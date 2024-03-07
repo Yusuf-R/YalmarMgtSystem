@@ -1,5 +1,6 @@
 require('dotenv').config({ path: '../server/.env' });
 const crypto = require('crypto');
+
 const { log } = console;
 
 function genJWT() {
