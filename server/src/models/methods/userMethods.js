@@ -1,14 +1,10 @@
 /* eslint-disable new-cap */
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable jest/require-hook */
 const mongoose = require('mongoose');
 const { v4: uuid } = require('uuid');
+const User = require('../User');
 
 async function createUser(attributes) {
-  const user = new mongoose.model('User')(attributes);
-  await user.save();
-  return user;
+  return new User(attributes).save();
 }
 
 async function generateOTP() {

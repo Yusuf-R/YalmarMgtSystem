@@ -4,8 +4,6 @@ require('dotenv').config({
 const Redis = require('ioredis');
 
 const url = process.env.REDIS_URL;
-
-console.log({ redis: url });
 const msg = 'Redis connection is not alive';
 
 class RedisClient {

@@ -4,7 +4,6 @@ require('dotenv').config({
 const mongoose = require('mongoose');
 
 const uri = process.env.MONGODB_URL;
-console.log({ uri });
 
 class DBClient {
   constructor() {
@@ -16,7 +15,6 @@ class DBClient {
     try {
       // Access the Mongoose connection object only after it's returned by connect
       const client = await mongoose.connect(uri);
-      console.log('Connection to MongoDB established successfully!');
       return client;
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);

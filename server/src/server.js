@@ -1,6 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable jest/require-hook */
-/* eslint-disable no-unused-vars */
 require('dotenv').config({
   path: '../server/.env',
 });
@@ -14,8 +11,7 @@ const dbClient = require('./utils/db');
 // const upload = multer({ dest: 'uploads/', fileField: 'file' });
 const upload = multer();
 const app = express();
-const port = process.env.EXPRESS_PORT;
-console.log({ port });
+const port = process.env.EXPRESS_PORT || 5000;
 
 // middleware
 app.use(upload.single('file')); // Place this before your routes
@@ -26,19 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(router);
 app.use(logger('dev'));
 
-// Error handling
-app.use((err, _req, res, _next) => {
-  const errorStatus = err.status || 500;
-  const errorMsg = err.message || 'Something went wrong';
-  return res.status(errorStatus).json({
-    success: false,
-    status: errorStatus,
-    message: errorMsg,
-    stack: err.stack,
-  });
-});
-
-async function connectDB() {
+async function startServer() {
   const redisStatus = await redisClient.isAlive();
   if (!redisStatus) {
     console.error('Failed to initialize Redis');
@@ -52,13 +36,24 @@ async function connectDB() {
       console.error('Database connection failed!');
       process.exit(1);
     }
+    // Graceful Shutdown
+    process.on('SIGINT', () => {
+      console.log('\nReceived SIGINT (signal interrupt) . Shutting down gracefully.');
+      // Perform cleanup tasks if needed
+      process.exit(0);
+    });
+    // Start the server
+    app.listen(port, () => {
+      console.log(`Server is listening on http://localhost:${port}`);
+    });
   } catch (error) {
-    console.error('Failed to initialize the database:', error);
+    console.error({
+      info: 'Server failed to start',
+      error,
+      details: error.message,
+    });
     process.exit(1);
   }
-  app.listen(port, () => {
-    console.log(`Server is listening on http://localhost:${port}`);
-  });
 }
 
-connectDB();
+startServer();
