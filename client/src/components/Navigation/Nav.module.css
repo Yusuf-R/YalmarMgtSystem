@@ -1,0 +1,39 @@
+/* components/Nav.module.css */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: white;
+    background-image: url('../../../images/bg-1.jpg'); /* Update with your image file path */
+    background-size: cover; /* Ensure the background covers the entire viewport */
+    background-repeat: no-repeat; /* Prevent background image from repeating */
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    width: 200px;
+    align-content: space-between;
+}
+
+.companyName {
+    margin-left: 20px;
+    font-size: 1.1rem;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navList a {
+    text-decoration: none;
+    color: rgb(255, 220, 255, 1.8);
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* Add responsive styles if needed */
