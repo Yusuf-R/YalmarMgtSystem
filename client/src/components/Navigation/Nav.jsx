@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import navStyle from "./Nav.module.css";
+import Link from "next/link";
+import yalmar from "../../../images/YML.png";
 
 function Nav() {
     return (
@@ -9,7 +11,7 @@ function Nav() {
             <div className={navStyle.logoContainer}>
                 <a href="/">
                     <Image
-                        src="/images/YML.png"
+                        src={yalmar}
                         alt="YALMAR Ventures"
                         width={37}
                         height={37}
@@ -20,20 +22,21 @@ function Nav() {
                 </p>
             </div>
             <nav>
-                <ul className={navStyle.navList}>
-                    <li>
-                        <a href="/">Home</a>
-                    </li>
-                    <li>
-                        <a href="#about">About</a>
-                    </li>
-                    <li>
-                        <a href="#login">Login</a>
-                    </li>
-                    <li>
-                        <a href="#signup">SignUp</a>
-                    </li>
-                </ul>
+                <div className={navStyle.navList}>
+                    <Link href="/">
+                        <p>Home</p>
+                    </Link>
+                    <Link href="/about">
+                        <p>About</p>
+                    </Link>
+                    <Link href="/login">
+                        <button>Login</button>
+                    </Link>
+                    <Link href="/register">
+                        <button>SignUp</button>
+                    </Link>
+                </div>
+
             </nav>
         </header>
     );

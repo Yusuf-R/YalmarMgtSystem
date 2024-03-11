@@ -27,6 +27,7 @@
     list-style: none;
     display: flex;
     gap: 20px;
+    border-bottom: 1px solid dimgrey;
 }
 
 .navList a {
@@ -34,6 +35,23 @@
     color: rgb(255, 220, 255, 1.8);
     font-weight: bold;
     font-size: 1rem;
+}
+
+.navList p {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 5px 0;
+    color: white;
+}
+
+.navList button {
+    font-weight: bold;
+    font-size: 1.1em;
+    background: inherit;
+    border-radius: 10px;
+    padding: 5px;
+    cursor: pointer;
+    color: white;
 }
 
 /* Add responsive styles if needed */

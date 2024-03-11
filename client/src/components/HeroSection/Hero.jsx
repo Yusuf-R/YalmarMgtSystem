@@ -1,4 +1,5 @@
 import heroStyle from './Hero.module.css';
+import Link from "next/link"
  function Hero() {
     return (
         <>
@@ -9,8 +10,12 @@ import heroStyle from './Hero.module.css';
                         <p>The smart system for managing staff and client operations.</p>
                     </div>
                     <div>
-                        <button className={heroStyle.heroBtn}>Get Started</button>
-                    </div>
+                        <Link href={"/register"} className={heroStyle.nextLink}>
+                            <button className={heroStyle.heroBtn}>
+                                Get Started
+                            </button>
+                        </Link>
+            </div>
                 </section>
             </div>
         

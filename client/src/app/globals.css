@@ -1,21 +1,23 @@
- * {
+/* global.css */
+
+/* Reset default styles */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
- }
+}
 
- root {
-     --textColor: white;
- }
+/* Define global variables or custom properties */
+:root {
+    --textColor: white;
+}
 
- body {
-     font-family: 'Roboto', sans-serif;
-     justify-content: center;
-     align-items: center;
-     margin: 0; /* Remove default body margin */
-     padding: 0; /* Remove default body padding */
-     color: var(--textColor);
- }
-
-
-
+/* Apply global styles to body */
+body {
+    font-family: 'Roboto', sans-serif;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    color: var(--textColor);
+}

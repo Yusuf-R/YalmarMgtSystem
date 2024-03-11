@@ -27,3 +27,7 @@
     background: hsl(120deg 100% 25%);
     color: var(--textColor);
 }
+
+.nextLink {
+    text-decoration: none;
+}
