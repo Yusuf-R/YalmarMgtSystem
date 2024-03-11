@@ -47,11 +47,31 @@
 .navList button {
     font-weight: bold;
     font-size: 1.1em;
-    background: inherit;
+    background: mediumpurple;
     border-radius: 10px;
     padding: 5px;
     cursor: pointer;
     color: white;
+}
+
+.navList button:hover {
+    background: blue;
+}
+
+/* Make bouncing effect for the button*/
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.navList button:hover {
+    animation: bounce 0.5s infinite;
 }
 
 /* Add responsive styles if needed */

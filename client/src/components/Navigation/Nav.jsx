@@ -11,7 +11,7 @@ function Nav() {
             <div className={navStyle.logoContainer}>
                 <a href="/">
                     <Image
-                        src={yalmar}
+                        src= {yalmar}
                         alt="YALMAR Ventures"
                         width={37}
                         height={37}

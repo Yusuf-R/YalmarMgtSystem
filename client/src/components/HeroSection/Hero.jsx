@@ -9,18 +9,20 @@ import Link from "next/link"
                         <h1>YALMAR Management System.</h1>
                         <p>The smart system for managing staff and client operations.</p>
                     </div>
-                    <div>
+                    <div >
                         <Link href={"/register"} className={heroStyle.nextLink}>
-                            <button className={heroStyle.heroBtn}>
-                                Get Started
-                            </button>
+                            <div className={heroStyle.animateContainer}>
+                                <button className={heroStyle.heroBtn}>
+                                    Get Started
+                                </button>
+                            </div>
                         </Link>
-            </div>
+                    </div>
                 </section>
             </div>
         
         </>
     )
-}
+ }
 
 export default Hero

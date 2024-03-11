@@ -10,7 +10,7 @@ function SetPassword() {
                 <div className={styleSetPassword.formParent}>
                     <div className={styleSetPassword.formParentMain}>
                         <form action="">
-                            <h5>Set New Password</h5>
+                            <h1>Set New Password</h1>
                             <div className={styleSetPassword.inputBox}>
                                 <input type="email" placeholder="Email" required={true}/>
                                 <MdOutlineMailLock className={styleSetPassword.icons}/>
