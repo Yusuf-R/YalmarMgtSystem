@@ -15,6 +15,7 @@ function Nav() {
                         alt="YALMAR Ventures"
                         width={37}
                         height={37}
+                        priority={true}
                     />
                 </a>
                 <p className={navStyle.companyName}>
