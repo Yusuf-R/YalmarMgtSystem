@@ -1,9 +1,28 @@
+'use client';
 import styleSetPassword from "./SetPassword.module.css";
 import {MdOutlineMailLock} from "react-icons/md";
 import { MdOutlineGeneratingTokens } from "react-icons/md";
 import {RiLockPasswordFill} from "react-icons/ri";
 import Link from "next/link";
+import { useRouter}  from "next/navigation";
+import { useState} from "react"
+import { useEffect } from "react";
+
+
 function SetPassword() {
+    const [email, setEmail] = useState('');
+    const router = useRouter();
+    // retrieve the email parameter
+    const { query } = router;
+    console.log(query);
+    
+    
+    // useEffect(() => {
+    //     if (router.query && router.query.email !== "") {
+    //         setEmail(router.query.email);
+    //     }
+    // }, [router.query])
+    
     return (
         <>
             <div className={styleSetPassword.container}>

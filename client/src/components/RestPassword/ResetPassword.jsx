@@ -1,17 +1,17 @@
 'use client'
 import styleForgot from "./ResetPassword.module.css"
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation'
 import { useForm } from "react-hook-form";
 import  { useState} from "react";
-import { resetEmailValidator } from "@/SchemaValidator/resetpassword";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {schemaResetPassword, validateEmail} from "@/SchemaValidator/resetpassword";
 
-function ResetPassword() {
+function ResetPassword(href, options) {
     const [borderColor, setBorderColor] = useState("black")
     const [typingTimeout, setTypingTimeout] = useState(null); // State for typing timeout
     const { register, handleSubmit, formState } = useForm({
-        defaultValues: {
-            email: "",
-        }
+        mode: "onBlur",
+        resolver: yupResolver(schemaResetPassword),
     });
     const { errors } = formState;
     const router = useRouter();
@@ -25,8 +25,7 @@ function ResetPassword() {
         clearTimeout(typingTimeout);
         setTypingTimeout(setTimeout(() => {
             if (value) {
-                setBorderColor("black");
-                 if (value.match(resetEmailValidator.pattern.value)) {
+                 if (value.match(validateEmail.pattern.value)) {
                     setBorderColor("green");
                 }
                 else {
@@ -47,15 +46,14 @@ function ResetPassword() {
                                 <input
                                     type="email"
                                     placeholder="Email"
-                                    {...register("email", resetEmailValidator)}
+                                    {...register("email", validateEmail)}
                                     onBlur={handleInputBlur}
                                     style={{ borderColor: borderColor, borderWidth: "4px", borderStyle: "solid"}}
                                     />
-                                {errors.email && <p className={styleForgot.emailError}>{errors.email.message}</p>}
+                                {errors.email && <p className={styleForgot.emailError}>{errors.email?.message}</p>}
                             </div>
-                            
                             <div className={styleForgot.btn}>
-                                <button type={"submit"} onSubmit={onClickFxn}>Submit</button>
+                                <button type={"submit"}>Submit</button>
                             </div>
                         </form>
                     </div>
