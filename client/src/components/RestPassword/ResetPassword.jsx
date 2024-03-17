@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import  { useState} from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {schemaResetPassword, validateEmail} from "@/SchemaValidator/resetpassword";
+import {toast } from "react-hot-toast"
 
 function ResetPassword(href, options) {
     const [borderColor, setBorderColor] = useState("black")
@@ -17,8 +18,10 @@ function ResetPassword(href, options) {
     const router = useRouter();
     
     const onClickFxn = (data) => {
-        console.log(data);
-        router.push("/setpassword");
+        const { email } = data;
+        sessionStorage.setItem("email", email);
+        toast.success ("Rest token sent to your email")
+        router.push(`/setpassword`);
     }
     const handleInputBlur = (e) => {
         const { value } = e.target;
@@ -30,6 +33,7 @@ function ResetPassword(href, options) {
                 }
                 else {
                     setBorderColor("red");
+
                 }
             }
         }, 500));
