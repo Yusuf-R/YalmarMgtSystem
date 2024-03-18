@@ -1,28 +1,70 @@
+'use client';
 import styleLogin from './Login.module.css';
 import Link from "next/link";
-import { RiLockPasswordFill } from "react-icons/ri";
 import { MdOutlineMailLock } from "react-icons/md";
 import styleSetPassword from "@/components/SetPassword/SetPassword.module.css";
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup";
+import { schemaLogin } from "@/SchemaValidator/login"
+import usePasswordToggle from "../../customHooks/usePasswordToggle";
+import { toast } from "react-hot-toast"
+
+
 
 function Login() {
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        mode: "onTouched",
+        resolver: yupResolver(schemaLogin),
+    })
+    
+    const onLogin = (data) => {
+        // display toast with a success
+        toast.success(' Login successful!',{
+            style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+            }
+        });
+        console.log(data)
+    }
+    const { icon: passwordIcon, inputType: passwordInputType, toggleVisibility: togglePasswordVisibility } = usePasswordToggle();
     return (
         <>
             <div className={styleLogin.loginContainer}>
                 <div className={styleLogin.wrapper}>
                     <div className={styleLogin.formParent}>
-                        <form action="">
+                        <form action="" onSubmit={handleSubmit(onLogin)} noValidate={true}>
                             <h1>Login</h1>
                             <div className={styleLogin.inputBox}>
-                                <input type="email" placeholder="Email" required={true}/>
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    {...register("email")}
+                                    style={{borderColor: errors.email ? "red" : "green"}}
+                                />
                                 <MdOutlineMailLock className={styleLogin.icons}/>
                             </div>
+                            {errors.email && <p className={styleLogin.inputError}>{errors.email?.message}</p>}
                             <div className={styleLogin.inputBox}>
-                                <input type="password" placeholder="Password" required={true}/>
-                                <RiLockPasswordFill className={styleLogin.icons}/>
+                                <input
+                                    type={passwordInputType}
+                                    placeholder="Password"
+                                    {...register("password")}
+                                    style={{borderColor: errors.password ? "red" : "green"}}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    className={styleLogin.icons}
+                                >
+                                    {passwordIcon}
+                                </button>
                             </div>
+                            {errors.password && <p className={styleLogin.inputError}>{errors.password?.message}</p>}
                             <div className={styleLogin.forgotPassword}>
                                 <label className={styleLogin.checkBox}>
-                                    <input type="checkbox"/>
+                                <input type="checkbox"/>
                                     <h1>Remember me</h1>
                                 </label>
                                 <Link href="/resetpassword">
@@ -30,7 +72,7 @@ function Login() {
                                 </Link>
                             </div>
                             <div className={styleLogin.submitButton}>
-                                <button type="submit">LOGIN</button>
+                                <button>LOGIN</button>
                             </div>
                         </form>
                         <br/>

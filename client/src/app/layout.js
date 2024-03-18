@@ -1,6 +1,10 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Navigation/Nav";
+import { Toaster } from "react-hot-toast";
+
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,7 +17,24 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Nav />
+        <Toaster 
+            position={"top-center"}
+            duration={3000}
+            reverseOrder={false}
+            autoClose={3000}
+            hideProgressBar={false}
+            toastOptions={{
+                style: {
+                    border: '5px solid green',
+                    padding: '20px',
+                    borderRadius: '20px',
+                    backgroundColor: 'white',
+                    fontSize: '1.1em',
+                    
+                },
+            }}
+        />
+        <Nav/>
         {children}
       </body>
     </html>

@@ -87,7 +87,8 @@
 .formParent .inputBox {
     width: 100%;
     height: 60px;
-    margin: 30px 0;
+    margin-top: 30px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     position: relative;
@@ -116,12 +117,16 @@
     color: orange;
     position: absolute;
     right: 15px;
+    border: none;
+    outline: none;
+    background: none;
 }
 
 .forgotPassword {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 50px 0;
 }
 
 .checkBox  {
@@ -131,12 +136,12 @@
 }
 
 .checkBox h1 {
-    font-size : 0.9em;
-    color: cyan;
+    font-size : 1.0em;
+    color: mediumpurple;
 }
 
 .forgotPassword p {
-    font-size : 0.9em;
+    font-size : 1.0em;
     color: yellowgreen;
 }
 
@@ -188,4 +193,10 @@
 
 .register h5 {
     color: #3734eb
+}
+
+.inputError {
+    color: red;
+    font-size: 1.0em;
+    padding: 2px;
 }
