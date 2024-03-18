@@ -1,5 +1,6 @@
 .registerContainer {
-    display: flex;
+    background-image: url('../../../images/bg-6.jpg');
+    /* display: flex;
     flex-direction: column;
     gap: 20px;
     justify-content: center;
@@ -8,9 +9,8 @@
     height: 100vh;
     position: relative;
     font-size: 3.0rem;
-    background-image: url('../../../images/bg-6.jpg'); /* Update with your image file path */
-    background-size: cover; /* Ensure the background covers the entire viewport */
-    background-repeat: no-repeat; /* Prevent background image from repeating */
+    background-size: cover; 
+    background-repeat: no-repeat; 
     color: white;
-    border-image: none;
+    border-image: none; */
 }
