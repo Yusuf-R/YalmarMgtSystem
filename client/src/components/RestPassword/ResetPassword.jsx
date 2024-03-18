@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import  { useState} from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {schemaResetPassword, validateEmail} from "@/SchemaValidator/resetpassword";
-import {toast } from "react-hot-toast"
+import { toast } from 'react-toastify';
+import {BsRocketTakeoff, BsRocketTakeoffFill} from "react-icons/bs";
 
 function ResetPassword(href, options) {
     const [borderColor, setBorderColor] = useState("black")
@@ -20,7 +21,13 @@ function ResetPassword(href, options) {
     const onClickFxn = (data) => {
         const { email } = data;
         sessionStorage.setItem("email", email);
-        toast.success ("Rest token sent to your email")
+        toast.info ("Reset token sent to your email", {
+            style: {
+                width: '20vw',
+                border : '2px solid cyan',
+            },
+            icon: <BsRocketTakeoff className={styleForgot.icons}/>
+        })
         router.push(`/setpassword`);
     }
     const handleInputBlur = (e) => {

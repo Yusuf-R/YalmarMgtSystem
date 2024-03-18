@@ -6,29 +6,27 @@ import styleSetPassword from "@/components/SetPassword/SetPassword.module.css";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaLogin } from "@/SchemaValidator/login"
+import { useState } from "react";
 import usePasswordToggle from "../../customHooks/usePasswordToggle";
-import { toast } from "react-hot-toast"
-
-
+import { toast } from 'react-toastify';
 
 function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm({
         mode: "onTouched",
         resolver: yupResolver(schemaLogin),
     })
+    const [ checkBox, setCheckBox ] = useState(false)
     
     const onLogin = (data) => {
         // display toast with a success
-        toast.success(' Login successful!',{
-            style: {
-                borderRadius: '10px',
-                background: '#333',
-                color: '#fff',
-            }
-        });
+        toast.success(' Login successful!')
+        data.isChecked = checkBox;
         console.log(data)
     }
     const { icon: passwordIcon, inputType: passwordInputType, toggleVisibility: togglePasswordVisibility } = usePasswordToggle();
+    const handleCheckBox = (e) => {
+        setCheckBox(e.target.checked);
+    }
     return (
         <>
             <div className={styleLogin.loginContainer}>
@@ -64,7 +62,9 @@ function Login() {
                             {errors.password && <p className={styleLogin.inputError}>{errors.password?.message}</p>}
                             <div className={styleLogin.forgotPassword}>
                                 <label className={styleLogin.checkBox}>
-                                <input type="checkbox"/>
+                                <input type="checkbox"
+                                       onClick={handleCheckBox}
+                                />
                                     <h1>Remember me</h1>
                                 </label>
                                 <Link href="/resetpassword">
@@ -87,6 +87,7 @@ function Login() {
                     </div>
                 </div>
             </div>
+            
         </>
     )
 }

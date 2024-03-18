@@ -1,5 +1,6 @@
 'use client';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-toastify';
+
 
 function About () {
     const testToast = () => {

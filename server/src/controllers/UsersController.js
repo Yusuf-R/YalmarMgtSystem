@@ -153,7 +153,7 @@ class UserController {
         error: 'User not found',
       });
     }
-    // Generate and send password reset token
+    // Generate and send password resetpassword token
     const resetToken = await user.generateOTP();
     try {
       await mailClient.sendToken(user);
@@ -163,7 +163,7 @@ class UserController {
       });
     }
     return res.status(201).json({
-      message: 'Password reset token sent successfully',
+      message: 'Password resetpassword token sent successfully',
       email: user.email,
       resetToken,
     });
@@ -212,7 +212,7 @@ class UserController {
       }
       // procedd user to login after password change
       return res.status(201).json({
-        message: 'Password reset successfully',
+        message: 'Password resetpassword successfully',
         email: user.email,
       });
     } catch (err) {

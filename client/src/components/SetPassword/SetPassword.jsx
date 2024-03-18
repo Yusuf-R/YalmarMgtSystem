@@ -10,6 +10,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { schemaSetNewPassword, validateToken, validatePassword, validateConfirmPassword } from "@/SchemaValidator/setnewpassword";
 import Link from "next/link";
 import usePasswordToggle from "../../customHooks/usePasswordToggle";
+import { toast } from 'react-toastify';
+import { SiConvertio } from "react-icons/si";
 
 
 function SetPassword() {
@@ -78,7 +80,10 @@ function SetPassword() {
     
     const onClickFxn = (data) => {
         data.email = email;
+        toast.success("Password set successfully!")
+        toast.success("Redirecting to login page 😎")
         console.log(data)
+        // router.push("/login");
     }
 
     useEffect(() => {
@@ -89,7 +94,7 @@ function SetPassword() {
         } else {
             router.push("/login");
         }
-    }, []);
+    }, [router]);
     
     return (
         <>
