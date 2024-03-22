@@ -16,9 +16,8 @@ const userRef = [
 ];
 const signupRef = [
   'username',
-  'country',
-  'city',
-  'phone',
+  'firstName',
+  'lastName',
 ];
 
 class UserController {
@@ -46,50 +45,6 @@ class UserController {
     });
   }
 
-  // static async createUser(req, res) {
-  //   const attributes = {};
-  //   const requiredAttributes = [
-  //     'username',
-  //     'email',
-  //     'country',
-  //     'city',
-  //     'phone',
-  //     'password',
-  //     'isAdmin',
-  //     'img',
-  //   ];
-  //   // Check if the body of the request has the required attributes
-  //   for (const key of requiredAttributes) {
-  //     if (!Object.prototype.hasOwnProperty.call(req.body, key)) {
-  //       return res.status(400).json({
-  //         error: `Missing required attribute: ${key}`,
-  //         genFormat: '{ username: <string>, email: <string>, country: <string>, city: <string>, ...}',
-  //       });
-  //     }
-  //     attributes[key] = req.body[key];
-  //   }
-  //   // Check if the user already exists
-  //   let coreCheck = await User.findOne({ email: attributes.email });
-  //   if (coreCheck) {
-  //     return res.status(409).json({ error: 'User email already exists' });
-  //   }
-  //   coreCheck = await User.findOne({ username: attributes.username });
-  //   if (coreCheck) {
-  //     return res.status(409).json({ error: 'Username already exists' });
-  //   }
-  //   try {
-  //     // Create a new user
-  //     const user = await User.createUser(attributes);
-  //     return res.status(201).json({
-  //       msg: 'User object successfully created',
-  //       data: user,
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ error: 'Internal Server Error' });
-  //   }
-  // }
-
   static async signUp(req, res) {
     const data64 = await authClient.signInPrecheck(req);
     if (data64.error) {
@@ -107,7 +62,7 @@ class UserController {
       if (!Object.prototype.hasOwnProperty.call(req.body, key)) {
         return res.status(400).json({
           error: `Missing required attribute: ${key}`,
-          genFormat: '{ username: <string>, email: <string>, country: <string>, city: <string>, phone: <string> }',
+          genFormat: '{ username: <string>, email: <string> }',
         });
       }
       attributes[key] = req.body[key];
@@ -283,7 +238,9 @@ class UserController {
     if (data64.error) {
       return res.status(400).json({ error: data64.error });
     }
+    console.log({ data64 });
     const decodeData = await authClient.singinDecrypt(data64);
+    console.log({ decodeData });
     if (decodeData.error) {
       return res.status(400).json({ error: decodeData.error });
     }
@@ -474,180 +431,6 @@ class UserController {
       message: 'Token refreshed successfully',
       accessToken,
       refreshToken,
-    });
-  }
-
-  static async bookings(req, res) {
-    const { id } = req.params;
-    if (!id) {
-      return res.status(400).json({ error: 'Missing user id' });
-    }
-    const accessToken = await authClient.currPreCheck(req);
-    if (accessToken.error) {
-      return res.status(400).json({ error: accessToken.error });
-    }
-    const payload = await authClient.verifyAccessToken(accessToken);
-    if (payload.error) {
-      return res.status(400).json({ error: payload.error });
-    }
-    if (payload.id !== id) {
-      return res.status(400).json({ error: 'Invalid token' });
-    }
-    const userData = await authClient.dashBoardCheck(id);
-    if (!userData) {
-      return res.status(400).json({ error: 'Invalid token to fetch userData' });
-    }
-    const bookings = await Booking.find({ userId: payload.id });
-    if (!bookings) {
-      return res.status(400).json({ error: 'No bookings found' });
-    }
-    return res.status(200).json({
-      accessToken,
-      userData,
-      bookings,
-
-    });
-  }
-
-  static async bookRoom(req, res) {
-    const genFormat = '{ userId: <string>, roomId: <string>, checkIn: <string>, checkOut: <string>, price: <number> }';
-    const { userId, roomId, checkIn, checkOut, price } = req.body;
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing user id', format: genFormat });
-    }
-    if (!roomId) {
-      return res.status(400).json({ error: 'Missing room id', format: genFormat });
-    }
-    if (!checkIn) {
-      return res.status(400).json({ error: 'Missing checkin date', format: genFormat });
-    }
-    if (!checkOut) {
-      return res.status(400).json({ error: 'Missing checkout date', format: genFormat });
-    }
-    if (!price) {
-      return res.status(400).json({ error: 'Missing price', format: genFormat });
-    }
-    const accessToken = await authClient.currPreCheck(req);
-    if (accessToken.error) {
-      return res.status(400).json({ error: accessToken.error });
-    }
-    const payload = await authClient.verifyAccessToken(accessToken);
-    if (payload.error) {
-      return res.status(400).json({ error: payload.error });
-    }
-    if (payload.id !== userId) {
-      return res.status(400).json({ error: 'Invalid token' });
-    }
-    const userData = await authClient.dashBoardCheck(id);
-    if (!userData) {
-      return res.status(400).json({ error: 'Invalid token to fetch userData' });
-    }
-    const booking = await Booking.create({ userId: payload.id, roomId, checkIn, checkOut, price });
-    if (!booking) {
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-    return res.status(201).json({
-      message: 'Room booked successfully',
-      bookingData: booking,
-      userData,
-      accessToken,
-    });
-  }
-
-  static async updateBooking(req, res) {
-    const genFormat = '{ userId: <string>, roomId: <string>, checkIn: <string>, checkOut: <string>, price: <number> }';
-    const { userId, roomId, checkIn, checkOut, price } = req.body;
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing user id', format: genFormat });
-    }
-    if (!roomId) {
-      return res.status(400).json({ error: 'Missing room id', format: genFormat });
-    }
-    if (!checkIn) {
-      return res.status(400).json({ error: 'Missing checkin date', format: genFormat });
-    }
-    if (!checkOut) {
-      return res.status(400).json({ error: 'Missing checkout date', format: genFormat });
-    }
-    if (!price) {
-      return res.status(400).json({ error: 'Missing price', format: genFormat });
-    }
-    const accessToken = await authClient.currPreCheck(req);
-    if (accessToken.error) {
-      return res.status(400).json({ error: accessToken.error });
-    }
-    const payload = await authClient.verifyAccessToken(accessToken);
-    if (payload.error) {
-      return res.status(400).json({ error: payload.error });
-    }
-    if (payload.id !== userId) {
-      return res.status(400).json({ error: 'Invalid token' });
-    }
-    const booking = await Booking.findOne({ userId: payload.id, roomId });
-    if (!booking) {
-      return res.status(400).json({ error: 'Booking not found' });
-    }
-    if (booking.checkIn === checkIn && booking.checkOut === checkOut && booking.price === price) {
-      return res.status(400).json({ error: 'No changes made' });
-    }
-    const userData = await authClient.dashBoardCheck(payload.id);
-    if (!userData) {
-      return res.status(400).json({ error: 'Invalid token to fetch userData' });
-    }
-    const updatedBooking = await booking.updateBooking({ checkIn, checkOut, price });
-    if (!updatedBooking) {
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-    return res.status(201).json({
-      message: 'Booking updated successfully',
-      bookingData: updatedBooking,
-      userData,
-      accessToken,
-    });
-  }
-
-  static async deleteBooking(req, res) {
-    const genFormat = '{ userId: <string>, roomId: <string> }';
-    const { userId, roomId } = req.body;
-    if (!userId) {
-      return res.status(400).json({ error: 'Missing user id', format: genFormat });
-    }
-    if (!roomId) {
-      return res.status(400).json({ error: 'Missing room id', format: genFormat });
-    }
-    const accessToken = await authClient.currPreCheck(req);
-    if (accessToken.error) {
-      return res.status(400).json({ error: accessToken.error });
-    }
-    const payload = await authClient.verifyAccessToken(accessToken);
-    if (payload.error) {
-      return res.status(400).json({ error: payload.error });
-    }
-    if (payload.id !== userId) {
-      return res.status(400).json({ error: 'Invalid token' });
-    }
-    const userData = await authClient.dashBoardCheck(payload.id);
-    if (!userData) {
-      return res.status(400).json({ error: 'Invalid token to fetch userData' });
-    }
-    const booking = await Booking.findOne({ userId: payload.id, roomId });
-    if (!booking) {
-      return res.status(400).json({ error: 'Booking not found' });
-    }
-    const deletedBooking = await mongoose.model('Booking').deleteOne({ userId: payload.id, roomId });
-    if (!deletedBooking) {
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-    if (deletedBooking.deletedCount === 0) {
-      return res.status(400).json({ error: 'Booking not found' });
-    }
-    if (deletedBooking.deletedCount > 1) {
-      return res.status(500).json({ error: 'Invalid Operation' });
-    }
-    return res.status(201).json({
-      message: 'Booking deleted successfully',
-      userData,
-      accessToken,
     });
   }
 }

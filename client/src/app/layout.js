@@ -1,14 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Navigation/Nav";
-// import {Toaster} from "sonner";
-import { ToastContainer, toast } from 'react-toastify';
+import ReactQueryProvider from "@/components/ReactQuery/ReactQueryProvider";
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import { Toaster } from "react-hot-toast";
-
-
-
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -18,24 +13,24 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Nav/>
-        {children}
-        <ToastContainer
-            position="top-center"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-    
-            pauseOnFocusLoss={false}
-            draggable
-            pauseOnHover={false}
-            theme="dark"
-        />
-      </body>
-    </html>
+          <html lang="en">
+            <body className={inter.className}>
+                <ReactQueryProvider>
+                    <Nav/>
+                    {children}
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={2000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        pauseOnFocusLoss={false}
+                        draggable
+                        pauseOnHover={false}
+                        theme="dark"
+                    />
+                </ReactQueryProvider>
+            </body>
+          </html>
   );
 }

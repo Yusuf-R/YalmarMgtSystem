@@ -17,10 +17,9 @@ userRouter.post('/logout', userController.logout);
 userRouter.post('/resetpassword', userController.resetPassword);
 userRouter.put('/newpassword', userController.newPassword);
 userRouter.put('/changepassword', userController.changePassword);
-userRouter.get('/me', userController.userData);
-userRouter.get('/signature', imageController.getSignature);
 userRouter.post('/uploadimage', imageController.uploadNewImage);
 userRouter.get('/me', userController.userData);
+userRouter.get('/signature', imageController.getSignature);
 
 // userRouter.patch('/profile', userController.updateProfile);
 
