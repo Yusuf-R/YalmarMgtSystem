@@ -4,7 +4,7 @@ const { v4: uuid } = require('uuid');
 const User = require('../User');
 
 async function createUser(attributes) {
-  return new User(attributes).save();
+  return new mongoose.model('User').create(attributes);
 }
 
 async function generateOTP() {

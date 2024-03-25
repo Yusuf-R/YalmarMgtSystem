@@ -6,7 +6,7 @@
     align-items: center;
     padding: 20px;
     color: white;
-    background-image: url('../../../images/bg-1.jpg'); /* Update with your image file path */
+    background-image: url('../../../public/bg-1.jpg'); /* Update with your image file path */
     background-size: cover; /* Ensure the background covers the entire viewport */
     background-repeat: no-repeat; /* Prevent background image from repeating */
 }
@@ -14,8 +14,11 @@
 .logoContainer {
     display: flex;
     align-items: center;
-    width: 200px;
+    /*width: 200px;*/
+    width: 50%;
+
     align-content: space-between;
+
 }
 
 .companyName {
@@ -26,8 +29,9 @@
 .navList {
     list-style: none;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 20px;
-    border-bottom: 1px solid dimgrey;
 }
 
 .navList a {

@@ -1,9 +1,10 @@
 require('dotenv').config({
-  path: '../server/.env',
+  path: '../../server/.env',
 });
 const mongoose = require('mongoose');
 
-const uri = process.env.MONGODB_URL;
+// const uri = process.env.MONGODB_URL || process.env.LOCAL_URL;
+const uri = process.env.LOCAL_URL;
 
 class DBClient {
   constructor() {

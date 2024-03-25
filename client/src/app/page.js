@@ -1,11 +1,12 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+
 import Hero from "@/components/HeroSection/Hero";
 import Footer from "@/components/Footer/Footer";
+import Nav from "@/components/Navigation/Nav";
 
 export default function Home() {
   return (
       <div>
+          <Nav/>
           <Hero />
           <Footer/>
       </div>

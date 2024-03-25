@@ -7,7 +7,7 @@
     height: 100vh;
     position: relative;
     font-size: 3.0rem;
-    background-image: url('../../../images/bg-2.jpg'); /* Update with your image file path */
+    background-image: url('../../../public/bg-2.jpg'); /* Update with your image file path */
     background-size: cover; /* Ensure the background covers the entire viewport */
     background-repeat: no-repeat; /* Prevent background image from repeating */
     color: white;
@@ -81,9 +81,8 @@
     font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease-out;
-    /*background: hsl(120deg 100% 25%);*/
-    background: inherit;
-    color: var(--textColor);
+    background: #131972;
+    color: white;
     z-index: 4;
 }
 

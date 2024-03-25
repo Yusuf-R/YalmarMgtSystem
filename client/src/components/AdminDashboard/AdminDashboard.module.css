@@ -1,0 +1,11 @@
+.adminContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../../../public/bg-6.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+}

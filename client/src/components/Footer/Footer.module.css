@@ -7,7 +7,7 @@
     align-content: space-around;
     background-color: #f5f5f5;
     font-size: 0.7rem;
-    background-image: url('../../../images/bg-5.jpg'); /* Update with your image file path */
+    background-image: url('../../../public/bg-5.jpg'); /* Update with your image file path */
     background-size: cover; /* Ensure the background covers the entire viewport */
     background-repeat: no-repeat; /* Prevent background image from repeating */
     color: white;

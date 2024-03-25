@@ -19,7 +19,12 @@ function About () {
     return (
         <>
             <div style={{
-                backgroundColor: "darkgrey",
+                backgroundColor: "black",
+                height: "100vh",
+                color: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
             }}>
                 About
                 {/*<AboutSection/>*/}

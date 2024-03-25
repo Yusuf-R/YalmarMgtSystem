@@ -19,6 +19,10 @@ function SetPassword() {
     const [tokenBorderColor, setTokenBorderColor] = useState("black");
     const [passwordBorderColor, setPasswordBorderColor] = useState("black");
     const [confirmPasswordBorderColor, setConfirmPasswordBorderColor] = useState("black");
+    const [tokenBorderWidth, setTokenBorderWidth] = useState("0px");
+    const [passwordBorderWidth, setPasswordBorderWidth] = useState("0px");
+    const [confirmPasswordBorderWidth, setConfirmPasswordBorderWidth] = useState("0px");
+    
     // Use custom hook for password input
     const {
         icon: passwordIcon,
@@ -45,11 +49,13 @@ function SetPassword() {
                 setTokenBorderColor("green");
             } else {
                 setTokenBorderColor("red");
+                setTokenBorderWidth("4px");
             }
             if ( value.length === validateToken.maxLength.value && value.match(validateToken.pattern.value)) {
                 setTokenBorderColor("green");
             } else {
                 setTokenBorderColor("red");
+                setTokenBorderWidth("4px");
             }
         }
     }
@@ -62,6 +68,7 @@ function SetPassword() {
                 setPasswordBorderColor("green");
             } else {
                 setPasswordBorderColor("red");
+                setPasswordBorderWidth("4px");
             }
         }
     }
@@ -74,6 +81,7 @@ function SetPassword() {
                 setConfirmPasswordBorderColor("green");
             } else {
                 setConfirmPasswordBorderColor("red");
+                setConfirmPasswordBorderWidth("4px");
             }
         }
     }
@@ -82,8 +90,7 @@ function SetPassword() {
         data.email = email;
         toast.success("Password set successfully!")
         toast.success("Redirecting to login page 😎")
-        console.log(data)
-        // router.push("/login");
+        router.push("/login");
     }
 
     useEffect(() => {
@@ -118,7 +125,9 @@ function SetPassword() {
                                     type="text"
                                     placeholder="Token"
                                     {...register("token")}
-                                    style={{borderColor: tokenBorderColor, borderWidth: "4px", borderStyle: "solid"}}
+                                    style={{
+                                        border: `${tokenBorderWidth} solid ${tokenBorderColor}`,
+                                    }}
                                     onBlur={handleTokenBlur}
                                 />
                                 <MdOutlineGeneratingTokens className={styleSetPassword.icons}/>
@@ -130,7 +139,9 @@ function SetPassword() {
                                     type={passwordInputType}
                                     placeholder="New Password"
                                     {...register("password")}
-                                    style={{borderColor: passwordBorderColor, borderWidth: "4px", borderStyle: "solid"}}
+                                    style={{
+                                        border: `${passwordBorderWidth} solid ${passwordBorderColor}`,
+                                    }}
                                     onBlur={handlePasswordBlur}
                                 />
                                 <button type="button" onClick={togglePasswordVisibility}
@@ -143,7 +154,9 @@ function SetPassword() {
                                     type={confirmPasswordInputType}
                                     placeholder="Confirm Password"
                                     {...register("confirmPassword")}
-                                    style={{ borderColor: confirmPasswordBorderColor, borderWidth: "4px", borderStyle: "solid"}}
+                                    style={{
+                                        border: `${confirmPasswordBorderWidth} solid ${confirmPasswordBorderColor}`,
+                                    }}
                                     onBlur={handleConfirmPasswordBlur}
                                 />
                                 <button type="button" onClick={toggleConfirmPasswordVisibility} className={styleSetPassword.icons}>{confirmPasswordIcon}</button>
