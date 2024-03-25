@@ -1,11 +1,10 @@
-//  creating a layout for the dashboard
+import DashboardTopNav from "@/components/DashboardTopNav/DashboardTopNav";
 
 function DashboardLayout({ children }) {
     return (
         <>
-            <html lang="en">
-                <body>{children}</body>
-            </html>
+            <DashboardTopNav />
+            {children}
         </>
     );
 }

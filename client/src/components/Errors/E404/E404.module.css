@@ -1,25 +1,25 @@
 .parentBody {
+    padding: 0;
+    margin:0;
     background-color: #1C2127;
     height: 100vh;
 }
 
 .container {
     position: absolute;
-    right: 30px;
-    border: 5px solid red;
-
+    right: 150px;
 }
 
-.message{
+.message {
     font-family: 'Poppins', sans-serif;
     font-size: 30px;
-    color: black;
+    color: white;
     font-weight: 500;
     position: absolute;
     top: 230px;
     left: 40px;
 }
-.message2{
+.message2 {
     font-family: 'Poppins', sans-serif;
     font-size: 18px;
     color: white;
@@ -41,7 +41,6 @@
     letter-spacing: 3px;
     text-shadow: 0 0 5px #6EECC1;
     animation: flux 2s linear infinite;
-
 }
 .trash{
     width: 170px;
@@ -55,7 +54,7 @@
     background-color: #6B737C;
     border-radius: 15px 15px 0 0;
 }
-.door-frame {
+.doorFrame {
     height: 495px;
     width: 295px;
     border-radius: 90px 90px 0 0;
@@ -123,6 +122,31 @@
     position: absolute;
     margin-top: 220px;
     margin-left: 20px;
+}
+
+.goHome {
+    margin: 40px 0;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+}
+
+.goHome button {
+    width: 150px;
+    height: 50px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    color: black;
+    font-size: 25px;
+    cursor: pointer;
+    padding: 4px;
+    background-color: teal;
+    transition: .5s;
+}
+
+.goHome button:hover {
+    background-color: #42bff5;
+    color: white;
 }
 
 @keyframes leaf {

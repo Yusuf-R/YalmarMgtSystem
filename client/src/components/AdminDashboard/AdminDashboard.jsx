@@ -8,19 +8,16 @@ function AdminDashboard({ userData, accessToken, refreshToken }) {
                     Welcome Admin
                 </div>
                 <div>
+                    {Object.entries(userData).map(([key, value]) => (
+                        <p key={key}>
+                            {key}: {value}
+                        </p>
+                    ))}
                     <p>
-                        {Object.entries(userData).map(([key, value]) => (
-                            <p key={key}>
-                                {key}: {value}
-                            </p>
-                            
-                        ))}
+                        Access-Token: {accessToken}
                     </p>
                     <p>
-                        {accessToken}
-                    </p>
-                    <p>
-                        {refreshToken}
+                        Refresh-Token: {refreshToken}
                     </p>
                 </div>
             </div>

@@ -9,13 +9,11 @@ function UserDashboard({ userData, accessToken, refreshToken }) {
                     Welcome User
                 </div>
                 <div>
-                    <p>
-                        {Object.entries(userData).map(([key, value]) => (
-                            <p key={key}>
-                                {key}: {value}
-                            </p>
-                        ))}
-                    </p>
+                    {Object.entries(userData).map(([key, value]) => (
+                        <p key={key}>
+                            {key}: {value}
+                        </p>
+                    ))}
                     <p>
                         Access-Token: {accessToken}
                     </p>

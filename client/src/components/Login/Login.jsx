@@ -16,28 +16,36 @@ import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie';
 import { FcRedo } from "react-icons/fc"
 
-
+Cookies.defaults = {
+    sameSite: 'None',
+    secure: true,
+    httpOnly: true,
+};
 function Login() {
-    useEffect(() => {
-        // Check if user data exists in cookies
-        const userData = Cookies.get('userData');
-        if (userData) {
-            // Redirect to dashboard if user data exists
-            router.push('/dashboard');
-        }
-    }, [])
     const router = useRouter();
+    useEffect(() => {
+        // clear all cookies before loading the login page
+        Cookies.remove('email');
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
+        Cookies.remove('userData');
+        Cookies.remove('rememberMe');
+    }, [])
+    
     const { register, handleSubmit, formState: { errors } } = useForm({
         mode: "onTouched",
         resolver: yupResolver(schemaLogin),
     })
     const [ rememberMe, setRememberMe ] = useState(false);
+    const [ isSubmit , setIsSubmit ] = useState(false);
     // using useMutation to send the data to the server
     const mutation = useMutation({
         mutationKey: ['login'],
         mutationFn: UserLogin,
     })
     const OnLogin = (loginData) => {
+        // Disable the button to prevent multiple clicks
+        setIsSubmit(true);
         // Call the mutate function to trigger the login request
         mutation.mutate(loginData, {
             onSuccess: (response) => {
@@ -64,6 +72,7 @@ function Login() {
                     setTimeout(() => {
                         router.push('/login');
                     }, 3000);
+                    setIsSubmit(false);
                 }
             },
             onError: (error) => {
@@ -72,6 +81,7 @@ function Login() {
                 setTimeout(() => {
                     router.push('/login');
                 }, 3000);
+                setIsSubmit(false);
             },
             
         });
@@ -125,8 +135,10 @@ function Login() {
                                     <p> Forgot Password? </p>
                                 </Link>
                             </div>
-                            <div className={styleLogin.submitButton}>
-                                <button>LOGIN</button>
+                            <div className={styleLogin.submitButton} >
+                                <button disabled={isSubmit}>
+                                    {isSubmit ? "Logging in..." : "Login"}
+                                </button>
                             </div>
                         </form>
                         <br/>

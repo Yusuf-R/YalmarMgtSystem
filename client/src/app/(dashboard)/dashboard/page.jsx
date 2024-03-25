@@ -1,57 +1,69 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
 import UserDashboard from '@/components/UserDashboard/UserDashboard';
-import useAuthGuard from "@/customHooks/useAuthGuard";
-import DashboardLayout from "@/app/(dashboard)/layout";
+
+Cookies.defaults = {
+    sameSite: 'None',
+    secure: true,
+    httpOnly: true,
+};
 
 function Dashboard() {
-    useAuthGuard();
+    const router = useRouter();
     const [userData, setUserData] = useState(null);
     const [accessToken, setAccessToken] = useState(null);
     const [refreshToken, setRefreshToken] = useState(null);
     
     useEffect(() => {
-        // Retrieve user data and tokens from cookies
         const userDataFromCookie = Cookies.get('userData');
-        const accessTokenFromCookie = Cookies.get('accessToken');
-        const refreshTokenFromCookie = Cookies.get('refreshToken');
+        if (!userDataFromCookie) {
+            // Redirect to login page if email is not found in cookies
+            router.push('/error/404');
+            return;
+        }
+        // If userData exists, initialize state values
+        setUserData(JSON.parse(userDataFromCookie));
+        setAccessToken(Cookies.get('accessToken'));
+        setRefreshToken(Cookies.get('refreshToken'));
         
-        if (userDataFromCookie) {
-            setUserData(JSON.parse(userDataFromCookie));
-        }
-        if (accessTokenFromCookie) {
-            setAccessToken(accessTokenFromCookie);
-        }
-        if (refreshTokenFromCookie) {
-            setRefreshToken(refreshTokenFromCookie);
-        }
-        
-        const rememberMe = Cookies.get('rememberMe') === 'true';
-        if (!rememberMe) {
-            // Delete cookies if remember me was not checked
+        // if user did not set remember me clear cookies
+        if (Cookies.get('rememberMe')  === 'false') {
             Cookies.remove('email');
-            Cookies.remove('userData');
             Cookies.remove('accessToken');
             Cookies.remove('refreshToken');
+            Cookies.remove('userData');
         }
-    }, []); // Empty dependency array ensures that this effect runs only once after the initial render
-    
+    }, [router]);
+
     // Render the appropriate dashboard based on user role
-    if (userData && userData.isAdmin) {
+    if (!userData) {
+        //render a loading indicator
+        return <div>Loading...</div>;
+    }
+    
+    if (userData.role === 'admin' || userData.role === 'superAdmin') {
         return (
-            <DashboardLayout>
-                <AdminDashboard userData={userData} accessToken={accessToken} refreshToken={refreshToken} />
-            </DashboardLayout>
-        );
-    } else if (userData) {
-        return (
-            <DashboardLayout>
-                <UserDashboard userData={userData} accessToken={accessToken} refreshToken={refreshToken} />
-            </DashboardLayout>
+                <AdminDashboard
+                    userData={userData}
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                />
         );
     }
+    
+    if (userData.role === 'user') {
+        return (
+                <UserDashboard
+                    userData={userData}
+                    accessToken={accessToken}
+                    refreshToken={refreshToken}
+                />
+        );
+    }
+    router.push('/error/404');
     return null;
 }
 

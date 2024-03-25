@@ -32,7 +32,6 @@ class ImageController {
       accessToken,
     });
   }
-
   static async uploadNewImage(req, res) {
     // this procedure can only be done by the admin
     const ops = await authClient.fullAdminCheck(req);

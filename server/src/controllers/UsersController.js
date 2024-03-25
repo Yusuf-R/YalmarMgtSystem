@@ -27,8 +27,7 @@ class UserController {
       message: 'Server is healthy',
     });
   }
-
-  static async getAllUsers(req, res) {
+ static async getAllUsers(req, res) {
     const credentials = await authClient.fullAdminCheck(req);
     if (credentials.error) {
       return res.status(400).json({ error: credentials.error });

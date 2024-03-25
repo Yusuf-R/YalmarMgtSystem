@@ -3,7 +3,6 @@
 import Image from "next/image";
 import navStyle from "./Nav.module.css";
 import Link from "next/link";
-import yalmar from "../../../images/YML.png";
 
 function Nav() {
     return (
@@ -11,7 +10,7 @@ function Nav() {
             <div className={navStyle.logoContainer}>
                 <a href="/">
                     <Image
-                        src= {yalmar}
+                        src='/YML.png'
                         alt="YALMAR Ventures"
                         width={37}
                         height={37}
@@ -19,7 +18,7 @@ function Nav() {
                     />
                 </a>
                 <p className={navStyle.companyName}>
-                    YALMAR Ventures Limited
+                    YALMAR<br/> Ventures Limited
                 </p>
             </div>
             <nav>

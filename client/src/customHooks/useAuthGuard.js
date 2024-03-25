@@ -5,10 +5,9 @@ import Cookies from 'js-cookie';
 
 function useAuthGuard() {
     const router = useRouter();
-    
     useEffect(() => {
-        const email = Cookies.get('email');
-        if (!email) {
+        const userData = Cookies.get('userData');
+        if (!userData) {
             // Redirect to login page if email is not found in cookies
             router.push('/error/404');
         }

@@ -13,8 +13,11 @@ const user = {
   lga: { type: String },
   stateOfResidence: { type: String },
   phoneNo: { type: String },
-  isAdmin: { type: Boolean, default: false },
-  isSuperAdmin: { type: Boolean, default: false },
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'superAdmin'],
+    default: 'user',
+  },
   ninID: { type: String },
   img: String,
   resetPwd: Boolean,

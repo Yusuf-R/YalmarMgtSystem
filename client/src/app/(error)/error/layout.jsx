@@ -3,9 +3,9 @@ import React from "react";
 
 function ErrorLayout({ children }) {
     return (
-            <section>
+            <>
                 {children}
-            </section>
+            </>
     );
 }
 
