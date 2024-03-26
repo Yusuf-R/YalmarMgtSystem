@@ -3,6 +3,7 @@ import { useState } from "react";
 import styleRegister from "./Register.module.css";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import Alert from "../../utils/AlertMessage"
 import {
   Container,
   Box,
@@ -11,6 +12,10 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Button,
+  Divider,
+  Chip,
+  CardMedia
 } from "@mui/material/";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
@@ -31,7 +36,7 @@ function Register() {
         maxWidth="md"
         sx={{
           minHeight: "100vh",
-          //   bgcolor: '#cfe8fc',
+          bgcolor: "#d9d9d9",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -44,13 +49,16 @@ function Register() {
             maxWidth: "50%",
             padding: "5px",
             textAlign: "center",
-            marginTop: "-450px",
+            marginTop: "-70px",
+            bgcolor: "#d9d9d9"
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: "bold", color: "white" }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", color: "blue" }}>
             Register
           </Typography>
-          <Typography component="h1">Welcome!👏, get started</Typography>
+          <Typography component="h1" sx={{ fontWeight: "bold", color: "blue" }}>
+            Welcome!👏, get started{" "}
+          </Typography>
           <Box component="form">
             <Grid container spacing={1}>
               <Grid item xs={6}>
@@ -59,7 +67,7 @@ function Register() {
                   margin="normal"
                   fullWidth
                   label="First Name"
-                //   variant="outlined"
+                  //   variant="outlined"
                   autoComplete="First Name"
                   autoFocus
                   helperText="will put something there"
@@ -69,7 +77,7 @@ function Register() {
                   margin="normal"
                   fullWidth
                   label="Email Address"
-                //   variant="outlined"
+                  //   variant="outlined"
                   autoComplete="First Name"
                   autoFocus
                   helperText="will put something there"
@@ -114,6 +122,50 @@ function Register() {
                 />
               </Grid>
             </Grid>
+            <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                size="medium"
+                sx={{
+                  mt: 1,
+                  mb: 3,
+                  borderRadius: "30px",
+                  padding: ".6rem 6rem",
+                  width: "50%",
+                  // textAlign: "left",
+                }}
+              >
+                Register
+              </Button>
+            <Typography
+              component="h5"
+              sx={{ fontSize: ".8rem", marginBottom: "20px" }}
+            >
+              <Divider sx={{ marginY: 2 }}>
+                <Chip label="OR" size="medium"/>
+              </Divider>
+              <Alert
+              button={
+                <Button
+                  variant="outlined"
+                  tabIndex={-1}
+                  sx={{  borderRadius: "24px", marginY: 2}}
+                  startIcon={
+                    <CardMedia component="img"
+                      image="/google.png"
+                      alt="Image"
+                      sx={{ width: 24, height: 24 }}
+                    />
+                  }
+                >
+                  Sign Up with Google
+                </Button>
+              }
+              message=" Sign Up with Google Coming Soon"
+              />
+
+            </Typography>
           </Box>
         </Box>
       </Container>
