@@ -1,36 +1,40 @@
 import styleTopNav from './DashboardTopNav.module.css';
 import Image from "next/image";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 
 function DashboardTopNav() {
     return (
         <>
-            <div className={styleTopNav.parent}>
-                <div className={styleTopNav.LHS}>
-                    <div>
+            <Box className={styleTopNav.parent}>
+                <Box className={styleTopNav.LHS}>
+                    <Box>
                             <Image
                                 src="/YMS.png"
                                 alt="YALMAR Logo"
                                 width={50}
                                 height={50}
                             />
-                        </div>
-                    <div>
-                        <h3>YALMAR <br/>Management System</h3>
-                    </div>
-                </div>
-                <div className={styleTopNav.RHS}>
-                    <div>
+                        </Box>
+                    <Box>
+                        <Typography>
+                            YALMAR <br/>Management System
+                        </Typography>
+                    </Box>
+                </Box>
+                <Box className={styleTopNav.RHS}>
+                    <Box>
                         Moon/Sun
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                         SettingsIcon
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                         Logout
-                    </div>
-                </div>
-            </div>
+                    </Box>
+                </Box>
+            </Box>
         </>
     )
 }
