@@ -1,20 +1,20 @@
 'use client';
-import { useRouter } from 'next/navigation';
-import { FcHome } from "react-icons/fc";
-import { ImExit } from "react-icons/im";
+import {useRouter} from 'next/navigation';
+import {FcHome} from "react-icons/fc";
+import {ImExit} from "react-icons/im";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { FcManager } from "react-icons/fc";
+import {FcManager} from "react-icons/fc";
 import Avatar from "@mui/material/Avatar";
-import { FcExpired } from "react-icons/fc";
-import { FcComboChart } from "react-icons/fc";
+import {FcExpired} from "react-icons/fc";
+import {FcComboChart} from "react-icons/fc";
 import UserUtils from "@/utils/UserUtilities";
 import {toast} from "react-toastify";
-import { FcAutomatic } from "react-icons/fc";
-import { useState } from 'react';
+import {FcAutomatic} from "react-icons/fc";
+import {useState} from 'react';
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -24,7 +24,7 @@ import Button from "@mui/material/Button";
 
 
 function AdminSideNav() {
-    const [confirmExit , setConfirmExit] = useState(false);
+    const [confirmExit, setConfirmExit] = useState(false);
     const router = useRouter();
     const handleLogout = () => {
         UserUtils.userLogout();
@@ -43,38 +43,44 @@ function AdminSideNav() {
     return (
         <>
             <List sx={{
-                        bgcolor: '#274e61',
-                        fontSize: '40px',
-                        borderRadius: '10px',
-                }}
+                bgcolor: '#274e61',
+                fontSize: '40px',
+                borderRadius: '10px',
+                width: '220px',
+                position: 'fixed',
+                top: '100px',
+                height: 'calc(100vh - 48px)', /* Adjust the height as needed */
+                overflowY: 'auto',
+                zIndex: '20',
+            }}
             >
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
-                    }}>
+                    }} onClick={() => router.push('/dashboard/admin')}>
                         <ListItemIcon>
-                            <FcHome />
+                            <FcHome/>
                         </ListItemIcon>
-                        <ListItemText primary="Dashboard" />
+                        <ListItemText primary="Dashboard"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
-                        "&:hover": { bgcolor: '#2c74f2'}
-                         }}
-                        onClick={() => router.push('/dashboard/staff')}
+                        "&:hover": {bgcolor: '#2c74f2'}
+                    }}
+                                    onClick={() => router.push('/dashboard/admin/staff')}
                     >
                         <ListItemIcon>
-                            <FcManager />
+                            <FcManager/>
                         </ListItemIcon>
-                        <ListItemText primary="Staff" />
+                        <ListItemText primary="Staff"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
@@ -87,11 +93,11 @@ function AdminSideNav() {
                                 // sx = {{width: 40, height: 60}}
                             />
                         </ListItemIcon>
-                        <ListItemText primary="Sites" />
+                        <ListItemText primary="Sites"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
@@ -104,11 +110,11 @@ function AdminSideNav() {
                                 color="red"
                             />
                         </ListItemIcon>
-                        <ListItemText primary="Generators" />
+                        <ListItemText primary="Generators"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
@@ -122,67 +128,67 @@ function AdminSideNav() {
                                 // sx = {{ width: 40, height: 45}}
                             />
                         </ListItemIcon>
-                        <ListItemText primary="Fuelling" />
+                        <ListItemText primary="Fuelling"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
                     }}>
                         <ListItemIcon>
-                            <FcComboChart />
+                            <FcComboChart/>
                         </ListItemIcon>
-                        <ListItemText primary="Planning" />
+                        <ListItemText primary="Planning"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
                     }}>
                         <ListItemIcon>
-                            <FcExpired />
+                            <FcExpired/>
                         </ListItemIcon>
-                        <ListItemText primary="Reports" />
+                        <ListItemText primary="Reports"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
                     }}>
                         <ListItemIcon>
-                            <FcAutomatic />
+                            <FcAutomatic/>
                         </ListItemIcon>
-                        <ListItemText primary="Settings" />
+                        <ListItemText primary="Settings"/>
                     </ListItemButton>
                 </ListItem>
                 
-                <ListItem >
+                <ListItem>
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
                     }}
-                      onClick={handleDialog}
+                                    onClick={handleDialog}
                     >
                         <ListItemIcon>
                             <ImExit style={{
                                 color: '#db818c',
                             }}/>
                         </ListItemIcon>
-                        <ListItemText primary="Logout" />
+                        <ListItemText primary="Logout"/>
                     </ListItemButton>
                 </ListItem>
             </List>
-            <Dialog open={confirmExit} >
+            <Dialog open={confirmExit}>
                 <DialogTitle>Confirm Logout</DialogTitle>
                 <DialogContent>
                     <DialogContentText>

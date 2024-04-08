@@ -1,10 +1,9 @@
 'use client';
 import Cookies from 'js-cookie';
 import {useRouter} from 'next/navigation';
-import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
-import UserDashboard from '@/components/UserDashboard/UserDashboard';
 import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
+import {CircularProgress} from '@mui/material';
 
 function Dashboard() {
     const router = useRouter();
@@ -20,7 +19,7 @@ function Dashboard() {
     }
     
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <CircularProgress/>;
     }
     
     if (!data) {
@@ -44,21 +43,11 @@ function Dashboard() {
     });
     
     if (userData.role === 'admin' || userData.role === 'superAdmin') {
-        return (
-            <AdminDashboard
-                userData={userData}
-                accessToken={accessToken}
-            />
-        );
+        return router.push('/dashboard/admin');
     }
     
     if (userData.role === 'user') {
-        return (
-            <UserDashboard
-                userData={userData}
-                accessToken={accessToken}
-            />
-        );
+        return router.push('/dashboard/user');
     }
     
     // Navigate to error page if user role is not recognized
