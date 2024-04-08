@@ -11,6 +11,7 @@ userRouter.get('/health', userController.isHealth);
 userRouter.get('/all', userController.getAllUsers);
 userRouter.post('/signup', userController.signUp);
 userRouter.post('/login', userController.login);
+userRouter.get('/dashboard', userController.dashboardData);
 userRouter.put('/update', userController.updateUser);
 userRouter.post('/refreshjwt', userController.refreshJWT);
 userRouter.post('/logout', userController.logout);

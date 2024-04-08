@@ -28,7 +28,8 @@ body {
     color: var(--textColor);
     /*background-color: #3d5273;*/
     /*background-color: #000000 !important;*/
-    background-color: #222222;
+    background-color: #234457 !important;
     background-size: cover;
+    background-repeat: no-repeat;
 
 }

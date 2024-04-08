@@ -1,10 +1,15 @@
-import DashboardTopNav from "@/components/DashboardTopNav/DashboardTopNav";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 
-function DashboardLayout({ children }) {
+
+function DashboardLayout({children}) {
     return (
         <>
-            <DashboardTopNav />
-            {children}
+            <Box>
+                <Stack direction='row' spacing={2}>
+                    {children}
+                </Stack>
+            </Box>
         </>
     );
 }

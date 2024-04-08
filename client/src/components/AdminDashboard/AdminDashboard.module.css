@@ -1,11 +1,20 @@
 .adminContainer {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('../../../public/bg-6.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    color: white;
+}
+
+.sideNavContainer {
+    width: 250px;
+    position: fixed;
+    top: 100px;
+    /*left: 20px;*/
+    height: calc(100vh - 48px); /* Adjust the height as needed */
+    overflow-y: auto;
+    z-index: 20;
+}
+
+.mainViewContainer {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    left: 250px;
 }
