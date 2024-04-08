@@ -1,48 +1,42 @@
-'use client';
-import styleLogin from './Login.module.css';
+"use client";
+import styleLogin from "./Login.module.css";
 import Link from "next/link";
-import { MdOutlineMailLock } from "react-icons/md";
+import {MdOutlineMailLock} from "react-icons/md";
 import styleSetPassword from "@/components/SetPassword/SetPassword.module.css";
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup";
-import { schemaLogin } from "@/SchemaValidator/login"
-import { useState, useEffect } from "react";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {schemaLogin} from "@/SchemaValidator/login";
+import {useState, useEffect} from "react";
 import usePasswordToggle from "../../customHooks/usePasswordToggle";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import UserLogin from '../../utils/authLogin'
-import { useRouter } from 'next/navigation'
-import Cookies from 'js-cookie';
-import { FcRedo } from "react-icons/fc"
+import {toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {useMutation} from "@tanstack/react-query";
+import {UserLogin} from "@/utils/authLogin";
+import {useRouter} from "next/navigation";
+import Cookies from "js-cookie";
+import {FcRedo} from "react-icons/fc";
 
-Cookies.defaults = {
-    sameSite: 'None',
-    secure: true,
-    httpOnly: true,
-};
 function Login() {
     const router = useRouter();
-    useEffect(() => {
-        // clear all cookies before loading the login page
-        Cookies.remove('email');
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        Cookies.remove('userData');
-        Cookies.remove('rememberMe');
-    }, [])
-    
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    // using react-hook-form to validate the form
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+    } = useForm({
         mode: "onTouched",
         resolver: yupResolver(schemaLogin),
-    })
-    const [ rememberMe, setRememberMe ] = useState(false);
-    const [ isSubmit , setIsSubmit ] = useState(false);
+    });
+    // using usePasswordToggle to toggle the visibility of the password
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isSubmit, setIsSubmit] = useState(false);
+    
     // using useMutation to send the data to the server
     const mutation = useMutation({
-        mutationKey: ['login'],
+        mutationKey: ["login"],
         mutationFn: UserLogin,
-    })
+    });
+    
     const OnLogin = (loginData) => {
         // Disable the button to prevent multiple clicks
         setIsSubmit(true);
@@ -51,26 +45,29 @@ function Login() {
             onSuccess: (response) => {
                 // Handle successful login
                 if (response) {
-                    toast.success('Login successful', {
+                    toast.success("Login successful", {
                         icon: "🚀",
                     });
-                    toast.success('Redirecting to dashboard', {
-                        icon: <FcRedo />,
+                    toast.success("Redirecting to dashboard", {
+                        icon: <FcRedo/>,
                     });
                     // store the return credentials to the cookies
-                    const { email, userData, accessToken, refreshToken } = response;
-                    Cookies.set('email', email);
-                    Cookies.set('userData', JSON.stringify(userData));
-                    Cookies.set('accessToken', accessToken);
-                    Cookies.set('refreshToken', refreshToken);
-                    Cookies.set('rememberMe', rememberMe ? 'true' : 'false'); // Store remember me flag
+                    const {accessToken} = response;
+                    Cookies.set("accessToken", accessToken, {
+                        secure: true,
+                        sameSite: "strict",
+                    });
+                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                        secure: true,
+                        sameSite: "strict",
+                    });
                     setTimeout(() => {
-                        router.push('/dashboard');
+                        router.push("/dashboard");
                     }, 3000);
                 } else {
-                    toast.error('Unauthorized credentials');
+                    toast.error("Unauthorized credentials");
                     setTimeout(() => {
-                        router.push('/login');
+                        router.push("/login");
                     }, 3000);
                     setIsSubmit(false);
                 }
@@ -79,18 +76,21 @@ function Login() {
                 // Handle login error
                 toast.error(error.message);
                 setTimeout(() => {
-                    router.push('/login');
+                    router.push("/login");
                 }, 3000);
                 setIsSubmit(false);
             },
-            
         });
-    }
+    };
     
-    const { icon: passwordIcon, inputType: passwordInputType, toggleVisibility: togglePasswordVisibility } = usePasswordToggle();
+    const {
+        icon: passwordIcon,
+        inputType: passwordInputType,
+        toggleVisibility: togglePasswordVisibility,
+    } = usePasswordToggle();
     const handleCheckBox = (e) => {
         setRememberMe(e.target.checked);
-    }
+    };
     return (
         <>
             <div className={styleLogin.loginContainer}>
@@ -107,7 +107,9 @@ function Login() {
                                 />
                                 <MdOutlineMailLock className={styleLogin.icons}/>
                             </div>
-                            {errors.email && <p className={styleLogin.inputError}>{errors.email?.message}</p>}
+                            {errors.email && (
+                                <p className={styleLogin.inputError}>{errors.email?.message}</p>
+                            )}
                             <div className={styleLogin.inputBox}>
                                 <input
                                     type={passwordInputType}
@@ -123,19 +125,21 @@ function Login() {
                                     {passwordIcon}
                                 </button>
                             </div>
-                            {errors.password && <p className={styleLogin.inputError}>{errors.password?.message}</p>}
+                            {errors.password && (
+                                <p className={styleLogin.inputError}>
+                                    {errors.password?.message}
+                                </p>
+                            )}
                             <div className={styleLogin.forgotPassword}>
                                 <label className={styleLogin.checkBox}>
-                                <input type="checkbox"
-                                       onClick={handleCheckBox}
-                                />
+                                    <input type="checkbox" onClick={handleCheckBox}/>
                                     <h1>Remember me</h1>
                                 </label>
                                 <Link href="/resetpassword">
                                     <p> Forgot Password? </p>
                                 </Link>
                             </div>
-                            <div className={styleLogin.submitButton} >
+                            <div className={styleLogin.submitButton}>
                                 <button disabled={isSubmit}>
                                     {isSubmit ? "Logging in..." : "Login"}
                                 </button>
@@ -153,9 +157,8 @@ function Login() {
                     </div>
                 </div>
             </div>
-            
         </>
-    )
+    );
 }
 
 export default Login;

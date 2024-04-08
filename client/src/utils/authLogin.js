@@ -1,5 +1,7 @@
 import axios from "axios";
-axios.defaults.baseURL=process.env.NEXT_PUBLIC_BACKEND_URL
+import Cookies from "js-cookie";
+
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_URL
 
 const UserLogin = async (obj) => {
     // Encode username and password in base64
@@ -23,4 +25,27 @@ const UserLogin = async (obj) => {
     }
 }
 
-export default UserLogin;
+const userDashboard = async () => {
+    const token = Cookies.get('accessToken');
+    if (!token) {
+        return null;
+    }
+    try {
+        const response = await axios({
+            method: "GET",
+            url: '/users/dashboard',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export {
+    UserLogin,
+    userDashboard,
+}

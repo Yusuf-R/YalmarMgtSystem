@@ -1,70 +1,68 @@
 'use client';
-import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
 import UserDashboard from '@/components/UserDashboard/UserDashboard';
-
-Cookies.defaults = {
-    sameSite: 'None',
-    secure: true,
-    httpOnly: true,
-};
+import {userDashboard} from '@/utils/authLogin';
+import {useQuery} from '@tanstack/react-query';
 
 function Dashboard() {
     const router = useRouter();
-    const [userData, setUserData] = useState(null);
-    const [accessToken, setAccessToken] = useState(null);
-    const [refreshToken, setRefreshToken] = useState(null);
     
-    useEffect(() => {
-        const userDataFromCookie = Cookies.get('userData');
-        if (!userDataFromCookie) {
-            // Redirect to login page if email is not found in cookies
-            router.push('/error/404');
-            return;
-        }
-        // If userData exists, initialize state values
-        setUserData(JSON.parse(userDataFromCookie));
-        setAccessToken(Cookies.get('accessToken'));
-        setRefreshToken(Cookies.get('refreshToken'));
-        
-        // if user did not set remember me clear cookies
-        if (Cookies.get('rememberMe')  === 'false') {
-            Cookies.remove('email');
-            Cookies.remove('accessToken');
-            Cookies.remove('refreshToken');
-            Cookies.remove('userData');
-        }
-    }, [router]);
-
-    // Render the appropriate dashboard based on user role
-    if (!userData) {
-        //render a loading indicator
+    const {data, isLoading, isError} = useQuery({
+        queryKey: ['userDashboard'],
+        queryFn: userDashboard,
+    });
+    
+    if (isError) {
+        // Navigate to error page
+        return router.push('/error/404');
+    }
+    
+    if (isLoading) {
         return <div>Loading...</div>;
     }
     
+    if (!data) {
+        console.error('No data received');
+        // Navigate to error page
+        return router.push('/error/404');
+    }
+    
+    const {userData, accessToken} = data;
+    
+    // Check if userData or accessToken is missing
+    if (!userData || !accessToken) {
+        // Navigate to error page
+        return router.push('/error/404');
+    }
+    
+    // Set the cookie for the userData
+    Cookies.set('userData', JSON.stringify(userData), {
+        secure: true,
+        sameSite: 'strict',
+    });
+    
     if (userData.role === 'admin' || userData.role === 'superAdmin') {
         return (
-                <AdminDashboard
-                    userData={userData}
-                    accessToken={accessToken}
-                    refreshToken={refreshToken}
-                />
+            <AdminDashboard
+                userData={userData}
+                accessToken={accessToken}
+            />
         );
     }
     
     if (userData.role === 'user') {
         return (
-                <UserDashboard
-                    userData={userData}
-                    accessToken={accessToken}
-                    refreshToken={refreshToken}
-                />
+            <UserDashboard
+                userData={userData}
+                accessToken={accessToken}
+            />
         );
     }
-    router.push('/error/404');
-    return null;
+    
+    // Navigate to error page if user role is not recognized
+    return router.push('/error/404');
 }
 
 export default Dashboard;

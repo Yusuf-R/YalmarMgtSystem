@@ -4,10 +4,17 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    position: relative;
+    position: fixed;
     font-size: 1.0rem;
     color: white;
     border-image: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    /*bottom: 0;*/
+    /*background-color: #3e5073;*/
+    background-color: #355e75;
 }
 
 .LHS {
@@ -20,10 +27,11 @@
 }
 
 .RHS {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 30px;
-    color: white;
+    /*display: flex;*/
+    /*flex-direction: row;*/
+    /*justify-content: space-between;*/
+    /*align-items: center;*/
+    /*background-color: black;*/
+    /*gap: 30px;*/
+    /*color: white;*/
 }
