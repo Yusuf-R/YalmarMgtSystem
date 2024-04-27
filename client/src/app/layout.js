@@ -1,13 +1,18 @@
 import ReactQueryProvider from "@/components/ReactQuery/ReactQueryProvider";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Inter} from "next/font/google";
+// import {Inter} from "next/font/google";
+import {Roboto} from 'next/font/google'
 import "./globals.css";
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v13-appRouter';
 import theme from "@/utils/theme";
 import {ThemeProvider} from "@mui/material/styles";
 
-const inter = Inter({subsets: ["latin"]});
+const roboto = Roboto({
+    subsets: ["latin"],
+    weight: ['100', '300', '400', '500', '700', '900'],
+    display: 'swap',
+});
 
 export const metadata = {
     title: "Yalmar Management System",
@@ -17,7 +22,7 @@ export const metadata = {
 export default function RootLayout({children}) {
     return (
         <html lang="en">
-        <body className={inter.className}>
+        <body className={roboto.className}>
         <ReactQueryProvider>
             <AppRouterCacheProvider>
                 <ThemeProvider theme={theme}>
