@@ -5,15 +5,10 @@ const express = require('express');
 const cors = require('cors');
 
 const authController = require('../controllers/AuthController');
+import SecurityConfig from "../utils/config";
 
-const corsOptions = {
-  origin: '*', // allow all origins for now
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  credentials: true,
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Auth-Token', 'Authorization', 'X-Token'],
-};
+const securityConfig = new SecurityConfig();
+const {corsOptions} = securityConfig;
 
 const authRouter = express.Router();
 
@@ -21,5 +16,6 @@ authRouter.use(cors(corsOptions));
 
 // authRouter.post('/register', authController.register);
 authRouter.get('/health', authController.isHealth);
+authRouter.get('/verify', authController.verify);
 
 module.exports = authRouter;

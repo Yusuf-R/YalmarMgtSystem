@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
-import Cookies from "js-cookie";
+import UserUtils from "./utils/UserUtilities";
 
-export function middleware(request) {
+export async function middleware(request) {
     // check if the request is for the login page
     if (request.nextUrl.pathname.startsWith("/login")) {
         // redirect to the dashboard if the user is already logged in
@@ -10,7 +10,7 @@ export function middleware(request) {
         if (!rememberMe || !accessToken || rememberMe === "false") {
             return NextResponse.next();
         } else {
-            return NextResponse.redirect(new URL("/dashboard", request.url))
+            return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     }
     if (request.nextUrl.pathname.startsWith("/dashboard")) {
@@ -18,7 +18,16 @@ export function middleware(request) {
         if (!accessToken) {
             return NextResponse.redirect(new URL("/error/404", request.url));
         } else {
-            return NextResponse.next();
+            try {
+                const data = await UserUtils.authGuard(request);
+                if (!data) {
+                    return NextResponse.redirect(new URL('/error/404', request.url));
+                }
+                return NextResponse.next();
+            } catch (error) {
+                console.error(error.message)
+                return NextResponse.redirect(new URL('/error/404', request.url));
+            }
         }
     }
     return NextResponse.next();

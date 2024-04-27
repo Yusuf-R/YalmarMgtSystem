@@ -16,11 +16,9 @@ import {Paper} from "@mui/material";
 import Cookies from "js-cookie";
 
 
-function AdminHeroSection() {
+function AdminHeroSection({userData, accessToken}) {
     const delay = 1;
     const duration = 5;
-    const userData = JSON.parse(Cookies.get('userData'));
-    
     return (
         <>
             <Stack
@@ -121,7 +119,6 @@ function AdminHeroSection() {
                 <br/><br/><br/>
                 
                 
-                
                 {/* Staff List*/}
                 <Stack>
                     <Card sx={{
@@ -180,27 +177,27 @@ function AdminHeroSection() {
                                     },
                                 }}>
                                     <TableRow>
-                                        <TableCell  align="center">
+                                        <TableCell align="center">
                                             <Typography variant="h6">
                                                 {userData.firstName}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell  align="center">
+                                        <TableCell align="center">
                                             <Typography variant="h6">
                                                 {userData.lastName}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell  align="center">
+                                        <TableCell align="center">
                                             <Typography variant="h6">
                                                 {userData.email}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell  align="center">
+                                        <TableCell align="center">
                                             <Typography variant="h6">
                                                 {userData.role}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell  align="center">
+                                        <TableCell align="center">
                                             <Typography variant="h6">
                                                 {userData.phoneNo ? userData.phoneNo : 'Not Available'}
                                             </Typography>

@@ -2,17 +2,16 @@
     display: flex;
 }
 
-.sideNavContainer {
-    width: 250px;
+.sideNav {
+    width: 550px;
     position: fixed;
     top: 100px;
-    /*left: 20px;*/
     height: calc(100vh - 48px); /* Adjust the height as needed */
     overflow-y: auto;
     z-index: 20;
 }
 
-.mainViewContainer {
+.mainNav {
     flex: 1;
     position: relative;
     overflow-y: auto;
