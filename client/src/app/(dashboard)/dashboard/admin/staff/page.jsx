@@ -1,25 +1,26 @@
-'use client';
-import {useRouter} from 'next/navigation';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import Staff from '@/components/Staff/Staff';
 
-function Staff() {
-    const router = useRouter();
+function AllStaff() {
+    // make a get request to the backEnd to get all the staff using tanstack-react-query
+    // render the return data as a props to the Staff components
+    
     return (
         <>
             <Box sx={{
-                border: '5px solid red'
+                padding: '20px',
+                width: 'calc(100% - 250px)',
+                position: 'absolute',
+                top: '70px',
+                left: '250px',
             }}>
-                <Typography>Staff</Typography>
-                <Stack direction='row' spacing={2}>
-                    <Button onClick={() => router.push('/dashboard/admin')}>Back</Button>
-                    <Button onClick={() => router.push('/dashboard/admin/staff/new')}>Add</Button>
+                <Stack direction='column' spacing={2}>
+                    <Staff/>
                 </Stack>
             </Box>
         </>
     )
 }
 
-export default Staff;
+export default AllStaff;

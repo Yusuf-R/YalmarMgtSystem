@@ -22,8 +22,10 @@ import {useEffect} from "react";
 import UserUtils from "@/utils/UserUtilities";
 import Cookies from "js-cookie";
 
+
 function DashboardTopNav({userData}) {
     const router = useRouter();
+    // const userData = JSON.parse(Cookies.get('userData') ? Cookies.get('userData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
     const [username, setUsername] = useState('');
     const open = Boolean(anchorEl);
@@ -35,7 +37,10 @@ function DashboardTopNav({userData}) {
     };
     
     const handleLogout = () => {
-        UserUtils.userLogout();
+        // UserUtils.userLogout();
+        Cookies.remove('accessToken');
+        Cookies.remove('userData');
+        Cookies.remove('rememberMe');
         toast.success('Logged out successfully', {
             autoClose: 2000,
         });
@@ -65,9 +70,8 @@ function DashboardTopNav({userData}) {
                     <Typography variant="h6" sx={{
                         fontWeight: 'bold',
                         paddingTop: '25px',
-                        
                     }}>
-                        Welcome {userData.username}
+                        Welcome {userData.username || 'Anonymous'}
                     </Typography>
                     <Tooltip title="Account-settings">
                         <Button

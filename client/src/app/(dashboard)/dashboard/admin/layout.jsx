@@ -2,24 +2,32 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import DashboardTopNav from "@/components/DashboardTopNav/DashboardTopNav";
-import Cookies from "js-cookie";
-import {useRouter} from 'next/navigation';
+import {useQuery} from '@tanstack/react-query';
+import {userDashboard} from '@/utils/authLogin'; // Ensure this is the correct path
 import AdminSideNav from "@/components/AdminSideNav/AdminSideNav";
-
+import CircularProgress from "@mui/material/CircularProgress";
 
 function AdminLayout({children}) {
-    const userData = JSON.parse(Cookies.get('userData') || null)
-    const router = useRouter();
-    if (!userData) {
-        return router.push('/error/404')
+    const {data, isLoading, isError} = useQuery({
+        queryKey: ['userDashboard'],
+        queryFn: userDashboard,
+    });
+    if (isLoading) {
+        return <CircularProgress/>;
     }
+    if (isError || !data) {
+        // Ideally, handle this more gracefully
+        console.error('Error fetching user data');
+        return <div>Error loading user data</div>;
+    }
+    const {userData} = data;
     return (
         <>
             <Box sx={{position: 'relative'}}>
                 <DashboardTopNav userData={userData}/>
                 <Stack direction='row' spacing={2} mt={3}>
-                    <AdminSideNav/>
-                    {children}
+                    <Box> <AdminSideNav/> </Box>
+                    <Box> {children} </Box>
                 </Stack>
             </Box>
         </>

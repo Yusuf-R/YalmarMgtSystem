@@ -2,29 +2,40 @@ const mongoose = require('mongoose');
 const userMethods = require('./methods/userMethods');
 
 const user = {
-  username: { type: String, unique: true },
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  middleName: { type: String },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  country: { type: String },
-  stateOfOrigin: { type: String },
-  lga: { type: String },
-  stateOfResidence: { type: String },
-  phoneNo: { type: String },
-  role: {
-    type: String,
-    enum: ['user', 'admin', 'superAdmin'],
-    default: 'user',
-  },
-  ninID: { type: String },
-  img: String,
-  resetPwd: Boolean,
-  resetTTL: Date,
-  resetOTP: String,
+    username: {type: String, unique: true},
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true},
+    middleName: {type: String},
+    email: {type: String, required: true, unique: true},
+    password: {type: String, required: true},
+    country: {type: String},
+    address: {type: String},
+    stateOfOrigin: {type: String},
+    lga: {type: String},
+    stateOfResidence: {type: String},
+    phoneNo: {type: String},
+    role: {
+        type: String,
+        enum: [
+            'User',
+            'Admin',
+            'SuperAdmin',
+            'Generator Technician',
+            'Accountant',
+            'Procurement Officer',
+            'Lawyer',
+            'Driver',
+            'Field Supervisor',
+            'Security Officer',
+        ],
+        default: 'user',
+    },
+    img: String,
+    resetPwd: Boolean,
+    resetTTL: Date,
+    resetOTP: String,
 };
-const userSchema = new mongoose.Schema(user, { timestamps: true });
+const userSchema = new mongoose.Schema(user, {timestamps: true});
 
 userSchema.statics.createUser = userMethods.createUser;
 userSchema.methods.generateOTP = userMethods.generateOTP;

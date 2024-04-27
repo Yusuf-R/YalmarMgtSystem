@@ -21,13 +21,17 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import Cookies from "js-cookie";
 
 
 function AdminSideNav() {
     const [confirmExit, setConfirmExit] = useState(false);
     const router = useRouter();
     const handleLogout = () => {
-        UserUtils.userLogout();
+        // UserUtils.userLogout();
+        Cookies.remove('accessToken');
+        Cookies.remove('userData');
+        Cookies.remove('rememberMe');
         setConfirmExit(false);
         toast.success('Logged out successfully', {
             autoClose: 2000,

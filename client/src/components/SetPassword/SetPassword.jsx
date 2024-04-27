@@ -1,21 +1,24 @@
 'use client';
 import styleSetPassword from "./SetPassword.module.css";
-import { MdOutlineMailLock } from "react-icons/md";
-import { MdOutlineGeneratingTokens } from "react-icons/md";
-import {RiLockPasswordFill} from "react-icons/ri";
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup";
-import { schemaSetNewPassword, validateToken, validatePassword, validateConfirmPassword } from "@/SchemaValidator/setnewpassword";
+import {MdOutlineMailLock} from "react-icons/md";
+import {MdOutlineGeneratingTokens} from "react-icons/md";
+import {useState, useEffect} from "react"
+import {useRouter} from "next/navigation";
+import {useForm} from "react-hook-form"
+import {yupResolver} from "@hookform/resolvers/yup";
+import {
+    schemaSetNewPassword,
+    validateToken,
+    validatePassword,
+    validateConfirmPassword
+} from "@/SchemaValidator/setnewpassword";
 import Link from "next/link";
 import usePasswordToggle from "../../customHooks/usePasswordToggle";
-import { toast } from 'react-toastify';
-import { SiConvertio } from "react-icons/si";
+import {toast} from 'react-toastify';
 
 
 function SetPassword() {
-    const [email, setEmail ] = useState("");
+    const [email, setEmail] = useState("");
     const [tokenBorderColor, setTokenBorderColor] = useState("black");
     const [passwordBorderColor, setPasswordBorderColor] = useState("black");
     const [confirmPasswordBorderColor, setConfirmPasswordBorderColor] = useState("black");
@@ -36,14 +39,14 @@ function SetPassword() {
         toggleVisibility: toggleConfirmPasswordVisibility
     } = usePasswordToggle();
     const router = useRouter();
-    const { register, handleSubmit, formState, watch } = useForm({
+    const {register, handleSubmit, formState, watch} = useForm({
         mode: "onTouched",
         resolver: yupResolver(schemaSetNewPassword),
     })
-    const { errors } = formState;
+    const {errors} = formState;
     const handleTokenBlur = (e) => {
         e.preventDefault();
-        let { value } = e.target
+        let {value} = e.target
         if (value) {
             if (value.length < validateToken.minLength.value) {
                 setTokenBorderColor("green");
@@ -51,7 +54,7 @@ function SetPassword() {
                 setTokenBorderColor("red");
                 setTokenBorderWidth("4px");
             }
-            if ( value.length === validateToken.maxLength.value && value.match(validateToken.pattern.value)) {
+            if (value.length === validateToken.maxLength.value && value.match(validateToken.pattern.value)) {
                 setTokenBorderColor("green");
             } else {
                 setTokenBorderColor("red");
@@ -62,9 +65,9 @@ function SetPassword() {
     
     const handlePasswordBlur = (e) => {
         e.preventDefault();
-        let { value } = e.target;
+        let {value} = e.target;
         if (value) {
-            if ( value.length >= validatePassword.minLength.value && value.match(validatePassword.pattern.value)) {
+            if (value.length >= validatePassword.minLength.value && value.match(validatePassword.pattern.value)) {
                 setPasswordBorderColor("green");
             } else {
                 setPasswordBorderColor("red");
@@ -75,7 +78,7 @@ function SetPassword() {
     
     const handleConfirmPasswordBlur = (e) => {
         e.preventDefault();
-        let { value } = e.target;
+        let {value} = e.target;
         if (value) {
             if (value === watch('password')) {
                 setConfirmPasswordBorderColor("green");
@@ -92,7 +95,7 @@ function SetPassword() {
         toast.success("Redirecting to login page 😎")
         router.push("/login");
     }
-
+    
     useEffect(() => {
         const storageEmail = sessionStorage.getItem("email");
         if (storageEmail) {
@@ -159,8 +162,10 @@ function SetPassword() {
                                     }}
                                     onBlur={handleConfirmPasswordBlur}
                                 />
-                                <button type="button" onClick={toggleConfirmPasswordVisibility} className={styleSetPassword.icons}>{confirmPasswordIcon}</button>
-                                {errors.confirmPassword && <p className={styleSetPassword.inputError}>{errors.confirmPassword?.message}</p>}
+                                <button type="button" onClick={toggleConfirmPasswordVisibility}
+                                        className={styleSetPassword.icons}>{confirmPasswordIcon}</button>
+                                {errors.confirmPassword &&
+                                    <p className={styleSetPassword.inputError}>{errors.confirmPassword?.message}</p>}
                             </div>
                             <div className={styleSetPassword.btn}>
                                 <button type={"submit"}>Submit</button>

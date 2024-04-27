@@ -1,13 +1,12 @@
 'use client';
-import Cookies from 'js-cookie';
 import {useRouter} from 'next/navigation';
 import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
 import {CircularProgress} from '@mui/material';
+import Cookies from 'js-cookie';
 
 function Dashboard() {
     const router = useRouter();
-    
     const {data, isLoading, isError} = useQuery({
         queryKey: ['userDashboard'],
         queryFn: userDashboard,
@@ -36,13 +35,8 @@ function Dashboard() {
         return router.push('/error/404');
     }
     
-    // Set the cookie for the userData
-    Cookies.set('userData', JSON.stringify(userData), {
-        secure: true,
-        sameSite: 'strict',
-    });
-    
     if (userData.role === 'admin' || userData.role === 'superAdmin') {
+        // Navigate to admin dashboard
         return router.push('/dashboard/admin');
     }
     
