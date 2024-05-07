@@ -4,13 +4,12 @@ const mongoose = require('mongoose');
 const EXP = 60 * 60 * 24 * 30; // 30days
 
 const refreshToken = {
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  token: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
+    userId: {type: mongoose.Schema.Types.ObjectId, required: true},
+    token: {type: String, required: true},
 };
 
-const refreshSchema = new mongoose.Schema(refreshToken, { timestamps: true });
-refreshSchema.index({ createdAt: 1 }, { expireAfterSeconds: EXP });
+const refreshSchema = new mongoose.Schema(refreshToken, {timestamps: true});
+refreshSchema.index({createdAt: 1}, {expireAfterSeconds: EXP});
 
 const RefreshToken = mongoose.model('RefreshToken', refreshSchema);
 

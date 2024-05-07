@@ -1,5 +1,4 @@
 import SecurityConfig from "../utils/config";
-import {Auth} from "request/lib/auth";
 
 const JWT = require('jsonwebtoken');
 const redisClient = require('../utils/redis');
@@ -9,9 +8,8 @@ const User = require('../models/User');
 const securityConfig = new SecurityConfig();
 
 
-
-const EXP = 60 * 60 * 24; // 24hrs
-// const EXP = 15; // 15s
+// const EXP = 60 * 60 * 24; // 24hrs
+const EXP = 30; // 15s
 
 const jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
 const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
@@ -28,27 +26,42 @@ class AuthController {
         if (!redisStatus) {
             return res.status(500).json({error: 'Redis connection failed'});
         }
-        const portal = req.originalUrl.split('/')[3];
-        return res.status(200).json({
-            portal,
-            message: 'Server is up and running',
-            redisStatus,
-            dbStatus,
-        });
+        try {
+            const encryptedAccessToken = await AuthController.currPreCheck(req);
+            const decryptedAccessToken = securityConfig.decryptData(encryptedAccessToken);
+            const verifiedAccessToken = await AuthController.verifyAccessToken(decryptedAccessToken);
+            const portal = req.originalUrl.split('/')[3];
+            return res.status(200).json({
+                verifiedAccessToken,
+                decryptedAccessToken,
+                portal,
+                message: 'Server is up and running',
+                redisStatus,
+                dbStatus,
+            });
+        } catch (error) {
+            throw new Error(error.message);
+            
+        }
     }
     
     static async currPreCheck(req) {
-        if (!req.headers.authorization) {
-            return ({error: 'Bearer Authorization header is required'});
+        try {
+            if (!req.headers.authorization) {
+                return new Error('Bearer Authorization header is required');
+            }
+            if (!req.headers.authorization.startsWith('Bearer ')) {
+                return new Error('Authorization Header improperly formatted');
+            }
+            const jwToken = req.headers.authorization.split(' ')[1];
+            if (!jwToken) {
+                return new Error('Missing JWT token');
+            }
+            return (jwToken);
+        } catch (error) {
+            throw new Error(error.message || 'Invalid token')
         }
-        if (!req.headers.authorization.startsWith('Bearer ')) {
-            return ({error: 'Authorization Header improperly formatted'});
-        }
-        const jwToken = req.headers.authorization.split(' ')[1];
-        if (!jwToken) {
-            return ({error: 'Missing JWT token'});
-        }
-        return (jwToken);
+        
     }
     
     static getAccessTokenFromCookie(cookieHeader) {
@@ -134,7 +147,7 @@ class AuthController {
         if (refreshObj) {
             console.log('removing and creating a new object');
             // remove the old refresh token object
-            await RefreshToken.deleteOne({userId: obj.id});
+            await RefreshToken.deleteMany({userId: obj.id});
             await RefreshToken.create({userId: obj.id, token: refreshToken});
         } else {
             console.log('creating');
@@ -143,41 +156,90 @@ class AuthController {
         return {accessToken, refreshToken};
     }
     
-    static async refreshJWT(oldRefreshToken, payload) {
+    static async refreshJWT(req, res) {
+        try {
+            const encToken = await AuthController.currPreCheck(req);
+            if (encToken.error) {
+                return res.status(400).json({error: encToken.error});
+            }
+            if (!encToken) {
+                return res.status(400).json({error: 'Missing token'});
+            }
+            // decrypt the expToken
+            const decToken = securityConfig.decryptData(encToken);
+            if (!decToken) {
+                return res.status(400).json({error: 'Decryption Failed'});
+            }
+            // vet the expiry and generate a new AT and RT
+            const payload = JWT.verify(decToken, jwtAccessSecret, {algorithm: 'HS256', ignoreExpiration: true});
+            if (payload.exp < Date.now()) {
+                // ensure this token is not in the blacklist
+                const blackListed = await redisClient.isInBlacklist(payload.id, decToken);
+                if (blackListed) {
+                    return res.status(403).json({error: 'Token is blacklisted'});
+                }
+                // refresh the access and refresh token
+                const refreshJWTcredentials = await AuthController.tokenGenerator(decToken, payload);
+                if (refreshJWTcredentials.error) {
+                    return res.status(400).json({error: refreshJWTcredentials.error});
+                }
+                const {accessToken, refreshToken} = refreshJWTcredentials;
+                // encrypt the AT
+                const encryptedAccessToken = securityConfig.encryptData(accessToken);
+                // set the cookie with the new accessToken
+                // set the encryptedAccessToken to be stored as a signed cookie
+                res.cookie('accessToken', encryptedAccessToken, {
+                    // httpOnly: true, // Prevent client-side access via JavaScript
+                    secure: true, // Requires HTTPS connection for secure transmission
+                    maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
+                    sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
+                });
+                // store the AT in redis
+                await AuthController.setJWT(payload, accessToken);
+                return res.status(201).json({
+                    message: 'Token refreshed successfully', accessToken: encryptedAccessToken, refreshToken,
+                });
+            }
+            res.status(403).json({msg: 'Forbidden Operation'});
+        } catch (err) {
+            res.status(403).json({msg: 'Forbidden Operation', info: err.message});
+        }
+    }
+    
+    
+    static async tokenGenerator(decToken, payload) {
+        // extract  from the payload
         try {
             // Find the old refresh token
-            const refreshTokenObj = await RefreshToken.findOne({userId: payload.id, token: oldRefreshToken});
+            const refreshTokenObj = await RefreshToken.findOne({userId: payload.id});
             // Check if the old refresh token exists
             if (!refreshTokenObj) {
-                return {error: 'Invalid refresh token'};
+                return {error: 'Invalid token'};
             }
+            // blacklist the old token
+            await redisClient.addToBlacklist(payload.id, decToken);
             // Generate new access and refresh token
             const accessToken = JWT.sign({id: payload.id}, jwtAccessSecret, {
                 expiresIn: jwtAccessExp,
-                algorithm: 'HS256'
+                algorithm: 'HS256',
             });
             const refreshToken = JWT.sign({id: payload.id}, jwtRefreshSecret, {
                 expiresIn: jwtRefreshExp,
-                algorithm: 'HS256'
+                algorithm: 'HS256',
             });
-            // Update refresh token
-            try {
-                // remove the old refresh token object
-                await RefreshToken.deleteOne({userId: payload.id, token: oldRefreshToken});
-                
-                // create a new refresh token
-                await RefreshToken.create({userId: payload.id, token: refreshToken});
-            } catch (err) {
-                return {error: 'Database Internal Server Error', err};
-            }
-            return {accessToken, refreshToken};
+            // remove the old refresh token object
+            await RefreshToken.deleteMany({userId: payload.id});
+            console.log('Deleting old refresh token');
+            // create a new refresh token
+            await RefreshToken.create({userId: payload.id, token: refreshToken});
+            console.log('Creating a new Token');
+            return ({accessToken, refreshToken});
         } catch (err) {
             return {error: err.message || 'Invalid refresh token'};
         }
     }
     
     static async verifyAccessToken(accessToken) {
-        // Verify the access token
         try {
             const payload = JWT.verify(accessToken, jwtAccessSecret, {algorithm: 'HS256'});
             if (!payload || !payload.id) {
@@ -185,7 +247,7 @@ class AuthController {
             }
             return (payload);
         } catch (err) {
-            throw new Error(err.message || 'Invalid access token');
+            throw new Error(err.message);
         }
     }
     
@@ -212,7 +274,6 @@ class AuthController {
             console.error('Redis Error:', RedisError);
             return ({error: RedisError});
         }
-        return;
     }
     
     static async getJWT(id) {
@@ -297,7 +358,11 @@ class AuthController {
     static async dashBoardCheck(id) {
         try {
             const user = await User.findById(id);
+            if (!user) {
+                return new Error(`User with ID ${id} not found.`);
+            }
             const userData = {};
+            //extract all the keys from the return user object query
             const userObj = user.toObject();
             const exclude = ['_id', 'password', '__v', 'createdAt', 'updatedAt'];
             Object.keys(userObj).forEach((key) => {
@@ -307,7 +372,7 @@ class AuthController {
             });
             return userData;
         } catch (err) {
-            return {error: err.message};
+            return new Error(err.message);
         }
     }
     
@@ -317,20 +382,23 @@ class AuthController {
             // decrypt the token
             const decryptedAccessToken = securityConfig.decryptData(encryptedAccessToken);
             const verifiedAccessToken = await AuthController.verifyAccessToken(decryptedAccessToken);
-            return (verifiedAccessToken);
+            return ({
+                verifiedAccessToken,
+                decryptedAccessToken
+            });
         } catch (err) {
-            throw new Error(err.message || 'Invalid token');
+            return new Error(err.message || 'Unauthorized');
         }
     }
-    
     
     static async verify(req, res) {
         // extract the token from the authorization header
         try {
-            const verifiedToken = await AuthController.apiPrecheck(req);
+            const {verifiedAccessToken, decryptedAccessToken} = await AuthController.apiPrecheck(req);
             return res.status(200).json({
                 msg: 'AccessToken verified',
-                verifiedToken,
+                verifiedAccessToken,
+                decryptedAccessToken
             });
         } catch (error) {
             console.log(error);
@@ -340,10 +408,3 @@ class AuthController {
 }
 
 module.exports = AuthController;
-
-// setTimeout(async () => {
-//   const xwt = await AuthController.generateJWTSecret();
-//   const { accessToken, refreshToken } = await AuthController.generateJWTToken({ id: 12 }, xwt);
-//   console.log({ accessToken });
-//   console.log({ refreshToken });
-// }, 5000);

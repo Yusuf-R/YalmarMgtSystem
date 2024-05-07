@@ -1,5 +1,5 @@
 require('dotenv').config({
-  path: '../server/.env',
+    path: '../server/.env',
 });
 const Redis = require('ioredis');
 
@@ -8,57 +8,89 @@ const redisURL = process.env.REDIS_LOCAL_URL;
 const msg = 'Redis connection is not alive';
 
 class RedisClient {
-  constructor() {
-    this.client = new Redis(redisURL);
-    this.client.on('error', (error) => {
-      console.error(error);
-    });
-    this.client.on('connect', () => {
-      console.log('Redis client connected to the server');
-    });
-  }
-
-  async isAlive() {
-    if (!await this.client.ping()) {
-      return false;
+    constructor() {
+        this.client = new Redis(redisURL);
+        this.client.on('error', (error) => {
+            console.error(error);
+        });
+        this.client.on('connect', () => {
+            console.log('Redis client connected to the server');
+        });
     }
-    return true;
-  }
-
-  async get(key) {
-    try {
-      if (!await this.isAlive()) {
-        throw new Error(msg);
-      }
-      const value = await this.client.get(key);
-      return value;
-    } catch (error) {
-      throw new Error(error);
+    
+    async isAlive() {
+        if (!await this.client.ping()) {
+            return false;
+        }
+        return true;
     }
-  }
-
-  async set(key, value, duration) {
-    try {
-      if (!await this.isAlive()) {
-        throw new Error(msg);
-      }
-      await this.client.set(key, value, 'EX', duration);
-    } catch (error) {
-      throw new Error(error);
+    
+    async get(key) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            return await this.client.get(key);
+        } catch (error) {
+            throw new Error(error);
+        }
     }
-  }
-
-  async del(key) {
-    try {
-      if (!await this.isAlive()) {
-        throw new Error(msg);
-      }
-      const ret = await this.client.del(key);
-      return ret;
-    } catch (error) {
-      throw new Error(error);
+    
+    async set(key, value, duration) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            await this.client.set(key, value, 'EX', duration);
+        } catch (error) {
+            throw new Error(error);
+        }
     }
-  }
+    
+    async del(key) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            return await this.client.del(key);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    // Add functionality for managing the blacklist
+    async addToBlacklist(userId, tokenId) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            await this.client.sadd(`blacklistedTokens:${userId}`, tokenId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    async isInBlacklist(userId, tokenId) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            return await this.client.sismember(`blacklistedTokens:${userId}`, tokenId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    async removeFromBlacklist(userId, tokenId) {
+        try {
+            if (!await this.isAlive()) {
+                return new Error(msg);
+            }
+            await this.client.srem(`blacklistedTokens:${userId}`, tokenId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 const redisClient = new RedisClient();

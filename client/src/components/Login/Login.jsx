@@ -51,12 +51,6 @@ function Login() {
                     toast.success("Redirecting to dashboard", {
                         icon: <FcRedo/>,
                     });
-                    // store the return credentials to the cookies
-                    // const {accessToken} = response;
-                    // Cookies.set("accessToken", accessToken, {
-                    //     secure: true,
-                    //     sameSite: "strict",
-                    // });
                     Cookies.set("rememberMe", rememberMe ? "true" : "false", {
                         secure: true,
                         sameSite: "strict",

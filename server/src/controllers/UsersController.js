@@ -14,12 +14,6 @@ const userRef = ['username', 'country', 'city', 'phone', 'isAdmin', 'img'];
 const signupRef = ['username', 'firstName', 'lastName'];
 
 class UserController {
-    static async isHealth(req, res) {
-        return res.status(200).json({
-            success: true, message: 'Server is healthy',
-        });
-    }
-    
     static async getAllUsers(req, res) {
         const credentials = await authClient.fullAdminCheck(req);
         if (credentials.error) {
@@ -94,7 +88,7 @@ class UserController {
                 error: 'User not found',
             });
         }
-        // Generate and send password resetpassword token
+        // Generate and send password reset password token
         const resetToken = await user.generateOTP();
         try {
             await mailClient.sendToken(user);
@@ -195,7 +189,7 @@ class UserController {
         } catch (err) {
             return res.status(400).json({error: err});
         }
-        // genrate new credential for the user
+        // generate new credential for the user
         const newCredentials = await authClient.generateJWT(user);
         if (newCredentials.error) {
             return res.status(400).json({error: newCredentials.error});
@@ -235,7 +229,7 @@ class UserController {
             });
         }
         try {
-            if (!dbClient.isAlive()) {
+            if (!await dbClient.isAlive()) {
                 return res.status(500).json({error: 'Internal Server Error'});
             }
             const user = await User.findOne({email});
@@ -268,13 +262,14 @@ class UserController {
             
             // set the encryptedAccessToken to be stored as a signed cookie
             res.cookie('accessToken', encryptedAccessToken, {
-                httpOnly: true, // Prevent client-side access via JavaScript
+                // httpOnly: true, // Prevent client-side access via JavaScript
                 secure: true, // Requires HTTPS connection for secure transmission
                 maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                 sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
             });
             return res.status(201).json({
                 message: 'Login successful',
+                accessToken: encryptedAccessToken,
             });
         } catch (err) {
             console.error(err);
@@ -284,12 +279,20 @@ class UserController {
     
     static async dashboardData(req, res) {
         try {
-            const verifedToken = await authClient.apiPrecheck(req);
-            const {id} = verifedToken;
+            const result = await authClient.apiPrecheck(req);
+            if (result instanceof Error) {
+                // Handle the error
+                return res.status(401).json({error: result.message});
+            }
+            const {verifiedAccessToken, decryptedAccessToken} = result;
+            const {id} = verifiedAccessToken;
             const userData = await authClient.dashBoardCheck(id);
+            if (userData instanceof Error) {
+                return res.status(400).json({error: userData.message});
+            }
             // set the userData to be stored as cookie
             res.cookie('userData', JSON.stringify(userData), {
-                httpOnly: true, // Prevent client-side access via JavaScript
+                // httpOnly: true, // Prevent client-side access via JavaScript
                 secure: true, // Requires HTTPS connection for secure transmission
                 maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                 sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
@@ -297,7 +300,7 @@ class UserController {
             return res.status(200).json({
                 message: 'Dashboard data retrieved successfully',
                 userData,
-                accessToken: verifedToken,
+                accessToken: decryptedAccessToken,
             });
         } catch (err) {
             return res.status(401).json({error: err.message ? err.message : 'Unauthorized'});
@@ -411,28 +414,7 @@ class UserController {
         });
     }
     
-    static async refreshJWT(req, res) {
-        const oldRefreshToken = await authClient.currPreCheck(req);
-        if (oldRefreshToken.error) {
-            return res.status(400).json({error: oldRefreshToken.error});
-        }
-        if (!oldRefreshToken) {
-            return res.status(400).json({error: 'Missing refresh token'});
-        }
-        const payload = await authClient.verifyRefreshToken(oldRefreshToken);
-        if (payload.error) {
-            return res.status(400).json({error: payload.error});
-        }
-        // refresh the access and refresh token
-        const refreshJWTcredentials = await authClient.refreshJWT(oldRefreshToken, payload);
-        if (refreshJWTcredentials.error) {
-            return res.status(400).json({error: refreshJWTcredentials.error});
-        }
-        const {accessToken, refreshToken} = refreshJWTcredentials;
-        return res.status(201).json({
-            message: 'Token refreshed successfully', accessToken, refreshToken,
-        });
-    }
+    
 }
 
 module.exports = UserController;

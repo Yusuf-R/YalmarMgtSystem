@@ -15,6 +15,6 @@ router.use(cors(corsOptions));
 
 // //  All routes
 router.use('/api/v1/auth', authRouter);
-router.use('/api/v1/users', userRouter);
+router.use('/api/v1/user', userRouter);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import heroStyle from './Hero.module.css';
 import Link from "next/link"
- function Hero() {
+
+function Hero() {
     return (
         <>
             <div className={heroStyle.heroContainer}>
@@ -9,7 +10,7 @@ import Link from "next/link"
                         <h1>YALMAR Management System.</h1>
                         <p>The smart system for managing staff and client operations.</p>
                     </div>
-                    <div >
+                    <div>
                         <Link href={"/register"} className={heroStyle.nextLink}>
                             <div className={heroStyle.animateContainer}>
                                 <button className={heroStyle.heroBtn}>
@@ -23,6 +24,6 @@ import Link from "next/link"
         
         </>
     )
- }
+}
 
 export default Hero
