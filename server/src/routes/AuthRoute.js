@@ -17,5 +17,6 @@ authRouter.use(cors(corsOptions));
 // authRouter.post('/register', authController.register);
 authRouter.get('/health', authController.isHealth);
 authRouter.get('/verify', authController.verify);
+authRouter.post('/refresh', authController.refreshJWT);
 
 module.exports = authRouter;

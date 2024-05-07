@@ -7,13 +7,11 @@ const imageController = require('../controllers/ImageController');
 
 const userRouter = express.Router();
 
-userRouter.get('/health', userController.isHealth);
 userRouter.get('/all', userController.getAllUsers);
 userRouter.post('/signup', userController.signUp);
 userRouter.post('/login', userController.login);
 userRouter.get('/dashboard', userController.dashboardData);
 userRouter.put('/update', userController.updateUser);
-userRouter.post('/refreshjwt', userController.refreshJWT);
 userRouter.post('/logout', userController.logout);
 userRouter.post('/resetpassword', userController.resetPassword);
 userRouter.put('/newpassword', userController.newPassword);

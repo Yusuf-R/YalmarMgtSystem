@@ -1,18 +1,61 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_URL
+export const axiosPrivate = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    withCredentials: true,
+    headers: {
+        "Content-Type": "application/json",
+    },
+})
+
+axiosPrivate.interceptors.request.use((config) => {
+    console.log('Interceptor called!');
+    const accessToken = document.cookie.match(/accessToken=([^;]*)/)[1];
+    config.headers.Authorization = `Bearer ${accessToken}`;
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
+axiosPrivate.interceptors.response.use((response) => {
+    console.log('Everything is fine,  no error encountered');
+    return response;
+}, async (error) => {
+    console.log('The intended request suffered a failure, this is the response: ', error.response.data);
+    const originalRequest = error.config;
+    if (error.response.status === 401 && error.response.data.error === "jwt expired" && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const accessToken = document.cookie.match(/accessToken=([^;]*)/)[1];
+        // make an api call to the refresh token endpoint
+        const newCall = await axiosPrivate({
+            method: "POST",
+            url: '/auth/refresh',
+            Authorization: `Bearer ${accessToken}`
+        });
+        // get the new access token from the cookie storage
+        const newAccessToken = newCall.data.accessToken;
+        // set the new access token in the header
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        // retry the request
+        return axiosPrivate(originalRequest);
+    }
+    return Promise.reject(error);
+});
+
 
 const UserLogin = async (obj) => {
     // Encode username and password in base64
     const encoded = Buffer.from(obj.email + ':' + obj.password).toString('base64');
-    const BasicAuth = `Basic ${encoded}`;
+    const BasicAuth =
+        `Basic ${encoded}`
+    ;
     // use axios for http request
     try {
         const response = await axios(
             {
                 method: "POST",
-                url: '/users/login',
+                url: '/user/login',
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": BasicAuth
@@ -23,36 +66,42 @@ const UserLogin = async (obj) => {
         return response.data;
     } catch (error) {
         console.log(error);
+        throw new Error(error.response.data.message);
     }
 }
 
 const userDashboard = async () => {
     try {
-        const response = await axios({
+        const response = await axiosPrivate({
             method: "GET",
-            url: '/users/dashboard',
+            url: '/user/dashboard',
             headers: {
                 "Content-Type": "application/json",
             },
-            withCredentials: true // Include cookies in the request
         });
         return response.data;
     } catch (error) {
-        console.log(error);
+        throw new Error({
+            error: error.response.data.message,
+            status: error.response.status,
+            headers: error.response.headers
+        });
     }
 }
 
 const verifyCredentials = async (request) => {
     try {
         // we will use fetch in this scenario since it supports edge runtime
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                cookie: request.cookies.get('accessToken')?.value
-            },
-            credentials: 'include',
-        });
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verify`
+            , {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    cookie: request.cookies.get('accessToken')?.value
+                },
+                credentials: 'include',
+            });
         if (response.status === 400) {
             return new Error('Access Denied');
         }
@@ -60,6 +109,21 @@ const verifyCredentials = async (request) => {
             return await response.json();
         }
         return null;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Access Denied');
+    }
+}
+
+const privateCheck = async (request) => {
+    console.log('Going for a private check');
+    try {
+        const response = await axiosPrivate({
+            method: "GET",
+            url: '/auth/health',
+        })
+        console.log(response.data);
+        return response.data;
     } catch (error) {
         console.log(error);
         throw new Error('Access Denied');
@@ -675,5 +739,6 @@ export {
     UserLogin,
     userDashboard,
     verifyCredentials,
+    privateCheck,
     data,
 }

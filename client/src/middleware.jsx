@@ -23,6 +23,8 @@ export async function middleware(request) {
                 if (!data) {
                     return NextResponse.redirect(new URL('/error/404', request.url));
                 }
+                // log the url of the request
+                console.log('Middleware for url: ', request.url);
                 return NextResponse.next();
             } catch (error) {
                 console.error(error.message)

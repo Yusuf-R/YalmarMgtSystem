@@ -16,10 +16,12 @@ function AdminLayout({children}) {
         return <CircularProgress/>;
     }
     if (isError || !data) {
+        console.log({data});
         // Ideally, handle this more gracefully
         console.error('Error fetching user data');
-        return <div>Error loading user data</div>;
+        return <div>Error loading user data as data is: {data}</div>;
     }
+    console.log({data});
     const {userData} = data;
     return (
         <>
