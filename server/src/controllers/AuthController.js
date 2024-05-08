@@ -27,25 +27,24 @@ class AuthController {
             return res.status(500).json({error: 'Redis connection failed'});
         }
         try {
-            const encryptedAccessToken = await AuthController.currPreCheck(req);
-            const decryptedAccessToken = securityConfig.decryptData(encryptedAccessToken);
-            const verifiedAccessToken = await AuthController.verifyAccessToken(decryptedAccessToken);
+            const verifiedJWT = await AuthController.currPreCheck(req);
+            if (verifiedJWT instanceof Error) {
+                return res.status(401).json({error: verifiedJWT.message});
+            }
             const portal = req.originalUrl.split('/')[3];
             return res.status(200).json({
-                verifiedAccessToken,
-                decryptedAccessToken,
+                verifiedJWT,
                 portal,
                 message: 'Server is up and running',
                 redisStatus,
                 dbStatus,
             });
         } catch (error) {
-            throw new Error(error.message);
-            
+            return res.status(401).json({error: error.message});
         }
     }
     
-    static async currPreCheck(req) {
+    static async refreshCurrPreCheck(req) {
         try {
             if (!req.headers.authorization) {
                 return new Error('Bearer Authorization header is required');
@@ -61,7 +60,52 @@ class AuthController {
         } catch (error) {
             throw new Error(error.message || 'Invalid token')
         }
-        
+    }
+    
+    static async currPreCheck(req) {
+        try {
+            if (!req.headers.authorization) {
+                return new Error('Bearer Authorization header is required');
+            }
+            if (!req.headers.authorization.startsWith('Bearer ')) {
+                return new Error('Authorization Header improperly formatted');
+            }
+            const encryptedJWT = req.headers.authorization.split(' ')[1];
+            if (!encryptedJWT) {
+                return new Error('Missing JWT token');
+            }
+            // decrypt the token
+            const decryptedJWT = securityConfig.decryptData(encryptedJWT);
+            if (!decryptedJWT) {
+                return new Error('Invalid JWT token');
+            }
+            // verify JWT token
+            const verifiedJWT = JWT.verify(decryptedJWT, jwtAccessSecret, {algorithm: 'HS256'});
+            if (!verifiedJWT) {
+                return new Error('Invalid JWT token');
+            }
+            // verify JWT against JWT
+            const redisAccessToken = await AuthController.getJWT(verifiedJWT.id);
+            if (!redisAccessToken) {
+                return new Error('Invalid JWT token');
+            }
+            if (redisAccessToken !== decryptedJWT) {
+                return new Error('Invalid JWT token');
+            }
+            // ensure token is not blacklisted
+            const blackListed = await redisClient.isInBlacklist(verifiedJWT.id, decryptedJWT);
+            if (blackListed) {
+                return new Error('Token is blacklisted');
+            }
+            // ensure it's corresponding refresh token exists
+            const refreshTokenObj = await RefreshToken.findOne({userId: verifiedJWT.id});
+            if (!refreshTokenObj) {
+                return new Error('Invalid token');
+            }
+            return verifiedJWT;
+        } catch (error) {
+            throw new Error(error.message || 'Invalid token')
+        }
     }
     
     static getAccessTokenFromCookie(cookieHeader) {
@@ -88,27 +132,39 @@ class AuthController {
     
     static async headlessCheck(req) {
         // Check if the cookie header exists
-        if (!req.headers.cookie) {
-            throw new Error('Missing cookie header');
-        }
-        // Parse the cookie header to extract the accessToken
-        const cookies = req.headers.cookie.split('; ');
-        let encryptedAccessToken = null;
-        
-        cookies.forEach(cookie => {
-            const [name, value] = cookie.split('=');
-            if (name === 'accessToken') {
-                encryptedAccessToken = value;
+        try {
+            if (!req.headers.authorization) {
+                return new Error('Missing authorization header');
             }
-        });
-        // If accessToken is not found, use the entire cookie value as a fallback
-        if (!encryptedAccessToken) {
-            encryptedAccessToken = req.headers.cookie;
+            if (!req.headers.authorization.startsWith('Bearer ')) {
+                return new Error('Authorization Header improperly formatted');
+            }
+            // Extract the accessToken from the cookie header
+            const encryptedAccessToken = req.headers.authorization.split(' ')[1];
+            if (!encryptedAccessToken) {
+                return new Error('Missing token');
+            }
+            // Decrypt the accessToken
+            const decryptedAccessToken = securityConfig.decryptData(encryptedAccessToken);
+            if (!decryptedAccessToken) {
+                return new Error('Invalid JWT token');
+            }
+            // Verify the accessToken
+            const verifiedAccessToken = JWT.verify(decryptedAccessToken, jwtAccessSecret, {
+                algorithm: 'HS256',
+                ignoreExpiration: true,
+            });
+            if (verifiedAccessToken.exp < Date.now()) {
+                // check if it has been blacklisted
+                const blacklisted = await redisClient.isInBlacklist(verifiedAccessToken.id, decryptedAccessToken);
+                if (blacklisted) {
+                    return new Error('Token is blacklisted');
+                }
+            }
+            return verifiedAccessToken;
+        } catch (error) {
+            return new Error(error.message);
         }
-        if (!encryptedAccessToken) {
-            throw new Error('Missing or invalid JWT token');
-        }
-        return encryptedAccessToken;
     }
     
     static async signInPrecheck(req) {
@@ -158,12 +214,9 @@ class AuthController {
     
     static async refreshJWT(req, res) {
         try {
-            const encToken = await AuthController.currPreCheck(req);
-            if (encToken.error) {
-                return res.status(400).json({error: encToken.error});
-            }
-            if (!encToken) {
-                return res.status(400).json({error: 'Missing token'});
+            const encToken = await AuthController.refreshCurrPreCheck(req);
+            if (encToken instanceof Error) {
+                return res.status(400).json({error: encToken.message});
             }
             // decrypt the expToken
             const decToken = securityConfig.decryptData(encToken);
@@ -179,6 +232,7 @@ class AuthController {
                     return res.status(403).json({error: 'Token is blacklisted'});
                 }
                 // refresh the access and refresh token
+                console.log('About to generate new tokens');
                 const refreshJWTcredentials = await AuthController.tokenGenerator(decToken, payload);
                 if (refreshJWTcredentials.error) {
                     return res.status(400).json({error: refreshJWTcredentials.error});
@@ -228,7 +282,7 @@ class AuthController {
                 algorithm: 'HS256',
             });
             // remove the old refresh token object
-            await RefreshToken.deleteMany({userId: payload.id});
+            await RefreshToken.deleteOne({userId: payload.id});
             console.log('Deleting old refresh token');
             // create a new refresh token
             await RefreshToken.create({userId: payload.id, token: refreshToken});
@@ -285,7 +339,8 @@ class AuthController {
         return redisAccessToken;
     }
     
-    static async deleteJWT(id) {
+    static
+    async deleteJWT(id) {
         const key = `auth_${id}`;
         try {
             const result = await redisClient.del(key);
@@ -378,7 +433,10 @@ class AuthController {
     
     static async apiPrecheck(req) {
         try {
-            const encryptedAccessToken = await AuthController.headlessCheck(req);
+            const encryptedAccessToken = await AuthController.refreshCurrPreCheck(req);
+            if (encryptedAccessToken instanceof Error) {
+                return new Error(encryptedAccessToken.message);
+            }
             // decrypt the token
             const decryptedAccessToken = securityConfig.decryptData(encryptedAccessToken);
             const verifiedAccessToken = await AuthController.verifyAccessToken(decryptedAccessToken);
@@ -394,14 +452,15 @@ class AuthController {
     static async verify(req, res) {
         // extract the token from the authorization header
         try {
-            const {verifiedAccessToken, decryptedAccessToken} = await AuthController.apiPrecheck(req);
+            const verifiedAccessToken = await AuthController.headlessCheck(req);
+            if (verifiedAccessToken instanceof Error) {
+                return res.status(400).json({error: verifiedAccessToken.message});
+            }
             return res.status(200).json({
                 msg: 'AccessToken verified',
                 verifiedAccessToken,
-                decryptedAccessToken
             });
         } catch (error) {
-            console.log(error);
             return res.status(400).json({error: error.message});
         }
     }
