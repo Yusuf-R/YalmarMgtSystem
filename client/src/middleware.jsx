@@ -20,14 +20,13 @@ export async function middleware(request) {
         } else {
             try {
                 const data = await UserUtils.authGuard(request);
-                if (!data) {
+                if (!data || data instanceof Error) {
                     return NextResponse.redirect(new URL('/error/404', request.url));
                 }
                 // log the url of the request
                 console.log('Middleware for url: ', request.url);
                 return NextResponse.next();
             } catch (error) {
-                console.error(error.message)
                 return NextResponse.redirect(new URL('/error/404', request.url));
             }
         }

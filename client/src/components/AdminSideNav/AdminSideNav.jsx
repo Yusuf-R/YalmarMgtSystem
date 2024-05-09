@@ -11,7 +11,6 @@ import {FcManager} from "react-icons/fc";
 import Avatar from "@mui/material/Avatar";
 import {FcExpired} from "react-icons/fc";
 import {FcComboChart} from "react-icons/fc";
-import UserUtils from "@/utils/UserUtilities";
 import {toast} from "react-toastify";
 import {FcAutomatic} from "react-icons/fc";
 import {useState} from 'react';
@@ -21,24 +20,37 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Cookies from "js-cookie";
+import {useMutation} from "@tanstack/react-query";
+import {UserLogout} from "@/utils/authLogin";
 
 
 function AdminSideNav() {
     const [confirmExit, setConfirmExit] = useState(false);
     const router = useRouter();
+    const mutation = useMutation({
+        mutationKey: ['Logout'],
+        mutationFn: UserLogout,
+    });
     const handleLogout = () => {
-        // UserUtils.userLogout();
-        Cookies.remove('accessToken');
-        Cookies.remove('userData');
-        Cookies.remove('rememberMe');
-        setConfirmExit(false);
-        toast.success('Logged out successfully', {
-            autoClose: 2000,
+        mutation.mutate(null, {
+            onSuccess: (response) => {
+                if (response) {
+                    toast.success('Logout successful');
+                    //set a time-out and route to log-out
+                    setTimeout(() => {
+                        router.push('/login');
+                    }, 500);
+                } else {
+                    toast.error('Logout failed');
+                }
+            },
+            onError: (error) => {
+                toast.error('Logout failed');
+                setTimeout(() => {
+                }, 500);
+            },
         });
-        setTimeout(() => {
-            router.push('/login');
-        }, 2500);
+        setConfirmExit(false);
     }
     
     const handleDialog = () => {
@@ -166,8 +178,10 @@ function AdminSideNav() {
                     <ListItemButton sx={{
                         "&:hover": {
                             bgcolor: '#2c74f2',
-                        }
-                    }}>
+                        },
+                    }}
+                                    onClick={() => router.push('/dashboard/admin/settings')}
+                    >
                         <ListItemIcon>
                             <FcAutomatic/>
                         </ListItemIcon>

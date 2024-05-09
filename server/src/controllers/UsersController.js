@@ -22,7 +22,7 @@ class UserController {
         const {accessToken} = credentials;
         const users = await User.find();
         if (!users) {
-            return res.status(400).json({error: 'No users found'});
+            return res.status(404).json({error: 'No users found'});
         }
         return res.status(200).json({
             message: 'All users retrieved successfully', data: users, accessToken,
@@ -111,9 +111,7 @@ class UserController {
         if (data64.error) {
             return res.status(400).json({error: data64.error});
         }
-        console.log({data64});
         const dataDecode = await authClient.singinDecrypt(data64);
-        console.log({dataDecode});
         if (dataDecode.error) {
             return res.status(400).json({error: dataDecode.error});
         }
@@ -199,8 +197,8 @@ class UserController {
         }
         const {accessToken, refreshToken} = newCredentials;
         // update RedisClient with the new credentials of the accessToken
-        const updateRedisAcessToken = await authClient.setJWT(user, accessToken);
-        if (updateRedisAcessToken.error) {
+        const updateRedisAccessToken = await authClient.setJWT(user, accessToken);
+        if (updateRedisAccessToken.error) {
             return res.status(400).json({error: updateRedisAcessToken.error});
         }
         return res.status(201).json({
@@ -235,7 +233,7 @@ class UserController {
             const user = await User.findOne({email});
             if (!user) {
                 return res
-                    .status(400)
+                    .status(404)
                     .json({error: 'User with this email address not found'});
             }
             const isMatch = await bcrypt.compare(password, user.password);
@@ -273,7 +271,7 @@ class UserController {
             });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({error: 'Failed to login'});
+            return res.status(500).json({error: 'Internal Server Error'});
         }
     }
     
@@ -309,39 +307,34 @@ class UserController {
     
     static async logout(req, res) {
         try {
-            const accessToken = await authClient.currPreCheck(req);
-            if (accessToken.error) {
-                return res.status(400).json({error: accessToken.error});
-            }
-            const payload = await authClient.verifyAccessToken(accessToken);
-            if (payload.error) {
-                return res.status(400).json({error: payload});
-            }
-            const {id} = payload;
-            if (!id) {
-                return res.status(400).json({error: 'Invalid token'});
+            const verifiedToken = await authClient.currPreCheck(req);
+            if (verifiedToken instanceof Error) {
+                return res.status(401).json({error: verifiedToken.message});
             }
             // delete the access token from Redis
-            const result = await authClient.deleteJWT(id);
+            const result = await authClient.deleteJWT(verifiedToken.id);
             if (result.error) {
                 return res.status(500).json(result);
             }
-            const ret = await RefreshToken.deleteOne({userId: id});
+            const ret = await RefreshToken.deleteOne({userId: verifiedToken.id});
             if (ret.deletedCount === 0) {
                 return res.status(500).json({error: 'Token Object does not exit'});
             }
             if (ret.deletedCount === 1 && result === 1) {
+                // delete all the content of the cookie
+                res.clearCookie('accessToken');
+                res.clearCookie('userData');
+                res.clearCookie('rememberMe');
                 return res.status(201).json({message: 'Logout successful'});
             }
             return res
                 .status(500)
                 .json({error: 'Invalid Operational Request', msg: 'Logout failed'});
         } catch (err) {
-            return res
-                .status(500)
-                .json({error: 'Failed to logout', msg: err.message});
+            return res.status(401).json({error: err.message});
         }
     }
+    
     
     static async updateUser(req, res) {
         const accessToken = await authClient.currPreCheck(req);
@@ -413,8 +406,6 @@ class UserController {
             userData, accessToken,
         });
     }
-    
-    
 }
 
 module.exports = UserController;
