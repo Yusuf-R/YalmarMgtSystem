@@ -3,9 +3,6 @@ import Stack from '@mui/material/Stack';
 import Staff from '@/components/Staff/Staff';
 
 function AllStaff() {
-    // make a get request to the backEnd to get all the staff using tanstack-react-query
-    // render the return data as a props to the Staff components
-    
     return (
         <>
             <Box sx={{

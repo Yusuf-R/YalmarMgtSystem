@@ -6,6 +6,7 @@ const user = {
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     middleName: {type: String},
+    sex: {type: String, enum: ['Male', 'Female'], required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     country: {type: String},
@@ -13,6 +14,7 @@ const user = {
     stateOfOrigin: {type: String},
     lga: {type: String},
     stateOfResidence: {type: String},
+    siteDesignation: {type: String},
     phoneNo: {type: String},
     role: {
         type: String,

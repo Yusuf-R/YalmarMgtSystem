@@ -31,10 +31,7 @@ class AuthController {
             if (verifiedJWT instanceof Error) {
                 return res.status(401).json({error: verifiedJWT.message});
             }
-            const portal = req.originalUrl.split('/')[3];
             return res.status(200).json({
-                verifiedJWT,
-                portal,
                 message: 'Server is up and running',
                 redisStatus,
                 dbStatus,
@@ -245,7 +242,7 @@ class AuthController {
                 res.cookie('accessToken', encryptedAccessToken, {
                     // httpOnly: true, // Prevent client-side access via JavaScript
                     secure: true, // Requires HTTPS connection for secure transmission
-                    maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
+                    // maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                     sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
                 });
                 // store the AT in redis

@@ -262,7 +262,7 @@ class UserController {
             res.cookie('accessToken', encryptedAccessToken, {
                 // httpOnly: true, // Prevent client-side access via JavaScript
                 secure: true, // Requires HTTPS connection for secure transmission
-                maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
+                // maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                 sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
             });
             return res.status(201).json({
@@ -292,7 +292,7 @@ class UserController {
             res.cookie('userData', JSON.stringify(userData), {
                 // httpOnly: true, // Prevent client-side access via JavaScript
                 secure: true, // Requires HTTPS connection for secure transmission
-                maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
+                // maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                 sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
             })
             return res.status(200).json({

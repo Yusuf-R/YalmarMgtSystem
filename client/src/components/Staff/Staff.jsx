@@ -180,12 +180,12 @@ function Staff() {
         },
         renderTopToolbarCustomActions: ({table}) => {
             // add your custom actions function here
-            const hiFati = () => alert('hi fati');
+            const createNew = () => router.push('/dashboard/admin/staff/new');
             return (
                 <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
                     <Button
                         color="secondary"
-                        onClick={hiFati}
+                        onClick={createNew}
                         variant="contained"
                     >
                         Create New Staff Account +
