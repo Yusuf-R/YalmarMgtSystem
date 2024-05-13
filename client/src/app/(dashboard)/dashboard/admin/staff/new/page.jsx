@@ -1,4 +1,4 @@
-import NewStaff from "@/components/Staff/NewStaff/NewStaff";
+import NewStaff from "@/components/NewStaff/NewStaff";
 
 function NewAccount() {
     return (

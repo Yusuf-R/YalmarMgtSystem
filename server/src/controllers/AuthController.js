@@ -8,8 +8,8 @@ const User = require('../models/User');
 const securityConfig = new SecurityConfig();
 
 
-// const EXP = 60 * 60 * 24; // 24hrs
-const EXP = 30; // 15s
+const EXP = 60 * 60 * 2; // 2hrs
+// const EXP = 30; // 15s
 
 const jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
 const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
