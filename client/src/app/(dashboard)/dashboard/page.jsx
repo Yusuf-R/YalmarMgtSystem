@@ -1,16 +1,16 @@
 'use client';
 import {useRouter} from 'next/navigation';
-import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
 import {CircularProgress} from '@mui/material';
-import Cookies from 'js-cookie';
+import UserUtils from "@/utils/UserUtilities";
+
 
 function Dashboard() {
     console.log('Dashboard page');
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['userDashboard'],
-        queryFn: userDashboard,
+        queryFn: UserUtils.userDashboard,
     });
     
     if (isError) {

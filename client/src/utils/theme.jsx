@@ -17,8 +17,12 @@ const theme = createTheme({
             styleOverrides: {
                 input: {
                     "&:-webkit-autofill": {
-                        "-webkit-box-shadow": "0 0 0 100px #274e61 inset",
-                        "-webkit-text-fill-color": "white",
+                        "WebkitBoxShadow": "0 0 0 100px #274e61 inset", // Set the background color to your own color
+                        "WebkitTextFillColor": "#FFF", // Set the text color to your own color
+                    },
+                    "&:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active": {
+                        backgroundColor: "#274e61", // Set the background color to your own color when it auto-fills
+                        color: "#FFF", // Set the text color to your own color when it auto-fills
                     },
                 },
             },

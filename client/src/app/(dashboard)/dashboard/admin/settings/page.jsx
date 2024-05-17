@@ -5,15 +5,15 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import {useRouter} from "next/navigation";
 import {useQuery} from '@tanstack/react-query';
-import {privateCheck} from "@/utils/authLogin";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useState} from "react";
+import UserUtils from "@/utils/UserUtilities";
 
 function New() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['privateCheck'],
-        queryFn: privateCheck,
+        queryFn: UserUtils.privateCheck,
     });
     const [message, setMessage] = useState('');
     const [redisStatus, setRedisStatus] = useState(false);

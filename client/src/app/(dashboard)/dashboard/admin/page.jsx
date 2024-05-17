@@ -1,15 +1,15 @@
 'use client';
 import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
-import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useRouter} from 'next/navigation';
+import UserUtils from "@/utils/UserUtilities";
 
 function Admin() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['userDashboard'],
-        queryFn: userDashboard,
+        queryFn: UserUtils.userDashboard,
     });
     
     if (isLoading) {

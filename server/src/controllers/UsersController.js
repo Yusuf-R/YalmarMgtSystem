@@ -8,10 +8,13 @@ const RefreshToken = require('../models/RefreshToken');
 const dbClient = require('../utils/db');
 const mailClient = require('../utils/mailer');
 const securityConfig = new SecurityConfig();
+import AuthController from "./AuthController";
+import {userSchemaValidator} from "../utils/schema";
+import {userSchema} from "../models/User";
+import Joi from "joi";
 
 
 const userRef = ['username', 'country', 'city', 'phone', 'isAdmin', 'img'];
-const signupRef = ['username', 'firstName', 'lastName'];
 
 class UserController {
     static async getAllUsers(req, res) {
@@ -30,47 +33,26 @@ class UserController {
     }
     
     static async signUp(req, res) {
-        const data64 = await authClient.signInPrecheck(req);
-        if (data64.error) {
-            return res.status(400).json({error: data64.error});
-        }
-        const decodeData = await authClient.singinDecrypt(data64);
-        if (decodeData.error) {
-            return res.status(400).json({error: decodeData.error});
-        }
-        const attributes = {};
-        attributes.email = decodeData.email;
-        attributes.password = decodeData.password;
-        // Check if the body of the request has the required attributes
-        for (const key of signupRef) {
-            if (!Object.prototype.hasOwnProperty.call(req.body, key)) {
-                return res.status(400).json({
-                    error: `Missing required attribute: ${key}`, genFormat: '{ username: <string>, email: <string> }',
-                });
-            }
-            attributes[key] = req.body[key];
-        }
-        let coreCheck = await User.findOne({email: attributes.email});
-        if (coreCheck) {
-            return res.status(409).json({error: 'User email already exists'});
-        }
-        coreCheck = await User.findOne({username: attributes.username});
-        if (coreCheck) {
-            return res.status(409).json({error: 'Username already exists'});
-        }
-        // Hash the password
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(attributes.password, saltRounds);
-        attributes.password = hashedPassword;
         try {
-            // Create a new user
-            const user = await User.createUser(attributes);
+            const verifiedJWT = await AuthController.currPreCheck(req);
+            if (verifiedJWT instanceof Error) {
+                return res.status(401).json({error: verifiedJWT.message});
+            }
+            // validate the request body against Joi
+            const {error, value} = userSchemaValidator.validate(req.body, {abortEarly: false});
+            if (error) {
+                // return res.status(400).json({error: error.details[0].message});
+                console.log(error.details[0].message)
+                return res.status(400).json({error: error.message});
+            }
+            const user = await User.createUser(value);
             return res.status(201).json({
-                msg: 'User object successfully created', data: user,
+                msg: 'User object successfully created',
+                data: user,
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({error: 'Internal Server Error'});
+            return res.status(500).json({error: error.message});
         }
     }
     

@@ -9,8 +9,10 @@ import {useMemo} from "react";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
-import {data} from "@/utils/authLogin";
 import {createTheme, ThemeProvider, useTheme} from '@mui/material';
+// import userData as data from '@/utils/data';
+import {userData} from "@/utils/data";
+
 
 import {
     MaterialReactTable,
@@ -134,7 +136,7 @@ function Staff() {
     )
     const table = useMaterialReactTable({
         columns,
-        data,
+        data: userData,
         enableSorting: true,
         enablePagination: true,
         enableColumnFiltering: true,

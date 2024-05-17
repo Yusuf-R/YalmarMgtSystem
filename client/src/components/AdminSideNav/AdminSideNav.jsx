@@ -11,7 +11,6 @@ import {FcManager} from "react-icons/fc";
 import Avatar from "@mui/material/Avatar";
 import {FcExpired} from "react-icons/fc";
 import {FcComboChart} from "react-icons/fc";
-import {toast} from "react-toastify";
 import {FcAutomatic} from "react-icons/fc";
 import {useState} from 'react';
 import Dialog from "@mui/material/Dialog";
@@ -20,39 +19,13 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import {useMutation} from "@tanstack/react-query";
-import {UserLogout} from "@/utils/authLogin";
+import {useLogout} from "@/customHooks/useLogout";
 
 
 function AdminSideNav() {
     const [confirmExit, setConfirmExit] = useState(false);
+    const handleLogout = useLogout();
     const router = useRouter();
-    const mutation = useMutation({
-        mutationKey: ['Logout'],
-        mutationFn: UserLogout,
-    });
-    const handleLogout = () => {
-        mutation.mutate(null, {
-            onSuccess: (response) => {
-                if (response) {
-                    toast.success('Logout successful');
-                    //set a time-out and route to log-out
-                    setTimeout(() => {
-                        router.push('/login');
-                    }, 500);
-                } else {
-                    toast.error('Logout failed');
-                }
-            },
-            onError: (error) => {
-                toast.error('Logout failed');
-                setTimeout(() => {
-                }, 500);
-            },
-        });
-        setConfirmExit(false);
-    }
-    
     const handleDialog = () => {
         setConfirmExit(true);
     }

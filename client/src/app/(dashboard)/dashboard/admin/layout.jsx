@@ -3,16 +3,17 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import DashboardTopNav from "@/components/DashboardTopNav/DashboardTopNav";
 import {useQuery} from '@tanstack/react-query';
-import {userDashboard} from '@/utils/authLogin'; // Ensure this is the correct path
+// Ensure this is the correct path
 import AdminSideNav from "@/components/AdminSideNav/AdminSideNav";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
+import UserUtils from "@/utils/UserUtilities";
 
 function AdminLayout({children}) {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['userDashboard'],
-        queryFn: userDashboard,
+        queryFn: UserUtils.userDashboard,
     });
     if (isLoading) {
         return <CircularProgress/>;
