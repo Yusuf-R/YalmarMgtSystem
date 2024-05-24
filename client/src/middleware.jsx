@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import UserUtils from "./utils/UserUtilities";
+import AdminUtils from "./utils/AdminUtilities";
 
 export async function middleware(request) {
     // check if the request is for the login page
@@ -19,7 +19,7 @@ export async function middleware(request) {
             return NextResponse.redirect(new URL("/error/404", request.url));
         } else {
             try {
-                const data = await UserUtils.authGuard(request);
+                const data = await AdminUtils.authGuard(request);
                 if (!data || data instanceof Error) {
                     return NextResponse.redirect(new URL('/error/404', request.url));
                 }

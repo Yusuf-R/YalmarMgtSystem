@@ -59,34 +59,34 @@ class RedisClient {
     }
     
     // Add functionality for managing the blacklist
-    async addToBlacklist(userId, tokenId) {
+    async addToBlacklist(staffId, tokenId) {
         try {
             if (!await this.isAlive()) {
                 return new Error(msg);
             }
-            await this.client.sadd(`blacklistedTokens:${userId}`, tokenId);
+            await this.client.sadd(`blacklistedTokens:${staffId}`, tokenId);
         } catch (error) {
             throw new Error(error);
         }
     }
     
-    async isInBlacklist(userId, tokenId) {
+    async isInBlacklist(staffId, tokenId) {
         try {
             if (!await this.isAlive()) {
                 return new Error(msg);
             }
-            return await this.client.sismember(`blacklistedTokens:${userId}`, tokenId);
+            return await this.client.sismember(`blacklistedTokens:${staffId}`, tokenId);
         } catch (error) {
             throw new Error(error);
         }
     }
     
-    async removeFromBlacklist(userId, tokenId) {
+    async removeFromBlacklist(staffId, tokenId) {
         try {
             if (!await this.isAlive()) {
                 return new Error(msg);
             }
-            await this.client.srem(`blacklistedTokens:${userId}`, tokenId);
+            await this.client.srem(`blacklistedTokens:${staffId}`, tokenId);
         } catch (error) {
             throw new Error(error);
         }

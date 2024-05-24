@@ -45,3 +45,6 @@
 // const decrytDT = decryptedData(encryptedData);
 // console.log({decrytDT});
 //
+
+
+// console.log(crypto.randomBytes(32).toString('hex'));

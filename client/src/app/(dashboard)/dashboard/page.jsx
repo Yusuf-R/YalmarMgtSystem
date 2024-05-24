@@ -1,16 +1,16 @@
 'use client';
 import {useRouter} from 'next/navigation';
-import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
 import {CircularProgress} from '@mui/material';
-import Cookies from 'js-cookie';
+import AdminUtils from "@/utils/AdminUtilities";
+
 
 function Dashboard() {
     console.log('Dashboard page');
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['userDashboard'],
-        queryFn: userDashboard,
+        queryKey: ['staffDashboard'],
+        queryFn: AdminUtils.staffDashboard,
     });
     
     if (isError) {
@@ -25,17 +25,17 @@ function Dashboard() {
         // Navigate to error page
         return router.push('/error/404');
     }
-    const {userData, accessToken} = data;
-    // Check if userData or accessToken is missing
-    if (!userData || !accessToken) {
+    const {staffData, accessToken} = data;
+    // Check if staffData or accessToken is missing
+    if (!staffData || !accessToken) {
         // Navigate to error page
         return router.push('/error/404');
     }
-    if (userData.role === 'Admin' || userData.role === 'SuperAdmin') {
+    if (staffData.role === 'Admin' || staffData.role === 'SuperAdmin') {
         // Navigate to admin dashboard
         return router.push('/dashboard/admin');
     }
-    if (userData.role === 'User') {
+    if (staffData.role === 'User') {
         return router.push('/dashboard/user');
     }
     // Navigate to error page if user role is not recognized

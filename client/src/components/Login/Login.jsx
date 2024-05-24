@@ -6,15 +6,16 @@ import styleSetPassword from "@/components/SetPassword/SetPassword.module.css";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {schemaLogin} from "@/SchemaValidator/login";
-import {useState, useEffect} from "react";
+import {useState} from "react";
 import usePasswordToggle from "../../customHooks/usePasswordToggle";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {useMutation} from "@tanstack/react-query";
-import {UserLogin} from "@/utils/authLogin";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
 import {FcRedo} from "react-icons/fc";
+import AdminUtils from "@/utils/AdminUtilities";
+
 
 function Login() {
     const router = useRouter();
@@ -26,20 +27,23 @@ function Login() {
     } = useForm({
         mode: "onTouched",
         resolver: yupResolver(schemaLogin),
+        reValidateMode: "onChange",
     });
     // using usePasswordToggle to toggle the visibility of the password
     const [rememberMe, setRememberMe] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     
-    // using useMutation to send the data to the server
+    // using useMutation to send the data to the server, pass in email and password to the function
     const mutation = useMutation({
         mutationKey: ["login"],
-        mutationFn: UserLogin,
+        mutationFn: AdminUtils.StaffLogin,
     });
+    
     
     const OnLogin = (loginData) => {
         // Disable the button to prevent multiple clicks
         setIsSubmit(true);
+        console.log(loginData);
         // Call the mutate function to trigger the login request
         mutation.mutate(loginData, {
             onSuccess: (response) => {
@@ -68,11 +72,13 @@ function Login() {
             },
             onError: (error) => {
                 // Handle login error
+                setIsSubmit(false);
+                console.log('hehe');
                 toast.error(error.message);
                 setTimeout(() => {
                     router.push("/login");
                 }, 3000);
-                setIsSubmit(false);
+                
             },
         });
     };

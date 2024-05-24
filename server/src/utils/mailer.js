@@ -1,26 +1,26 @@
 const nodemailer = require('nodemailer');
 
 class MailClient {
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'schoolpilot.mgt@gmail.com',
-        pass: 'fvhn lfcb upap wcob',
-      },
-      // debug: true,
-      // logger: true,
-    });
-  }
-
-  async sendToken(obj) {
-    try {
-      const info = await this.transporter.sendMail({
-        from: 'schoolpilot.mgt@gmail.com',
-        to: obj.email,
-        subject: 'Activation Profile Token',
-        html: `
-          <p>Dear ${obj.username},</p>
+    constructor() {
+        this.transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                staff: 'schoolpilot.mgt@gmail.com',
+                pass: 'fvhn lfcb upap wcob',
+            },
+            // debug: true,
+            // logger: true,
+        });
+    }
+    
+    async sendToken(obj) {
+        try {
+            const info = await this.transporter.sendMail({
+                from: 'schoolpilot.mgt@gmail.com',
+                to: obj.email,
+                subject: 'Activation Profile Token',
+                html: `
+          <p>Dear ${obj.staffname},</p>
           <p>To reset your password, please use the following activation token:</p>
           <p><strong>Activation Token:</strong> ${obj.resetOTP}</p>
           <p>Use this token only once. Do not share it with anyone.</p>
@@ -29,12 +29,12 @@ class MailClient {
           <p>Best regards,</p>
           <p>The BookingDev Team</p>
         `,
-      });
-      console.log('Message sent: %s', info.messageId);
-    } catch (error) {
-      console.error('Error sending email:', error);
+            });
+            console.log('Message sent: %s', info.messageId);
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
     }
-  }
 }
 
 const mailClient = new MailClient();

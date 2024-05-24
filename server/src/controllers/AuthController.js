@@ -4,12 +4,12 @@ const JWT = require('jsonwebtoken');
 const redisClient = require('../utils/redis');
 const dbClient = require('../utils/db');
 const RefreshToken = require('../models/RefreshToken');
-const User = require('../models/User');
+const Staff = require('../models/Staff');
 const securityConfig = new SecurityConfig();
 
 
-// const EXP = 60 * 60 * 24; // 24hrs
-const EXP = 30; // 15s
+const EXP = 60 * 60 * 2; // 2hrs
+// const EXP = 10; // 10s
 
 const jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
 const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
@@ -31,16 +31,16 @@ class AuthController {
             if (verifiedJWT instanceof Error) {
                 return res.status(401).json({error: verifiedJWT.message});
             }
-            const portal = req.originalUrl.split('/')[3];
             return res.status(200).json({
-                verifiedJWT,
-                portal,
                 message: 'Server is up and running',
                 redisStatus,
                 dbStatus,
             });
         } catch (error) {
-            return res.status(401).json({error: error.message});
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            return res.status(500).json({error: error.message});
         }
     }
     
@@ -98,13 +98,13 @@ class AuthController {
                 return new Error('Token is blacklisted');
             }
             // ensure it's corresponding refresh token exists
-            const refreshTokenObj = await RefreshToken.findOne({userId: verifiedJWT.id});
+            const refreshTokenObj = await RefreshToken.findOne({staffId: verifiedJWT.id});
             if (!refreshTokenObj) {
                 return new Error('Invalid token');
             }
             return verifiedJWT;
         } catch (error) {
-            throw new Error(error.message || 'Invalid token')
+            throw new Error(error.message)
         }
     }
     
@@ -168,20 +168,24 @@ class AuthController {
     }
     
     static async signInPrecheck(req) {
-        // check authorization header
-        if (!req.headers.authorization) {
-            return {error: 'Basic Authorization header is required'};
+        try {
+            // check authorization header
+            if (!req.headers.authorization) {
+                return new Error('Basic Authorization header is required');
+            }
+            // check if Authorization header starts with Basic + space
+            if (!req.headers.authorization.startsWith('Basic ')) {
+                return new Error('Authorization Header encryption improperly formatted');
+            }
+            // get the token
+            const data64 = req.headers.authorization.split(' ')[1];
+            if (!data64) {
+                return new Error('Encrypted base64 information not found');
+            }
+            return data64;
+        } catch (error) {
+            throw new Error(error.message);
         }
-        // check if Authorization header starts with Basic + space
-        if (!req.headers.authorization.startsWith('Basic ')) {
-            return {error: 'Authorization Header encryption improperly formatted'};
-        }
-        // get the token
-        const data64 = req.headers.authorization.split(' ')[1];
-        if (!data64) {
-            return {error: 'Encrypted base64 information not found'};
-        }
-        return data64;
     }
     
     static async singinDecrypt(data64) {
@@ -199,15 +203,15 @@ class AuthController {
         const payload = {id: obj.id};
         const accessToken = JWT.sign(payload, jwtAccessSecret, {expiresIn: jwtAccessExp, algorithm: 'HS256'});
         const refreshToken = JWT.sign(payload, jwtRefreshSecret, {expiresIn: jwtRefreshExp, algorithm: 'HS256'});
-        const refreshObj = await RefreshToken.findOne({userId: obj.id});
+        const refreshObj = await RefreshToken.findOne({staffId: obj.id});
         if (refreshObj) {
             console.log('removing and creating a new object');
             // remove the old refresh token object
-            await RefreshToken.deleteMany({userId: obj.id});
-            await RefreshToken.create({userId: obj.id, token: refreshToken});
+            await RefreshToken.deleteMany({staffId: obj.id});
+            await RefreshToken.create({staffId: obj.id, token: refreshToken});
         } else {
             console.log('creating');
-            await RefreshToken.create({userId: obj.id, token: refreshToken});
+            await RefreshToken.create({staffId: obj.id, token: refreshToken});
         }
         return {accessToken, refreshToken};
     }
@@ -245,7 +249,7 @@ class AuthController {
                 res.cookie('accessToken', encryptedAccessToken, {
                     // httpOnly: true, // Prevent client-side access via JavaScript
                     secure: true, // Requires HTTPS connection for secure transmission
-                    maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
+                    // maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
                     sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
                 });
                 // store the AT in redis
@@ -260,12 +264,11 @@ class AuthController {
         }
     }
     
-    
     static async tokenGenerator(decToken, payload) {
         // extract  from the payload
         try {
             // Find the old refresh token
-            const refreshTokenObj = await RefreshToken.findOne({userId: payload.id});
+            const refreshTokenObj = await RefreshToken.findOne({staffId: payload.id});
             // Check if the old refresh token exists
             if (!refreshTokenObj) {
                 return {error: 'Invalid token'};
@@ -282,10 +285,10 @@ class AuthController {
                 algorithm: 'HS256',
             });
             // remove the old refresh token object
-            await RefreshToken.deleteOne({userId: payload.id});
+            await RefreshToken.deleteOne({staffId: payload.id});
             console.log('Deleting old refresh token');
             // create a new refresh token
-            await RefreshToken.create({userId: payload.id, token: refreshToken});
+            await RefreshToken.create({staffId: payload.id, token: refreshToken});
             console.log('Creating a new Token');
             return ({accessToken, refreshToken});
         } catch (err) {
@@ -339,8 +342,7 @@ class AuthController {
         return redisAccessToken;
     }
     
-    static
-    async deleteJWT(id) {
+    static async deleteJWT(id) {
         const key = `auth_${id}`;
         try {
             const result = await redisClient.del(key);
@@ -380,52 +382,39 @@ class AuthController {
         return {id, accessToken};
     }
     
-    static async fullAdminCheck(req) {
-        const accessToken = await this.currPreCheck(req);
-        if (accessToken.error) {
-            return {error: accessToken.error};
+    static async AdminCheck(id) {
+        try {
+            // extract admin data
+            const admin = await Staff.findById(id);
+            if (!admin) {
+                return new Error('Unauthorized Access');
+            }
+            // ensure only Admin or SuperAdmin can perform this request
+            if (admin.role !== 'Admin' && admin.role !== 'SuperAdmin') {
+                return new Error('Forbidden Operation: Privileged Access Required');
+            }
+            return admin;
+        } catch (error) {
+            throw new Error(error.message)
         }
-        const payload = await this.verifyAccessToken(accessToken);
-        if (payload.error) {
-            return {error: payload.error};
-        }
-        const {id} = payload;
-        if (!id) {
-            return {error: 'Invalid token for associated ID'};
-        }
-        const redisAccessToken = await this.getJWT(payload.id);
-        if (redisAccessToken.error) {
-            return {error: redisAccessToken.error};
-        }
-        if (redisAccessToken !== accessToken) {
-            return {error: 'Invalid token'};
-        }
-        const user = await User.findById(id);
-        if (!user) {
-            return {error: 'User does not exist'};
-        }
-        if (!user.isAdmin) {
-            return {error: 'User is not an admin'};
-        }
-        return {id, accessToken};
     }
     
     static async dashBoardCheck(id) {
         try {
-            const user = await User.findById(id);
-            if (!user) {
+            const staff = await Staff.findById(id);
+            if (!staff) {
                 return new Error(`User with ID ${id} not found.`);
             }
-            const userData = {};
-            //extract all the keys from the return user object query
-            const userObj = user.toObject();
+            const staffData = {};
+            //extract all the keys from the return staff object query
+            const staffObj = staff.toObject();
             const exclude = ['_id', 'password', '__v', 'createdAt', 'updatedAt'];
-            Object.keys(userObj).forEach((key) => {
+            Object.keys(staffObj).forEach((key) => {
                 if (!exclude.includes(key)) {
-                    userData[key] = user[key];
+                    staffData[key] = staff[key];
                 }
             });
-            return userData;
+            return staffData;
         } catch (err) {
             return new Error(err.message);
         }

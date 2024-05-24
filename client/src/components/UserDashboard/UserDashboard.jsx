@@ -1,6 +1,6 @@
-import styleUser from './UserDashboard.module.css';
+import styleUser from './StaffDashboard.module.css';
 
-function UserDashboard({ userData, accessToken, refreshToken }) {
+function StaffDashboard({staffData, accessToken, refreshToken}) {
     return (
         <>
             <div className={styleUser.userContainer}>
@@ -9,7 +9,7 @@ function UserDashboard({ userData, accessToken, refreshToken }) {
                     Welcome User
                 </div>
                 <div>
-                    {Object.entries(userData).map(([key, value]) => (
+                    {Object.entries(staffData).map(([key, value]) => (
                         <p key={key}>
                             {key}: {value}
                         </p>
@@ -28,4 +28,4 @@ function UserDashboard({ userData, accessToken, refreshToken }) {
     )
 }
 
-export default UserDashboard;
+export default StaffDashboard;

@@ -6,7 +6,7 @@ const securityConfig = new SecurityConfig()
 const {corsOptions} = securityConfig;
 
 const authRouter = require('./AuthRoute');
-const userRouter = require('./UsersRoutes');
+const staffRouter = require('./StaffRoutes');
 
 
 const router = express.Router();
@@ -15,6 +15,6 @@ router.use(cors(corsOptions));
 
 // //  All routes
 router.use('/api/v1/auth', authRouter);
-router.use('/api/v1/user', userRouter);
+router.use('/api/v1/staff', staffRouter);
 
 module.exports = router;

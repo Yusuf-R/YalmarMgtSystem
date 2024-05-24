@@ -1,15 +1,15 @@
 'use client';
 import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
-import {userDashboard} from '@/utils/authLogin';
 import {useQuery} from '@tanstack/react-query';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useRouter} from 'next/navigation';
+import AdminUtils from "@/utils/AdminUtilities";
 
 function Admin() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['userDashboard'],
-        queryFn: userDashboard,
+        queryKey: ['staffDashboard'],
+        queryFn: AdminUtils.staffDashboard,
     });
     
     if (isLoading) {
@@ -19,14 +19,14 @@ function Admin() {
     if (isError || !data) {
         // Handle error state, possibly navigating to an error page or showing an error message
         console.error('Failed to fetch or no data available');
-        return router.push('/error/404');
+        router.push('/error/404');
     }
     
-    const {userData, accessToken} = data;
+    const {staffData, accessToken} = data;
     
     return (
         <AdminDashboard
-            userData={userData}
+            staffData={staffData}
             accessToken={accessToken}
         />
     );

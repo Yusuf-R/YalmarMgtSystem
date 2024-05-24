@@ -16,18 +16,16 @@ import Logout from '@mui/icons-material/Logout';
 import Button from "@mui/material/Button";
 import Stack from '@mui/material/Stack';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import {toast} from "react-toastify";
+
 import {useRouter} from "next/navigation";
-import {useEffect} from "react";
-import UserUtils from "@/utils/UserUtilities";
-import Cookies from "js-cookie";
+import {useLogout} from "@/customHooks/useLogout";
 
 
-function DashboardTopNav({userData}) {
+
+function DashboardTopNav({staffData}) {
     const router = useRouter();
-    // const userData = JSON.parse(Cookies.get('userData') ? Cookies.get('userData') : '{}');
+    // const staffData = JSON.parse(Cookies.get('staffData') ? Cookies.get('staffData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
-    const [username, setUsername] = useState('');
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -36,18 +34,7 @@ function DashboardTopNav({userData}) {
         setAnchorEl(null);
     };
     
-    const handleLogout = () => {
-        // UserUtils.userLogout();
-        Cookies.remove('accessToken');
-        Cookies.remove('userData');
-        Cookies.remove('rememberMe');
-        toast.success('Logged out successfully', {
-            autoClose: 2000,
-        });
-        setTimeout(() => {
-            router.push('/login');
-        }, 2500);
-    }
+    const handleLogout = useLogout()
     return (
         <>
             <Box className={styleTopNav.parent} sx={{
@@ -71,7 +58,7 @@ function DashboardTopNav({userData}) {
                         fontWeight: 'bold',
                         paddingTop: '25px',
                     }}>
-                        Welcome {userData.username || 'Anonymous'}
+                        Welcome {staffData.email || 'Anonymous'}
                     </Typography>
                     <Tooltip title="Account-settings">
                         <Button

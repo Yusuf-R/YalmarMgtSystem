@@ -1,13 +1,13 @@
 // hooks/useAuthGuard.js
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import Cookies from 'js-cookie';
 
 function useAuthGuard() {
     const router = useRouter();
     useEffect(() => {
-        const userData = Cookies.get('userData');
-        if (!userData) {
+        const staffData = Cookies.get('staffData');
+        if (!staffData) {
             // Redirect to login page if email is not found in cookies
             router.push('/error/404');
         }
