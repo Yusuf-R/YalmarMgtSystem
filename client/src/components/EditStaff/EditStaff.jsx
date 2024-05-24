@@ -1,106 +1,130 @@
-'use client';
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
-import {DemoContainer} from '@mui/x-date-pickers/internals/demo';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {useEffect, useState} from 'react';
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {Controller, useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import Link from "next/link";
+import {toast} from 'react-toastify';
+import {Checkbox, Chip, FormHelperText, InputLabel, OutlinedInput, Paper, Select} from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
 import {
     Countries,
-    employmentType,
-    jobTitle,
     martialStatus,
     nextOfKinRelationship,
     religionIdentity,
     sex,
-    sitesData,
-    siteStates,
     statesAndLGAs,
-    title
+    title,
+    siteStates,
+    employmentType,
+    jobTitle,
+    sitesData,
 } from "@/utils/data";
-import {Controller, useForm} from "react-hook-form";
-import {Checkbox, FormHelperText, OutlinedInput, Paper} from "@mui/material";
+import {Label} from "@mui/icons-material";
+import Stack from "@mui/material/Stack";
 import ListItemText from "@mui/material/ListItemText";
-import {Chip, InputLabel, Select} from "@mui/material/";
-import {yupResolver} from "@hookform/resolvers/yup";
-import {newStaffSchema} from "@/SchemaValidator/newStaffSchema";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
-import {toast} from "react-toastify";
-import Link from "next/link";
-import {useRouter} from "next/navigation";
+import {editStaffSchema} from "@/SchemaValidator/editStaffSchema";
 
-
-function NewStaff() {
-    const theme = createTheme({
-        components: {
-            // Assuming you are using MUI v5; adjust based on your version
-            MuiPaper: {  // Often, the calendar uses a Paper component for the dropdown
-                styleOverrides: {
-                    root: {
-                        backgroundColor: "#274e61", // Change to any color you prefer
-                        color: '#ffffff',
-                    },
-                },
-            },
-            MuiButton: {
-                styleOverrides: {
-                    root: {
-                        color: '#FFF',
-                        '&:hover': {
-                            backgroundColor: '#191844',
-                        },
-                    },
-                },
-            },
-            MuiIconButton: {
-                styleOverrides: {
-                    root: {
-                        color: '#FFF',
-                    },
-                },
-            },
-        }
-    });
-    const {
-        control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset
-    } = useForm({
-        mode: "onTouched",
-        resolver: yupResolver(newStaffSchema),
-        reValidateMode: "onChange",
-    });
+function EditStaff({id, staffData}) {
     const router = useRouter();
-    const Clear = () => {
-        // clear all the content of the fields of the box components
-        console.log('Hi User Form');
-        reset();
-        setDateValue(null);
-    }
+    const [gender, setGender] = useState('');
+    const [maritalStatus, setMaritalStatus] = useState('');
+    const [religion, setReligion] = useState('');
+    const [employment, setEmployment] = useState('');
     const [dateValue, setDateValue] = useState(null);
     const [stateOfOrigin, setStateOfOrigin] = useState('');
     const [residentState, setResidentState] = useState('');
     const [lga, setLGA] = useState('');
-    const [jobRole, setJobRole] = useState('');
     const [empType, setEmpType] = useState('');
-    const [cluster, setCluster] = useState('');
-    const [siteID, setSiteID] = useState([]);
+    const [jobRole, setJobRole] = useState(staffData.role || '');
+    const [cluster, setCluster] = useState(staffData.cluster || '');
+    const [siteID, setSiteID] = useState(staffData.siteID || []);
     const [siteState, setSiteState] = useState('');
     const [prefix, setPrefix] = useState('');
-    const [maritalStatus, setMaritalStatus] = useState('')
-    const [religion, setReligion] = useState('')
-    const [gender, setGender] = useState('')
     const [country, setCountry] = useState('')
     const [nextOfKin, setNextOfKin] = useState('')
     
+    // const [formData, setFormData] = useState({
+    //     title: staffData.title || "",
+    //     firstName: staffData.firstName || "",
+    //     middleName: staffData.middleName || "",
+    //     lastName: staffData.lastName || "",
+    //     gender: staffData.gender || "",
+    //     religion: staffData.religion || "",
+    //     phone: staffData.phone || "",
+    //     country: staffData.country || "",
+    //     address: staffData.address || "",
+    //     lga: staffData.lga || "",
+    //     stateOfOrigin: staffData.stateOfOrigin || "",
+    //     stateOfResidence: staffData.stateOfResidence || "",
+    //     nextOfKin: staffData.nextOfKin || "",
+    //     nextOfKinPhone: staffData.nextOfKinPhone || "",
+    //     nextOfKinRelationship: staffData.nextOfKinRelationship || "",
+    //     role: staffData.role || "",
+    //     cluster: staffData.cluster || "",
+    //     siteID: staffData.siteID || "",
+    //     siteState: staffData.siteState || "",
+    //     employment: staffData.employment || ""
+    // });
+    const {
+        control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset
+    } = useForm({
+        mode: "onTouched",
+        resolver: yupResolver(editStaffSchema),
+        reValidateMode: "onChange",
+    });
     
+    const txProps = {
+        color: "white",
+        bgcolor: "#274e61",
+        borderRadius: "10px",
+        width: '270px',
+    };
+    // *********************State Management**********************
+    // Gender state
+    const getGenderType = () => {
+        return sex.map((type) => (
+            <MenuItem key={type} value={type}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
+        ));
+    };
+    const handleGenderTypeChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setGender(event.target.value);
+    }
+    // Marital Status state
+    const getMaritalStatus = () => {
+        return martialStatus.map((type) => (
+            <MenuItem key={type} value={type}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
+        ))
+    }
+    const handleMaritalStatusChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setMaritalStatus(event.target.value);
+    }
+    // Religion state
+    const getReligionType = () => {
+        return religionIdentity.map((type) => (
+            <MenuItem key={type} value={type}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
+        ));
+    };
+    const handleReligionTypeChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setReligion(event.target.value);
+    }
+    // State of Origin
     const getStateOfOriginOptions = () => {
         return Object.keys(statesAndLGAs).map((stateName) => (
             <MenuItem key={stateName} value={stateName}
@@ -109,71 +133,26 @@ function NewStaff() {
             </MenuItem>
         ));
     };
-    const getResidentStateOptions = () => {
-        return Object.keys(statesAndLGAs).map((stateName) => (
-            <MenuItem key={stateName} value={stateName}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
-                {stateName}
-            </MenuItem>
-        ));
+    const handleStateOfOriginChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setStateOfOrigin(event.target.value);
+        // Clear the LGA selection when a new state is selected
+        setLGA('');
     };
-    /**
-     * Generates a list of job title options based on the given array of job titles.
-     *
-     * @return {Array<JSX.Element>} An array of MenuItem components representing the job titles.
-     */
-    const getJobTitleOptions = () => {
-        return jobTitle.map((title) => (
-            <MenuItem key={title} value={title}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{title}</MenuItem>
-        ));
-    };
-    /**
-     * Generates a list of employment type options based on the given array of employment types.
-     *
-     * @return {Array<JSX.Element>} An array of MenuItem components representing the employment types.
-     */
-    const getEmploymentType = () => {
-        return employmentType.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ))
-    }
-    const getPrefix = () => {
-        return title.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ))
-    }
-    const getGenderType = () => {
-        return sex.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ));
-    };
-    const getReligionType = () => {
-        return religionIdentity.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ));
-    };
+    // Country
     const getCountryType = () => {
         return Countries.map((type) => (
             <MenuItem key={type} value={type}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
         ));
     };
-    const getMaritalStatus = () => {
-        return martialStatus.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ))
+    const handleCountryChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setCountry(event.target.value);
     }
-    /**
-     * Function to generate LGA options based on the selected state
-     *
-     * @returns {Array<JSX.Element>} An array of MenuItem components representing the LGA options
-     */
+    // LGA
     const getLGAOptions = () => {
         if (!stateOfOrigin) {
             return [];
@@ -193,20 +172,88 @@ function NewStaff() {
             </MenuItem>
         ));
     };
+    const handleLGAChange = (event) => {
+        // prevent default action of submitting the form
+        
+        event.preventDefault();
+        setLGA(event.target.value);
+    };
+    // Kin
     const getNextOfKinOptions = () => {
         return nextOfKinRelationship.map((type) => (
             <MenuItem key={type} value={type}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
         ));
     }
+    const handleNextOfKinChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setNextOfKin(event.target.value);
+    }
+    // Resident State
+    const getResidentStateOptions = () => {
+        return Object.keys(statesAndLGAs).map((stateName) => (
+            <MenuItem key={stateName} value={stateName}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {stateName}
+            </MenuItem>
+        ));
+    };
+    const handleResidentStateChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setResidentState(event.target.value);
+    };
+    // Employment state
+    const getEmploymentType = () => {
+        return employmentType.map((type) => (
+            <MenuItem key={type} value={type}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
+        ))
+    }
+    const handleEmpTypeChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setEmpType(event.target.value);
+    }
+    // Job Role
+    const getJobTitleOptions = () => {
+        return jobTitle.map((title) => (
+            <MenuItem key={title} value={title}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{title}</MenuItem>
+        ));
+    };
+    const handleJobRoleChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        const role = event.target.value;
+        setJobRole(event.target.value);
+        // Clear the cluster and site selection when a new job role is selected
+        if (role !== 'Field Supervisor' && role !== 'Generator Technician') {
+            setValue('siteState', '');
+            setValue('cluster', '');
+            setValue('siteID', []);
+        }
+    }
+    // Site State Selection
     const getSiteStateOptions = () => {
         return siteStates.map((stateName) => (
             <MenuItem key={stateName} value={stateName}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{stateName}</MenuItem>
         ));
+    };
+    const handleSiteStateChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setSiteState(event.target.value);
+        // Clear the site selection when a new state is selected
+        setCluster('');
     }
+    // Cluster Selection
     const getClusterOptions = () => {
-        if (!siteState) return [];
+        if (!siteState) {
+            return [];
+        }
         return Object.keys(sitesData).map((clusterName) => (
             <MenuItem key={clusterName} value={clusterName}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
@@ -214,8 +261,20 @@ function NewStaff() {
             </MenuItem>
         ));
     };
+    const handleClusterChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setCluster(event.target.value);
+        // Clear the site selection when a new cluster is selected
+        setSiteID([]);
+        setValue('siteID', []);
+        clearErrors('siteID');
+    }
+    // Site Selection
     const getSiteOptions = () => {
-        if (!cluster) return [];
+        if (!cluster) {
+            return [];
+        }
         return sitesData[cluster].map((siteName) => (
             <MenuItem key={siteName} value={siteName}
                       sx={{
@@ -232,105 +291,30 @@ function NewStaff() {
             </MenuItem>
         ));
     }
-    const handleStateOfOriginChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setStateOfOrigin(event.target.value);
-        // Clear the LGA selection when a new state is selected
-        setLGA('');
-    };
-    const handleResidentStateChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setResidentState(event.target.value);
-    };
-    // Handle LGA selection
-    const handleLGAChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setLGA(event.target.value);
-    };
-    // Handle Job Role selection
-    const handleJobRoleChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        const role = event.target.value;
-        setJobRole(event.target.value);
-        // Clear the cluster and site selection when a new job role is selected
-        if (role !== 'Field Supervisor' && role !== 'Generator Technician') {
-            setValue('siteState', '');
-            setValue('cluster', '');
-            setValue('siteID', []);
-        }
-    }
-    const handlePrefixChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setPrefix(event.target.value);
-    }
-    const handleCountryChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setCountry(event.target.value);
-    }
-    const handleGenderTypeChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setGender(event.target.value);
-    }
-    const handleReligionTypeChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setReligion(event.target.value);
-    }
-    const handleMaritalStatusChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setMaritalStatus(event.target.value);
-    }
-    const handleNextOfKinChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setNextOfKin(event.target.value);
-    }
-    // Handle Employment Type selection
-    const handleEmpTypeChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setEmpType(event.target.value);
-    }
-    const handleSiteStateChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setSiteState(event.target.value);
-        // Clear the site selection when a new state is selected
-        setCluster('');
-    }
-    // Handle Cluster selection
-    const handleClusterChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setCluster(event.target.value);
-        // Clear the site selection when a new cluster is selected
-        setSiteID([]);
-        setValue('siteID', []);
-        clearErrors('siteID');
-    }
-    // Handle Site selection
     const handleSiteChange = (event) => {
         // prevent default action of submitting the form
         event.preventDefault();
         const {target: {value}} = event;
         setSiteID(typeof value === 'string' ? value.split(',') : value);
-    }
+    };
     
-    const txProps = {
-        color: "white",
-        bgcolor: "#274e61",
-        borderRadius: "10px",
-        width: '400px',
-    }
+    // check if stateOfOrigin is set, and if true auto select it's corresponding lga from the staff data
+    // also check if role is Field Supervisor or Generator Technician, and if true auto select the siteState,  cluster and siteID from the staff data
+    // all this should only happen when edit page is loaded and only once
+    useEffect(() => {
+            if (staffData.stateOfOrigin) {
+                setStateOfOrigin(staffData.stateOfOrigin);
+                setLGA(staffData.lga);
+            }
+            if (staffData.role === 'Field Supervisor' || staffData.role === 'Generator Technician') {
+                setCluster(staffData.cluster);
+                setSiteID(staffData.siteID);
+                setSiteState(staffData.siteState);
+            }
+        }, [staffData, setValue]
+    );
     
+    // Menu Style props
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
     const MenuProps = {
@@ -343,6 +327,7 @@ function NewStaff() {
         },
     };
     
+    // useEffect for handling error changes text across the edit form
     useEffect(() => {
         if (jobRole !== 'Field Supervisor' && jobRole !== 'Generator Technician') {
             setCluster('');
@@ -353,40 +338,44 @@ function NewStaff() {
         }
     }, [jobRole, setValue, clearErrors]);
     
+    const queryClient = useQueryClient()
     
     if (Object.keys(errors).length > 0) {
-        console.log({errors});
+        console.log(errors);
     }
-    const queryClient = useQueryClient()
+    
+    // Mutation for updating staff profile
     const mutation = useMutation({
-        mutationKey: ["newStaff"],
-        mutationFn: AdminUtils.NewStaff
+        mutationKey: ["updateStaff"],
+        mutationFn: AdminUtils.UpdateStaff,
     });
     
-    const SubmitData = async (data) => {
+    const UpdateProfile = async (data) => {
         try {
-            await newStaffSchema.validate(data, {abortEarly: false});
+            await editStaffSchema.validate(data, {abortEarly: false});
             console.log("Validation passed!"); // Check if validation passes
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
-                        toast.success('New Staff Account Created Successfully');
+                        toast.success(response.message);
+                        setTimeout(() => {
+                            router.push('/dashboard/admin/staff');
+                        }, 1500);
                         //     refresh the query that fetched all the staff
                         queryClient.invalidateQueries({queryKey: ["AllStaff"]});
-                        //     clear the form fields
-                        Clear();
-                        router.push('/dashboard/admin/staff');
+                        
                     } else {
-                        toast.error('Failed to create new staff account');
+                        toast.error(response.message);
+                        router.refresh();
                     }
                 },
                 onError: (error) => {
                     toast.error(error.message);
-                    console.log(error);
+                    router.refresh();
                 }
             });
         } catch (e) {
-            console.log({e});
+            toast.error("Form Validation Error");
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,
@@ -395,66 +384,62 @@ function NewStaff() {
             });
         }
     }
-    
     return (
-        <>
-            <Box sx={{
-                padding: '20px',
-                width: 'calc(100% - 250px)',
-                position: 'absolute',
-                top: '70px',
-                left: '250px',
-            }}
-                 component='form'
-                 noValidate
-                 onSubmit={handleSubmit(SubmitData)}>
+        <Box sx={{
+            padding: '20px',
+            width: 'calc(100% - 250px)',
+            position: 'absolute',
+            top: '70px',
+            left: '250px',
+        }}
+             component='form'
+             onSubmit={handleSubmit(UpdateProfile)}
+             noValidate
+        >
+            <Paper elevation={5} sx={{
+                alignCenter: 'center',
+                textAlign: 'center',
+                padding: '10px',
+                backgroundColor: '#274e61',
+                color: '#46F0F9',
+                borderRadius: '10px',
+                width: '100%',
+                height: 'auto',
+            }}>
+                <Typography variant='h5'>Edit Staff Account Form</Typography>
+            </Paper>
+            <br/><br/>
+            <Grid container spacing={4}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" component="h5">Staff Profile</Typography>
+                </Grid>
                 <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
+                    alignContent: 'start',
+                    padding: '30px',
+                    backgroundColor: 'inherit',
                     color: '#46F0F9',
                     borderRadius: '10px',
                     width: '100%',
                     height: 'auto',
+                    margin: '25px'
                 }}>
-                    <Typography variant='h5'>New Staff Account Form</Typography>
-                </Paper>
-                {/*registration form here*/}
-                {/*<Grid container spacing={2}>*/}
-                <br/>
-                <br/>
-                <Grid container spacing={4}>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5">Personal Information</Typography>
-                    </Grid>
                     
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        {/* First Row (1 fields) prefix */}
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                {/* Prefix */}
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="title"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
+                    {/*    First Row: Title field*/}
+                    <Grid container spacing={4}>
+                        {/*    First Row: Title field*/}
+                        <Grid item xs={4}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="title"
+                                    control={control}
+                                    defaultValue={staffData.title}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Title</Typography>
                                             <TextField
                                                 {...field}
-                                                select
-                                                label="Title"
-                                                error={!!errors.title}
-                                                helperText={errors.title ? errors.title.message : ''}
+                                                variant="outlined"
                                                 InputProps={{
                                                     sx: {
                                                         color: "white",
@@ -462,6 +447,7 @@ function NewStaff() {
                                                         borderRadius: "10px",
                                                         width: '100px',
                                                     },
+                                                    readOnly: true
                                                 }}
                                                 InputLabelProps={{
                                                     sx: {
@@ -492,23 +478,75 @@ function NewStaff() {
                                                     },
                                                 }}
                                             >
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Prefix
-                                                </MenuItem>
-                                                {getPrefix()}
                                             </TextField>
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            {/* First Row (3 fields) Name, middle-name, lastname */}
-                            <Grid item xs={4}>
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="firstName"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={8}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="_id"
+                                    control={control}
+                                    defaultValue={staffData._id}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Staff ID</Typography>
+                                            <TextField
+                                                {...field}
+                                                variant="outlined"
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                // SelectProps={{
+                                                //     MenuProps: {
+                                                //         PaperProps: {
+                                                //             sx: {
+                                                //                 backgroundColor: '#134357',
+                                                //                 color: 'white',
+                                                //                 maxHeight: 450,
+                                                //                 overflow: 'auto',
+                                                //             },
+                                                //         },
+                                                //     },
+                                                // }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                }}
+                                            >
+                                            </TextField>
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/* Second Row: FirstName, MiddleName, LastName*/}
+                        <Grid item xs={4}>
+                            {/* firstName */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="firstName"
+                                    control={control}
+                                    defaultValue={staffData.firstName}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>First Name</Typography>
                                             <TextField
                                                 {...field}
                                                 InputProps={{
@@ -525,262 +563,214 @@ function NewStaff() {
                                                 sx={{
                                                     color: "#46F0F9",
                                                 }}
-                                                label="First Name"
                                                 variant="outlined"
                                                 error={!!errors.firstName}
                                                 helperText={errors.firstName ? errors.firstName.message : ''}
                                                 required
                                             />
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={4}>
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* MiddleName */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="middleName"
                                     control={control}
-                                    defaultValue=""
+                                    defaultValue={staffData.middleName ? staffData.middleName : ""}
                                     render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Middle Name</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
                                                     }
-                                                }
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Middle Name"
-                                            error={!!errors.middleName}
-                                            helperText={errors.middleName ? errors.middleName.message : ''}
-                                            variant="outlined"
-                                        />
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.middleName}
+                                                helperText={errors.middleName ? errors.middleName.message : ''}
+                                                required
+                                            />
+                                        </Stack>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="lastName"
                                     control={control}
-                                    defaultValue=""
+                                    defaultValue={staffData.lastName ? staffData.lastName : ""}
                                     render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Last Name</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
                                                     }
-                                                }
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Last Name"
-                                            variant="outlined"
-                                            error={!!errors.lastName}
-                                            helperText={errors.lastName ? errors.lastName.message : ''}
-                                            required
-                                        />
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.lastName}
+                                                helperText={errors.lastName ? errors.lastName.message : ''}
+                                                required
+                                            />
+                                        </Stack>
                                     )}
                                 />
-                            </Grid>
-                            {/* Second Row (3 fields) email, phone, DOB*/}
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        {/* Third Row: Email, PhoneNo, DOB*/}
+                        <Grid item xs={4}>
+                            {/* Email */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="email"
                                     control={control}
-                                    defaultValue=""
+                                    defaultValue={staffData.email}
                                     render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Email</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
                                                     }
-                                                }
-                                            }
-                                            }
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Email Address"
-                                            variant="outlined"
-                                            autoComplete="off"
-                                            error={!!errors.email}
-                                            helperText={errors.email ? errors.email.message : ''}
-                                            required
-                                        />
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.email}
+                                                helperText={errors.email ? errors.email.message : ''}
+                                                required
+                                            />
+                                        </Stack>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* PhoneNo */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="phone"
                                     control={control}
-                                    defaultValue=""
+                                    defaultValue={staffData.phone ? staffData.phone : ""}
                                     render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Mobile No *</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
                                                     }
-                                                }
-                                            }
-                                            }
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Phone Number"
-                                            variant="outlined"
-                                            error={!!errors.phone}
-                                            helperText={errors.phone ? errors.phone.message : ''}
-                                            required
-                                        />
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.phone}
+                                                helperText={errors.phone ? errors.phone.message : ''}
+                                                required
+                                            />
+                                        </Stack>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Date of Birth */}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* DOB */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="dob"
                                     control={control}
-                                    defaultValue={null}
-                                    error={errors.dob?.message}
-                                    clearErrors={clearErrors}
+                                    defaultValue={staffData.dob ? staffData.dob : ""}
                                     render={({field}) => (
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            {/*Date picker for DOB input*/}
-                                            <ThemeProvider theme={theme}>
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        {...field}
-                                                        label="DOB *"
-                                                        value={field.value}
-                                                        onChange={(newValue) => {
-                                                            field.onChange(newValue);
-                                                            setDateValue(newValue);
-                                                        }}
-                                                        disableFuture
-                                                        views={['year', 'month', 'day']}
-                                                        error={!!errors.dob}
-                                                        helperText={errors.dob ? errors.dob.message : ''}
-                                                        inputRef={field.ref}
-                                                        closeOnSelect={false}
-                                                        localeText={{toolbarTitle: 'Date of Birth'}}
-                                                        format={'DD/MM/YYYY'}
-                                                        slotProps={{
-                                                            openPickerButton: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                }
-                                                            },
-                                                            textField: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    bgcolor: '#274e61',
-                                                                    borderRadius: '10px',
-                                                                    width: '350px',
-                                                                    "& .MuiInputLabel-root": {
-                                                                        color: '#46F0F9',
-                                                                    },
-                                                                    "& .MuiInputBase-input": { // Target input text
-                                                                        color: 'white', // Set focused text color to white
-                                                                    },
-                                                                    "& .MuiFormHelperText-root": {
-                                                                        // color: '#FDBFC9',
-                                                                        color: 'red',
-                                                                    },
-                                                                    //     set the border color to red upon error
-                                                                    "& .MuiOutlinedInput-notchedOutline": {
-                                                                        // borderColor: '#F51313',
-                                                                        borderColor: errors.dob ? 'red' : '',
-                                                                    },
-                                                                    // ensure the bgColor does not change when autofill is triggered
-                                                                    "& input:-webkit-autofill": {
-                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
-                                                                        WebkitTextFillColor: 'white',
-                                                                    },
-                                                                },
-                                                                helperText: errors.dob ? errors.dob.message : null,
-                                                            },
-                                                            actionBar: {
-                                                                actions: ['cancel', 'clear', 'accept'],
-                                                            },
-                                                            toolbar: {
-                                                                hidden: false,
-                                                                sx: {
-                                                                    // set the title 'Select Date' to white text
-                                                                    '& .MuiTypography-root': {
-                                                                        color: '#FFF',
-                                                                    },
-                                                                },
-                                                            },
-                                                            tabs: {
-                                                                hidden: false
-                                                            },
-                                                            layout: {
-                                                                sx: {
-                                                                    '& .MuiDayCalendar-weekDayLabel': {
-                                                                        color: '#F51313',
-                                                                        backgroundColor: '#0B0337',
-                                                                        borderRadius: '50px',
-                                                                    },
-                                                                },
-                                                            },
-                                                            day: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 'bold',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#07053B',
-                                                                    },
-                                                                }
-                                                            },
-                                                        }}
-                                                    />
-                                                </DemoContainer>
-                                            </ThemeProvider>
-                                        </LocalizationProvider>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>DOB *</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true
+                                                    
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.dob}
+                                                helperText={errors.dob ? errors.dob.message : ''}
+                                                required
+                                            />
+                                        </Stack>
                                     )}
                                 />
-                            </Grid>
-                            {/* Third Row (3 fields) Gender, Marital Status , Religion*/}
-                            <Grid item xs={4}>
-                                {/* Gender */}
-                                <Controller
-                                    name="gender"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                            </FormControl>
+                        </Grid>
+                        {/* Fourth Row: Gender, Marital Status, Religion*/}
+                        <Grid item xs={4}>
+                            {/* Gender */}
+                            <Controller
+                                name="gender"
+                                control={control}
+                                defaultValue={staffData.gender}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Gender *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Gender"
                                                 value={field.value}
                                                 onChange={(e) => {
                                                     field.onChange(e);
@@ -825,22 +815,24 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getGenderType()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Marital Status */}
-                                <Controller
-                                    name="maritalStatus"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Marital Status */}
+                            <Controller
+                                name="maritalStatus"
+                                control={control}
+                                defaultValue={staffData.maritalStatus}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Marital Status *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Marital Status"
                                                 value={field.value}
                                                 onChange={(e) => {
                                                     field.onChange(e);
@@ -885,22 +877,24 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getMaritalStatus()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Religion */}
-                                <Controller
-                                    name="religion"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Religion */}
+                            <Controller
+                                name="religion"
+                                control={control}
+                                defaultValue={staffData.religion}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Religion *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Religion"
                                                 value={field.value}
                                                 onChange={(e) => {
                                                     field.onChange(e);
@@ -945,23 +939,25 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getReligionType()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/* Fourth Row (3 fields) country, state, lga */}
-                            <Grid item xs={4}>
-                                {/* Country */}
-                                <Controller
-                                    name="country"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        {/* Fifth Row: Country, State, LGA */}
+                        <Grid item xs={4}>
+                            {/* Country */}
+                            <Controller
+                                name="country"
+                                control={control}
+                                defaultValue={staffData.country}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Country *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Country"
                                                 value={field.value}
                                                 required
                                                 onChange={(e) => {
@@ -1006,22 +1002,24 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getCountryType()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* State of Origin */}
-                                <Controller
-                                    name="stateOfOrigin"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* State of Origin */}
+                            <Controller
+                                name="stateOfOrigin"
+                                control={control}
+                                defaultValue={staffData.stateOfOrigin || ""}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>State of Origin *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="State of Origin"
                                                 value={field.value}
                                                 required
                                                 error={!!errors.stateOfOrigin}
@@ -1041,6 +1039,11 @@ function NewStaff() {
                                                         },
                                                     }
                                                 }}
+                                                // FormHelperTextProps={{
+                                                //     sx: {
+                                                //         color: "#E4080A",
+                                                //     }
+                                                // }}
                                                 SelectProps={{
                                                     MenuProps: {
                                                         PaperProps: {
@@ -1066,22 +1069,24 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getStateOfOriginOptions()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* LGA */}
-                                <Controller
-                                    name="lga"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* LGA */}
+                            <Controller
+                                name="lga"
+                                control={control}
+                                defaultValue={staffData.lga}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>LGA *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="LGA"
                                                 value={field.value}
                                                 required
                                                 onChange={(e) => {
@@ -1124,24 +1129,27 @@ function NewStaff() {
                                                 <MenuItem value="" sx={{color: "#4BF807"}}>Select LGA</MenuItem>
                                                 {getLGAOptions()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/* fifth row 1 field nextOfKin Information text*/}
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color="white">Next of Kin
-                                    Information</Typography>
-                            </Grid>
-                            {/* sixth row 3 field nextOfKin, relationship, nextOfKinPhoneNo*/}
-                            <Grid item xs={4}>
-                                {/* NextOfKin */}
-                                <Controller
-                                    name="nextOfKin"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        {/* Sixth row 1 field nextOfKin Information text*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color="white">Next of Kin
+                                Information</Typography>
+                        </Grid>
+                        {/* Seventh row 4 field nextOfKin, relationship, nextOfKinPhoneNo*/}
+                        <Grid item xs={4}>
+                            {/* NextOfKin */}
+                            <Controller
+                                name="nextOfKin"
+                                control={control}
+                                defaultValue={staffData.nextOfKin}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Next of Kin *</Typography>
                                             <TextField
                                                 {...field}
                                                 InputProps={{
@@ -1156,29 +1164,30 @@ function NewStaff() {
                                                     }
                                                 }}
                                                 id="outlined-basic"
-                                                label="Name"
                                                 variant="outlined"
                                                 error={!!errors.nextOfKin}
                                                 helperText={errors.nextOfKin ? errors.nextOfKin.message : ''}
                                                 required
                                             
                                             />
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/* Sixth row 1 field, Relationship*/}
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="nextOfKinRelationship"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Controller
+                                name="nextOfKinRelationship"
+                                control={control}
+                                defaultValue={staffData.nextOfKinRelationship}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Next of Kin Relationship
+                                                *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Relationship"
                                                 value={field.value}
                                                 error={!!errors.nextOfKinRelationship}
                                                 helperText={errors.nextOfKinRelationship ? errors.nextOfKinRelationship.message : ''}
@@ -1223,19 +1232,22 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getNextOfKinOptions()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/* nextOfKinPhoneNo*/}
-                            <Grid item xs={4}>
-                                {/* NextOfKin */}
-                                <Controller
-                                    name="nextOfKinPhone"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* NextOfKin */}
+                            <Controller
+                                name="nextOfKinPhone"
+                                control={control}
+                                defaultValue={staffData.nextOfKinPhone}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Next of Kin Phone Number
+                                                *</Typography>
                                             <TextField
                                                 {...field}
                                                 InputProps={{
@@ -1250,28 +1262,32 @@ function NewStaff() {
                                                     }
                                                 }}
                                                 id="outlined-basic"
-                                                label="Contact No"
                                                 variant="outlined"
                                                 error={!!errors.nextOfKinPhone}
                                                 helperText={errors.nextOfKinPhone ? errors.nextOfKinPhone.message : ''}
                                                 required
                                             />
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color="white">Residential Address</Typography>
-                            </Grid>
-                            {/* Eight Row 1 field residential address  */}
-                            <Grid item xs={4}>
-                                {/* Residential Address */}
-                                <Controller
-                                    name="address"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        {/* Eight Row : Residential Address Info*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color="white">Residential Address</Typography>
+                        </Grid>
+                        {/* Eight Row 1 field residential address  */}
+                        <Grid item xs={6}>
+                            {/* Residential Address */}
+                            <Controller
+                                name="address"
+                                control={control}
+                                defaultValue={staffData.address}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction='column' spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Residential Address
+                                                *</Typography>
                                             <TextField
                                                 {...field}
                                                 InputProps={{
@@ -1286,23 +1302,25 @@ function NewStaff() {
                                                     }
                                                 }}
                                                 id="outlined-basic"
-                                                label="Residential Address *"
                                                 variant="outlined"
                                                 error={!!errors.address}
                                                 helperText={errors.address ? errors.address.message : ''}
                                             />
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* State of Residence */}
-                                <Controller
-                                    name="stateOfResidence"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            {/* State of Residence */}
+                            <Controller
+                                name="stateOfResidence"
+                                control={control}
+                                defaultValue={staffData.stateOfResidence}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Address *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
@@ -1352,40 +1370,28 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getResidentStateOptions()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
                         </Grid>
-                    </Paper>
-                    {/* **************************** ********************** ******************* */}
-                    {/* Next section will contain Employment info*/}
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5">Employment Information</Typography>
-                    </Grid>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        <Grid container spacing={4}>
-                            <Grid item xs={6}>
-                                {/* Employment Type */}
-                                <Controller
-                                    name="employmentType"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                        {/*    Ninth Row: Employment Info*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color="white">Employment Info</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            {/* Employment Type */}
+                            <Controller
+                                name="employmentType"
+                                control={control}
+                                defaultValue={staffData.employment}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Employment Type *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Employment Type"
                                                 value={field.value}
                                                 error={!!errors.employmentType}
                                                 helperText={errors.employmentType ? errors.employmentType.message : ''}
@@ -1430,22 +1436,24 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getEmploymentType()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                {/* Job Role */}
-                                <Controller
-                                    name="role"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            {/* Job Role */}
+                            <Controller
+                                name="role"
+                                control={control}
+                                defaultValue={staffData.role}
+                                render={({field}) => (
+                                    <FormControl fullWidth>
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Job Role *</Typography>
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Role"
                                                 value={field.value}
                                                 required
                                                 error={!!errors.role}
@@ -1493,30 +1501,32 @@ function NewStaff() {
                                                 </MenuItem>
                                                 {getJobTitleOptions()}
                                             </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color='white'>Site Information -: (Applicable to
-                                    Technicians
-                                    and
-                                    Field Supervisors Role)</Typography>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="siteState"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => {
-                                        const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
-                                        return (
-                                            <FormControl fullWidth>
+                                        </Stack>
+                                    </FormControl>
+                                )}
+                            />
+                        </Grid>
+                        {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color='white'>Site Information -: (Applicable to
+                                Technicians
+                                and
+                                Field Supervisors Role)</Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Controller
+                                name="siteState"
+                                control={control}
+                                defaultValue={staffData.siteState || ''}
+                                render={({field}) => {
+                                    const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
+                                    return (
+                                        <FormControl fullWidth>
+                                            <Stack direction="column" spacing={2}>
+                                                <Typography variant="subtitle1" gutterBottom>Site State *</Typography>
                                                 <TextField
                                                     {...field}
                                                     select
-                                                    label="Site State"
                                                     value={field.value}
                                                     onChange={(e) => {
                                                         field.onChange(e);
@@ -1567,24 +1577,26 @@ function NewStaff() {
                                                     </MenuItem>
                                                     {getSiteStateOptions()}
                                                 </TextField>
-                                            </FormControl>
-                                        );
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="cluster"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => {
-                                        const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
-                                        return (
-                                            <FormControl fullWidth>
+                                            </Stack>
+                                        </FormControl>
+                                    );
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Controller
+                                name="cluster"
+                                control={control}
+                                defaultValue={staffData.cluster || ""}
+                                render={({field}) => {
+                                    const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
+                                    return (
+                                        <FormControl fullWidth>
+                                            <Stack direction="column" spacing={2}>
+                                                <Typography variant="subtitle1" gutterBottom>Cluster *</Typography>
                                                 <TextField
                                                     {...field}
                                                     select
-                                                    label="Cluster Area"
                                                     value={field.value}
                                                     onChange={(e) => {
                                                         field.onChange(e);
@@ -1635,21 +1647,24 @@ function NewStaff() {
                                                     </MenuItem>
                                                     {getClusterOptions()}
                                                 </TextField>
-                                            </FormControl>
-                                        );
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="siteID"
-                                    control={control}
-                                    defaultValue={[]}
-                                    errors={errors}
-                                    render={({field}) => {
-                                        const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
-                                        return (
-                                            <FormControl fullWidth>
+                                            </Stack>
+                                        </FormControl>
+                                    );
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Controller
+                                name="siteID"
+                                control={control}
+                                defaultValue={staffData.site || []}
+                                errors={errors}
+                                render={({field}) => {
+                                    const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
+                                    return (
+                                        <FormControl fullWidth>
+                                            <Stack direction="column" spacing={2}>
+                                                <Typography variant="subtitle1" gutterBottom>Site IDs *</Typography>
                                                 <InputLabel
                                                     id="siteID-label"
                                                     sx={{
@@ -1661,7 +1676,6 @@ function NewStaff() {
                                                     disabled={isDisabled}
                                                     error={!isDisabled && !!errors.siteID}
                                                 >
-                                                    Site ID
                                                 </InputLabel>
                                                 <Select
                                                     {...field}
@@ -1715,81 +1729,27 @@ function NewStaff() {
                                                     error={!!(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician') && !!errors.siteID}>
                                                     {errors.siteID?.message}
                                                 </FormHelperText>
-                                            </FormControl>
-                                        );
-                                    }}
-                                />
-                            </Grid>
+                                            </Stack>
+                                        </FormControl>
+                                    );
+                                }}
+                            />
                         </Grid>
-                    </Paper>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5" color='white'>Security Info</Typography>
                     </Grid>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" component="h6" color='white'>
-                                Set default password as &quot;Staff@123&quot;
-                            </Typography>
-                        </Grid>
-                        <br/><br/>
-                        <Grid item xs={4}>
-                            <FormControl fullWidth>
-                                <Controller
-                                    name="password"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white",
-                                                    },
-                                                }
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Password"
-                                            variant="outlined"
-                                            error={!!errors.password}
-                                            helperText={errors.password ? errors.password.message : ''}
-                                            required
-                                        />
-                                    )}
-                                />
-                            </FormControl>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                <br/>
-                <br/>
-                {/*Submitting button */}
-                <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
-                    <Link href="/dashboard/admin/staff">
-                        <Button variant="contained" color='success' title='Back'> Back </Button>
-                    </Link>
-                    <Button variant="contained" color='secondary' onClick={Clear} type='reset'
-                            title='Clear'> Clear </Button>
-                    <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
-                </Stack>
-            </Box>
-        </>
-    )
+                </Paper>
+            </Grid>
+            <br/>
+            <br/>
+            {/*Submitting button */}
+            <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
+                <Link href="/dashboard/admin/staff">
+                    <Button variant="contained" color='success' title='Back'> Back </Button>
+                </Link>
+                <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
+            </Stack>
+        </Box>
+    );
 }
 
-export default NewStaff;
+
+export default EditStaff;

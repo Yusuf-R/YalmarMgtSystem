@@ -14,7 +14,7 @@ import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
 import {FcRedo} from "react-icons/fc";
-import UserUtils from "@/utils/UserUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 
 
 function Login() {
@@ -36,7 +36,7 @@ function Login() {
     // using useMutation to send the data to the server, pass in email and password to the function
     const mutation = useMutation({
         mutationKey: ["login"],
-        mutationFn: UserUtils.UserLogin,
+        mutationFn: AdminUtils.StaffLogin,
     });
     
     

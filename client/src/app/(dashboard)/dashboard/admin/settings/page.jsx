@@ -7,13 +7,13 @@ import {useRouter} from "next/navigation";
 import {useQuery} from '@tanstack/react-query';
 import CircularProgress from "@mui/material/CircularProgress";
 import {useState} from "react";
-import UserUtils from "@/utils/UserUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 
 function New() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['privateCheck'],
-        queryFn: UserUtils.privateCheck,
+        queryFn: AdminUtils.privateCheck,
     });
     const [message, setMessage] = useState('');
     const [redisStatus, setRedisStatus] = useState(false);

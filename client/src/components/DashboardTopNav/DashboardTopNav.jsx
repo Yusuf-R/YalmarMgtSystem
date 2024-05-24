@@ -22,9 +22,9 @@ import {useLogout} from "@/customHooks/useLogout";
 
 
 
-function DashboardTopNav({userData}) {
+function DashboardTopNav({staffData}) {
     const router = useRouter();
-    // const userData = JSON.parse(Cookies.get('userData') ? Cookies.get('userData') : '{}');
+    // const staffData = JSON.parse(Cookies.get('staffData') ? Cookies.get('staffData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -58,7 +58,7 @@ function DashboardTopNav({userData}) {
                         fontWeight: 'bold',
                         paddingTop: '25px',
                     }}>
-                        Welcome {userData.username || 'Anonymous'}
+                        Welcome {staffData.email || 'Anonymous'}
                     </Typography>
                     <Tooltip title="Account-settings">
                         <Button

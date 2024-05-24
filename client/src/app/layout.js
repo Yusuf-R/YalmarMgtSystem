@@ -31,7 +31,7 @@ export default function RootLayout({children}) {
             </AppRouterCacheProvider>
             <ToastContainer
                 position="top-center"
-                autoClose={2000}
+                autoClose={2500}
                 hideProgressBar={false}
                 newestOnTop={false}
                 closeOnClick
@@ -39,6 +39,10 @@ export default function RootLayout({children}) {
                 draggable
                 pauseOnHover={false}
                 theme="dark"
+                style={{
+                    color: "#fff",
+                    width: 600
+                }}
             />
         </ReactQueryProvider>
         </body>

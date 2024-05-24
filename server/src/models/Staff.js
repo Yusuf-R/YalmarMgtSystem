@@ -1,22 +1,23 @@
 const mongoose = require('mongoose');
-const userMethods = require('./methods/userMethods');
+const staffMethods = require('./methods/staffMethods');
 
-const user = {
+const staff = {
     title: {type: String, enum: ['Miss', 'Mr', 'Mrs'], required: true},
-    userName: {type: String, unique: true},
+    // staffName: {type: String, unique: true},
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     middleName: {type: String},
-    dob: {type: Date, required: true},
+    dob: {type: String, default: Date, required: true},
     gender: {type: String, enum: ['Male', 'Female'], required: true},
     religion: {type: String, enum: ['Christianity', 'Islam', 'Others'], required: true},
+    maritalStatus: {type: String, enum: ['Single', 'Married', 'Divorced', 'Widowed'], required: true},
     email: {type: String, required: true, unique: true},
     phone: {type: String, required: true, unique: true},
-    // password: {type: String, required: true, unique: true},
-    country: {type: String},
-    address: {type: String},
-    stateOfOrigin: {type: String},
-    lga: {type: String},
+    password: {type: String, required: true},
+    country: {type: String, required: true},
+    address: {type: String, required: true},
+    stateOfOrigin: {type: String, required: true},
+    lga: {type: String, required: true},
     stateOfResidence: {type: String, required: true},
     nextOfKin: {type: String, required: true},
     nextOfKinPhone: {type: String, required: true},
@@ -79,16 +80,15 @@ const user = {
     resetTTL: Date,
     resetOTP: String,
 };
-const userSchema = new mongoose.Schema(user, {timestamps: true});
+const staffSchema = new mongoose.Schema(staff, {timestamps: true});
 
-userSchema.statics.createUser = userMethods.createUser; // static, cos we're creating a new instance of a class object
-userSchema.methods.generateOTP = userMethods.generateOTP;
-userSchema.methods.validateOTP = userMethods.validateOTP;
-userSchema.methods.resetPassword = userMethods.resetPassword;
-userSchema.methods.changePassword = userMethods.changePassword;
-userSchema.methods.updateProfile = userMethods.updateProfile;
+staffSchema.methods.generateOTP = staffMethods.generateOTP;
+staffSchema.methods.validateOTP = staffMethods.validateOTP;
+staffSchema.methods.resetPassword = staffMethods.resetPassword;
+staffSchema.methods.changePassword = staffMethods.changePassword;
+staffSchema.methods.updateProfile = staffMethods.updateProfile;
 
-const User = mongoose.model('User', userSchema);
+const Staff = mongoose.model('Staff', staffSchema);
 
-module.exports = User;
-module.exports.userSchema = userSchema;
+module.exports = Staff;
+module.exports.staffSchema = staffSchema;

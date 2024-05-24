@@ -3,14 +3,14 @@
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 import {useMutation} from "@tanstack/react-query";
-import UserUtils from "@/utils/UserUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 import Cookies from "js-cookie";
 
 export const useLogout = () => {
     const router = useRouter();
     const mutation = useMutation({
         mutationKey: ['Logout'],
-        mutationFn: UserUtils.UserLogout,
+        mutationFn: AdminUtils.StaffLogout,
     });
     
     const handleLogout = () => {
@@ -20,7 +20,7 @@ export const useLogout = () => {
                     toast.success('Logout successful');
                     // Clear cookies and other user data
                     Cookies.remove('accessToken');
-                    Cookies.remove('userData');
+                    Cookies.remove('staffData');
                     Cookies.remove('rememberMe');
                     // Redirect to login page
                     setTimeout(() => {
@@ -32,6 +32,7 @@ export const useLogout = () => {
             },
             onError: (error) => {
                 toast.error('Logout failed');
+                router.push('/error/404');
             },
         });
     };

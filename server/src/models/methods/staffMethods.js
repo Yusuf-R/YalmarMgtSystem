@@ -1,12 +1,7 @@
 /* eslint-disable new-cap */
 const mongoose = require('mongoose');
 const {v4: uuid} = require('uuid');
-const User = require('../User');
-
-async function createUser(attributes) {
-    console.log('Calling createUser function...');
-    return new mongoose.model('User').create(attributes);
-}
+const User = require('../Staff');
 
 async function generateOTP() {
     this.resetPwd = true;
@@ -35,7 +30,7 @@ async function resetPassword(OTP, newPassword) {
     if (error) {
         return {error};
     }
-    // Update password and return user object with updated password
+    // Update password and return staff object with updated password
     this.password = newPassword;
     return this.save();
 }
@@ -56,7 +51,6 @@ async function updateProfile(attributes) {
 }
 
 module.exports = {
-    createUser,
     generateOTP,
     validateOTP,
     resetPassword,

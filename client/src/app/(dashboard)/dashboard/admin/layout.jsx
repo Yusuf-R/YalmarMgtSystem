@@ -7,13 +7,13 @@ import {useQuery} from '@tanstack/react-query';
 import AdminSideNav from "@/components/AdminSideNav/AdminSideNav";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
-import UserUtils from "@/utils/UserUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 
 function AdminLayout({children}) {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['userDashboard'],
-        queryFn: UserUtils.userDashboard,
+        queryKey: ['Data'],
+        queryFn: AdminUtils.Profile,
     });
     if (isLoading) {
         return <CircularProgress/>;
@@ -24,11 +24,11 @@ function AdminLayout({children}) {
         // route the user to error page
         return router.push('/error/404');
     }
-    const {userData} = data;
+    const {staffData: staffData} = data;
     return (
         <>
             <Box sx={{position: 'relative'}}>
-                <DashboardTopNav userData={userData}/>
+                <DashboardTopNav staffData={staffData}/>
                 <Stack direction='row' spacing={2} mt={3}>
                     <Box> <AdminSideNav/> </Box>
                     <Box> {children} </Box>

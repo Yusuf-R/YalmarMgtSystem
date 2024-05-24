@@ -16,7 +16,7 @@ import {Paper} from "@mui/material";
 
 
 
-function AdminHeroSection({userData, accessToken}) {
+function AdminHeroSection({staffData, accessToken}) {
     const delay = 1;
     const duration = 5;
     return (
@@ -179,27 +179,27 @@ function AdminHeroSection({userData, accessToken}) {
                                     <TableRow>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.firstName}
+                                                {staffData.firstName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.lastName}
+                                                {staffData.lastName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.email}
+                                                {staffData.email}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.role}
+                                                {staffData.role}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.phoneNo ? userData.phoneNo : 'Not Available'}
+                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
@@ -270,27 +270,27 @@ function AdminHeroSection({userData, accessToken}) {
                                     <TableRow>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.firstName}
+                                                {staffData.firstName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.lastName}
+                                                {staffData.lastName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.email}
+                                                {staffData.email}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.role}
+                                                {staffData.role}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.phoneNo ? userData.phoneNo : 'Not Available'}
+                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
@@ -366,32 +366,32 @@ function AdminHeroSection({userData, accessToken}) {
                                     <TableRow>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.firstName}
+                                                {staffData.firstName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.lastName}
+                                                {staffData.lastName}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.email}
+                                                {staffData.email}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.role}
+                                                {staffData.role}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.phoneNo ? userData.phoneNo : 'Not Available'}
+                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
                                             </Typography>
                                         </TableCell>
                                         <TableCell align="center">
                                             <Typography variant="h6">
-                                                {userData.phoneNo ? userData.phoneNo : 'Not Available'}
+                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>

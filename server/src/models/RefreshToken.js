@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const EXP = 60 * 60 * 24 * 30; // 30days
 
 const refreshToken = {
-    userId: {type: mongoose.Schema.Types.ObjectId, required: true, unique: true},
+    staffId: {type: mongoose.Schema.Types.ObjectId, required: true, unique: true},
     token: {type: String, required: true, unique: true},
 };
 
