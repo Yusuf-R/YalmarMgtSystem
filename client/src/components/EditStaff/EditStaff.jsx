@@ -7,7 +7,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import {useRouter, usePathname} from "next/navigation";
 import Link from "next/link";
 import {toast} from 'react-toastify';
 import {Checkbox, Chip, FormHelperText, InputLabel, OutlinedInput, Paper, Select} from "@mui/material";
@@ -31,9 +31,57 @@ import Stack from "@mui/material/Stack";
 import ListItemText from "@mui/material/ListItemText";
 import AdminUtils from "@/utils/AdminUtilities";
 import {editStaffSchema} from "@/SchemaValidator/editStaffSchema";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {DemoContainer} from "@mui/x-date-pickers/internals/demo";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 function EditStaff({id, staffData}) {
+    const theme = createTheme({
+        components: {
+            // Assuming you are using MUI v5; adjust based on your version
+            MuiPaper: {  // Often, the calendar uses a Paper component for the dropdown
+                styleOverrides: {
+                    root: {
+                        backgroundColor: "#274e61", // Change to any color you prefer
+                        color: '#ffffff',
+                    },
+                },
+            },
+            MuiButton: {
+                styleOverrides: {
+                    root: {
+                        color: '#FFF',
+                        '&:hover': {
+                            backgroundColor: '#191844',
+                        },
+                    },
+                },
+            },
+            MuiIconButton: {
+                styleOverrides: {
+                    root: {
+                        color: '#FFF',
+                    },
+                },
+            },
+            MuiStack: {
+                styleOverrides: {
+                    root: {
+                        marginTop: '8px !important',
+                        width: '200px',
+                    },
+                },
+            },
+        }
+    });
     const router = useRouter();
+    const pathname = usePathname();
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/staff/edit');
     const [gender, setGender] = useState('');
     const [maritalStatus, setMaritalStatus] = useState('');
     const [religion, setReligion] = useState('');
@@ -50,31 +98,10 @@ function EditStaff({id, staffData}) {
     const [prefix, setPrefix] = useState('');
     const [country, setCountry] = useState('')
     const [nextOfKin, setNextOfKin] = useState('')
-    
-    // const [formData, setFormData] = useState({
-    //     title: staffData.title || "",
-    //     firstName: staffData.firstName || "",
-    //     middleName: staffData.middleName || "",
-    //     lastName: staffData.lastName || "",
-    //     gender: staffData.gender || "",
-    //     religion: staffData.religion || "",
-    //     phone: staffData.phone || "",
-    //     country: staffData.country || "",
-    //     address: staffData.address || "",
-    //     lga: staffData.lga || "",
-    //     stateOfOrigin: staffData.stateOfOrigin || "",
-    //     stateOfResidence: staffData.stateOfResidence || "",
-    //     nextOfKin: staffData.nextOfKin || "",
-    //     nextOfKinPhone: staffData.nextOfKinPhone || "",
-    //     nextOfKinRelationship: staffData.nextOfKinRelationship || "",
-    //     role: staffData.role || "",
-    //     cluster: staffData.cluster || "",
-    //     siteID: staffData.siteID || "",
-    //     siteState: staffData.siteState || "",
-    //     employment: staffData.employment || ""
-    // });
+    const [initialValues, setInitialValues] = useState({});
+    const [graduation, setGraduation] = useState('');
     const {
-        control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset
+        control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset, watch
     } = useForm({
         mode: "onTouched",
         resolver: yupResolver(editStaffSchema),
@@ -338,6 +365,55 @@ function EditStaff({id, staffData}) {
         }
     }, [jobRole, setValue, clearErrors]);
     
+    // useEffect or handling navigation between view and edits
+    useEffect(() => {
+        if (pathname.includes('view')) {
+            setActiveTab('/dashboard/admin/staff/view');
+        } else if (pathname.includes('edit')) {
+            setActiveTab('/dashboard/admin/staff/edit');
+        } else {
+            setActiveTab('/dashboard/admin/staff');
+        }
+    }, [pathname]);
+    
+    // use Effect for closely monitoring if the edit form has had any changes in it's field
+    useEffect(() => {
+        // Set initial form values
+        const initialFormValues = {
+            // Populate with staffData fields
+            firstName: staffData.firstName,
+            middleName: staffData.middleName,
+            lastName: staffData.lastName,
+            gender: staffData.gender,
+            maritalStatus: staffData.maritalStatus,
+            religion: staffData.religion,
+            employment: staffData.employment,
+            phone: staffData.phone,
+            country: staffData.country,
+            stateOfOrigin: staffData.stateOfOrigin,
+            lga: staffData.lga,
+            nextOfKin: staffData.nextOfKin,
+            nextOfKinRelationship: staffData.nextOfKinRelationship,
+            nextOfKinPhone: staffData.nextOfKinPhone,
+            nextOfKinEmail: staffData.nextOfKinEmail,
+            address: staffData.address,
+            stateOfResidence: staffData.stateOfResidence,
+            siteState: staffData.siteState,
+            cluster: staffData.cluster,
+            siteID: staffData.siteID,
+            role: staffData.role,
+            // Add other fields as needed
+        };
+        setInitialValues(initialFormValues);
+        
+        // Set form values in the useForm
+        for (const [key, value] of Object.entries(initialFormValues)) {
+            setValue(key, value);
+        }
+    }, [staffData, setValue]);
+    
+    const watchAllFields = watch(); // Watch all form fields
+    
     const queryClient = useQueryClient()
     
     if (Object.keys(errors).length > 0) {
@@ -370,7 +446,7 @@ function EditStaff({id, staffData}) {
                     }
                 },
                 onError: (error) => {
-                    toast.error(error.message);
+                    // toast.error(error.message);
                     router.refresh();
                 }
             });
@@ -383,7 +459,9 @@ function EditStaff({id, staffData}) {
                 });
             });
         }
-    }
+    };
+    // Compare initial and current form values
+    const isFormChanged = JSON.stringify(initialValues) !== JSON.stringify(watchAllFields);
     return (
         <Box sx={{
             padding: '20px',
@@ -410,9 +488,68 @@ function EditStaff({id, staffData}) {
             </Paper>
             <br/><br/>
             <Grid container spacing={4}>
-                <Grid item xs={12}>
-                    <Typography variant="h5" component="h5">Staff Profile</Typography>
-                </Grid>
+                <Stack direction='row' spacing={2} sx={{
+                    justifyContent: 'flex-start',
+                }}>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        centered
+                        sx={{
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: '#46F0F9',
+                            },
+                            // Hover behaviour
+                            '& .MuiTab-root:hover': {
+                                color: '#46F0F9',
+                                opacity: 1,
+                            }
+                            
+                            
+                        }}
+                    >
+                        <Tab
+                            label="Staff"
+                            component={Link}
+                            href="/dashboard/admin/staff"
+                            value="/dashboard/admin/staff"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="View"
+                            component={Link}
+                            href="/dashboard/admin/staff/view"
+                            value="/dashboard/admin/staff/view"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="Edit"
+                            // onClick={editStaff}
+                            href="/dashboard/admin/staff/edit"
+                            value="/dashboard/admin/staff/edit"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                    </Tabs>
+                </Stack>
+                <br/>
                 <Paper elevation={5} sx={{
                     alignContent: 'start',
                     padding: '30px',
@@ -426,6 +563,10 @@ function EditStaff({id, staffData}) {
                     
                     {/*    First Row: Title field*/}
                     <Grid container spacing={4}>
+                        {/*Heading BIO data*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color="white">BIO DATA</Typography>
+                        </Grid>
                         {/*    First Row: Title field*/}
                         <Grid item xs={4}>
                             {/* Prefix */}
@@ -720,42 +861,114 @@ function EditStaff({id, staffData}) {
                             </FormControl>
                         </Grid>
                         <Grid item xs={4}>
-                            {/* DOB */}
-                            <FormControl fullWidth>
+                            {/* Date of Birth */}
+                            <Stack direction="column" spacing={2}>
+                                <Typography variant="subtitle1" gutterBottom>DOB *</Typography>
                                 <Controller
                                     name="dob"
                                     control={control}
-                                    defaultValue={staffData.dob ? staffData.dob : ""}
+                                    defaultValue={staffData.dob === '' ? null : dayjs(staffData.dob)}
+                                    error={errors.dob?.message}
+                                    clearErrors={clearErrors}
                                     render={({field}) => (
-                                        <Stack direction="column" spacing={2}>
-                                            <Typography variant="subtitle1" gutterBottom>DOB *</Typography>
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                    readOnly: true
-                                                    
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
-                                                    color: "#46F0F9",
-                                                }}
-                                                variant="outlined"
-                                                error={!!errors.dob}
-                                                helperText={errors.dob ? errors.dob.message : ''}
-                                                required
-                                            />
-                                        </Stack>
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            {/*Date picker for DOB input*/}
+                                            <ThemeProvider theme={theme}>
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        {...field}
+                                                        value={field.value}
+                                                        onChange={(newValue) => {
+                                                            field.onChange(newValue);
+                                                            setDateValue(newValue);
+                                                        }}
+                                                        disableFuture
+                                                        views={['year', 'month', 'day']}
+                                                        error={!!errors.dob}
+                                                        readOnly
+                                                        helperText={errors.dob ? errors.dob.message : ''}
+                                                        inputRef={field.ref}
+                                                        closeOnSelect={false}
+                                                        localeText={{toolbarTitle: 'Date of Birth'}}
+                                                        format={'DD/MMM/YYYY'}
+                                                        slotProps={{
+                                                            openPickerButton: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                }
+                                                            },
+                                                            textField: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    bgcolor: '#274e61',
+                                                                    borderRadius: '10px',
+                                                                    width: '350px',
+                                                                    "& .MuiInputLabel-root": {
+                                                                        color: '#46F0F9',
+                                                                    },
+                                                                    "& .MuiInputBase-input": { // Target input text
+                                                                        color: 'white', // Set focused text color to white
+                                                                    },
+                                                                    "& .MuiFormHelperText-root": {
+                                                                        // color: '#FDBFC9',
+                                                                        color: 'red',
+                                                                    },
+                                                                    //     set the border color to red upon error
+                                                                    "& .MuiOutlinedInput-notchedOutline": {
+                                                                        // borderColor: '#F51313',
+                                                                        borderColor: errors.dob ? 'red' : '',
+                                                                    },
+                                                                    // ensure the bgColor does not change when autofill is triggered
+                                                                    "& input:-webkit-autofill": {
+                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+                                                                        WebkitTextFillColor: 'white',
+                                                                    },
+                                                                },
+                                                                helperText: errors.dob ? errors.dob.message : null,
+                                                            },
+                                                            actionBar: {
+                                                                actions: ['cancel', 'clear', 'accept'],
+                                                            },
+                                                            toolbar: {
+                                                                hidden: false,
+                                                                sx: {
+                                                                    // set the title 'Select Date' to white text
+                                                                    '& .MuiTypography-root': {
+                                                                        color: '#FFF',
+                                                                    },
+                                                                },
+                                                            },
+                                                            tabs: {
+                                                                hidden: false
+                                                            },
+                                                            layout: {
+                                                                sx: {
+                                                                    '& .MuiDayCalendar-weekDayLabel': {
+                                                                        color: '#F51313',
+                                                                        backgroundColor: '#0B0337',
+                                                                        borderRadius: '50px',
+                                                                        
+                                                                    },
+                                                                },
+                                                            },
+                                                            day: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    fontSize: '0.8rem',
+                                                                    fontWeight: 'bold',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#07053B',
+                                                                    },
+                                                                }
+                                                            },
+                                                        }}
+                                                    />
+                                                </DemoContainer>
+                                            </ThemeProvider>
+                                        </LocalizationProvider>
                                     )}
                                 />
-                            </FormControl>
+                            </Stack>
                         </Grid>
                         {/* Fourth Row: Gender, Marital Status, Religion*/}
                         <Grid item xs={4}>
@@ -1134,6 +1347,7 @@ function EditStaff({id, staffData}) {
                                 )}
                             />
                         </Grid>
+                        <Grid item xs={12}/>
                         {/* Sixth row 1 field nextOfKin Information text*/}
                         <Grid item xs={12}>
                             <Typography variant="h6" component="h6" color="white">Next of Kin
@@ -1272,6 +1486,7 @@ function EditStaff({id, staffData}) {
                                 )}
                             />
                         </Grid>
+                        <Grid item xs={12}></Grid>
                         {/* Eight Row : Residential Address Info*/}
                         <Grid item xs={12}>
                             <Typography variant="h6" component="h6" color="white">Residential Address</Typography>
@@ -1375,11 +1590,421 @@ function EditStaff({id, staffData}) {
                                 )}
                             />
                         </Grid>
+                        <Grid item={12}></Grid>
+                        {/*Eduction Info*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h6" color="white">Education Info</Typography>
+                        </Grid>
+                        <Grid item xs={2}>
+                            {/* Highest Qualification */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="highestDegree"
+                                    control={control}
+                                    defaultValue={staffData.highestDegree || ""}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Degree</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: {...txProps, width: '120px'},
+                                                    readOnly: true,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                helperText={errors.highestDegree ? errors.highestDegree.message : ''}
+                                                required
+                                            />
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={5}>
+                            {/* Institution Attended */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="institution"
+                                    control={control}
+                                    defaultValue={staffData.institution || ""}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Institution Name</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: {...txProps, width: '550px'},
+                                                    readOnly: true,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.institution}
+                                                helperText={errors.institution ? errors.institution.message : ''}
+                                                required
+                                            />
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={3}>
+                            {/* Date of Graduation */}
+                            <Stack direction="column" spacing={2}>
+                                <Typography variant="subtitle1" gutterBottom>Graduation Date</Typography>
+                                <Controller
+                                    name="graduationDate"
+                                    control={control}
+                                    defaultValue={staffData.graduationDate === '' ? null : dayjs(staffData.graduationDate)}
+                                    error={errors.graduationDate?.message}
+                                    clearErrors={clearErrors}
+                                    render={({field}) => (
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            {/*Date picker for DOB input*/}
+                                            <ThemeProvider theme={theme}>
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        {...field}
+                                                        // label="DOB *"
+                                                        value={field.value}
+                                                        onChange={(newValue) => {
+                                                            field.onChange(newValue);
+                                                            setGraduation(newValue);
+                                                        }}
+                                                        disableFuture
+                                                        views={['year', 'month', 'day']}
+                                                        error={!!errors.graduationDate}
+                                                        readOnly
+                                                        helperText={errors.graduationDate ? errors.graduationDate.message : ''}
+                                                        inputRef={field.ref}
+                                                        closeOnSelect={false}
+                                                        localeText={{toolbarTitle: 'Date of Birth'}}
+                                                        format={'DD/MMM/YYYY'}
+                                                        slotProps={{
+                                                            openPickerButton: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                }
+                                                            },
+                                                            textField: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    bgcolor: '#274e61',
+                                                                    borderRadius: '10px',
+                                                                    width: '350px',
+                                                                    "& .MuiInputLabel-root": {
+                                                                        color: '#46F0F9',
+                                                                    },
+                                                                    "& .MuiInputBase-input": { // Target input text
+                                                                        color: 'white', // Set focused text color to white
+                                                                    },
+                                                                    "& .MuiFormHelperText-root": {
+                                                                        // color: '#FDBFC9',
+                                                                        color: 'red',
+                                                                    },
+                                                                    //     set the border color to red upon error
+                                                                    "& .MuiOutlinedInput-notchedOutline": {
+                                                                        // borderColor: '#F51313',
+                                                                        borderColor: errors.dob ? 'red' : '',
+                                                                    },
+                                                                    // ensure the bgColor does not change when autofill is triggered
+                                                                    "& input:-webkit-autofill": {
+                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+                                                                        WebkitTextFillColor: 'white',
+                                                                    },
+                                                                },
+                                                                helperText: errors.graduationDate ? errors.graduationDate.message : null,
+                                                            },
+                                                            actionBar: {
+                                                                actions: ['cancel', 'clear', 'accept'],
+                                                            },
+                                                            toolbar: {
+                                                                hidden: false,
+                                                                sx: {
+                                                                    // set the title 'Select Date' to white text
+                                                                    '& .MuiTypography-root': {
+                                                                        color: '#FFF',
+                                                                    },
+                                                                },
+                                                            },
+                                                            tabs: {
+                                                                hidden: false
+                                                            },
+                                                            layout: {
+                                                                sx: {
+                                                                    '& .MuiDayCalendar-weekDayLabel': {
+                                                                        color: '#F51313',
+                                                                        backgroundColor: '#0B0337',
+                                                                        borderRadius: '50px',
+                                                                        
+                                                                    },
+                                                                },
+                                                            },
+                                                            day: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    fontSize: '0.8rem',
+                                                                    fontWeight: 'bold',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#07053B',
+                                                                    },
+                                                                }
+                                                            },
+                                                        }}
+                                                    />
+                                                </DemoContainer>
+                                            </ThemeProvider>
+                                        </LocalizationProvider>
+                                    )}
+                                />
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="faculty"
+                                    control={control}
+                                    defaultValue={staffData.faculty ? staffData.faculty : ""}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Faculty</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.faculty}
+                                                helperText={errors.faculty ? errors.faculty.message : ''}
+                                                required
+                                            />
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="courseOfStudy"
+                                    control={control}
+                                    defaultValue={staffData.courseOfStudy ? staffData.courseOfStudy : ""}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Course of Study</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.courseOfStudy}
+                                                helperText={errors.courseOfStudy ? errors.courseOfStudy.message : ''}
+                                                required
+                                            />
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="classofDegree"
+                                    control={control}
+                                    defaultValue={staffData.classofDegree ? staffData.classofDegree : ""}
+                                    render={({field}) => (
+                                        <Stack direction="column" spacing={2}>
+                                            <Typography variant="subtitle1" gutterBottom>Class of Degree</Typography>
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                variant="outlined"
+                                                error={!!errors.classofDegree}
+                                                helperText={errors.classofDegree ? errors.classofDegree.message : ''}
+                                                required
+                                            />
+                                        </Stack>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
                         {/*    Ninth Row: Employment Info*/}
                         <Grid item xs={12}>
                             <Typography variant="h6" component="h6" color="white">Employment Info</Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={2}>
+                            {/* Employment Date */}
+                            <Stack direction="column" spacing={2}>
+                                <Typography variant="subtitle1" gutterBottom>Employment Date</Typography>
+                                <Controller
+                                    name="employmentDate"
+                                    control={control}
+                                    defaultValue={staffData.employmentDate === '' ? null : dayjs(staffData.employmentDate)}
+                                    error={errors.employmentDate?.message}
+                                    clearErrors={clearErrors}
+                                    render={({field}) => (
+                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                            {/*Date picker for DOB input*/}
+                                            <ThemeProvider theme={theme}>
+                                                <DemoContainer components={['DatePicker']}>
+                                                    <DatePicker
+                                                        {...field}
+                                                        // label="DOB *"
+                                                        value={field.value}
+                                                        onChange={(newValue) => {
+                                                            field.onChange(newValue);
+                                                            setGraduation(newValue);
+                                                        }}
+                                                        disableFuture
+                                                        views={['year', 'month', 'day']}
+                                                        error={!!errors.employmentDate}
+                                                        readOnly
+                                                        helperText={errors.employmentDate ? errors.employmentDate.message : ''}
+                                                        inputRef={field.ref}
+                                                        closeOnSelect={false}
+                                                        localeText={{toolbarTitle: 'Date of Birth'}}
+                                                        format={'DD/MMM/YYYY'}
+                                                        slotProps={{
+                                                            openPickerButton: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                }
+                                                            },
+                                                            textField: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    bgcolor: '#274e61',
+                                                                    borderRadius: '10px',
+                                                                    width: '350px',
+                                                                    "& .MuiInputLabel-root": {
+                                                                        color: '#46F0F9',
+                                                                    },
+                                                                    "& .MuiInputBase-input": { // Target input text
+                                                                        color: 'white', // Set focused text color to white
+                                                                    },
+                                                                    "& .MuiFormHelperText-root": {
+                                                                        // color: '#FDBFC9',
+                                                                        color: 'red',
+                                                                    },
+                                                                    //     set the border color to red upon error
+                                                                    "& .MuiOutlinedInput-notchedOutline": {
+                                                                        // borderColor: '#F51313',
+                                                                        borderColor: errors.dob ? 'red' : '',
+                                                                    },
+                                                                    // ensure the bgColor does not change when autofill is triggered
+                                                                    "& input:-webkit-autofill": {
+                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+                                                                        WebkitTextFillColor: 'white',
+                                                                    },
+                                                                },
+                                                                helperText: errors.employmentDate ? errors.employmentDate.message : null,
+                                                            },
+                                                            actionBar: {
+                                                                actions: ['cancel', 'clear', 'accept'],
+                                                            },
+                                                            toolbar: {
+                                                                hidden: false,
+                                                                sx: {
+                                                                    // set the title 'Select Date' to white text
+                                                                    '& .MuiTypography-root': {
+                                                                        color: '#FFF',
+                                                                    },
+                                                                },
+                                                            },
+                                                            tabs: {
+                                                                hidden: false
+                                                            },
+                                                            layout: {
+                                                                sx: {
+                                                                    '& .MuiDayCalendar-weekDayLabel': {
+                                                                        color: '#F51313',
+                                                                        backgroundColor: '#0B0337',
+                                                                        borderRadius: '50px',
+                                                                        
+                                                                    },
+                                                                },
+                                                            },
+                                                            day: {
+                                                                sx: {
+                                                                    color: 'white',
+                                                                    fontSize: '0.8rem',
+                                                                    fontWeight: 'bold',
+                                                                    '&:hover': {
+                                                                        backgroundColor: '#07053B',
+                                                                    },
+                                                                }
+                                                            },
+                                                        }}
+                                                    />
+                                                </DemoContainer>
+                                            </ThemeProvider>
+                                        </LocalizationProvider>
+                                    )}
+                                />
+                            </Stack>
+                        </Grid>
+                        <Grid item xs={3}>
                             {/* Employment Type */}
                             <Controller
                                 name="employmentType"
@@ -1441,7 +2066,7 @@ function EditStaff({id, staffData}) {
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}>
                             {/* Job Role */}
                             <Controller
                                 name="role"
@@ -1506,6 +2131,7 @@ function EditStaff({id, staffData}) {
                                 )}
                             />
                         </Grid>
+                        <Grid item xs={12}></Grid>
                         {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
                         <Grid item xs={12}>
                             <Typography variant="h6" component="h6" color='white'>Site Information -: (Applicable to
@@ -1741,11 +2367,13 @@ function EditStaff({id, staffData}) {
             <br/>
             <br/>
             {/*Submitting button */}
-            <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
+            <Stack direction='row' gap={2} sx={{marginBottom: '75px', justifyContent: 'space-around'}}>
                 <Link href="/dashboard/admin/staff">
                     <Button variant="contained" color='success' title='Back'> Back </Button>
                 </Link>
-                <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
+                <Button variant="contained" color='error' type='submit' title='Submit'>
+                    Submit
+                </Button>
             </Stack>
         </Box>
     );

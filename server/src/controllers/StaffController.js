@@ -143,8 +143,10 @@ class StaffController {
                 });
                 return res.status(400).json({error: formattedErrors});
             }
-            //  correctly format the dob
+            //  correctly format the dob, employmentDate, graduationDate to DD-MMM-YYYY
             value.dob = dayjs(value.dob).format('DD-MMM-YYYY');
+            value.employmentDate = dayjs(value.employmentDate).format('DD-MMM-YYYY');
+            value.graduationDate = dayjs(value.graduationDate).format('DD-MMM-YYYY');
             // check if server is up before verifying
             if (!(await dbClient.isAlive())) {
                 return res.status(500).json({error: 'Database connection failed'});

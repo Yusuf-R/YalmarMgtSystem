@@ -186,36 +186,14 @@ function Staff({allStaff}) {
             });
             // encrypt the staffID and store it in the session storage using window.crypto.subtle
             // also ensure that the session storage is empty before setting the id in to the session storage
-            const viewStaff = async () => {
-                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
-                const userData = allStaff.find((staff) => staff._id === staffID);
-                // encrypt the data and store it in the session storage
-                const encryptedData = await AdminUtilities.encryptData(userData);
-                if (sessionStorage.getItem('staffData')) {
-                    sessionStorage.removeItem('staffData');
-                }
-                if (sessionStorage.getItem('staffID')) {
-                    sessionStorage.removeItem('staffID');
-                }
-                sessionStorage.setItem('staffData', encryptedData);
-                sessionStorage.setItem('staffID', encryptedUserID);
-                router.push(`/dashboard/admin/staff/view`);
+            
+            const handleOpen = () => setOpen(true);
+            const handleClose = () => {
+                setOpen(false);
+                setEmail('');
+                setEmailError('');
             };
-            const editStaff = async () => {
-                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
-                const userData = allStaff.find((staff) => staff._id === staffID);
-                // encrypt the data and store it in the session storage
-                const encryptedData = await AdminUtilities.encryptData(userData);
-                if (sessionStorage.getItem('staffData')) {
-                    sessionStorage.removeItem('staffData');
-                }
-                if (sessionStorage.getItem('staffID')) {
-                    sessionStorage.removeItem('staffID');
-                }
-                sessionStorage.setItem('staffData', encryptedData);
-                sessionStorage.setItem('staffID', encryptedUserID);
-                router.push(`/dashboard/admin/staff/edit`);
-            };
+            
             const handleEmailChange = (event) => {
                 setEmail(event.target.value);
                 // Basic email validation regex
@@ -226,12 +204,6 @@ function Staff({allStaff}) {
                     setEmailError('');
                 }
             };
-            const handleClose = () => {
-                setOpen(false);
-                setEmail('');
-                setEmailError('');
-            };
-            const handleOpen = () => setOpen(true);
             const handleDelete = async (event) => {
                 event.preventDefault();
                 const obj = {email, selectedIds: [staffID]};
@@ -247,6 +219,40 @@ function Staff({allStaff}) {
                         setOpen(false);
                     }
                 });
+            };
+            
+            
+            // function to view staff profile
+            const viewStaff = async () => {
+                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
+                const userData = allStaff.find((staff) => staff._id === staffID);
+                // encrypt the data and store it in the session storage
+                const encryptedData = await AdminUtilities.encryptData(userData);
+                if (sessionStorage.getItem('staffData')) {
+                    sessionStorage.removeItem('staffData');
+                }
+                if (sessionStorage.getItem('staffID')) {
+                    sessionStorage.removeItem('staffID');
+                }
+                sessionStorage.setItem('staffData', encryptedData);
+                sessionStorage.setItem('staffID', encryptedUserID);
+                router.push(`/dashboard/admin/staff/view`);
+            };
+            // function to edit staff profile
+            const editStaff = async () => {
+                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
+                const userData = allStaff.find((staff) => staff._id === staffID);
+                // encrypt the data and store it in the session storage
+                const encryptedData = await AdminUtilities.encryptData(userData);
+                if (sessionStorage.getItem('staffData')) {
+                    sessionStorage.removeItem('staffData');
+                }
+                if (sessionStorage.getItem('staffID')) {
+                    sessionStorage.removeItem('staffID');
+                }
+                sessionStorage.setItem('staffData', encryptedData);
+                sessionStorage.setItem('staffID', encryptedUserID);
+                router.push(`/dashboard/admin/staff/edit`);
             };
             return (
                 <>
@@ -273,7 +279,9 @@ function Staff({allStaff}) {
                         PaperProps={{
                             component: 'form',
                             onSubmit: handleDelete,
-                            sx: {backgroundColor: '#0E1E1E'},
+                            sx: {
+                                backgroundColor: '#0E1E1E'
+                            },
                         }}
                     >
                         <DialogTitle>
@@ -290,8 +298,8 @@ function Staff({allStaff}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em'
                                             }}>
-                                    You are about to permanently delete the selected Staff Accounts, Please enter your
-                                    email address to further confirm your actions.
+                                    You are about to permanently delete the selected Staff Accounts. Please enter your
+                                    Email address to further confirm your actions.
                                 </Typography>
                             </DialogContentText>
                             <TextField

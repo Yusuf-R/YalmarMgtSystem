@@ -14,6 +14,7 @@ staffRouter.get('/profile', staffController.getStaffData);
 staffRouter.get('/all', staffController.getAllStaff);
 staffRouter.delete('/delete', staffController.deleteStaff);
 
+
 staffRouter.get('/dashboard', staffController.dashboardData);
 staffRouter.put('/update', staffController.updateStaff);
 staffRouter.post('/resetpassword', staffController.resetPassword);
