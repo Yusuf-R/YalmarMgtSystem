@@ -12,8 +12,9 @@ import AdminUtils from "@/utils/AdminUtilities";
 function AdminLayout({children}) {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['Data'],
+        queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
+        staleTime: Infinity,
     });
     if (isLoading) {
         return <CircularProgress/>;
@@ -22,7 +23,7 @@ function AdminLayout({children}) {
         // Ideally, handle this more gracefully
         console.error('Error fetching user data');
         // route the user to error page
-        return router.push('/error/404');
+        router.push('/error/404');
     }
     const {staffData: staffData} = data;
     return (

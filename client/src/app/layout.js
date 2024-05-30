@@ -29,22 +29,22 @@ export default function RootLayout({children}) {
                     {children}
                 </ThemeProvider>
             </AppRouterCacheProvider>
-            <ToastContainer
-                position="top-center"
-                autoClose={2500}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                pauseOnFocusLoss={false}
-                draggable
-                pauseOnHover={false}
-                theme="dark"
-                style={{
-                    color: "#fff",
-                    width: 600
-                }}
-            />
         </ReactQueryProvider>
+        <ToastContainer
+            position="top-center"
+            autoClose={2500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnFocusLoss={false}
+            draggable
+            pauseOnHover={false}
+            theme="dark"
+            style={{
+                color: "#fff",
+                width: 600
+            }}
+        />
         </body>
         </html>
     );

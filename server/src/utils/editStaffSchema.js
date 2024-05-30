@@ -1,5 +1,5 @@
 const Joi = require('joi');
-import {stateAndLGA} from "./data";
+import {stateAndLGA, institutions,} from "./data";
 
 const validState = Object.keys(stateAndLGA);
 const normalizedStateAndLGA = Object.fromEntries(
@@ -31,11 +31,12 @@ export const editStaffSchemaValidator = Joi.object().keys({
     maritalStatus: Joi.string().required().valid('Single', 'Married', 'Divorced', 'Widowed'),
     religion: Joi.string().required().valid('Christianity', 'Islam', 'Others'),
     country: Joi.string().required(),
-    // ensure state is valid state in nigeria as per in the stateAndLGA data
+    // ensure stateOfOrigin is valid state in nigeria as per in the stateAndLGA data
     stateOfOrigin: Joi.string().required().valid(...validState).insensitive(),
-    // ensure lga is a valid local government area in the selected state
+    // ensure lga is a valid local government area in the selected stateOfOrigin
     lga: Joi.string().required().custom((value, helpers) => {
         const {stateOfOrigin} = helpers.state.ancestors[0];
+        console.log({stateOfOrigin});
         if (!stateOfOrigin) {
             return helpers.error('any.invalid'); // State must be validated before LGA
         }
@@ -63,6 +64,8 @@ export const editStaffSchemaValidator = Joi.object().keys({
         'Son',
         'Daughter',
         'Spouse',
+        'Wife',
+        'Husband',
         'Uncle',
         'Aunt',
         'Cousin',
@@ -71,28 +74,76 @@ export const editStaffSchemaValidator = Joi.object().keys({
         'Grandfather',
         'Grandmother',
         'Others',
-    ),
+    ).insensitive(),
     address: Joi.string().required(),
     stateOfResidence: Joi.string().required(),
-    employmentType: Joi.string().required().valid('FullTime', 'Contract', 'Trainee'),
-    role: Joi.string().required().valid('Admin', 'SuperAdmin', 'User', 'Accountant', 'Generator Technician', 'Procurement Officer', 'Lawyer', 'Driver', 'Field Supervisor', 'Security Officer'),
+    highestDegree: Joi.string().required().valid(
+        'SSCE',
+        'NCE',
+        'ND',
+        'OND',
+        'HND',
+        'BSc',
+        'MSc',
+        'PgD',
+        'PhD',
+        'Others',
+    ).insensitive(),
+    institution: Joi.string().required().valid(...institutions).insensitive(),
+    courseOfStudy: Joi.string().required(),
+    classofDegree: Joi.string().required().valid(
+        'Distinction',
+        'First Class',
+        'Second Class Upper',
+        'Second Class Lower',
+        'Third Class',
+        'Pass',
+        'Merit',
+        'Upper Credit',
+        'Lower Credit',
+        'Credit',
+        'Others',
+    ).insensitive(),
+    faculty: Joi.string().required().valid(
+        "Arts",
+        "Basic Medical Sciences",
+        "Clinical Sciences",
+        "Dental Sciences",
+        "Education",
+        "Physical Sciences",
+        "Engineering",
+        "Environmental Sciences",
+        "Science",
+        "Health",
+        "Business",
+        "Law",
+        "Management Sciences",
+        "Pharmacy",
+        "Social Sciences",
+        "Humanities",
+        "Others",
+    ).insensitive(),
+    graduationDate: Joi.date().required(),
+    employmentDate: Joi.date().required(),
+    employmentType: Joi.string().required().valid('FullTime', 'Contract', 'Trainee').insensitive(),
+    role: Joi.string().required().valid('Admin', 'SuperAdmin', 'User', 'Accountant', 'Generator Technician', 'Procurement Officer', 'Lawyer', 'Driver', 'Field Supervisor', 'Security Officer').insensitive(),
     // siteState: Joi.string().allow('', null).when('role', {
     //     is: Joi.string().valid('Field Supervisor', 'Generator Technician'),
     //     then: Joi.string().required(),
     //     otherwise: Joi.string().optional().allow('', null),
     // }),
     siteState: Joi.string().when('role', {
-        is: Joi.string().valid('Field Supervisor', 'Generator Technician'),
+        is: Joi.string().valid('Field Supervisor', 'Generator Technician').insensitive(),
         then: Joi.string().required(),
         otherwise: Joi.string().optional().allow('', null),
     }),
     cluster: Joi.string().when('role', {
-        is: Joi.string().valid('Field Supervisor', 'Generator Technician'),
+        is: Joi.string().valid('Field Supervisor', 'Generator Technician').insensitive(),
         then: Joi.string().required(),
         otherwise: Joi.string().optional().allow('', null),
     }),
     siteID: Joi.array().items(Joi.string()).when('role', {
-        is: Joi.string().valid('Field Supervisor', 'Generator Technician'),
+        is: Joi.string().valid('Field Supervisor', 'Generator Technician').insensitive(),
         then: Joi.array().min(1).required(),
         otherwise: Joi.array().optional().allow('', null),
     }),

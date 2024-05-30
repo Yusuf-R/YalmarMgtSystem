@@ -17,10 +17,8 @@ function ViewProfile() {
             try {
                 const staffID = sessionStorage.getItem('staffID');
                 const decryptedID = await AdminUtilities.decryptUserID(staffID);
-                
                 const staffData = sessionStorage.getItem('staffData');
                 const decryptedData = await AdminUtilities.decryptData(staffData);
-                
                 setDecryptedUserID(decryptedID);
                 setDecryptedStaffData(decryptedData);
             } catch (error) {
@@ -47,11 +45,9 @@ function ViewProfile() {
     if (isLoading) {
         return <p>Loading...</p>;
     }
-    //
     if (!decryptedUserID || !decryptedStaffData) {
         return <VoidStaff/>; // Render LostInSpace if decryption failed
     }
-    
     return (
         <>
             <ViewStaff id={decryptedUserID} staffData={decryptedStaffData}/>

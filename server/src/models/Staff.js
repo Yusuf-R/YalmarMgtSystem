@@ -13,6 +13,43 @@ const staff = {
     maritalStatus: {type: String, enum: ['Single', 'Married', 'Divorced', 'Widowed'], required: true},
     email: {type: String, required: true, unique: true},
     phone: {type: String, required: true, unique: true},
+    highestDegree: {
+        type: String,
+        enum: [
+            'SSCE',
+            'NCE',
+            'ND',
+            'OND',
+            'HND',
+            'BSc',
+            'MSc',
+            'PgD',
+            'PhD',
+            'Others',
+        ],
+        required: true
+    },
+    classofDegree: {
+        type: String,
+        enum: [
+            'Distinction',
+            'First Class',
+            'Second Class Upper',
+            'Second Class Lower',
+            'Third Class',
+            'Pass',
+            'Merit',
+            'Upper Credit',
+            'Lower Credit',
+            'Credit',
+            'Others',
+        ],
+        required: true
+    },
+    institution: {type: String, required: true},
+    faculty: {type: String, required: true},
+    courseOfStudy: {type: String, required: true},
+    graduationDate: {type: String, default: Date, required: true},
     password: {type: String, required: true},
     country: {type: String, required: true},
     address: {type: String, required: true},
@@ -22,6 +59,7 @@ const staff = {
     nextOfKin: {type: String, required: true},
     nextOfKinPhone: {type: String, required: true},
     nextOfKinRelationship: {type: String, required: true},
+    employmentDate: {type: String, default: Date, required: true},
     role: {
         type: String,
         enum: [

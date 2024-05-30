@@ -142,8 +142,7 @@ const LostInSpace = () => {
                     </Box>
                     <CentralBody>
                         <img src="http://salehriaz.com/404Page/img/404.svg" alt="404" width="300px"/>
-                        
-                        <br/><br/>
+                        <br/>
                         <Stack direction='column' justifyContent="center" alignItems="center" spacing={2} sx={{mt: 5}}>
                             <Typography variant="button" display="block" gutterBottom
                                         sx={{color: 'white', fontSize: '20px'}}>Use
