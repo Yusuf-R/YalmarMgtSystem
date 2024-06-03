@@ -400,6 +400,25 @@ class AuthController {
         }
     }
     
+    static async StaffCheck(id) {
+        try {
+            // extract admin data
+            const staff = await Staff.findById(id);
+            if (!staff) {
+                return new Error('Unauthorized Access');
+            }
+            // ensure every other role can perform this task except Admin or SuperAdmin
+            const {role} = staff;
+            if (role === 'Admin' || role === 'SuperAdmin') {
+                return new Error('Forbidden Operation: Strictly a Staff Operation');
+            }
+            return staff;
+            
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+    
     static async dashBoardCheck(id) {
         try {
             const staff = await Staff.findById(id);
