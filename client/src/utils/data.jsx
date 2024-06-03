@@ -1290,3 +1290,10 @@ export const classOfDegree = [
     "Pass",
     "Others",
 ]
+export const status = [
+    "Active",
+    "Suspended",
+    "Terminated",
+    "Deceased",
+    'Pending',
+]

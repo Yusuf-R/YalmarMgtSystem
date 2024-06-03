@@ -139,11 +139,13 @@ function AdminSideNav() {
                         "&:hover": {
                             bgcolor: '#2c74f2',
                         }
-                    }}>
+                    }}
+                                    onClick={() => router.push('/dashboard/admin/notifications')}
+                    >
                         <ListItemIcon>
                             <FcExpired/>
                         </ListItemIcon>
-                        <ListItemText primary="Reports"/>
+                        <ListItemText primary="Notifications"/>
                     </ListItemButton>
                 </ListItem>
                 

@@ -13,6 +13,7 @@ const staff = {
     maritalStatus: {type: String, enum: ['Single', 'Married', 'Divorced', 'Widowed'], required: true},
     email: {type: String, required: true, unique: true},
     phone: {type: String, required: true, unique: true},
+    status: {type: String, enum: ['Active', 'Suspended', 'Terminated', 'Deceased', 'Pending'], default: 'Pending'},
     highestDegree: {
         type: String,
         enum: [
@@ -103,7 +104,7 @@ const staff = {
             return this.role === 'Field Supervisor' || this.role === 'Generator Technician';
         },
     },
-    employment: {
+    employmentType: {
         type: String,
         enum: [
             'FullTime',
@@ -113,7 +114,7 @@ const staff = {
         default: 'FullTime',
         required: true,
     },
-    img: String,
+    imgURL: {type: String, default: ''},
     resetPwd: Boolean,
     resetTTL: Date,
     resetOTP: String,

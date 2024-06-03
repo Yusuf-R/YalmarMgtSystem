@@ -18,6 +18,7 @@ export const newStaffSchemaValidator = Joi.object().keys({
         .max(11)
         .required(),
     dob: Joi.date().required(),
+    status: Joi.string().required().valid('Active', 'Suspended', 'Terminated', 'Deceased', 'Pending'),
     password: Joi.string()
         .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+])[A-Za-z\\d!@#$%^&*()_+]{6,30}$'))
         .required()
@@ -35,7 +36,6 @@ export const newStaffSchemaValidator = Joi.object().keys({
     // ensure lga is a valid local government area in the selected stateOfOrigin
     lga: Joi.string().required().custom((value, helpers) => {
         const {stateOfOrigin} = helpers.state.ancestors[0];
-        console.log({stateOfOrigin});
         if (!stateOfOrigin) {
             return helpers.error('any.invalid'); // State must be validated before LGA
         }

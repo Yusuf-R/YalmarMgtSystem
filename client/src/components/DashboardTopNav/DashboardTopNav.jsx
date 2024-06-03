@@ -1,6 +1,5 @@
 'use client';
 import styleTopNav from './DashboardTopNav.module.css';
-import {useState} from 'react';
 import Image from "next/image";
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -16,7 +15,7 @@ import Logout from '@mui/icons-material/Logout';
 import Button from "@mui/material/Button";
 import Stack from '@mui/material/Stack';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
+import {useState, useEffect} from 'react';
 import {useRouter} from "next/navigation";
 import {useLogout} from "@/customHooks/useLogout";
 
@@ -24,17 +23,32 @@ import {useLogout} from "@/customHooks/useLogout";
 
 function DashboardTopNav({staffData}) {
     const router = useRouter();
+    
+    const [imgSrc, setImgSrc] = useState('');
     // const staffData = JSON.parse(Cookies.get('staffData') ? Cookies.get('staffData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
+    // Fallback image if Cloudinary image fails to load
+    let fallbackImg;
+    if (staffData.gender === 'Male') {
+        fallbackImg = '/Avatar-9.svg';
+    } else {
+        fallbackImg = '/Avatar-10.svg';
+    }
     const handleClose = () => {
         setAnchorEl(null);
     };
-    
     const handleLogout = useLogout()
+    useEffect(() => {
+        if (staffData.imgURL !== '') {
+            setImgSrc(staffData.imgURL);
+        } else {
+            setImgSrc(fallbackImg);
+        }
+    }, [staffData.imgURL]);
     return (
         <>
             <Box className={styleTopNav.parent} sx={{
@@ -43,10 +57,12 @@ function DashboardTopNav({staffData}) {
                 <Box className={styleTopNav.LHS}>
                     <div>
                         <Image
-                            src="/YMS.png"
+                            src={"/YMS.png"}
                             alt="YALMAR Logo"
-                            width={55}
-                            height={55}
+                            width={75}
+                            height={75}
+                            quality={100}
+                        
                         />
                     </div>
                     <div>
@@ -71,10 +87,13 @@ function DashboardTopNav({staffData}) {
                             aria-expanded={open ? 'true' : undefined}
                         >
                             <Image
-                                src="/Avatar-9.svg"
-                                alt="Settings"
+                                src={imgSrc}
+                                alt="Avatar"
                                 width={75}
                                 height={75}
+                                quality={80}
+                                style={{borderRadius: '50%'}}
+                                priority
                             />
                         </Button>
                     </Tooltip>

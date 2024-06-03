@@ -4,6 +4,11 @@ import {editStaffSchemaValidator} from "../utils/editStaffSchema";
 import dayjs from "dayjs";
 import {newStaffSchemaValidator} from "../utils/newStaffSchema";
 import redisClient from "../utils/redis";
+import {cloudinary} from "../utils/cloudinary";
+import mongoose from "mongoose";
+
+const {Worker} = require('node:worker_threads');
+const path = require('path');
 
 const bcrypt = require('bcrypt');
 const Staff = require('../models/Staff');
@@ -13,9 +18,10 @@ const dbClient = require('../utils/db');
 const mailClient = require('../utils/mailer');
 const securityConfig = new SecurityConfig();
 
-
 const staffRef = ['username', 'country', 'city', 'phone', 'isAdmin', 'img'];
 const forbiddenUpdate = ['email', 'dob', '_id', 'createdAt', 'updatedAt', '__v'];
+const {ObjectId} = mongoose.Types;
+
 
 class StaffController {
     static async login(req, res) {
@@ -270,16 +276,18 @@ class StaffController {
             if (admin instanceof Error) {
                 return res.status(400).json({error: admin.message});
             }
-            console.log(req.body);
             // validate the request body against Joi
             const {error, value} = editStaffSchemaValidator.validate(req.body, {abortEarly: false});
             if (error) {
                 // Format Joi error messages
+                console.log('Error Genesis');
                 const formattedErrors = error.details.map(detail => {
                     // Remove slashes and display more readable messages
                     return detail.message.replace(/["\\]/g, '');
                 });
-                return res.status(400).json({error: formattedErrors});
+                // console.log(formattedErrors);
+                return res.status(400).json({error: 'Form Validation Error'})
+                // return res.status(400).json({error: formattedErrors});
             }
             // check if server is up before verifying
             if (!(await dbClient.isAlive())) {
@@ -396,6 +404,128 @@ class StaffController {
         }
     }
     
+    // static async setAvatar(req, res) {
+    //     try {
+    //         const verifiedJWT = await AuthController.currPreCheck(req);
+    //         if (verifiedJWT instanceof Error) {
+    //             return res.status(400).json({error: verifiedJWT.message});
+    //         }
+    //         const {id} = verifiedJWT;
+    //         if (!id) {
+    //             return res.status(400).json({error: 'Invalid token'});
+    //         }
+    //         const {avatar} = req.body;
+    //         if (!avatar) {
+    //             return res.status(400).json({error: 'Missing file URL in the request'});
+    //         }
+    //         const result = await cloudinary.uploader.upload(avatar, {
+    //             folder: `YalmarMgtSystem/ProfilePic/${id}`,
+    //             public_id: 'image',
+    //             overwrite: true,
+    //             invalidate: true,
+    //         });
+    //         if (!result) {
+    //             return res.status(500).json({error: 'Internal Server Error'});
+    //         }
+    //         // find the staff with the id and update the imgURL with the secure_url from the result object
+    //         await Staff.findOneAndUpdate(new ObjectId(id), {imgURL: result.secure_url}, {
+    //             new: true, // return the updated object as the saved object
+    //             runValidators: true, // run the validators on the update operation
+    //             context: 'query', // allows the use of the 'where' clause
+    //             upsert: true // creates the object if it doesn't exist
+    //         });
+    //         return res.status(201).json({
+    //             message: 'Profile Picture set successfully',
+    //             imgURL: result.secure_url,
+    //         });
+    //     } catch (error) {
+    //         if (error.message === 'jwt expired') {
+    //             return res.status(401).json({error: error.message});
+    //         }
+    //         return res.status(500).json({error: error.message});
+    //     }
+    // }
+    static async setAvatar(req, res) {
+        try {
+            const verifiedJWT = await AuthController.currPreCheck(req);
+            if (verifiedJWT instanceof Error) {
+                return res.status(400).json({error: verifiedJWT.message});
+            }
+            
+            const {id} = verifiedJWT;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            
+            const {avatar} = req.body;
+            if (!avatar) {
+                return res.status(400).json({error: 'Missing file URL in the request'});
+            }
+            
+            // Decode the base64 image string
+            const base64Data = avatar.replace(/^data:image\/\w+;base64,/, '');
+            const buffer = Buffer.from(base64Data, 'base64');
+            
+            // Create a new worker thread
+            const worker = new Worker(path.resolve(__dirname, 'imageWorker.js'));
+            
+            worker.postMessage(buffer);
+            
+            worker.on('message', async (compressedBuffer) => {
+                if (compressedBuffer.error) {
+                    return res.status(500).json({error: compressedBuffer.error});
+                }
+                
+                // Upload the processed image to Cloudinary
+                const result = await new Promise((resolve, reject) => {
+                    cloudinary.uploader.upload_stream(
+                        {
+                            folder: `YalmarMgtSystem/ProfilePic/${id}`,
+                            public_id: 'image',
+                            overwrite: true,
+                            invalidate: true,
+                        },
+                        (error, result) => {
+                            if (error) {
+                                return reject(error);
+                            }
+                            resolve(result);
+                        }
+                    ).end(compressedBuffer);
+                });
+                
+                if (!result) {
+                    return res.status(500).json({error: 'Internal Server Error'});
+                }
+                
+                // Update the staff profile with the new image URL
+                await Staff.findOneAndUpdate(
+                    new ObjectId(id),
+                    {imgURL: result.secure_url},
+                    {
+                        new: true, // return the updated object as the saved object
+                        runValidators: true, // run the validators on the update operation
+                        context: 'query', // allows the use of the 'where' clause
+                        upsert: true // creates the object if it doesn't exist
+                    }
+                );
+                
+                return res.status(201).json({
+                    message: 'Profile Picture set successfully',
+                    imgURL: result.secure_url,
+                });
+            });
+            
+            worker.on('error', (error) => {
+                return res.status(500).json({error: error.message});
+            });
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            return res.status(500).json({error: error.message});
+        }
+    }
     
     static async dashboardData(req, res) {
         try {

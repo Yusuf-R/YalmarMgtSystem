@@ -29,6 +29,7 @@ import {
     institutions,
     faculties,
     classOfDegree,
+    status,
 } from "@/utils/data";
 import {Controller, useForm} from "react-hook-form";
 import {Checkbox, FormHelperText, OutlinedInput, Paper} from "@mui/material";
@@ -105,6 +106,7 @@ function NewStaff() {
     const [residentState, setResidentState] = useState('');
     const [lga, setLGA] = useState('');
     const [jobRole, setJobRole] = useState('');
+    const [currentStatus, setCurrentStatus] = useState('');
     const [empType, setEmpType] = useState('');
     const [cluster, setCluster] = useState('');
     const [siteID, setSiteID] = useState([]);
@@ -121,6 +123,7 @@ function NewStaff() {
     const [graduation, setGraduation] = useState('')
     const [employment, setEmployment] = useState('')
     const [faculty, setFaculty] = useState('')
+    
     
     
     const getStateOfOriginOptions = () => {
@@ -388,6 +391,19 @@ function NewStaff() {
         // prevent default action of submitting the form
         event.preventDefault();
         setFaculty(event.target.value);
+    }
+    
+    // Current Account Status state
+    const getCurrentStatus = () => {
+        return status.map((type) => (
+            <MenuItem key={type} value={type}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
+        ))
+    }
+    const handleCurrentStatusChange = (event) => {
+        // prevent default action of submitting the form
+        event.preventDefault();
+        setCurrentStatus(event.target.value);
     }
     
     const txProps = {
@@ -2398,39 +2414,104 @@ function NewStaff() {
                             </Typography>
                         </Grid>
                         <br/><br/>
-                        <Grid item xs={4}>
-                            <FormControl fullWidth>
+                        <Stack direction="row" spacing={2}>
+                            <Grid item xs={4}>
+                                <FormControl fullWidth>
+                                    <Controller
+                                        name="password"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
+                                                        },
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="Password"
+                                                variant="outlined"
+                                                error={!!errors.password}
+                                                helperText={errors.password ? errors.password.message : ''}
+                                                required
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={4}>
+                                {/* Job Role */}
                                 <Controller
-                                    name="password"
+                                    name="status"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: txProps
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white",
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                {...field}
+                                                select
+                                                label="Role"
+                                                value={field.value}
+                                                required
+                                                error={!!errors.status}
+                                                helperText={errors.status ? errors.status.message : ''}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleCurrentStatusChange(e);
+                                                }}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
+                                                            },
+                                                        },
                                                     },
-                                                }
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Password"
-                                            variant="outlined"
-                                            error={!!errors.password}
-                                            helperText={errors.password ? errors.password.message : ''}
-                                            required
-                                        />
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                }}>
+                                                <MenuItem value="" sx={{
+                                                    color: "#4BF807",
+                                                    cursor: "not-allowed",
+                                                }}>
+                                                    Select Job Role
+                                                </MenuItem>
+                                                {getCurrentStatus()}
+                                            </TextField>
+                                        </FormControl>
                                     )}
                                 />
-                            </FormControl>
-                        </Grid>
+                            </Grid>
+                        </Stack>
                     </Paper>
                 </Grid>
                 <br/>

@@ -12,6 +12,8 @@ function AllStaff() {
     const {isLoading, isError, data, error} = useQuery({
         queryKey: ['AllStaff'],
         queryFn: AdminUtils.AllStaff,
+        staleTime: Infinity,
+        refetchOnWindowFocus: false,
     });
     
     // Clear session storage when the component mounts

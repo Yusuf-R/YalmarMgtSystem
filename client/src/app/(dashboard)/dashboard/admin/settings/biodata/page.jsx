@@ -1,11 +1,11 @@
 'use client';
 import Box from "@mui/material/Box";
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import AdminBioData from "@/components/AdminBioData/AdminBioData";
+import BioData from "@/components/BioData/BioData";
 import AdminUtils from "@/utils/AdminUtilities";
 
 
-function BioData() {
+function PersonalData() {
     const queryClient = useQueryClient();
     const {staffData} = queryClient.getQueryData(['BioData']);
     if (!staffData) {
@@ -13,18 +13,19 @@ function BioData() {
             queryKey: ['AdminBioData'],
             queryFn: AdminUtils.Profile,
             staleTime: Infinity,
+            refetchOnWindowFocus: false,
         });
         const {staffData} = data;
         return (
-            <AdminBioData staffData={staffData}/>
+            <BioData staffData={staffData}/>
         )
     }
     return (
         <>
             
-            <AdminBioData staffData={staffData}/>
+            <BioData staffData={staffData}/>
         </>
     )
 }
 
-export default BioData;
+export default PersonalData;

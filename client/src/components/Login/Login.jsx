@@ -43,7 +43,6 @@ function Login() {
     const OnLogin = (loginData) => {
         // Disable the button to prevent multiple clicks
         setIsSubmit(true);
-        console.log(loginData);
         // Call the mutate function to trigger the login request
         mutation.mutate(loginData, {
             onSuccess: (response) => {
@@ -74,7 +73,7 @@ function Login() {
                 // Handle login error
                 setIsSubmit(false);
                 console.log('hehe');
-                toast.error(error.message);
+                toast.error(error.response.data.message);
                 setTimeout(() => {
                     router.push("/login");
                 }, 3000);
