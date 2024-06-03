@@ -5,6 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {useRouter} from 'next/navigation';
 import AdminUtils from "@/utils/AdminUtilities";
 
+
 function Admin() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({

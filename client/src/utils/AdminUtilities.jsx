@@ -229,9 +229,7 @@ class AdminUtils {
     static async StaffLogin(obj) {
         // Encode username and password in base64
         const encoded = Buffer.from(obj.email + ':' + obj.password).toString('base64');
-        const BasicAuth =
-            `Basic ${encoded}`
-        ;
+        const BasicAuth = `Basic ${encoded}`;
         // use axios for http request
         try {
             const response = await axiosPublic(
@@ -353,11 +351,29 @@ class AdminUtils {
         }
     }
     
-    static async DeleteStaff(obj) {
+    static async DeleteStaff(obj, onUploadProgress) {
         try {
             const response = await axiosPrivate({
                 method: "DELETE",
                 url: `/staff/delete`,
+                data: obj,
+                onUploadProgress,
+            });
+            return response.data;
+        } catch (error) {
+            const errData = (error.response.data.error)
+            throw new Error(errData);
+        }
+    }
+    
+    static async UpdateProfilePicture(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: `/staff/avatar`,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
                 data: obj,
             });
             return response.data;

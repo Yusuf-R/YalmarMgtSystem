@@ -66,10 +66,18 @@ class SecurityConfig {
         return {
             origin: 'http://localhost:3000',
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-            preflightContinue: true,
-            optionsSuccessStatus: 204,
             credentials: true,
-            allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Auth-Token', 'Authorization', 'X-Token'],
+            allowedHeaders: [
+                'Origin',
+                'X-Requested-With',
+                'Content-Type',
+                'Accept',
+                'X-Auth-Token',
+                'Authorization',
+                'X-Token',
+            ],
+            preflightContinue: false, // Ensure preflight requests are handled correctly
+            optionsSuccessStatus: 204, // Response status code for successful OPTIONS requests
         };
     }
 }

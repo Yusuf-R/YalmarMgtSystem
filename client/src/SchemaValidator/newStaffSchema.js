@@ -19,6 +19,7 @@ export const newStaffSchema = yup.object().shape({
         .max(11, 'Phone number must not exceed 11 characters')
         .required('Phone Number is required'),
     dob: yup.date().required('Date of Birth is required'),
+    status: yup.string().required('Status is require'),
     gender: yup.string().required('Gender is required'),
     maritalStatus: yup.string().required('Marital Status is required'),
     religion: yup.string().required('Religion is required'),

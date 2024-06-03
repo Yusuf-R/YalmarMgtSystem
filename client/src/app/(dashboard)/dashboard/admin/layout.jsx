@@ -23,7 +23,7 @@ function AdminLayout({children}) {
         // Ideally, handle this more gracefully
         console.error('Error fetching user data');
         // route the user to error page
-        router.push('/error/404');
+        return router.push('/error/404');
     }
     const {staffData: staffData} = data;
     return (

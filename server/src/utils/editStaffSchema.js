@@ -19,6 +19,7 @@ export const editStaffSchemaValidator = Joi.object().keys({
         .max(11)
         .required(),
     dob: Joi.date().required(),
+    status: Joi.string().required().valid('Active', 'Suspended', 'Terminated', 'Deceased', 'Pending'),
     // password: Joi.string()
     //     .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+])[A-Za-z\\d!@#$%^&*()_+]{6,30}$'))
     //     .required()
@@ -36,7 +37,6 @@ export const editStaffSchemaValidator = Joi.object().keys({
     // ensure lga is a valid local government area in the selected stateOfOrigin
     lga: Joi.string().required().custom((value, helpers) => {
         const {stateOfOrigin} = helpers.state.ancestors[0];
-        console.log({stateOfOrigin});
         if (!stateOfOrigin) {
             return helpers.error('any.invalid'); // State must be validated before LGA
         }
@@ -124,8 +124,8 @@ export const editStaffSchemaValidator = Joi.object().keys({
         "Others",
     ).insensitive(),
     graduationDate: Joi.date().required(),
-    employmentDate: Joi.date().required(),
     employmentType: Joi.string().required().valid('FullTime', 'Contract', 'Trainee').insensitive(),
+    employmentDate: Joi.date().required(),
     role: Joi.string().required().valid('Admin', 'SuperAdmin', 'User', 'Accountant', 'Generator Technician', 'Procurement Officer', 'Lawyer', 'Driver', 'Field Supervisor', 'Security Officer').insensitive(),
     // siteState: Joi.string().allow('', null).when('role', {
     //     is: Joi.string().valid('Field Supervisor', 'Generator Technician'),

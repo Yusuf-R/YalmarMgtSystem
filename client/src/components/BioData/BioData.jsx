@@ -1,96 +1,52 @@
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Link from "next/link";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import React, {useEffect, useState} from "react";
+import {usePathname, useRouter} from "next/navigation";
+import AdminUtilities from "@/utils/AdminUtilities";
+import InputAdornment from "@mui/material/InputAdornment";
+import PublicIcon from "@mui/icons-material/Public";
+import DomainIcon from "@mui/icons-material/Domain";
+import Button from "@mui/material/Button";
+import PodcastsIcon from "@mui/icons-material/Podcasts";
+import Select from "@mui/material/Select";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Badge from '@mui/material/Badge';
-import TextField from "@mui/material/TextField";
-import AdminUtilities from "@/utils/AdminUtilities";
-import {useState, useEffect} from "react";
-import {useRouter, usePathname} from "next/navigation";
-import InputAdornment from "@mui/material/InputAdornment";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import PhoneInTalkRoundedIcon from '@mui/icons-material/PhoneInTalkRounded';
-import PublicIcon from '@mui/icons-material/Public';
-import DomainIcon from '@mui/icons-material/Domain';
-import MapIcon from '@mui/icons-material/Map';
-import Avatar from "@mui/material/Avatar";
-import ManIcon from '@mui/icons-material/Man';
-import WomanIcon from '@mui/icons-material/Woman';
-import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
-import MosqueIcon from '@mui/icons-material/Mosque';
-import ChurchIcon from '@mui/icons-material/Church';
-import ChaletIcon from '@mui/icons-material/Chalet';
-import DeckIcon from '@mui/icons-material/Deck';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import WorkOutlinedIcon from '@mui/icons-material/WorkOutlined';
-import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
-import EngineeringIcon from '@mui/icons-material/Engineering';
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import SchoolIcon from '@mui/icons-material/School';
-import ClassIcon from '@mui/icons-material/Class';
-import Select from "@mui/material/Select";
-import {
-    yellow,
-    blueGrey,
-} from "@mui/material/colors";
-
-const colorSuspended = yellow[200];
-const colorDeceased = blueGrey[500];
-
-const getBadgeStyles = (status) => {
-    switch (status) {
-        case 'Active':
-            return {
-                backgroundColor: 'success.main',
-                color: 'white',
-            };
-        case 'Suspended':
-            return {
-                backgroundColor: colorSuspended,
-                color: 'black',
-            };
-        case 'Terminated':
-            return {
-                backgroundColor: 'error.main',
-                color: 'white',
-            };
-        case 'Deceased':
-            return {
-                backgroundColor: colorDeceased,
-                color: 'white',
-            };
-        case 'Pending':
-            return {
-                backgroundColor: 'secondary.main',
-                color: 'white',
-            };
-        default:
-            return {
-                backgroundColor: 'default',
-                color: 'white',
-            };
-    }
-};
-
+import Link from "next/link";
+import Grid from "@mui/material/Grid";
 import Image from "next/image";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
+import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
+import PhoneInTalkRoundedIcon from "@mui/icons-material/PhoneInTalkRounded";
+import Avatar from "@mui/material/Avatar";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import MapIcon from "@mui/icons-material/Map";
+import ManIcon from "@mui/icons-material/Man";
+import WomanIcon from "@mui/icons-material/Woman";
+import MosqueIcon from "@mui/icons-material/Mosque";
+import ChurchIcon from "@mui/icons-material/Church";
+import ChaletIcon from "@mui/icons-material/Chalet";
+import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
+import DeckIcon from "@mui/icons-material/Deck";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
 import dayjs from "dayjs";
+import ClassIcon from "@mui/icons-material/Class";
+import SchoolIcon from "@mui/icons-material/School";
+import WorkOutlinedIcon from "@mui/icons-material/WorkOutlined";
+import WorkHistoryIcon from "@mui/icons-material/WorkHistory";
+import EngineeringIcon from "@mui/icons-material/Engineering";
 
-function ViewStaff({id, staffData}) {
+function BioData({staffData}) {
     const fullName = `${staffData.firstName} ${staffData.middleName ? staffData.middleName : " "} ${staffData.lastName}`;
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/staff/view');
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/settings/biodata');
     const pathname = usePathname();
     const router = useRouter();
     const editStaff = async () => {
-        const encryptedUserID = await AdminUtilities.encryptUserID(id);
+        const encryptedUserID = await AdminUtilities.encryptUserID(staffData._id);
         // encrypt the data and store it in the session storage
         const encryptedData = await AdminUtilities.encryptData(staffData);
         if (sessionStorage.getItem('staffData')) {
@@ -101,7 +57,7 @@ function ViewStaff({id, staffData}) {
         }
         sessionStorage.setItem('staffData', encryptedData);
         sessionStorage.setItem('staffID', encryptedUserID);
-        router.push("/dashboard/admin/staff/edit");
+        router.push("/dashboard/admin/settings/editbiodata");
     };
     // conditionally rendering the staff cluster and profile
     const SiteInfo = ({staffData}) => {
@@ -210,12 +166,12 @@ function ViewStaff({id, staffData}) {
         );
     };
     useEffect(() => {
-        if (pathname.includes('view')) {
-            setActiveTab('/dashboard/admin/staff/view');
+        if (pathname.includes('biodata')) {
+            setActiveTab('/dashboard/admin/settings/biodata');
         } else if (pathname.includes('edit')) {
-            setActiveTab('/dashboard/admin/staff/edit');
+            setActiveTab('/dashboard/admin/settings/editbiodata');
         } else {
-            setActiveTab('/dashboard/admin/staff');
+            setActiveTab('/dashboard/admin/settings');
         }
     }, [pathname]);
     return (
@@ -239,7 +195,7 @@ function ViewStaff({id, staffData}) {
                     height: 'auto',
                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
                 }}>
-                    <Typography variant='h5'>Staff Profile</Typography>
+                    <Typography variant='h5'>Bio Data</Typography>
                 </Paper>
                 <br/>
                 {/*Body of the page*/}
@@ -258,10 +214,10 @@ function ViewStaff({id, staffData}) {
                         }}
                     >
                         <Tab
-                            label="Staff"
+                            label="Settings"
                             component={Link}
-                            href="/dashboard/admin/staff"
-                            value="/dashboard/admin/staff"
+                            href="/dashboard/admin/settings"
+                            value="/dashboard/admin/settings"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -271,10 +227,10 @@ function ViewStaff({id, staffData}) {
                             }}
                         />
                         <Tab
-                            label="View"
+                            label="Biodata"
                             component={Link}
-                            href="/dashboard/admin/staff/view"
-                            value="/dashboard/admin/staff/view"
+                            href="/dashboard/admin/settings/biodata"
+                            value="/dashboard/admin/settings/biodata"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -286,7 +242,7 @@ function ViewStaff({id, staffData}) {
                         <Tab
                             label="Edit"
                             onClick={editStaff}
-                            value="/dashboard/admin/staff/edit"
+                            value="/dashboard/admin/settings/editbiodata"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -324,8 +280,6 @@ function ViewStaff({id, staffData}) {
                                                 alt={staffData.email}
                                                 width={350}
                                                 height={350}
-                                                style={{borderRadius: '50%'}}
-                                            
                                             />
                                         ) : (
                                             <Image
@@ -333,24 +287,10 @@ function ViewStaff({id, staffData}) {
                                                 alt={staffData.email}
                                                 width={350}
                                                 height={350}
-                                                style={{borderRadius: '50%'}}
                                             />
                                         )}
+                                    
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <Badge
-                                            sx={{
-                                                '& .MuiBadge-badge': getBadgeStyles(staffData.status)
-                                            }}
-                                            overlap="circular"
-                                            badgeContent={staffData.status}
-                                            // color='error'
-                                            // overlap="circular"
-                                            // badgeContent='Terminated'
-                                        >
-                                        </Badge>
-                                    </Grid>
-                                    <br/><br/><br/>
                                     <Grid item xs={12}>
                                         <TextField
                                             id="input-with-icon-textfield"
@@ -1416,4 +1356,4 @@ function ViewStaff({id, staffData}) {
     )
 }
 
-export default ViewStaff;
+export default BioData;

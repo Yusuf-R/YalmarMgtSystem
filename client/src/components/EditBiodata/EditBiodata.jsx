@@ -25,7 +25,6 @@ import {
     employmentType,
     jobTitle,
     sitesData,
-    status,
 } from "@/utils/data";
 import {Label} from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
@@ -41,7 +40,7 @@ import {DemoContainer} from "@mui/x-date-pickers/internals/demo";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 
-function EditStaff({id, staffData}) {
+function EditBiodata({id, staffData}) {
     const theme = createTheme({
         components: {
             // Assuming you are using MUI v5; adjust based on your version
@@ -82,10 +81,9 @@ function EditStaff({id, staffData}) {
     });
     const router = useRouter();
     const pathname = usePathname();
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/staff/edit');
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/settings/editbiodata');
     const [gender, setGender] = useState('');
     const [maritalStatus, setMaritalStatus] = useState('');
-    const [currentStatus, setCurrentStatus] = useState('');
     const [religion, setReligion] = useState('');
     const [employment, setEmployment] = useState('');
     const [dateValue, setDateValue] = useState(null);
@@ -128,18 +126,6 @@ function EditStaff({id, staffData}) {
         // prevent default action of submitting the form
         event.preventDefault();
         setGender(event.target.value);
-    }
-    // Current Account Status state
-    const getCurrentStatus = () => {
-        return status.map((type) => (
-            <MenuItem key={type} value={type}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{type}</MenuItem>
-        ))
-    }
-    const handleCurrentStatusChange = (event) => {
-        // prevent default action of submitting the form
-        event.preventDefault();
-        setCurrentStatus(event.target.value);
     }
     // Marital Status state
     const getMaritalStatus = () => {
@@ -245,7 +231,7 @@ function EditStaff({id, staffData}) {
         event.preventDefault();
         setResidentState(event.target.value);
     };
-    // Employment Type
+    // Employment state
     const getEmploymentType = () => {
         return employmentType.map((type) => (
             <MenuItem key={type} value={type}
@@ -379,14 +365,14 @@ function EditStaff({id, staffData}) {
         }
     }, [jobRole, setValue, clearErrors]);
     
-    // useEffect or handling navigation between view and edits
+    // useEffect or handling navigation between biodata and edits
     useEffect(() => {
-        if (pathname.includes('view')) {
-            setActiveTab('/dashboard/admin/staff/view');
-        } else if (pathname.includes('edit')) {
-            setActiveTab('/dashboard/admin/staff/edit');
+        if (pathname.includes('editbiodata')) {
+            setActiveTab('/dashboard/admin/settings/editbiodata');
+        } else if (pathname.includes('biodata')) {
+            setActiveTab('/dashboard/admin/settings/biodata');
         } else {
-            setActiveTab('/dashboard/admin/staff');
+            setActiveTab('/dashboard/admin/settings');
         }
     }, [pathname]);
     
@@ -436,7 +422,7 @@ function EditStaff({id, staffData}) {
     
     // Mutation for updating staff profile
     const mutation = useMutation({
-        mutationKey: ["updateStaff"],
+        mutationKey: ["UpdateStaff"],
         mutationFn: AdminUtils.UpdateStaff,
     });
     
@@ -446,17 +432,21 @@ function EditStaff({id, staffData}) {
             console.log("Validation passed!"); // Check if validation passes
             mutation.mutate(data, {
                 onSuccess: (response) => {
-                    toast.success(response.message);
-                    setTimeout(() => {
-                        router.push('/dashboard/admin/staff');
-                    }, 1500);
-                    //     refresh the query that fetched all the staff
-                    queryClient.invalidateQueries({queryKey: ["AllStaff"]});
-                    queryClient.invalidateQueries({queryKey: ["Biodata"]});
-                    
+                    if (response) {
+                        toast.success(response.message);
+                        setTimeout(() => {
+                            router.push('/dashboard/admin/staff');
+                        }, 1500);
+                        //     refresh the query that fetched all the staff
+                        queryClient.invalidateQueries({queryKey: ["AllStaff"]});
+                        queryClient.invalidateQueries({queryKey: ["Biodata"]});
+                    } else {
+                        toast.error(response.message);
+                        router.refresh();
+                    }
                 },
                 onError: (error) => {
-                    toast.error(error.message);
+                    // toast.error(error.message);
                     router.refresh();
                 }
             });
@@ -519,10 +509,10 @@ function EditStaff({id, staffData}) {
                         }}
                     >
                         <Tab
-                            label="Staff"
+                            label="Settings"
                             component={Link}
-                            href="/dashboard/admin/staff"
-                            value="/dashboard/admin/staff"
+                            href="/dashboard/admin/settings"
+                            value="/dashboard/admin/settings"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -532,10 +522,10 @@ function EditStaff({id, staffData}) {
                             }}
                         />
                         <Tab
-                            label="View"
+                            label="BioData"
                             component={Link}
-                            href="/dashboard/admin/staff/view"
-                            value="/dashboard/admin/staff/view"
+                            href="/dashboard/admin/settings/biodata"
+                            value="/dashboard/admin/settings/biodata"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -547,8 +537,8 @@ function EditStaff({id, staffData}) {
                         <Tab
                             label="Edit"
                             // onClick={editStaff}
-                            href="/dashboard/admin/staff/edit"
-                            value="/dashboard/admin/staff/edit"
+                            href="/dashboard/admin/settings/editbiodata"
+                            value="/dashboard/admin/settings/editbiodata"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -577,7 +567,7 @@ function EditStaff({id, staffData}) {
                         <Grid item xs={12}>
                             <Typography variant="h6" component="h6" color="white">BIO DATA</Typography>
                         </Grid>
-                        {/*    First Row: Title Id, and Status*/}
+                        {/*    First Row: Title field*/}
                         <Grid item xs={4}>
                             {/* Prefix */}
                             <FormControl fullWidth>
@@ -635,7 +625,7 @@ function EditStaff({id, staffData}) {
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={8}>
                             {/* Prefix */}
                             <FormControl fullWidth>
                                 <Controller
@@ -660,6 +650,18 @@ function EditStaff({id, staffData}) {
                                                         },
                                                     }
                                                 }}
+                                                // SelectProps={{
+                                                //     MenuProps: {
+                                                //         PaperProps: {
+                                                //             sx: {
+                                                //                 backgroundColor: '#134357',
+                                                //                 color: 'white',
+                                                //                 maxHeight: 450,
+                                                //                 overflow: 'auto',
+                                                //             },
+                                                //         },
+                                                //     },
+                                                // }}
                                                 sx={{
                                                     '& .MuiSelect-icon': {
                                                         color: '#fff',
@@ -674,68 +676,6 @@ function EditStaff({id, staffData}) {
                                     )}
                                 />
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Status */}
-                            <Controller
-                                name="status"
-                                control={control}
-                                defaultValue={staffData.status || 'N/A'}
-                                render={({field}) => (
-                                    <FormControl fullWidth>
-                                        <Stack direction="column" spacing={2}>
-                                            <Typography variant="subtitle1" gutterBottom>Status *</Typography>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                value={field.value}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleCurrentStatusChange(e);
-                                                }}
-                                                required
-                                                error={!!errors.staus}
-                                                helperText={errors.status ? errors.status.message : ''}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
-                                                    },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Status
-                                                </MenuItem>
-                                                {getCurrentStatus()}
-                                            </TextField>
-                                        </Stack>
-                                    </FormControl>
-                                )}
-                            />
                         </Grid>
                         {/* Second Row: FirstName, MiddleName, LastName*/}
                         <Grid item xs={4}>
@@ -2428,7 +2368,7 @@ function EditStaff({id, staffData}) {
             <br/>
             {/*Submitting button */}
             <Stack direction='row' gap={2} sx={{marginBottom: '75px', justifyContent: 'space-around'}}>
-                <Link href="/dashboard/admin/staff">
+                <Link href="/dashboard/admin/settings">
                     <Button variant="contained" color='success' title='Back'> Back </Button>
                 </Link>
                 <Button variant="contained" color='error' type='submit' title='Submit'>
@@ -2440,4 +2380,4 @@ function EditStaff({id, staffData}) {
 }
 
 
-export default EditStaff;
+export default EditBiodata;

@@ -82,15 +82,15 @@ class AuthController {
             // verify JWT token
             const verifiedJWT = JWT.verify(decryptedJWT, jwtAccessSecret, {algorithm: 'HS256'});
             if (!verifiedJWT) {
-                return new Error('Invalid JWT token');
+                return new Error('A Invalid JWT token');
             }
             // verify JWT against JWT
             const redisAccessToken = await AuthController.getJWT(verifiedJWT.id);
             if (!redisAccessToken) {
-                return new Error('Invalid JWT token');
+                return new Error('B Invalid JWT token');
             }
             if (redisAccessToken !== decryptedJWT) {
-                return new Error('Invalid JWT token');
+                return new Error('JWT token mismatch');
             }
             // ensure token is not blacklisted
             const blackListed = await redisClient.isInBlacklist(verifiedJWT.id, decryptedJWT);
@@ -337,6 +337,7 @@ class AuthController {
         const key = `auth_${id}`;
         const redisAccessToken = await redisClient.get(key);
         if (!redisAccessToken || redisAccessToken === 'nill' || redisAccessToken === 'null') {
+            console.log('Genesis is Here');
             return ({error: 'Access token is expired'});
         }
         return redisAccessToken;
@@ -394,6 +395,25 @@ class AuthController {
                 return new Error('Forbidden Operation: Privileged Access Required');
             }
             return admin;
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+    
+    static async StaffCheck(id) {
+        try {
+            // extract admin data
+            const staff = await Staff.findById(id);
+            if (!staff) {
+                return new Error('Unauthorized Access');
+            }
+            // ensure every other role can perform this task except Admin or SuperAdmin
+            const {role} = staff;
+            if (role === 'Admin' || role === 'SuperAdmin') {
+                return new Error('Forbidden Operation: Strictly a Staff Operation');
+            }
+            return staff;
+            
         } catch (error) {
             throw new Error(error.message)
         }
