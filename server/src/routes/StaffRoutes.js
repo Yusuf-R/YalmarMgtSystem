@@ -25,6 +25,9 @@ staffRouter.get('/dashboard', staffController.dashboardData);
 staffRouter.put('/update', staffController.updateStaff);
 staffRouter.post('/avatar', upload.single('avatar'), staffController.setAvatar);
 
+
+
+
 staffRouter.post('/resetpassword', staffController.resetPassword);
 staffRouter.put('/newpassword', staffController.newPassword);
 staffRouter.put('/changepassword', staffController.changePassword);

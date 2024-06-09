@@ -5,6 +5,7 @@ const idSecret = process.env.ID_SECRET;
 const dataSecret = process.env.DATA_SECRET;
 
 class AdminUtils {
+    // encryption utils
     static async encryptUserID(userID) {
         // Hash the idSecret to get a 256-bit key
         // new TextEncoder().encode(idSecret) converts the secrets to an array of bytes
@@ -149,6 +150,7 @@ class AdminUtils {
         return JSON.parse(new TextDecoder().decode(decrypted));
     }
     
+    // middleware verification
     static async verifyCredentials(request) {
         try {
             // we will use fetch in this scenario since it supports edge runtime
@@ -184,6 +186,7 @@ class AdminUtils {
         }
     }
     
+    // image utils
     static async createImage(url) {
         new Promise((resolve, reject) => {
             const image = new Image();
@@ -225,7 +228,7 @@ class AdminUtils {
         });
     }
     
-    
+    // Login API ---- Staff-------
     static async StaffLogin(obj) {
         // Encode username and password in base64
         const encoded = Buffer.from(obj.email + ':' + obj.password).toString('base64');
@@ -383,7 +386,164 @@ class AdminUtils {
         }
     }
     
+    static async LeaveRequestOps(obj) {
+        console.log({obj});
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: `/leave-request/new`,
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error.message);
+            const errData = (error.message)
+            throw new Error(errData);
+        }
+    }
     
+    // get all leave request from the DB
+    static async AllLeaveRequest() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/leave-request/all',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    // get a staff request
+    static async StaffLeaveRequest() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/leave-request/staff',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async ConfirmStaffLeaveRequest(obj) {
+        try {
+            return await axiosPrivate({
+                method: "PATCH",
+                url: '/leave-request/action',
+                data: obj,
+            });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async UpdateStaffLeaveRequest(obj) {
+        try {
+            return await axiosPrivate({
+                method: "PUT",
+                url: '/leave-request/update'
+            });
+            
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    /// site API----------Sites-----------  ///
+    
+    static async AllSite() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/site/all',
+            });
+            return response.data;
+            
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async BGwariSite() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/site/birnin-gwari',
+            });
+            return response.data;
+            
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async KdCentralSite() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/site/kaduna-central',
+            });
+            return response.data;
+            
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async ZariaSite() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/site/zaria',
+            });
+            return response.data;
+            
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async NewSite(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/site/new',
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async UpdateSite(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "PATCH",
+                url: '/site/update',
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async DeleteSite(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/site/delete',
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;

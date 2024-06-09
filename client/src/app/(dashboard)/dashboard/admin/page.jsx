@@ -1,5 +1,5 @@
 'use client';
-import AdminDashboard from '@/components/AdminDashboard/AdminDashboard';
+import AdminDashboard from '@/components/AdminLandingPageComponents/AdminDashboard/AdminDashboard';
 import {useQuery} from '@tanstack/react-query';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useRouter} from 'next/navigation';

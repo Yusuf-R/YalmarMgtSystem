@@ -1,4 +1,4 @@
-import SettingsLandingPage from "@/components/SettingsLandingPage/SettingsLandingPage";
+import SettingsLandingPage from "@/components/SettingsComponents/SettingsLandingPage/SettingsLandingPage";
 
 function SystemSettings() {
     return (

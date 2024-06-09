@@ -9,7 +9,6 @@ if (!isMainThread) {
                 .resize(500, 500, {fit: 'inside'}) // resize to 500x500 keeping aspect ratio
                 .jpeg({quality: 80}) // compress to 80% quality
                 .toBuffer();
-            
             parentPort.postMessage(compressedBuffer);
         } catch (error) {
             parentPort.postMessage({error: error.message});

@@ -1,5 +1,5 @@
 'use client'
-import EditStaff from "@/components/EditStaff/EditStaff";
+import EditStaff from "@/components/StaffComponents/EditStaff/EditStaff";
 import AdminUtilities from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';

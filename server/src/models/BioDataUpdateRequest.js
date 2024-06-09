@@ -13,8 +13,8 @@ const bioUpdateObject = {
         of: changeSchema,
         required: true
     },
-    description: {type: String, default: 'Bio Data Change'},
-    status: {type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending'},
+    category: {type: String, enum: ['MyBioData-Update', 'Avatar-Confirmation'], default: 'MyBioData-Update'},
+    status: {type: String, enum: ['Pending', 'Accepted', 'Rejected', 'Requested'], default: 'Requested'},
     saveAsDraft: {type: Boolean, default: false},
 }
 

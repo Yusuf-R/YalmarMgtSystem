@@ -1,6 +1,6 @@
-import Login from "../../../components/Login/Login";
+import Login from "@/components/HomeComponents/Login/Login";
 import styleSignIn from "./SiginIn.module.css";
-import { ToastContainer } from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
 
 function SignIn() {
     return (

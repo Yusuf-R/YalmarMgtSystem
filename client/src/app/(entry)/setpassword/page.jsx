@@ -1,13 +1,13 @@
-import SetPassword from "@/components/SetPassword/SetPassword";
+import SetPassword from "@/components/HomeComponents/SetPassword/SetPassword";
 
-function NewPassword () {
-
+function NewPassword() {
+    
     return (
         <>
-            <SetPassword />
+            <SetPassword/>
         </>
     )
-
+    
 }
 
 export default NewPassword

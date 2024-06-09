@@ -2,9 +2,10 @@ import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
-import {Grid} from "@mui/material";
+import Grid from "@mui/material/Grid";
 import Link from "next/link";
 import Image from "next/image";
+import {mainSection} from "@/utils/data";
 
 function NotificationsLandingPage() {
     const paperSx = {
@@ -18,13 +19,7 @@ function NotificationsLandingPage() {
     }
     return (
         <>
-            <Box sx={{
-                padding: '20px',
-                width: 'calc(100% - 250px)',
-                position: 'absolute',
-                top: '70px',
-                left: '250px',
-            }}>
+            <Box sx={mainSection}>
                 {/*Header*/}
                 <Paper elevation={5} sx={{
                     alignCenter: 'center',
@@ -51,98 +46,6 @@ function NotificationsLandingPage() {
                                         <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
                                     </Link>
                                     <Typography variant='h6'>Avatar Update Request</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render BioData component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/BioData.svg' alt='Biodata' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>BioData Update Request</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render Optimization component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Optimization.svg' alt='Optimization' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Leave Request</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4}>
-                            {/* Render Optimization component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Optimization.svg' alt='Optimization' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Incident Report</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render Optimization component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Optimization.svg' alt='Optimization' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Optimization</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render CheckHealth component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Health.svg' alt='Biodata' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Check Health</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4}>
-                            {/* Render Optimization component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Optimization.svg' alt='Optimization' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Message Center</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render Optimization component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Optimization.svg' alt='Optimization' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Optimization</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            {/* Render CheckHealth component*/}
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/biodata'>
-                                        <Image src='/Health.svg' alt='Biodata' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Check Health</Typography>
                                 </Stack>
                             </Paper>
                         </Grid>
