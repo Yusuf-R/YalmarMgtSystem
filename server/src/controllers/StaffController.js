@@ -1,8 +1,9 @@
 import SecurityConfig from "../utils/config";
 import AuthController from "./AuthController";
-import {editStaffSchemaValidator} from "../utils/editStaffSchema";
+
+import {editStaffSchemaValidator} from "../utils/Validators/editStaffSchema";
 import dayjs from "dayjs";
-import {newStaffSchemaValidator} from "../utils/newStaffSchema";
+import {newStaffSchemaValidator} from "../utils/Validators/newStaffSchema";
 import redisClient from "../utils/redis";
 import {cloudinary} from "../utils/cloudinary";
 import mongoose from "mongoose";
@@ -12,12 +13,12 @@ const path = require('path');
 
 const bcrypt = require('bcrypt');
 const Staff = require('../models/Staff');
+const BioDataUpdateRequest = require('../models/BioDataUpdateRequest');
 const authClient = require('./AuthController');
 const RefreshToken = require('../models/RefreshToken');
 const dbClient = require('../utils/db');
 const mailClient = require('../utils/mailer');
 const securityConfig = new SecurityConfig();
-
 const staffRef = ['username', 'country', 'city', 'phone', 'isAdmin', 'img'];
 const forbiddenUpdate = ['email', 'dob', '_id', 'createdAt', 'updatedAt', '__v'];
 const {ObjectId} = mongoose.Types;
@@ -89,6 +90,14 @@ class StaffController {
                 accessToken: encryptedAccessToken,
             });
         } catch (err) {
+            if (err.code === 11000) {
+                let duplicate = Object.keys(err.keyValue)[0];
+                // capitalize the first character of duplicate
+                duplicate = duplicate.charAt(0).toUpperCase() + duplicate.slice(1);
+                return res.status(409).json({
+                    error: `Duplicate Error: ${duplicate} Credentials already exists`,
+                });
+            }
             console.error(err);
             return res.status(500).json({error: 'Internal Server Error'});
         }
@@ -208,10 +217,6 @@ class StaffController {
             if (!(await dbClient.isAlive())) {
                 return res.status(500).json({error: 'Database connection failed'});
             }
-            // const admin = await AuthController.AdminCheck(id);
-            // if (admin instanceof Error) {
-            //     return res.status(400).json({error: admin.message});
-            // }
             const staffData = await Staff.findById(id).select('-password -createdAt -updatedAt -__v');
             if (!staffData) {
                 return res.status(404).json({error: 'Staff not found'});
@@ -445,6 +450,124 @@ class StaffController {
     //         return res.status(500).json({error: error.message});
     //     }
     // }
+    // static async setAvatar(req, res) {
+    //     try {
+    //         const verifiedJWT = await AuthController.currPreCheck(req);
+    //         if (
+    //             verifiedJWT instanceof Error) {
+    //             return res.status(400).json({error: verifiedJWT.message});
+    //         }
+    //
+    //         const {id} = verifiedJWT;
+    //         if (!id) {
+    //             return res.status(400).json({error: 'Invalid token'});
+    //         }
+    //
+    //         const {avatar} = req.body;
+    //         if (!avatar) {
+    //             return res.status(400).json({error: 'Missing file URL in the request'});
+    //         }
+    //
+    //         // Decode the base64 image string
+    //         const base64Data = avatar.replace(/^data:image\/\w+;base64,/, '');
+    //         const buffer = Buffer.from(base64Data, 'base64');
+    //
+    //         // Create a new worker thread
+    //         const worker = new Worker(path.resolve(__dirname, 'imageWorker.js'));
+    //
+    //         worker.postMessage(buffer);
+    //
+    //         worker.on('message', async (compressedBuffer) => {
+    //             if (compressedBuffer.error) {
+    //                 return res.status(500).json({error: compressedBuffer.error});
+    //             }
+    //
+    //             // Upload the processed image to Cloudinary
+    //             const result = await new Promise((resolve, reject) => {
+    //                 cloudinary.uploader.upload_stream(
+    //                     {
+    //                         folder: `YalmarMgtSystem/ProfilePic/${id}`,
+    //                         public_id: 'image',
+    //                         overwrite: true,
+    //                         invalidate: true,
+    //                     },
+    //                     (error, result) => {
+    //                         if (error) {
+    //                             return reject(error);
+    //                         }
+    //                         resolve(result);
+    //                     }
+    //                 ).end(compressedBuffer);
+    //             });
+    //
+    //             if (!result) {
+    //                 return res.status(500).json({error: 'Internal Server Error'});
+    //             }
+    //             // if the object role is of type Admin or SuperAdmin
+    //             const staffObj = await Staff.findById(new ObjectId(id))
+    //             // if (staffObj.role === 'Admin' || staffObj.role === 'SuperAdmin') {
+    //             if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
+    //                 // Update the staff profile with the new image URL
+    //                 await Staff.findOneAndUpdate(
+    //                     new ObjectId(id),
+    //                     {imgURL: result.secure_url},
+    //                     {
+    //                         new: true, // return the updated object as the saved object
+    //                         runValidators: true, // run the validators on the update operation
+    //                         context: 'query', // allows the use of the 'where' clause
+    //                         upsert: true // creates the object if it doesn't exist
+    //                     }
+    //                 );
+    //
+    //                 return res.status(201).json({
+    //                     message: 'Profile Picture set successfully',
+    //                     imgURL: result.secure_url,
+    //                 });
+    //             } else if (staffObj.role === 'Admin' || staffObj.role === 'SuperAdmin') {
+    //                 // } else if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
+    //                 // Update the staff profile with the new image URL
+    //                 await Staff.findOneAndUpdate(
+    //                     new ObjectId(id),
+    //                     {imgURL: result.secure_url, imgConfirmation: 'Pending', ctrlFlag: true},
+    //                     {
+    //                         new: true, // return the updated object as the saved object
+    //                         runValidators: true, // run the validators on the update operation
+    //                         context: 'query', // allows the use of the 'where' clause
+    //                         upsert: true // creates the object if it doesn't exist
+    //                     }
+    //                 );
+    //                 // create a bioDataUpdate for the Avatar-Confirmation
+    //                 const bioDataUpdate = {
+    //                     staffID: staffObj._id,
+    //                     email: staffObj.email,
+    //                     changes: {
+    //                         imgURL: {
+    //                             old: staffObj.imgURL,
+    //                             new: result.secure_url,
+    //                         }
+    //                     },
+    //                     category: 'Avatar-Confirmation',
+    //                 }
+    //                 await BioDataUpdateRequest.create(bioDataUpdate);
+    //                 // send a notification of this created object to alert the admin
+    //                 // to be implemented later
+    //                 return res.status(201).json({
+    //                     message: 'Profile Picture set successfully',
+    //                 });
+    //
+    //             }
+    //         });
+    //
+    //         worker.on('error', (error) => {
+    //             return res.status(500).json({error: error.message});
+    //         });
+    //     } catch (error) {
+    //         if (error.message === 'jwt expired') {
+    //             return res.status(401).json({error: error.message});
+    //         }
+    //         return res.status(500).json({error: error.message});
+    //     }
+    // }
     static async setAvatar(req, res) {
         try {
             const verifiedJWT = await AuthController.currPreCheck(req);
@@ -472,52 +595,173 @@ class StaffController {
             worker.postMessage(buffer);
             
             worker.on('message', async (compressedBuffer) => {
-                if (compressedBuffer.error) {
-                    return res.status(500).json({error: compressedBuffer.error});
-                }
-                
-                // Upload the processed image to Cloudinary
-                const result = await new Promise((resolve, reject) => {
-                    cloudinary.uploader.upload_stream(
-                        {
-                            folder: `YalmarMgtSystem/ProfilePic/${id}`,
-                            public_id: 'image',
-                            overwrite: true,
-                            invalidate: true,
-                        },
-                        (error, result) => {
-                            if (error) {
-                                return reject(error);
-                            }
-                            resolve(result);
-                        }
-                    ).end(compressedBuffer);
-                });
-                
-                if (!result) {
-                    return res.status(500).json({error: 'Internal Server Error'});
-                }
-                
-                // Update the staff profile with the new image URL
-                await Staff.findOneAndUpdate(
-                    new ObjectId(id),
-                    {imgURL: result.secure_url},
-                    {
-                        new: true, // return the updated object as the saved object
-                        runValidators: true, // run the validators on the update operation
-                        context: 'query', // allows the use of the 'where' clause
-                        upsert: true // creates the object if it doesn't exist
+                try {
+                    if (compressedBuffer.error) {
+                        return res.status(500).json({error: compressedBuffer.error});
                     }
-                );
-                
-                return res.status(201).json({
-                    message: 'Profile Picture set successfully',
-                    imgURL: result.secure_url,
-                });
+                    
+                    // Upload the processed image to Cloudinary
+                    const result = await new Promise((resolve, reject) => {
+                        cloudinary.uploader.upload_stream(
+                            {
+                                folder: `YalmarMgtSystem/ProfilePic/${id}`,
+                                public_id: 'image',
+                                overwrite: true,
+                                invalidate: true,
+                            },
+                            (error, result) => {
+                                if (error) {
+                                    return reject(error);
+                                }
+                                resolve(result);
+                            }
+                        ).end(compressedBuffer);
+                    });
+                    
+                    if (!result) {
+                        return res.status(500).json({error: 'Internal Server Error'});
+                    }
+                    
+                    // if the object role is of type Admin or SuperAdmin
+                    const staffObj = await Staff.findById(new ObjectId(id));
+                    if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
+                        // Update the staff profile with the new image URL
+                        await Staff.findOneAndUpdate(
+                            new ObjectId(id),
+                            {imgURL: result.secure_url},
+                            {
+                                new: true, // return the updated object as the saved object
+                                runValidators: true, // run the validators on the update operation
+                                context: 'query', // allows the use of the 'where' clause
+                                upsert: true // creates the object if it doesn't exist
+                            }
+                        );
+                        
+                        return res.status(201).json({
+                            message: 'Profile Picture set successfully',
+                            imgURL: result.secure_url,
+                        });
+                    } else if (staffObj.role === 'Admin' || staffObj.role === 'SuperAdmin') {
+                        // Update the staff profile with the new image URL
+                        await Staff.findOneAndUpdate(
+                            new ObjectId(id),
+                            {imgURL: result.secure_url, imgConfirmation: 'Requested', ctrlFlag: true},
+                            {
+                                new: true, // return the updated object as the saved object
+                                runValidators: true, // run the validators on the update operation
+                                context: 'query', // allows the use of the 'where' clause
+                                upsert: true // creates the object if it doesn't exist
+                            }
+                        );
+                        
+                        // create a bioDataUpdate for the Avatar-Confirmation
+                        const bioDataUpdate = {
+                            staffID: staffObj._id,
+                            email: staffObj.email,
+                            changes: {
+                                imgURL: {
+                                    old: staffObj.imgURL,
+                                    new: result.secure_url,
+                                }
+                            },
+                            category: 'Avatar-Confirmation',
+                        }
+                        await BioDataUpdateRequest.create(bioDataUpdate);
+                        
+                        // send a notification of this created object to alert the admin
+                        // to be implemented later
+                        return res.status(201).json({
+                            message: 'Profile Picture set successfully',
+                        });
+                    }
+                } catch (error) {
+                    return res.status(500).json({error: error.message});
+                }
             });
             
             worker.on('error', (error) => {
                 return res.status(500).json({error: error.message});
+            });
+            
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            return res.status(500).json({error: error.message});
+        }
+    }
+    
+    
+    // delete avatar from cloudinary for direct admin and staff
+    static async delAvatar(req, res) {
+        try {
+            const verifiedJWT = await AuthController.currPreCheck(req);
+            if (verifiedJWT instanceof Error) {
+                return res.status(400).json({error: verifiedJWT.message});
+            }
+            const {id} = verifiedJWT;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            // if req.body.id is true, it means the operation is for the admin to delete the staff avatar
+            const {staffID} = req.body;
+            if (staffID) {
+                const staffObj = await Staff.findById(new ObjectId(staffID));
+                if (!staffObj) {
+                    return res.status(404).json({error: 'Staff not found'});
+                }
+                if (!staffObj.imgURL) {
+                    return res.status(404).json({error: 'No image found'});
+                }
+                if (staffObj.ctrlFlag === false) {
+                    return res.status(404).json({error: 'Staff Authorization is required'});
+                }
+                // delete the image from cloudinary
+                const public_id = staffObj.imgURL.split('/')[staffObj.imgURL.split('/').length - 1].split('.')[0];
+                const result = await cloudinary.uploader.destroy(public_id);
+                if (result.result !== 'ok') {
+                    return res.status(500).json({error: 'Internal Server Error'});
+                }
+                // update the staff profile
+                await Staff.findOneAndUpdate(new ObjectId(staffID), {imgURL: '', ctrlFlag: false}, {
+                    new: true, // return the updated object as the saved object
+                    runValidators: true, // run the validators on the update operation
+                    context: 'query', // allows the use of the 'where' clause
+                    upsert: true // creates the object if it doesn't exist
+                });
+                return res.status(201).json({
+                    message: 'Profile Picture deleted successfully',
+                });
+                
+            }
+            // find the staff with the id and update the imgURL with the secure_url from the result object
+            const staff = await Staff.findById(new ObjectId(id));
+            if (!staff) {
+                return res.status(404).json({error: 'Staff not found'});
+            }
+            if (!staff.imgURL) {
+                return res.status(404).json({error: 'No image found'});
+            }
+            
+            // delete the image from cloudinary
+            const public_id = staff.imgURL.split('/')[staff.imgURL.split('/').length - 1].split('.')[0];
+            const result = await cloudinary.uploader.destroy(public_id);
+            if (result.result !== 'ok') {
+                return res.status(500).json({error: 'Internal Server Error'});
+            }
+            // update the staff profile
+            await Staff.findOneAndUpdate(new ObjectId(id), {imgURL: ''}, {
+                new: true, // return the updated object as the saved object
+                runValidators: true, // run the validators on the update operation
+                context: 'query', // allows the use of the 'where' clause
+                upsert: true // creates the object if it doesn't exist
+            });
+            return res.status(201).json({
+                message: 'Profile Picture deleted successfully',
             });
         } catch (error) {
             if (error.message === 'jwt expired') {
@@ -661,7 +905,6 @@ class StaffController {
             message: 'Password changed successfully', accessToken, refreshToken,
         });
     }
-    
     
     static async resetPassword(req, res) {
         // check if the email is valid

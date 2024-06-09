@@ -1,5 +1,5 @@
 'use client'
-import ViewStaff from "@/components/ViewStaff/ViewStaff";
+import ViewStaff from "@/components/StaffComponents/ViewStaff/ViewStaff";
 import AdminUtilities from "@/utils/AdminUtilities";
 import {useEffect, useState, useRef} from 'react';
 import {useRouter} from 'next/navigation';

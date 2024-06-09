@@ -1,4 +1,4 @@
-import ResetPassword from '@/components/RestPassword/ResetPassword';
+import ResetPassword from '@/components/HomeComponents/RestPassword/ResetPassword';
 
 function ResetOldPassword() {
     return (

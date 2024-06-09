@@ -203,15 +203,17 @@ class AuthController {
         const payload = {id: obj.id};
         const accessToken = JWT.sign(payload, jwtAccessSecret, {expiresIn: jwtAccessExp, algorithm: 'HS256'});
         const refreshToken = JWT.sign(payload, jwtRefreshSecret, {expiresIn: jwtRefreshExp, algorithm: 'HS256'});
-        const refreshObj = await RefreshToken.findOne({staffId: obj.id});
+        const refreshObj = await RefreshToken.findOne({staffId: obj._id});
+        console.log({obj});
+        console.log({refreshObj});
         if (refreshObj) {
             console.log('removing and creating a new object');
             // remove the old refresh token object
-            await RefreshToken.deleteMany({staffId: obj.id});
-            await RefreshToken.create({staffId: obj.id, token: refreshToken});
+            await RefreshToken.deleteMany({staffId: obj._id});
+            await RefreshToken.create({staffId: obj._id, token: refreshToken});
         } else {
             console.log('creating');
-            await RefreshToken.create({staffId: obj.id, token: refreshToken});
+            await RefreshToken.create({staffId: obj._id, token: refreshToken});
         }
         return {accessToken, refreshToken};
     }

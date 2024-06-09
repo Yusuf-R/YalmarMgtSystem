@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable jest/require-hook */
-const express = require('express');
-
-const cors = require('cors');
-
-const authController = require('../controllers/AuthController');
 import SecurityConfig from "../utils/config";
+
+const express = require('express');
+const cors = require('cors');
+const authController = require('../controllers/AuthController');
+
 
 const securityConfig = new SecurityConfig();
 const {corsOptions} = securityConfig;

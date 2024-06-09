@@ -3,7 +3,7 @@ import AdminUtilities from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import LostInSpace from "@/components/LostInSpace/LostInSpace";
-import EditBiodata from "@/components/EditBiodata/EditBiodata";
+import EditBiodata from "@/components/SettingsComponents/EditBiodata/EditBiodata";
 
 function EditBio() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);

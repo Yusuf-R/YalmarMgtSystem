@@ -1,3 +1,10 @@
+export const mainSection = {
+    padding: '20px',
+    width: 'calc(100% - 250px)',
+    position: 'absolute',
+    top: '70px',
+    left: '200px',
+}
 export const statesAndLGAs = {
     Abia: [
         "Aba North",
@@ -863,7 +870,7 @@ export const employmentType =
         'Trainee',
     ];
 export const sitesData = {
-    'Birnin-Gwari': [
+    'BIRNIN-GWARI': [
         "BRU001",
         "BGR007",
         "BGR005",
@@ -872,7 +879,7 @@ export const sitesData = {
         "BGR001",
         "KOM001"
     ],
-    'Kaduna-Central': [
+    'KADUNA-CENTRAL': [
         "KAD020",
         "KAD037",
         "KAD038",
@@ -886,7 +893,7 @@ export const sitesData = {
         "KAD103",
         "TNA013"
     ],
-    Zaria: [
+    ZARIA: [
         "ZAR001",
         "ZAR002",
         "ZAR003",
@@ -936,7 +943,7 @@ export const sitesData = {
     ],
 };
 export const siteStates = [
-    'Kaduna',
+    'KADUNA',
 ];
 export const sex = [
     'Female',
@@ -1296,4 +1303,47 @@ export const status = [
     "Terminated",
     "Deceased",
     'Pending',
+]
+export const leaveType = [
+    "Annual",
+    "Casual",
+    "Compassionate",
+    "Emergency",
+    "Maternity",
+    "Paternity",
+    "Sick",
+    "Study",
+    "Leave without Pay",
+    "Others",
+]
+export const leaveReason = [
+    "Accident",
+    "Annual",
+    "Appointment",
+    "Bereavement",
+    "Burial",
+    "Emergency",
+    "Family Related",
+    "Personal",
+    "Medical CheckUp",
+    "Medical",
+    "Surgery",
+    "Wedding",
+    "Confidential",
+]
+export const statusAction = [
+    "Pending",
+    "Accepted",
+    "Rejected"
+]
+export const siteStatus = [
+    'Inactive',
+    'Active',
+    'Deactivated',
+]
+export const type = [
+    'BSC',
+    'HUB',
+    'MAJOR-HUB',
+    'TERMINAL'
 ]

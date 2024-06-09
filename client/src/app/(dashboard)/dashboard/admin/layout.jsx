@@ -1,10 +1,10 @@
 'use client';
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import DashboardTopNav from "@/components/DashboardTopNav/DashboardTopNav";
+import DashboardTopNav from "@/components/AdminLandingPageComponents/DashboardTopNav/DashboardTopNav";
 import {useQuery} from '@tanstack/react-query';
 // Ensure this is the correct path
-import AdminSideNav from "@/components/AdminSideNav/AdminSideNav";
+import AdminSideNav from "@/components/AdminLandingPageComponents/AdminSideNav/AdminSideNav";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
 import AdminUtils from "@/utils/AdminUtilities";

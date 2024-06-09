@@ -19,6 +19,7 @@ import CropIcon from '@mui/icons-material/Crop';
 import Modal from '@mui/material/Modal';
 import {useDebounceEffect} from "@/customHooks/useDebounceEffect";
 import {canvasPreview} from "@/utils/canvasPreview";
+import {mainSection} from "@/utils/data";
 
 function AdvancedImageResizer() {
     // we have imageSrc, croppedImage
@@ -202,7 +203,7 @@ function AdvancedImageResizer() {
     }
     return (
         <>
-            <Box sx={{padding: '20px', width: 'calc(100% - 250px)', position: 'absolute', top: '70px', left: '250px'}}>
+            <Box sx={mainSection}>
                 <Paper elevation={5} sx={{
                     alignCenter: 'center',
                     textAlign: 'center',

@@ -1,7 +1,7 @@
 'use client';
 import Box from "@mui/material/Box";
 import {useQuery, useQueryClient} from '@tanstack/react-query';
-import BioData from "@/components/BioData/BioData";
+import MyBioData from "@/components/SettingsComponents/MyBioData/MyBioData";
 import AdminUtils from "@/utils/AdminUtilities";
 
 
@@ -17,13 +17,13 @@ function PersonalData() {
         });
         const {staffData} = data;
         return (
-            <BioData staffData={staffData}/>
+            <MyBioData staffData={staffData}/>
         )
     }
     return (
         <>
             
-            <BioData staffData={staffData}/>
+            <MyBioData staffData={staffData}/>
         </>
     )
 }

@@ -1,5 +1,5 @@
 'use client';
-import ProfilePicture from '@/components/ProfilePicture/ProfilePicture';
+import ProfilePicture from '@/components/SettingsComponents/ProfilePicture/ProfilePicture';
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import CircularProgress from "@mui/material/CircularProgress";
 import AdminUtils from "@/utils/AdminUtilities";

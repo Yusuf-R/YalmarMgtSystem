@@ -1,0 +1,81 @@
+/* components/Nav.module.css */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: white;
+    background-image: url('../../../../public/bg-1.jpg'); /* Update with your image file path */
+    background-size: cover; /* Ensure the background covers the entire viewport */
+    background-repeat: no-repeat; /* Prevent background image from repeating */
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    /*width: 200px;*/
+    width: 50%;
+
+    align-content: space-between;
+
+}
+
+.companyName {
+    margin-left: 20px;
+    font-size: 1.1rem;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.navList a {
+    text-decoration: none;
+    color: rgb(255, 220, 255, 1.8);
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.navList p {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 5px 0;
+    color: white;
+}
+
+.navList button {
+    font-weight: bold;
+    font-size: 1.1em;
+    background: mediumpurple;
+    border-radius: 10px;
+    padding: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.navList button:hover {
+    background: blue;
+}
+
+/* Make bouncing effect for the button*/
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.navList button:hover {
+    animation: bounce 0.5s infinite;
+}
+
+/* Add responsive styles if needed */
