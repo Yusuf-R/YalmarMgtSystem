@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import {mainSection} from '@/utils/data';
 
 function SiteLandingPage() {
     // const paperSx = {
@@ -20,13 +20,7 @@ function SiteLandingPage() {
     // }
     return (
         <>
-            <Box sx={{
-                padding: '20px',
-                width: 'calc(100% - 250px)',
-                position: 'absolute',
-                top: '70px',
-                left: '250px',
-            }}>
+            <Box sx={mainSection}>
                 {/*Header*/}
                 <Paper elevation={5} sx={{
                     alignCenter: 'center',

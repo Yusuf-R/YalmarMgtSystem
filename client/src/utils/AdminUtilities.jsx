@@ -544,6 +544,33 @@ class AdminUtils {
             throw new Error(error);
         }
     }
+    
+    // Fuelling API----Fuelling------  ///
+    static async AllFuelReport() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/fuel/all',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async NewFuelSupplyReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/fuel/new',
+                data: obj,
+            })
+            
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;

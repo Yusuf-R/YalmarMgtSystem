@@ -44,7 +44,7 @@ import {mainSection} from "@/utils/data";
 
 function MyBioData({staffData}) {
     const fullName = `${staffData.firstName} ${staffData.middleName ? staffData.middleName : " "} ${staffData.lastName}`;
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/settings/biodata');
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/settings/biodata/view');
     const pathname = usePathname();
     const router = useRouter();
     const editStaff = async () => {
@@ -59,7 +59,7 @@ function MyBioData({staffData}) {
         }
         sessionStorage.setItem('staffData', encryptedData);
         sessionStorage.setItem('staffID', encryptedUserID);
-        router.push("/dashboard/admin/settings/editbiodata");
+        router.push("/dashboard/admin/settings/biodata/editbiodata");
     };
     // conditionally rendering the staff cluster and profile
     const SiteInfo = ({staffData}) => {
@@ -168,9 +168,9 @@ function MyBioData({staffData}) {
     };
     useEffect(() => {
         if (pathname.includes('biodata')) {
-            setActiveTab('/dashboard/admin/settings/biodata');
+            setActiveTab('/dashboard/admin/settings/biodata/view');
         } else if (pathname.includes('edit')) {
-            setActiveTab('/dashboard/admin/settings/editbiodata');
+            setActiveTab('/dashboard/admin/settings/biodata/editbiodata');
         } else {
             setActiveTab('/dashboard/admin/settings');
         }
@@ -222,10 +222,10 @@ function MyBioData({staffData}) {
                             }}
                         />
                         <Tab
-                            label="Biodata"
+                            label="View"
                             component={Link}
-                            href="/dashboard/admin/settings/biodata"
-                            value="/dashboard/admin/settings/biodata"
+                            href="/dashboard/admin/settings/biodata/view"
+                            value="/dashboard/admin/settings/biodata/view"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',

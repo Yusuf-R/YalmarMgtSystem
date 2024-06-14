@@ -10,6 +10,7 @@ const staffRouter = require('./StaffRoutes');
 const bioUpdateRouter = require('./BioUpdateRoutes');
 const leaveReqRouter = require('./LeaveRequestRoutes')
 const siteRouter = require('./SiteRoutes');
+const fuelRouter = require('./FuelRoutes')
 
 
 const router = express.Router();
@@ -22,4 +23,5 @@ router.use('/api/v1/staff', staffRouter);
 router.use('/api/v1/bio-update', bioUpdateRouter);
 router.use('/api/v1/leave-request', leaveReqRouter)
 router.use('/api/v1/site', siteRouter);
+router.use('/api/v1/fuel', fuelRouter);
 module.exports = router;

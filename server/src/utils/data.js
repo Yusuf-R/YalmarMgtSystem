@@ -1110,7 +1110,7 @@ export const institutions = [
     "Others",
 ];
 export const allSitesData = {
-    'Birnin-Gwari': [
+    'BIRNIN-GWARI': [
         "BRU001",
         "BGR007",
         "BGR005",
@@ -1119,7 +1119,7 @@ export const allSitesData = {
         "BGR001",
         "KOM001"
     ],
-    'Kaduna-Central': [
+    'KADUNA-CENTRAL': [
         "KAD020",
         "KAD037",
         "KAD038",
@@ -1133,7 +1133,7 @@ export const allSitesData = {
         "KAD103",
         "TNA013"
     ],
-    Zaria: [
+    ZARIA: [
         "ZAR001",
         "ZAR002",
         "ZAR003",
@@ -1182,3 +1182,6 @@ export const allSitesData = {
         "MTR002"
     ],
 };
+export const allSiteStates = [
+    'KADUNA',
+];

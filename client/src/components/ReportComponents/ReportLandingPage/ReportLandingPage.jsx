@@ -43,16 +43,6 @@ function ReportLandingPage() {
                                     <Link href='#'>
                                         <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
                                     </Link>
-                                    <Typography variant='h6'>Auditing</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
                                     <Typography variant='h6'>Servicing</Typography>
                                 </Stack>
                             </Paper>
@@ -60,7 +50,7 @@ function ReportLandingPage() {
                         <Grid item xs={4}>
                             <Paper elevation={5} sx={paperSx}>
                                 <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
+                                    <Link href='/dashboard/admin/reports/fuel'>
                                         <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
                                     </Link>
                                     <Typography variant='h6'>Fuelling</Typography>

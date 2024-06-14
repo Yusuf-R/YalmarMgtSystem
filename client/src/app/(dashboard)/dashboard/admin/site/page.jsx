@@ -1,6 +1,5 @@
 import SiteLandingPage from "@/components/SiteComponents/SiteLandingPage/SiteLandingPage"
 
-
 function Sites() {
     return (
         <>
@@ -9,4 +8,4 @@ function Sites() {
     )
 }
 
-export default Sites
+export default Sites;

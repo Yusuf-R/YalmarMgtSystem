@@ -9,7 +9,6 @@ const {ObjectId} = mongoose.Types;
 
 class SiteController {
     static async getAllSite(req, res) {
-        console.log(req.body, req.originalUrl)
         try {
             // perform full current check
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -30,11 +29,9 @@ class SiteController {
                 console.log('Hi here');
                 return res.status(400).json({error: admin.message});
             }
-            console.log('Hi');
             // get all the site in db
             const allSite = await Site.find({}).select('-__v -createdAt -updatedAt');
             if (!allSite) {
-                console.log('Hi ok here');
                 return res.status(404).json({error: 'No site found'});
             }
             return res.status(200).json({
@@ -135,6 +132,25 @@ class SiteController {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
             }
+            return res.status(500).json({error: error.message});
+        }
+    }
+    
+    static async superAdminCreation(req, res) {
+        try {
+            // creating multiple sites at once
+            const sites = req.body;
+            if (!sites) {
+                return res.status(400).json({error: 'Missing sites'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            // create multiple sites at once and return new entry into the db
+            await Site.insertMany(sites);
+            return res.status(201).json({message: 'All Sites created successfully'});
+        } catch (error) {
             return res.status(500).json({error: error.message});
         }
     }

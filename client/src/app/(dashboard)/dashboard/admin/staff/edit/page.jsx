@@ -1,9 +1,9 @@
 'use client'
 import EditStaff from "@/components/StaffComponents/EditStaff/EditStaff";
-import AdminUtilities from "@/utils/AdminUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
-import LostInSpace from "@/components/LostInSpace/LostInSpace";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 
 function EditProfile() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);
@@ -16,10 +16,10 @@ function EditProfile() {
         const decryptData = async () => {
             try {
                 const staffID = sessionStorage.getItem('staffID');
-                const decryptedID = await AdminUtilities.decryptUserID(staffID);
+                const decryptedID = await AdminUtils.decryptUserID(staffID);
                 
                 const staffData = sessionStorage.getItem('staffData');
-                const decryptedData = await AdminUtilities.decryptData(staffData);
+                const decryptedData = await AdminUtils.decryptData(staffData);
                 
                 setDecryptedUserID(decryptedID);
                 setDecryptedStaffData(decryptedData);

@@ -514,10 +514,10 @@ function NewSite() {
                                                     }}
                                                     required
                                                     label="Site Status"
-                                                    error={!!errors.type}
-                                                    helperText={errors.type ? (
+                                                    error={!!errors.status}
+                                                    helperText={errors.status ? (
                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.type.message}
+                                                                                {errors.status.message}
                                                                                 </span>
                                                     ) : ''}
                                                     InputProps={{

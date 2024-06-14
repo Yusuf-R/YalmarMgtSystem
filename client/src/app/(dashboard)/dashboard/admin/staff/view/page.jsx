@@ -1,9 +1,10 @@
 'use client'
 import ViewStaff from "@/components/StaffComponents/ViewStaff/ViewStaff";
-import AdminUtilities from "@/utils/AdminUtilities";
+import AdminUtils from "@/utils/AdminUtilities";
 import {useEffect, useState, useRef} from 'react';
 import {useRouter} from 'next/navigation';
-import VoidStaff from "@/components/LostInSpace/LostInSpace";
+import VoidStaff from "@/components/Errors/LostInSpace/LostInSpace";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
 function ViewProfile() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);
@@ -16,9 +17,9 @@ function ViewProfile() {
         const decryptData = async () => {
             try {
                 const staffID = sessionStorage.getItem('staffID');
-                const decryptedID = await AdminUtilities.decryptUserID(staffID);
+                const decryptedID = await AdminUtils.decryptUserID(staffID);
                 const staffData = sessionStorage.getItem('staffData');
-                const decryptedData = await AdminUtilities.decryptData(staffData);
+                const decryptedData = await AdminUtils.decryptData(staffData);
                 setDecryptedUserID(decryptedID);
                 setDecryptedStaffData(decryptedData);
             } catch (error) {
@@ -43,7 +44,7 @@ function ViewProfile() {
     }, [shouldRedirect, router]); // Depend on shouldRedirect to trigger the effect
     
     if (isLoading) {
-        return <p>Loading...</p>;
+        return <LazyLoading/>;
     }
     if (!decryptedUserID || !decryptedStaffData) {
         return <VoidStaff/>; // Render LostInSpace if decryption failed

@@ -2,11 +2,11 @@
 import Site from "@/components/SiteComponents/Site/Site"
 import AdminUtils from '@/utils/AdminUtilities';
 import {useQuery} from '@tanstack/react-query'; // Ensure this import is correct
-import {useRouter} from "next/navigation"
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import {Suspense} from "react";
+import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
 
 function AllSites() {
-    // make an api call to get all the site in the DB
-    const router = useRouter();
     const {isLoading, isError, data, error} = useQuery({
         queryKey: ['AllSite'],
         queryFn: AdminUtils.AllSite,
@@ -14,24 +14,22 @@ function AllSites() {
         refetchOnWindowFocus: false,
     });
     
-    // // Clear session storage when the component mounts
-    // sessionStorage.removeItem('siteID');
-    // sessionStorage.removeItem('siteData');
-    //
     if (isLoading) {
-        return <span>Loading...</span>;
+        return <LazyLoading/>
     }
-    if (isError) {
-        return router.push('/error/404');
+    
+    if (isError || !data) {
+        console.error('Error fetching user data');
+        return <DataFetchError/>;
     }
     const {allSite} = data;
-    
     return (
         <>
-            <Site allSite={allSite}/>
+            <Suspense fallback={<LazyLoading/>}>
+                <Site allSite={allSite}/>
+            </Suspense>
         </>
     )
-    
 }
 
-export default AllSites
+export default AllSites;

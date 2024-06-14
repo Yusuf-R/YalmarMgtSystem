@@ -1,9 +1,8 @@
 'use client';
 import {useRouter} from 'next/navigation';
 import {useQuery} from '@tanstack/react-query';
-import {CircularProgress} from '@mui/material';
 import AdminUtils from "@/utils/AdminUtilities";
-
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
 function Dashboard() {
     console.log('Dashboard page');
@@ -18,7 +17,7 @@ function Dashboard() {
         return router.push('/error/404');
     }
     if (isLoading) {
-        return <CircularProgress/>;
+        return <LazyLoading/>;
     }
     if (!data) {
         console.error('No data received');
