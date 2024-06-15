@@ -35,6 +35,10 @@ function NewFuellingReport({allSite}) {
         mode: "onTouched",
         resolver: yupResolver(newFuelSupplyReportSchema),
         reValidateMode: "onChange",
+        defaultValues: {
+            cpd: '',
+            customCPD: ''
+        }
     });
     const Clear = () => {
         // clear the form
@@ -174,12 +178,19 @@ function NewFuellingReport({allSite}) {
         mutationFn: AdminUtils.NewFuelSupplyReport,
     });
     const SubmitData = async (data) => {
+        console.log(data.cpd);
         try {
+            // check if customCpd was entered, and if so we set cpd value to customCpd
+            if (cpd === 'Others' && customCPD) {
+                data.cpd = Number(customCPD);
+            }
             await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
             console.log("Validation passed!"); // Check if validation passes
             data.site_id = site_id;
             // convert dateSupplied to DD/MMM/YYYY
             data.dateSupplied = dayjs(dateSupplied).format('DD/MMM/YYYY');
+            // remove customCPD from data
+            delete data.customCPD;
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
@@ -200,6 +211,7 @@ function NewFuellingReport({allSite}) {
                 }
             });
         } catch (e) {
+            console.log(e);
             e.inner.forEach((error) => {
                 // Set form errors
                 setError(error.path, {
@@ -682,6 +694,7 @@ function NewFuellingReport({allSite}) {
                                                 {...field}
                                                 label="CPD"
                                                 select
+                                                type='number'
                                                 value={field.value}
                                                 onChange={(e) => field.onChange(e)}
                                                 InputProps={{

@@ -13,7 +13,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -45,7 +45,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SwapVerticalCircleIcon from '@mui/icons-material/SwapVerticalCircle';
 import FormControl from "@mui/material/FormControl";
-import {Controller, useForm} from "react-hook-form";
+import {Controller, useForm, useWatch} from "react-hook-form";
 import MenuItem from "@mui/material/MenuItem";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {
@@ -64,10 +64,7 @@ function FuellingReport({allFuelReport}) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/fuel/new');
-    const [stateMain, setStateMain] = useState('');
-    const [cluster, setClusterType] = useState('');
-    const [status, setStatus] = useState('');
-    const [siteType, setSiteType] = useState('');
+    const [dateSupplied, setDateSupplied] = useState(null);
     
     
     const handleClickOpen = () => {
@@ -267,7 +264,7 @@ function FuellingReport({allFuelReport}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        fontSize: '1.0em',
+        fontSize: '1.2em',
     };
     const modalStyle = {
         position: 'absolute',
@@ -343,65 +340,29 @@ function FuellingReport({allFuelReport}) {
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
             }
             const {
-                control, handleSubmit, formState: {errors}, setError, reset
+                control, handleSubmit, formState: {errors}, setError, reset, setValue
             } = useForm({
                 mode: "onTouched",
                 // resolver: yupResolver(newFuelReportSchema),
                 reValidateMode: "onChange",
             });
             
-            // set state
-            const getState = () => {
-                return siteStates.map((stateName) => (
-                    <MenuItem key={stateName} value={stateName}
-                              sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{stateName}</MenuItem>
-                ));
-            }
-            const handleState = (event) => {
-                // prevent default action of submitting the form
-                event.preventDefault();
-                setStateMain(event.target.value);
-                // Clear the cluster selection when a new state is selected
-            }
+            // Fuel supply info Section
+            const qtyInitial = useWatch({control, name: 'qtyInitial', defaultValue: siteData.qtyInitial});
+            const qtySupplied = useWatch({control, name: 'qtySupplied', defaultValue: siteData.qtySupplied});
+            const cpd = useWatch({control, name: 'cpd', defaultValue: siteData.cpd});
+            const customCPD = useWatch({control, name: 'customCPD'});
             
-            // set cluster
-            const getCluster = () => {
-                return Object.keys(sitesData).map((clusterName) => (
-                    <MenuItem key={clusterName} value={clusterName}
-                              sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
-                        {clusterName}
-                    </MenuItem>
-                ));
-            }
-            const handleCluster = (event) => {
-                event.preventDefault();
-                setClusterType(event.target.value);
-            }
+            const newAvailableQty = (Number(qtyInitial) + Number(qtySupplied)) || 0;
+            const consumptionPerDay = cpd === 'Others' ? Number(customCPD) : Number(cpd) || 0;
+            const duration = consumptionPerDay ? Math.ceil(newAvailableQty / consumptionPerDay) : 0;
+            const nextDueDate = dateSupplied ? dayjs(dateSupplied).add(duration, 'day').format('DD/MMM/YYYY') : '';
             
-            // set Type
-            const getType = () => {
-                return type.map((types) => (
-                    <MenuItem key={types} value={types}
-                              sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{types}</MenuItem>
-                ));
-            }
-            const handleType = (event) => {
-                event.preventDefault();
-                setSiteType(event.target.value);
-            }
-            
-            // set status
-            const getStatus = () => {
-                return siteStatus.map((status) => (
-                    <MenuItem key={status} value={status}
-                              sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{status}</MenuItem>
-                ));
-            }
-            const handleStatus = (event) => {
-                event.preventDefault();
-                setStatus(event.target.value);
-                setCurrSiteStatus(event.target.value);
-            }
+            useEffect(() => {
+                setValue('qtyNew', newAvailableQty);
+                setValue('duration', duration);
+                setValue('nextDueDate', nextDueDate);
+            }, [newAvailableQty, consumptionPerDay, dateSupplied]);
             
             
             if (Object.keys(errors).length > 0) {
@@ -443,8 +404,8 @@ function FuellingReport({allFuelReport}) {
             };
             // Update Mutation instance
             const mutationUpdate = useMutation({
-                mutationKey: ["UpdateSite"],
-                mutationFn: AdminUtils.UpdateSite,
+                mutationKey: ["UpdateFuelReport"],
+                mutationFn: AdminUtils.UpdateFuelReport,
             });
             
             // delete Mutation instance
@@ -473,20 +434,48 @@ function FuellingReport({allFuelReport}) {
             
             // handle save edited data
             const submitUpdate = async (data) => {
-                await newSiteSchema.validate(data, {abortEarly: false});
-                console.log("Validation passed!"); // Check if validation passes
-                data._id = siteData._id;
-                mutationUpdate.mutate(data, {
-                    onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
-                        toast.success('Site updated successfully');
-                        handleModalEditClose();
-                    },
-                    onError: (error) => {
-                        toast.error('Error updating staff account');
-                        console.error("Update failed", error);
+                console.log(data.cpd);
+                try {
+                    // check if customCpd was entered, and if so we set cpd value to customCpd
+                    if (cpd === 'Others' && customCPD) {
+                        data.cpd = Number(customCPD);
                     }
-                });
+                    await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
+                    console.log("Validation passed!"); // Check if validation passes
+                    data.site_id = site_id;
+                    // convert dateSupplied to DD/MMM/YYYY
+                    data.dateSupplied = dayjs(dateSupplied).format('DD/MMM/YYYY');
+                    // remove customCPD from data
+                    delete data.customCPD;
+                    mutationUpdate.mutate(data, {
+                        onSuccess: (response) => {
+                            if (response) {
+                                toast.success('Fuel Supply Record created successfully');
+                                //     refresh the query that fetched all the staff
+                                queryClient.invalidateQueries({queryKey: ["AllFuelReport"]});
+                                //     clear the form fields
+                                Clear();
+                                //     redirect to all the fuel reports
+                                router.push('/dashboard/admin/reports/fuel/all');
+                            } else {
+                                toast.error('Failed to create new staff account');
+                            }
+                        },
+                        onError: (error) => {
+                            toast.error(error.message);
+                            console.log(error);
+                        }
+                    });
+                } catch (e) {
+                    console.log(e);
+                    e.inner.forEach((error) => {
+                        // Set form errors
+                        setError(error.path, {
+                            type: error.type,
+                            message: error.message,
+                        });
+                    });
+                }
             };
             // render color base on adminSelection
             const getAdminActionBackgroundColor = () => {
@@ -513,7 +502,7 @@ function FuellingReport({allFuelReport}) {
                 handleModalViewClose();
             }
             
-            // handle submit
+            // handle submit for new fuel report
             const SubmitData = async (data) => {
                 try {
                     await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
@@ -1437,6 +1426,7 @@ function FuellingReport({allFuelReport}) {
                                                     errors={errors}
                                                     labelText="Supply Date"
                                                     setDate={setDateSupplied}
+                                                    defaultValue={siteData.dateSupplied} // Pass default value
                                                 />
                                             </Grid>
                                             {/*Initial Quantity*/}
@@ -1461,6 +1451,7 @@ function FuellingReport({allFuelReport}) {
                                                             }}
                                                             sx={{
                                                                 color: "#46F0F9",
+                                                                
                                                             }}
                                                             label="Initial Quantity"
                                                             type="number"
@@ -1523,7 +1514,7 @@ function FuellingReport({allFuelReport}) {
                                                             label="New Available Quantity"
                                                             type="number"
                                                             InputProps={{
-                                                                sx: {...txProps, color: 'green'},
+                                                                sx: {...txProps, color: 'lime'},
                                                                 readOnly: true,
                                                             }}
                                                             InputLabelProps={{
@@ -1542,10 +1533,8 @@ function FuellingReport({allFuelReport}) {
                                                     )}
                                                 />
                                             </Grid>
-                                            {/*Anonymous Spacing*/}
-                                            <Grid item xs={12}></Grid>
                                             {/*CPD*/}
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3}>
                                                 {/* CPD selection */}
                                                 <Controller
                                                     name="cpd"
@@ -1575,9 +1564,6 @@ function FuellingReport({allFuelReport}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
-                                                                            overflow: 'auto',
-                                                                            
                                                                         },
                                                                     },
                                                                 },
@@ -1590,6 +1576,8 @@ function FuellingReport({allFuelReport}) {
                                                                     color: '#fff',
                                                                 },
                                                                 textAlign: 'left',
+                                                                width: '150px',
+                                                                alignSelf: 'left',
                                                             }}>
                                                             <MenuItem value={50}>50</MenuItem>
                                                             <MenuItem value={60}>60</MenuItem>
@@ -1601,8 +1589,8 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*Custom CPD*/}
-                                            {siteData.cpd === 'Others' && (
-                                                <Grid item xs={4}>
+                                            {cpd === 'Others' && (
+                                                <Grid item xs={3}>
                                                     {/* Custom CPD input */}
                                                     <Controller
                                                         name="customCPD"
@@ -1634,7 +1622,7 @@ function FuellingReport({allFuelReport}) {
                                                 </Grid>
                                             )}
                                             {/*supply Duration*/}
-                                            {siteData.cpd && (
+                                            {cpd && (
                                                 <>
                                                     <Grid item xs={3}>
                                                         <Controller
@@ -1708,7 +1696,7 @@ function FuellingReport({allFuelReport}) {
                             </Box>
                             <DialogActions>
                                 <Button onClick={closeDialogEdit} color='error' variant='contained'>Cancel</Button>
-                                <Button onClick={handleDelete} color='success' variant='contained'>Confirm</Button>
+                                <Button onClick={submitUpdate} color='success' variant='contained'>Submit</Button>
                             </DialogActions>
                         </Paper>
                     </Dialog>
