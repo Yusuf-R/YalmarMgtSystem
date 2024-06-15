@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {PieChart, Pie, Cell, ResponsiveContainer, Sector} from 'recharts';
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import {PieChart, Pie, Cell, ResponsiveContainer} from 'recharts';
 
 const renderNeedle = ({cx, cy, radius, angle, needleColor}) => {
     const needleRadius = 10;
-    const needleLength = radius * 1.0;
+    const needleLength = radius * 0.8; // Adjusted needle length
     const needleAngle = angle * (Math.PI / 180);
     const x1 = cx;
     const y1 = cy;
@@ -23,24 +21,22 @@ const renderNeedle = ({cx, cy, radius, angle, needleColor}) => {
 const GaugeChartCurrentFuel = ({currentFuelAvailable, totalQty}) => {
     const [fuelToDatePercentage, setFuelToDatePercentage] = useState(0);
     const [fuelToDateColor, setFuelToDateColor] = useState("#33cc33");
-    const [fuelToDateText, setFuelToDateText] = useState("75-100% left");
     
     useEffect(() => {
-        const percentage = (currentFuelAvailable / totalQty) * 100;
+        let percentage = (currentFuelAvailable / totalQty) * 100;
+        percentage = Math.max(percentage, 0)
         setFuelToDatePercentage(percentage);
         
-        if (percentage <= 25) {
+        if (percentage <= 0) {
             setFuelToDateColor("#ff3300"); // Red
-            setFuelToDateText("<= 25% left");
+        } else if (percentage <= 25) {
+            setFuelToDateColor("#ff3300"); // Red
         } else if (percentage <= 50) {
             setFuelToDateColor("#00ccff"); // Blue
-            setFuelToDateText("<= 50% left");
         } else if (percentage <= 75) {
             setFuelToDateColor("#ffcc00"); // Yellow
-            setFuelToDateText("<= 75% left");
         } else {
             setFuelToDateColor("#33cc33"); // Green
-            setFuelToDateText("75-100% left");
         }
     }, [currentFuelAvailable, totalQty]);
     
@@ -51,7 +47,7 @@ const GaugeChartCurrentFuel = ({currentFuelAvailable, totalQty}) => {
         {value: 25, fill: '#33cc33'},
     ];
     
-    const needleAngle = 180 - (fuelToDatePercentage * 1.8);
+    const needleAngle = 180 - (fuelToDatePercentage * 1.8); // Convert percentage to angle
     
     return (
         <div style={{height: 400}}>
@@ -82,21 +78,17 @@ const GaugeChartCurrentFuel = ({currentFuelAvailable, totalQty}) => {
                     })}
                     <text
                         x="50%"
-                        y="70%"
+                        y="90%"
                         textAnchor="middle"
                         dominantBaseline="central"
                         fill={fuelToDateColor}
                         fontSize="20"
                         style={{textAlign: 'center', color: fuelToDateColor, fontWeight: 'bold'}}
                     >
-                        {fuelToDateText}
+                        {`${fuelToDatePercentage.toFixed(1)}% left`}
                     </text>
                 </PieChart>
-            
-            
             </ResponsiveContainer>
-        
-        
         </div>
     );
 };
