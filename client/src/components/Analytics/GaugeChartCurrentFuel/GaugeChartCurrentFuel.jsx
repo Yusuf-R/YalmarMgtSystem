@@ -24,7 +24,7 @@ const GaugeChartCurrentFuel = ({currentFuelAvailable, totalQty}) => {
     
     useEffect(() => {
         let percentage = (currentFuelAvailable / totalQty) * 100;
-        percentage = Math.max(percentage, 0)
+        percentage = Math.max(percentage, 0) // keeps min value to 0
         setFuelToDatePercentage(percentage);
         
         if (percentage <= 0) {
