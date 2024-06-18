@@ -17,7 +17,7 @@ fuelRouter.use(cors(corsOptions));
 fuelRouter.get('/all', fuelController.getAllFuelReport);
 // fuelRouter.get('/territory', fuelController.getFuelReportByTerritory);
 fuelRouter.post('/new', fuelController.newFuelReport);
-// fuelRouter.patch('/update', fuelController.updateFuelReport);
-// fuelRouter.delete('/delete', fuelController.deleteFuelReport);
+fuelRouter.patch('/update', fuelController.updateFuelReport);
+fuelRouter.delete('/delete', fuelController.deleteFuelReport);
 
 module.exports = fuelRouter;

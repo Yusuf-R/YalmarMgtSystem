@@ -1,6 +1,5 @@
 'use client';
 import Button from "@mui/material/Button";
-import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import EditIcon from '@mui/icons-material/Edit';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -32,19 +31,12 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import Modal from '@mui/material/Modal';
-// import Modal from '@mui/base/Modal';
 import InputAdornment from "@mui/material/InputAdornment";
 import MapIcon from "@mui/icons-material/Map";
 import Grid from "@mui/material/Grid";
-import OnlinePredictionIcon from '@mui/icons-material/OnlinePrediction';
 import CellTowerIcon from '@mui/icons-material/CellTower';
 import KebabDiningIcon from '@mui/icons-material/KebabDining';
-import SignalWifiStatusbarConnectedNoInternet4Icon from '@mui/icons-material/SignalWifiStatusbarConnectedNoInternet4';
-import SignalWifiStatusbar4BarIcon from '@mui/icons-material/SignalWifiStatusbar4Bar';
-import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SwapVerticalCircleIcon from '@mui/icons-material/SwapVerticalCircle';
-import FormControl from "@mui/material/FormControl";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import MenuItem from "@mui/material/MenuItem";
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -52,19 +44,16 @@ import {
     mainSection,
     sitesData, siteStates, siteStatus, type,
 } from "@/utils/data";
-import {newSiteSchema} from "@/SchemaValidator/newSiteSchema";
 import dayjs from "dayjs";
-import globalState from "@/utils/GlobalState";
 import DateComponent from "@/components/DateComponent/DateComponent";
-import {newFuelSupplyReportSchema} from "@/SchemaValidator/newFuelSupplyReport";
 import Divider from "@mui/material/Divider";
+import {editFuelSupplyReportSchema} from "@/SchemaValidator/editFuelSupplyReport";
 
 
 function FuellingReport({allFuelReport}) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/fuel/new');
-    const [dateSupplied, setDateSupplied] = useState(null);
     
     
     const handleClickOpen = () => {
@@ -321,11 +310,10 @@ function FuellingReport({allFuelReport}) {
             const objID = row.original._id;
             const siteData = allFuelReport.find((site) => site._id === objID);
             const [open, setOpen] = useState(false);
-            const [dialogueDelete, setDialogueDelete] = useState(false);
+            const [dialogDelete, setDialogDelete] = useState(false);
             const [modalViewOpen, setModalViewOpen] = useState(false);
             const [dialogEditOpen, setDialogEditOpen] = useState(false);
             const [dateSupplied, setDateSupplied] = useState(siteData.dateSupplied);
-            const [curSiteStatus, setCurrSiteStatus] = useState(siteData.status);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
             const queryClient = useQueryClient();
@@ -343,9 +331,16 @@ function FuellingReport({allFuelReport}) {
                 control, handleSubmit, formState: {errors}, setError, reset, setValue
             } = useForm({
                 mode: "onTouched",
-                // resolver: yupResolver(newFuelReportSchema),
+                resolver: yupResolver(editFuelSupplyReportSchema),
                 reValidateMode: "onChange",
+                defaultValues: {
+                    qtyInitial: siteData.qtyInitial,
+                    qtySupplied: siteData.qtySupplied,
+                    qtyNew: siteData.qtyNew,
+                    duration: siteData.duration,
+                },
             });
+            
             
             // Fuel supply info Section
             const qtyInitial = useWatch({control, name: 'qtyInitial', defaultValue: siteData.qtyInitial});
@@ -362,7 +357,7 @@ function FuellingReport({allFuelReport}) {
                 setValue('qtyNew', newAvailableQty);
                 setValue('duration', duration);
                 setValue('nextDueDate', nextDueDate);
-            }, [newAvailableQty, consumptionPerDay, dateSupplied]);
+            }, [newAvailableQty, consumptionPerDay, dateSupplied, setValue]);
             
             
             if (Object.keys(errors).length > 0) {
@@ -383,12 +378,17 @@ function FuellingReport({allFuelReport}) {
             };
             
             const closeDialogEdit = () => {
+                Clear();
                 setDialogEditOpen(false);
             };
             
             
-            const OpenDeleteDialogue = () => setDialogueDelete(true)
-            const CloseDeleteDialogue = () => setDialogueDelete(false)
+            const OpenDeleteDialogue = () => {
+                setDialogDelete(true)
+            }
+            const CloseDeleteDialogue = () => {
+                setDialogDelete(false)
+            }
             
             
             // handle email change
@@ -402,16 +402,16 @@ function FuellingReport({allFuelReport}) {
                     setEmailError('');
                 }
             };
-            // Update Mutation instance
+            // Update fuelReport instance
             const mutationUpdate = useMutation({
-                mutationKey: ["UpdateFuelReport"],
-                mutationFn: AdminUtils.UpdateFuelReport,
+                mutationKey: ["UpdateFuelSupplyReport"],
+                mutationFn: AdminUtils.UpdateFuelSupplyReport,
             });
             
-            // delete Mutation instance
+            // delete fuelReport instance
             const mutationDelete = useMutation({
-                mutationKey: ["UpdateSite"],
-                mutationFn: AdminUtils.DeleteSite,
+                mutationKey: ["DeleteFuelSupplyReport"],
+                mutationFn: AdminUtils.DeleteFuelSupplyReport,
             });
             
             // handle delete
@@ -420,9 +420,10 @@ function FuellingReport({allFuelReport}) {
                 const obj = {email, selectedIds: [objID]};
                 mutationDelete.mutate(obj, {
                     onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
-                        toast.success('Site deleted successfully');
+                        queryClient.invalidateQueries({queryKey: ["AllFuelReport"]});
+                        toast.success('Fuel Report deleted successfully');
                         CloseDeleteDialogue();
+                        window.location.reload();
                     },
                     onError: (error) => {
                         toast.error('Error deleting site');
@@ -431,18 +432,17 @@ function FuellingReport({allFuelReport}) {
                 });
             };
             
-            
             // handle save edited data
             const submitUpdate = async (data) => {
-                console.log(data.cpd);
                 try {
                     // check if customCpd was entered, and if so we set cpd value to customCpd
                     if (cpd === 'Others' && customCPD) {
                         data.cpd = Number(customCPD);
                     }
-                    await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
+                    await editFuelSupplyReportSchema.validate(data, {abortEarly: false});
                     console.log("Validation passed!"); // Check if validation passes
-                    data.site_id = site_id;
+                    data.site_id = siteData.site_id;
+                    data._id = siteData._id;
                     // convert dateSupplied to DD/MMM/YYYY
                     data.dateSupplied = dayjs(dateSupplied).format('DD/MMM/YYYY');
                     // remove customCPD from data
@@ -450,13 +450,14 @@ function FuellingReport({allFuelReport}) {
                     mutationUpdate.mutate(data, {
                         onSuccess: (response) => {
                             if (response) {
-                                toast.success('Fuel Supply Record created successfully');
+                                toast.success('Fuel Supply Record Updated successfully');
                                 //     refresh the query that fetched all the staff
                                 queryClient.invalidateQueries({queryKey: ["AllFuelReport"]});
                                 //     clear the form fields
                                 Clear();
-                                //     redirect to all the fuel reports
-                                router.push('/dashboard/admin/reports/fuel/all');
+                                setDialogEditOpen(false);
+                                // perform hard reload
+                                window.location.reload();
                             } else {
                                 toast.error('Failed to create new staff account');
                             }
@@ -477,22 +478,10 @@ function FuellingReport({allFuelReport}) {
                     });
                 }
             };
-            // render color base on adminSelection
-            const getAdminActionBackgroundColor = () => {
-                switch (curSiteStatus) {
-                    case 'Active':
-                        return 'green';
-                    case 'Inactive':
-                        return 'red';
-                    case 'Deactivated':
-                        return 'rgb(204, 153, 0)';
-                    default:
-                        return '#274e61';
-                }
-            };
+            
             //Analytics on the FuelData
             const ViewAnalytics = async () => {
-                // encrypt siteData in the local sessino storage
+                // encrypt siteData in the local session storage
                 const encryptedSiteData = await AdminUtils.encryptData(siteData)
                 if (sessionStorage.getItem('siteData')) {
                     sessionStorage.removeItem('siteData');
@@ -501,45 +490,6 @@ function FuellingReport({allFuelReport}) {
                 router.push('/dashboard/admin/reports/fuel/analytics');
                 handleModalViewClose();
             }
-            
-            // handle submit for new fuel report
-            const SubmitData = async (data) => {
-                try {
-                    await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
-                    console.log("Validation passed!"); // Check if validation passes
-                    data.site_id = site_id;
-                    // convert dateSupplied to DD/MMM/YYYY
-                    data.dateSupplied = dayjs(dateSupplied).format('DD/MMM/YYYY');
-                    mutation.mutate(data, {
-                        onSuccess: (response) => {
-                            if (response) {
-                                toast.success('Fuel Supply Record created successfully');
-                                //     refresh the query that fetched all the staff
-                                queryClient.invalidateQueries({queryKey: ["AllFuelReport"]});
-                                //     clear the form fields
-                                Clear();
-                                //     redirect to all the fuel reports
-                                router.push('/dashboard/admin/reports/fuel/all');
-                            } else {
-                                toast.error('Failed to create new staff account');
-                            }
-                        },
-                        onError: (error) => {
-                            toast.error(error.message);
-                            console.log(error);
-                        }
-                    });
-                } catch (e) {
-                    e.inner.forEach((error) => {
-                        // Set form errors
-                        setError(error.path, {
-                            type: error.type,
-                            message: error.message,
-                        });
-                    });
-                }
-            }
-            
             
             // Data Xcal
             const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQty, cpd) => {
@@ -870,6 +820,14 @@ function FuellingReport({allFuelReport}) {
                 );
             };
             
+            const handleCPDChange = (e) => {
+                const {value} = e.target;
+                setValue('cpd', value);
+                if (value !== 'Others') {
+                    setValue('customCPD', '');
+                }
+            };
+            
             return (
                 <>
                     <Stack direction='row'
@@ -880,7 +838,6 @@ function FuellingReport({allFuelReport}) {
                                alignItems: 'center',
                                spacing: 0,
                            }}
-                           noValidate
                     >
                         <Button onClick={handleModalViewOpen}>
                             <Tooltip title="View" arrow>
@@ -962,6 +919,7 @@ function FuellingReport({allFuelReport}) {
                             </Stack>
                         </DialogActions>
                     </Dialog>
+                    {/*Modal for Site data view*/}
                     <Modal open={modalViewOpen} onClose={handleModalViewClose} noValidate overflow>
                         <Paper elevation={5} sx={modalStyle}>
                             <Stack direction="column" gap={2}>
@@ -1344,6 +1302,7 @@ function FuellingReport({allFuelReport}) {
                             </Stack>
                         </Paper>
                     </Modal>
+                    {/*Dialog for Editing Site Data*/}
                     <Dialog open={dialogEditOpen} onClose={closeDialogEdit} fullWidth maxWidth='lg'>
                         <Paper sx={{
                             alignCenter: 'center',
@@ -1364,12 +1323,14 @@ function FuellingReport({allFuelReport}) {
                                 borderRadius: '10px',
                                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
                             }}>
-                                <Typography variant='h6'>Edit Fuel Report Form</Typography>
+                                <Typography variant='h6' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>Edit Fuel
+                                    Report
+                                    Form</Typography>
                             </Paper>
                             <br/>
                             <Box
                                 component="form"
-                                onSubmit={handleSubmit(SubmitData)}
+                                onSubmit={handleSubmit(submitUpdate)}
                                 noValidate
                             >
                                 {/* Main Body */}
@@ -1413,7 +1374,7 @@ function FuellingReport({allFuelReport}) {
                                         {/* First Row (1 fields) prefix */}
                                         <Grid container spacing={4}>
                                             <Grid item xs={12}>
-                                                <Typography variant='h6'
+                                                <Typography variant='h6' textAlign='left'
                                                             sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
                                                     Fuel Supply Info
                                                 </Typography>
@@ -1430,7 +1391,7 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*Initial Quantity*/}
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3}>
                                                 <Controller
                                                     name="qtyInitial"
                                                     control={control}
@@ -1467,7 +1428,7 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*Supplied Quantity*/}
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3}>
                                                 <Controller
                                                     name="qtySupplied"
                                                     control={control}
@@ -1503,7 +1464,7 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*New Available Quantity*/}
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3}>
                                                 <Controller
                                                     name="qtyNew"
                                                     control={control}
@@ -1534,19 +1495,53 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*CPD*/}
+                                            {/*Current Site CPD*/}
                                             <Grid item xs={3}>
+                                                <TextField
+                                                    label="Current Site CPD"
+                                                    value={siteData.cpd}
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                        sx: txProps
+                                                    }}
+                                                    InputLabelProps={{
+                                                        sx: {
+                                                            color: "#46F0F9",
+                                                            "&.Mui-focused": {
+                                                                color: "white",
+                                                            },
+                                                        }
+                                                    }}
+                                                    sx={{
+                                                        color: "#46F0F9",
+                                                    }}
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Divider orientation="horizontal" flexItem
+                                                         sx={{borderColor: '#FFF',}}>
+                                                    <Typography variant='h6' textAlign='center'
+                                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
+                                                        Set New CPD
+                                                    </Typography>
+                                                </Divider>
+                                            
+                                            </Grid>
+                                            <Grid item xs={3} sx={{display: 'flex', flexDirection: 'column'}}>
                                                 {/* CPD selection */}
                                                 <Controller
                                                     name="cpd"
                                                     control={control}
-                                                    defaultValue={siteData.cpd}
                                                     render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             label="CPD"
                                                             select
                                                             value={field.value}
-                                                            onChange={(e) => field.onChange(e)}
+                                                            onChange={handleCPDChange}
+                                                            error={!!errors.cpd}
+                                                            helperText={errors.cpd ? errors.cpd.message : ''}
                                                             InputProps={{
                                                                 sx: txProps
                                                             }}
@@ -1576,7 +1571,6 @@ function FuellingReport({allFuelReport}) {
                                                                     color: '#fff',
                                                                 },
                                                                 textAlign: 'left',
-                                                                width: '150px',
                                                                 alignSelf: 'left',
                                                             }}>
                                                             <MenuItem value={50}>50</MenuItem>
@@ -1595,12 +1589,13 @@ function FuellingReport({allFuelReport}) {
                                                     <Controller
                                                         name="customCPD"
                                                         control={control}
-                                                        defaultValue=""
                                                         render={({field}) => (
                                                             <TextField
                                                                 {...field}
                                                                 label="Enter CPD"
                                                                 type="number"
+                                                                error={!!errors.customCPD}
+                                                                helperText={errors.customCPD ? errors.customCPD.message : ''}
                                                                 InputProps={{
                                                                     sx: txProps
                                                                 }}
@@ -1688,25 +1683,94 @@ function FuellingReport({allFuelReport}) {
                                                 </>
                                             )}
                                         </Grid>
-                                    
                                     </Paper>
                                 </Grid>
                                 <br/><br/>
                                 {/*Submitting button */}
+                                <DialogActions>
+                                    <Button onClick={closeDialogEdit} color='error' variant='contained'>Cancel</Button>
+                                    <Button type='submit' color='success' variant='contained'>Submit</Button>
+                                </DialogActions>
                             </Box>
-                            <DialogActions>
-                                <Button onClick={closeDialogEdit} color='error' variant='contained'>Cancel</Button>
-                                <Button onClick={submitUpdate} color='success' variant='contained'>Submit</Button>
-                            </DialogActions>
                         </Paper>
                     </Dialog>
+                    {/*Delete Dialog*/}
+                    <Dialog open={dialogDelete} onClose={CloseDeleteDialogue}
+                            PaperProps={{
+                                component: 'form',
+                                onSubmit: handleDelete,
+                                sx: {
+                                    backgroundColor: '#0E1E1E'
+                                },
+                            }}
+                    >
+                        <DialogTitle>
+                            <Typography variant="button" display="block" gutterBottom
+                                        sx={{
+                                            color: 'red',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.0em',
+                                            fontFamily: 'Poppins',
+                                        }}>
+                                Confirm Deletion
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                <Typography variant="body1" gutterBottom
+                                            sx={{
+                                                color: 'red',
+                                                fontWeight: 'bold',
+                                                fontSize: '1.1em',
+                                                fontFamily: 'Poppins',
+                                            }}>
+                                    You are about to permanently delete the selected Fuel Supply Report. Please enter
+                                    your
+                                    Email address to further confirm your actions.
+                                </Typography>
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="email"
+                                name="email"
+                                type="email"
+                                fullWidth
+                                variant="outlined"
+                                value={email}
+                                onChange={handleEmailChange}
+                                error={!!emailError}
+                                helperText={emailError}
+                                InputLabelProps={{
+                                    sx: {
+                                        color: "#46F0F9",
+                                        "&.Mui-focused": {
+                                            color: "white",
+                                        },
+                                    }
+                                }}
+                                InputProps={{
+                                    sx: txProps
+                                }}
+                            />
+                        </DialogContent>
+                        <DialogActions sx={{justifyContent: 'space-between'}}>
+                            <Stack direction="row" gap={4} justifyContent='space-between'
+                                   sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
+                                <Button onClick={CloseDeleteDialogue} variant="contained"
+                                        color="success">Cancel</Button>
+                                <Button type="submit" variant="contained" color="error"> Delete </Button>
+                            </Stack>
+                        </DialogActions>
+                    </Dialog>
+                
                 </>
             )
         },
         renderTopToolbarCustomActions: ({table}) => {
             const mutation = useMutation({
-                mutationKey: ["DeleteSite"],
-                mutationFn: AdminUtils.DeleteSite,
+                mutationKey: ["DeleteFuelSupplyReport"],
+                mutationFn: AdminUtils.DeleteFuelSupplyReport,
             });
             const queryClient = useQueryClient();
             const createNew = () => router.push('/dashboard/admin/reports/fuel/new');
@@ -1740,12 +1804,12 @@ function FuellingReport({allFuelReport}) {
                 const obj = {email, selectedIds};
                 mutation.mutate(obj, {
                     onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
+                        queryClient.invalidateQueries({queryKey: ["AllFuelReport"]});
                         toast.success('Selected Sites Deleted Successfully');
                         // reload the page
                         handleClose();
-                        router.refresh();
-                        
+                        // perform hard reload
+                        window.location.reload();
                     },
                     onError: (error) => {
                         toast.error('Error Deleting selected Site');

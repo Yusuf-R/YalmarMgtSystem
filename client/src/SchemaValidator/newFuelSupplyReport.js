@@ -5,7 +5,6 @@ export const newFuelSupplyReportSchema = yup.object().shape({
     state: yup.string().required(),
     cluster: yup.string().required(),
     location: yup.string().required(),
-    // accepted values: 'TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'
     type: yup.string().required().valueOf().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC']),
     qtyInitial: yup.number().required(),
     qtySupplied: yup.number().required(),

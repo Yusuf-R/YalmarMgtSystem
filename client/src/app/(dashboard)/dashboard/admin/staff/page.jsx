@@ -1,11 +1,8 @@
 'use client';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Staff from '@/components/StaffComponents/Staff/Staff';
 import {useQuery} from '@tanstack/react-query'; // Ensure this import is correct
 import AdminUtils from '@/utils/AdminUtilities';
 import {useRouter} from "next/navigation";
-import {useEffect} from "react";
 import {Suspense} from "react";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";

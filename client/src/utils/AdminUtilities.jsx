@@ -571,6 +571,33 @@ class AdminUtils {
             throw new Error(error);
         }
     }
+    
+    static async UpdateFuelSupplyReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "PATCH",
+                url: '/fuel/update',
+                data: obj,
+            })
+            
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async DeleteFuelSupplyReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/fuel/delete',
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;
