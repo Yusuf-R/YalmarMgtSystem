@@ -574,6 +574,7 @@ function NewFuellingReport({allSite}) {
                                         errors={errors}
                                         labelText="Supply Date"
                                         setDate={setDateSupplied}
+                                        defaultValue={dayjs()}
                                     />
                                 </Grid>
                                 {/*Initial Quantity*/}

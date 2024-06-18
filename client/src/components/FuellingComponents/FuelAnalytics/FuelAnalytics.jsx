@@ -865,6 +865,7 @@ function FuelAnalytics({siteData}) {
                                 errors={errors}
                                 labelText={null}
                                 setDate={setCustomDate}
+                                defaultValue={siteData.dateSupplied}
                             />
                         </Stack>
                     </Stack>

@@ -177,6 +177,7 @@ function ProfilePicture({staffData}) {
                     queryClient.refetchQueries({queryKey: ["AllStaff"]})
                     setIsLoading(false);
                     router.push('/dashboard/admin/settings');
+                    window.location.reload();
                 },
                 onError: (error) => {
                     toast.error(error.message);
