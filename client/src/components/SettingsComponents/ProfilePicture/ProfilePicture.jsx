@@ -25,10 +25,7 @@ import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
 import Tabs from "@mui/material/Tabs";
-import Skeleton from '@mui/material/Skeleton';
 import {mainSection} from "@/utils/data";
-
-
 
 function ProfilePicture({staffData}) {
     const pathname = usePathname();

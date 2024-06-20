@@ -49,13 +49,10 @@ import DateComponent from "@/components/DateComponent/DateComponent";
 import Divider from "@mui/material/Divider";
 import {editFuelSupplyReportSchema} from "@/SchemaValidator/editFuelSupplyReport";
 
-
 function FuellingReport({allFuelReport}) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/fuel/new');
-    
-    
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -267,7 +264,6 @@ function FuellingReport({allFuelReport}) {
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
         overflow: 'scroll',
     };
-    
     const paperInnerStyle = {
         // textAlign: 'center',
         padding: '5px',
@@ -277,15 +273,12 @@ function FuellingReport({allFuelReport}) {
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
         margin: 0, // Ensure no margin
     };
-    
     const gridStyle = {
         padding: '5px', // Optional: Add padding inside the Grid to avoid overlapping borders
     };
-    
     const gridItemStyle = {
         padding: '5px', // Optional: Add padding inside the Grid item to avoid overlapping borders
     };
-    
     const table = useMaterialReactTable({
         columns,
         data: tableData,
@@ -318,29 +311,13 @@ function FuellingReport({allFuelReport}) {
             const [emailError, setEmailError] = useState('');
             const queryClient = useQueryClient();
             const router = useRouter();
-            const paperProps = {
-                alignCenter: 'center',
-                textAlign: 'center',
-                padding: '25px',
-                backgroundColor: '#274e61',
-                color: '#46F0F9',
-                borderRadius: '10px',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-            }
             const {
                 control, handleSubmit, formState: {errors}, setError, reset, setValue
             } = useForm({
                 mode: "onTouched",
                 resolver: yupResolver(editFuelSupplyReportSchema),
                 reValidateMode: "onChange",
-                defaultValues: {
-                    qtyInitial: siteData.qtyInitial,
-                    qtySupplied: siteData.qtySupplied,
-                    qtyNew: siteData.qtyNew,
-                    duration: siteData.duration,
-                },
             });
-            
             
             // Fuel supply info Section
             const qtyInitial = useWatch({control, name: 'qtyInitial', defaultValue: siteData.qtyInitial});
@@ -359,7 +336,6 @@ function FuellingReport({allFuelReport}) {
                 setValue('nextDueDate', nextDueDate);
             }, [newAvailableQty, consumptionPerDay, dateSupplied, setValue]);
             
-            
             if (Object.keys(errors).length > 0) {
                 console.log({errors});
             }
@@ -372,16 +348,13 @@ function FuellingReport({allFuelReport}) {
             const handleModalViewOpen = () => setModalViewOpen(true);
             const handleModalViewClose = () => setModalViewOpen(false);
             
-            
             const openDialogEdit = () => {
                 setDialogEditOpen(true);
             };
-            
             const closeDialogEdit = () => {
                 Clear();
                 setDialogEditOpen(false);
             };
-            
             
             const OpenDeleteDialogue = () => {
                 setDialogDelete(true)
@@ -389,7 +362,6 @@ function FuellingReport({allFuelReport}) {
             const CloseDeleteDialogue = () => {
                 setDialogDelete(false)
             }
-            
             
             // handle email change
             const handleEmailChange = (event) => {
@@ -402,6 +374,7 @@ function FuellingReport({allFuelReport}) {
                     setEmailError('');
                 }
             };
+            
             // Update fuelReport instance
             const mutationUpdate = useMutation({
                 mutationKey: ["UpdateFuelSupplyReport"],
@@ -1538,7 +1511,7 @@ function FuellingReport({allFuelReport}) {
                                                             {...field}
                                                             label="CPD"
                                                             select
-                                                            value={field.value}
+                                                            value={field.value || ''}
                                                             onChange={handleCPDChange}
                                                             error={!!errors.cpd}
                                                             helperText={errors.cpd ? errors.cpd.message : ''}
@@ -1594,6 +1567,7 @@ function FuellingReport({allFuelReport}) {
                                                                 {...field}
                                                                 label="Enter CPD"
                                                                 type="number"
+                                                                value={field.value || ''}
                                                                 error={!!errors.customCPD}
                                                                 helperText={errors.customCPD ? errors.customCPD.message : ''}
                                                                 InputProps={{
@@ -1993,17 +1967,6 @@ function FuellingReport({allFuelReport}) {
             density: 'compact',
         }
     });
-    const paperProps = {
-        alignCenter: 'center',
-        textAlign: 'center',
-        padding: '10px',
-        backgroundColor: '#274e61',
-        color: '#46F0F9',
-        borderRadius: '10px',
-        width: '100%',
-        height: 'auto',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-    }
     return (
         <>
             <Box sx={mainSection}>
@@ -2045,7 +2008,5 @@ function FuellingReport({allFuelReport}) {
         </>
     );
 }
-
-
 
 export default FuellingReport;

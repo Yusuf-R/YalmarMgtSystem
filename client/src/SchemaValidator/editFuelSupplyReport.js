@@ -1,21 +1,16 @@
 import * as yup from 'yup';
 
 export const editFuelSupplyReportSchema = yup.object().shape({
-    qtyInitial: yup.number().required('what is wrong here'),
-    qtySupplied: yup.number().required(),
-    qtyNew: yup.number().required(),
-    dateSupplied: yup.string().required(),
-    duration: yup.number().required(),
-    nextDueDate: yup.string().required(),
-    // cpd: yup.mixed().when('cpd', {
-    //     is: (value) => value === 'Others',
-    //     then: yup.number().required('Custom CPD is required').positive('CPD must be a positive number'),
-    //     otherwise: yup.number().required('CPD is required').positive('CPD must be a positive number'),
-    // }),
-    cpd: yup.mixed().required('CPD is required').oneOf([50, 60, 100, 120, 'Others']),
-    customCPD: yup.number().when('cpd', {
-        is: 'Others',
-        then: yup.number().required('Custom CPD is required').positive('CPD must be a positive number'),
-        otherwise: yup.number(),
-    }),
+    qtyInitial: yup.number().required('Initial Quantity is required').typeError('Initial Quantity must be a number'),
+    qtySupplied: yup.number().required('Supplied Quantity is required').typeError('Supplied Quantity must be a number'),
+    qtyNew: yup.number().required('New Available Quantity is required').typeError('New Available Quantity must be a number'),
+    dateSupplied: yup.string().required('Date Supplied is required').typeError('Date Supplied must be a valid date'),
+    duration: yup.number().required('Duration is required').typeError('Duration must be a number'),
+    nextDueDate: yup.string().required('Next Due Date is required').typeError('Next Due Date must be a valid date'),
+    cpd: yup.mixed().test('is-valid-cpd', 'CPD must be a positive number or "Others"', function (value) {
+        if (value === 'Others') {
+            return true;
+        }
+        return typeof value === 'number' && value > 0;
+    }).required('CPD is required'),
 });
