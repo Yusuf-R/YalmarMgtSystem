@@ -25,23 +25,7 @@ import ProgressBar from "@/components/ProgressBar/ProgressBar";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
 import Tabs from "@mui/material/Tabs";
-import Skeleton from '@mui/material/Skeleton';
 import {mainSection} from "@/utils/data";
-
-function PreloadSkeleton() {
-    return (
-        <>
-            <Stack spacing={1}>
-                {/* For variant="text", adjust the height via font-size */}
-                <Skeleton variant="text" sx={{fontSize: '1rem'}}/>
-                {/* For other variants, adjust the size with `width` and `height` */}
-                <Skeleton variant="circular" width={40} height={40}/>
-                <Skeleton variant="rectangular" width={210} height={60}/>
-                <Skeleton variant="rounded" width={210} height={60}/>
-            </Stack>
-        </>
-    )
-}
 
 function ProfilePicture({staffData}) {
     const pathname = usePathname();
@@ -190,7 +174,7 @@ function ProfilePicture({staffData}) {
                     queryClient.refetchQueries({queryKey: ["AllStaff"]})
                     setIsLoading(false);
                     router.push('/dashboard/admin/settings');
-                    // window.location.reload();
+                    window.location.reload();
                 },
                 onError: (error) => {
                     toast.error(error.message);
@@ -204,7 +188,7 @@ function ProfilePicture({staffData}) {
             setSelectedPicture('');
             setCroppedPicture('');
             setErrorMessage('');
-            window.location.reload();
+            router.refresh();
         }
     }
     // useEffect or handling navigation between view and edits
@@ -302,17 +286,13 @@ function ProfilePicture({staffData}) {
                                 <Stack direction='column' spacing={2} justifyContent="center" alignItems="center">
                                     {/*have a typography that says original image*/}
                                     <Typography variant='subtitle1' color="#FFF">Original Image</Typography>
-                                    {imgSrc ? (
-                                        <Image
-                                            src={imgSrc}
-                                            alt='Original Image Preview'
-                                            width={360}
-                                            height={360}
-                                            priority={true}
-                                        />
-                                    ) : (
-                                        <PreloadSkeleton/>
-                                    )}
+                                    <Image
+                                        src={imgSrc}
+                                        alt='Original Image Preview'
+                                        width={360}
+                                        height={360}
+                                        priority={true}
+                                    />
                                     {errorMessage && (
                                         <Typography variant='subtitle1' color='error'>
                                             {errorMessage}

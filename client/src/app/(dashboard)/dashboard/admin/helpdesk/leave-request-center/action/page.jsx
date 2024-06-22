@@ -4,7 +4,7 @@ import LeaveRequestConfirmation
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import AdminUtilities from "@/utils/AdminUtilities";
-import LostInSpace from "@/components/LostInSpace/LostInSpace";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 
 function LeaveReqConfirmation() {
     const [decryptedReqID, setDecryptedReqID] = useState(null);

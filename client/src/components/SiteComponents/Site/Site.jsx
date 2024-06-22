@@ -13,7 +13,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import React, {useMemo, useState} from "react";
+import React, {useMemo, useState, Suspense} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -192,8 +192,7 @@ function Site({allSite}) {
         'cluster',
         'type',
         'status',
-        'longitude',
-        'latitude',
+        'location'
     ];
     // Function to capitalize the first letter of the key
     const capitalizeFirstLetter = (key) => {
@@ -1377,7 +1376,7 @@ function Site({allSite}) {
                         toast.success('Selected Sites Deleted Successfully');
                         // reload the page
                         handleClose();
-                        window.location.reload();
+                        router.refresh();
                         
                     },
                     onError: (error) => {
@@ -1548,8 +1547,20 @@ function Site({allSite}) {
             color: 'warning',
             variant: 'text',
             size: 'small',
+            rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
+            // set the table to display the first 100 data by default
+            rowsPerPage: 100,
         },
         paginationDisplayMode: 'pages',
+        positionPagination: "both",
+        initialState: {
+            pagination: {
+                pageIndex: 0,
+                pageSize: 100
+            },
+            density: 'compact',
+            
+        }
     });
     const paperProps = {
         alignCenter: 'center',
@@ -1603,5 +1614,7 @@ function Site({allSite}) {
         </>
     );
 }
+
+
 
 export default Site;

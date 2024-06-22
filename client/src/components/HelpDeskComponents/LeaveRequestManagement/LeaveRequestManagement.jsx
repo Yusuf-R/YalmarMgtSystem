@@ -366,8 +366,19 @@ function LeaveRequestManagement({leaveReqData}) {
             color: 'warning',
             variant: 'text',
             size: 'small',
+            rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
+            // set the table to display the first 100 data by default
+            rowsPerPage: 100,
         },
         paginationDisplayMode: 'pages',
+        initialState: {
+            pagination: {
+                pageIndex: 0,
+                pageSize: 100
+            },
+            density: 'compact',
+            
+        }
     });
     const paperProps = {
         alignCenter: 'center',

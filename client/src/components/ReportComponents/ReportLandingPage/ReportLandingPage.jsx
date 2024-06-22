@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import Link from "next/link";
 import Image from "next/image";
 import {mainSection} from "@/utils/data";
+import Avatar from "@mui/material/Avatar";
 
 function ReportLandingPage() {
     const paperSx = {
@@ -14,7 +15,7 @@ function ReportLandingPage() {
         backgroundColor: '#274e61',
         color: '#46F0F9',
         borderRadius: '10px',
-        width: '90%',
+        width: '60%',
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
     }
     return (
@@ -31,53 +32,82 @@ function ReportLandingPage() {
                     width: '100%',
                     height: 'auto',
                 }}>
-                    <Typography variant='h5'>Incident Report Center</Typography>
+                    <Typography variant='h6' textAlign='center'
+                                sx={{
+                                    fontFamily: 'Poppins',
+                                    fontWeight: 'bold',
+                                }}>
+                        Operational Report Center</Typography>
                 </Paper>
                 <br/><br/>
                 <Stack spacing={2} direction='column'
-                       sx={{padding: 0, borderRadius: '10px'}}>
-                    <Grid container spacing={2}>
+                       sx={{padding: 3, borderRadius: '10px'}}>
+                    <Grid container spacing={1}>
                         <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Auditing</Typography>
-                                </Stack>
-                            </Paper>
+                            <Stack direction='column' spacing={2} sx={{alignItems: 'left'}}>
+                                <Link href='/dashboard/admin/reports/servicing'>
+                                    <Avatar src='/Servicing.svg' alt='Servicing' sx={{width: 250, height: 250,}}/>
+                                </Link>
+                                <Link href='#'>
+                                    <Typography variant='h6' textAlign='center'
+                                                sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: 'bold',
+                                                    borderRadius: 5,
+                                                    ml: 3,
+                                                    p: '5px',
+                                                    bgcolor: '#0059b3',
+                                                    color: '#FFF',
+                                                    width: '50%',
+                                                }}>
+                                        Servicing Reports
+                                    </Typography>
+                                </Link>
+                            </Stack>
                         </Grid>
                         <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Servicing</Typography>
-                                </Stack>
-                            </Paper>
+                            <Stack direction='column' spacing={2}>
+                                <Link href='/dashboard/admin/reports/fuel'>
+                                    <Avatar src='/Fuelling-2.svg' alt='Fuelling' sx={{width: 250, height: 250,}}/>
+                                </Link>
+                                <Link href='#'>
+                                    <Typography variant='h6' textAlign='center'
+                                                sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: 'bold',
+                                                    // color: '#46F0F9',
+                                                    borderRadius: 5,
+                                                    p: '5px',
+                                                    bgcolor: '#0059b3',
+                                                    color: '#FFF',
+                                                    width: '50%',
+                                                    ml: 3,
+                                                    
+                                                }}>Fuelling Reports</Typography>
+                                </Link>
+                            </Stack>
                         </Grid>
                         <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Fuelling</Typography>
-                                </Stack>
-                            </Paper>
+                            <Stack direction='column' spacing={2}>
+                                <Link href='#'>
+                                    <Avatar src='/Incident.svg' alt='Incident' sx={{width: 250, height: 250,}}/>
+                                </Link>
+                                <Link href='#'>
+                                    <Typography variant='h6' textAlign='center'
+                                                sx={{
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: 'bold',
+                                                    // color: '#46F0F9',
+                                                    borderRadius: 5,
+                                                    p: '5px',
+                                                    bgcolor: '#0059b3',
+                                                    color: '#FFF',
+                                                    width: '50%',
+                                                    ml: 3,
+                                                }}>Incident-Reports</Typography>
+                                </Link>
+                            </Stack>
                         </Grid>
-                        <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='#'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Incident-Reports</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                    
                     </Grid>
                 </Stack>
             

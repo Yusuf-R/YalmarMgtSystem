@@ -2,8 +2,9 @@
 import AdminUtilities from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
 import {useEffect, useState} from 'react';
-import LostInSpace from "@/components/LostInSpace/LostInSpace";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 import EditBiodata from "@/components/SettingsComponents/EditBiodata/EditBiodata";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
 function EditBio() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);
@@ -45,10 +46,11 @@ function EditBio() {
     }, [shouldRedirect, router]); // Depend on shouldRedirect to trigger the effect
     
     if (isLoading) {
-        return <p>Loading...</p>;
+        return <LazyLoading/>
     }
     
     if (!decryptedUserID || !decryptedStaffData) {
+        
         return <LostInSpace/>; // Render LostInSpace if decryption failed
     }
     return (

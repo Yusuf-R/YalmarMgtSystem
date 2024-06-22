@@ -1,11 +1,12 @@
 'use client';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Staff from '@/components/StaffComponents/Staff/Staff';
 import {useQuery} from '@tanstack/react-query'; // Ensure this import is correct
 import AdminUtils from '@/utils/AdminUtilities';
 import {useRouter} from "next/navigation";
-import {useEffect} from "react";
+import {Suspense} from "react";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
+
 
 function AllStaff() {
     const router = useRouter();
@@ -21,17 +22,17 @@ function AllStaff() {
     sessionStorage.removeItem('staffData');
     
     if (isLoading) {
-        return <span>Loading...</span>;
+        return <LazyLoading/>
     }
     
     if (isError) {
-        return router.push('/error/404');
+        return <DataFetchError/>
     }
     const {allStaff} = data;
     return (
-        <>
+        <Suspense fallback={<LazyLoading/>}>
             <Staff allStaff={allStaff}/>
-        </>
+        </Suspense>
     );
 }
 

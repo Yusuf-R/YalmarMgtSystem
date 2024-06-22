@@ -1342,8 +1342,10 @@ export const siteStatus = [
     'Deactivated',
 ]
 export const type = [
-    'BSC',
+    'MGW',
     'HUB',
     'MAJOR-HUB',
-    'TERMINAL'
+    'TERMINAL',
+    'TERMINAL-HUB',
+    'BSC',
 ]

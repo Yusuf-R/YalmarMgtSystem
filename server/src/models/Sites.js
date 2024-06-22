@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
+
 const site = {
     siteId: {type: String, required: true, unique: true},
     state: {type: String, required: true, default: 'KADUNA'},
     cluster: {type: String, enum: ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA'], required: true},
     location: {type: String},
     type: {
-        type: String, enum: ['TERMINAL', 'HUB', 'MAJOR-HUB', 'BSC'],
+        type: String, enum: ['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'],
         required: true,
         default: 'HUB'
     },

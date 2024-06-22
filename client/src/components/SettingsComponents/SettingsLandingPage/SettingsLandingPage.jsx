@@ -41,16 +41,6 @@ function SettingsLandingPage() {
                        sx={{padding: 0, borderRadius: '10px'}}>
                     <Grid container spacing={2}>
                         <Grid item xs={4}>
-                            <Paper elevation={5} sx={paperSx}>
-                                <Stack direction='column' spacing={2}>
-                                    <Link href='/dashboard/admin/settings/picture'>
-                                        <Image src='/ProfilePic.svg' alt='ProfilePic' width={200} height={200}/>
-                                    </Link>
-                                    <Typography variant='h6'>Update Profile Picture</Typography>
-                                </Stack>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={4}>
                             {/* Render MyBioData component*/}
                             <Paper elevation={5} sx={paperSx}>
                                 <Stack direction='column' spacing={2}>
@@ -68,12 +58,10 @@ function SettingsLandingPage() {
                                     <Link href='/dashboard/admin/settings/leave-request'>
                                         <Image src='/LeaveRequest.svg' alt='Optimization' width={200} height={200}/>
                                     </Link>
-                                    <Typography variant='h6'>LeaveRequest</Typography>
+                                    <Typography variant='h6'>LeaveRequest Manager</Typography>
                                 </Stack>
                             </Paper>
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
                         <Grid item xs={4}>
                             {/* Render Optimization component*/}
                             <Paper elevation={5} sx={paperSx}>
@@ -85,6 +73,8 @@ function SettingsLandingPage() {
                                 </Stack>
                             </Paper>
                         </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
                         <Grid item xs={4}>
                             {/* Render Optimization component*/}
                             <Paper elevation={5} sx={paperSx}>

@@ -3,6 +3,9 @@ import LeaveRequestManagement from "@/components/HelpDeskComponents/LeaveRequest
 import {useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
+import {Suspense} from "react";
 
 function LeaveRequestCenter() {
     const router = useRouter();
@@ -13,15 +16,19 @@ function LeaveRequestCenter() {
         refetchOnWindowFocus: false,
     });
     if (isLoading) {
-        return <span>Loading...</span>;
+        return <LazyLoading/>
     }
-    if (isError) {
-        return router.push('/error/404');
+    
+    if (isError || !data) {
+        console.error('Error fetching user data');
+        return <DataFetchError/>;
     }
     const {leaveReqData} = data;
     return (
         <>
-            <LeaveRequestManagement leaveReqData={leaveReqData}/>
+            <Suspense fallback={<LazyLoading/>}>
+                <LeaveRequestManagement leaveReqData={leaveReqData}/>
+            </Suspense>
         </>
     )
 }

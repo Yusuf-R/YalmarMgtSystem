@@ -1,4 +1,4 @@
-import LostInSpace from "@/components/LostInSpace/LostInSpace";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 
 function VoidPage() {
     return (

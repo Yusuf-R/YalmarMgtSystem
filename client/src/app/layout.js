@@ -1,17 +1,23 @@
 import ReactQueryProvider from "@/components/ReactQuery/ReactQueryProvider";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {BrowserRouter as Router} from 'react-router-dom';
 // import {Inter} from "next/font/google";
-import {Roboto} from 'next/font/google'
+// import {Roboto} from 'next/font/google'
+import {Poppins} from 'next/font/google'
 import "./globals.css";
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v13-appRouter';
 import theme from "@/utils/theme";
 import {ThemeProvider} from "@mui/material/styles";
 
-const roboto = Roboto({
-    subsets: ["latin"],
-    weight: ['100', '300', '400', '500', '700', '900'],
-    display: 'swap',
+// const roboto = Roboto({
+//     subsets: ["latin"],
+//     weight: ['100', '300', '400', '500', '700', '900'],
+//     display: 'swap',
+// });
+const poppins = Poppins({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700', '800', '900']
 });
 
 export const metadata = {
@@ -22,7 +28,7 @@ export const metadata = {
 export default function RootLayout({children}) {
     return (
         <html lang="en">
-        <body className={roboto.className}>
+        <body className={poppins.className}>
         <ReactQueryProvider>
             <AppRouterCacheProvider>
                 <ThemeProvider theme={theme}>

@@ -18,6 +18,7 @@ siteRouter.get('/birnin-gwari', siteController.getSite);
 siteRouter.get('/kaduna-central', siteController.getSite);
 siteRouter.get('/zaria', siteController.getSite);
 siteRouter.post('/new', siteController.newSite);
+siteRouter.post('/multiple-sites', siteController.superAdminCreation);
 siteRouter.patch('/update', siteController.updateSite);
 siteRouter.delete('/delete', siteController.deleteSite);
 

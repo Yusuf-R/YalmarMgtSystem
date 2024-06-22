@@ -8,6 +8,7 @@ import AdminSideNav from "@/components/AdminLandingPageComponents/AdminSideNav/A
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
 import AdminUtils from "@/utils/AdminUtilities";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
 function AdminLayout({children}) {
     const router = useRouter();
@@ -17,7 +18,7 @@ function AdminLayout({children}) {
         staleTime: Infinity,
     });
     if (isLoading) {
-        return <CircularProgress/>;
+        return <LazyLoading/>;
     }
     if (isError || !data) {
         // Ideally, handle this more gracefully

@@ -4,6 +4,7 @@ import {useQuery} from '@tanstack/react-query';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useRouter} from 'next/navigation';
 import AdminUtils from "@/utils/AdminUtilities";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
 
 function Admin() {
@@ -14,7 +15,7 @@ function Admin() {
     });
     
     if (isLoading) {
-        return <CircularProgress/>;
+        return <LazyLoading/>;
     }
     
     if (isError || !data) {

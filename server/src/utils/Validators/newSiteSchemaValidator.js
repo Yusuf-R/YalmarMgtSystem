@@ -5,7 +5,7 @@ export const newSiteSchemaValidator = Joi.object().keys({
     state: Joi.string().required(),
     cluster: Joi.string().required(),
     location: Joi.string().optional().allow('').allow(null),
-    type: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'BSC'),
+    type: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'),
     status: Joi.string().required().valid('Active', 'Inactive', 'Deactivated'),
     longitude: Joi.number().optional().allow('').allow(null),
     latitude: Joi.number().optional().allow('').allow(null),
