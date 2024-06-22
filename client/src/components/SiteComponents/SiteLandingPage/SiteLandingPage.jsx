@@ -47,8 +47,8 @@ function SiteLandingPage() {
                                 <Link href='/dashboard/admin/site/all'>
                                     <Avatar src='/SitesGroup.svg' alt='Biodata'
                                             sx={{
-                                                width: 250,
-                                                height: 250,
+                                                width: 300,
+                                                height: 300,
                                                 alignContent: 'center',
                                                 
                                             }}/>

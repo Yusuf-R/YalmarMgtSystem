@@ -598,6 +598,59 @@ class AdminUtils {
             throw new Error(error);
         }
     }
+    
+    static async AllServicingReports() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/service/all',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async NewServicingReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/service/new',
+                data: obj,
+            })
+            
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async UpdateServicingReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "PATCH",
+                url: '/service/update',
+                data: obj,
+            })
+            
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async DeleteServicingReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/service/delete',
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;

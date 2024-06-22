@@ -1,7 +1,6 @@
 import AuthController from "./AuthController";
 import dbClient from "../utils/db";
 import mongoose from "mongoose";
-import Site from "../models/Sites";
 import Fuelling from "../models/Fuelling";
 import {newFuellingSchemaValidator} from "../utils/Validators/newFuellingSchema";
 import {editFuellingReportSchemaValidator} from "../utils/Validators/editFuelingReportSchema";

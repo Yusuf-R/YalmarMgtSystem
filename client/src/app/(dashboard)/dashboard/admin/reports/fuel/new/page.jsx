@@ -1,5 +1,5 @@
 'use client';
-import NewFuellingReport from "@/components/FuellingComponents/NewFuellingReport/NewFuellingReport";
+import NewFuellingReport from "@/components/ReportComponents/FuellingComponents/NewFuellingReport/NewFuellingReport";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
@@ -26,11 +26,11 @@ function FuelSupplyReportForm() {
         return <DataFetchError/>;
     }
     
-    const effectiveStaffData = allSite || data.allSite;
+    const effectiveSiteData = allSite || data.allSite;
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <NewFuellingReport allSite={effectiveStaffData.allSite}/>
+                <NewFuellingReport allSite={effectiveSiteData.allSite}/>
             </Suspense>
         </>
     )

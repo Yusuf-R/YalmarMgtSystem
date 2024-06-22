@@ -1,57 +1,56 @@
-// const {v4: uuidv4} = require('uuid');
-//
-// require('dotenv').config({path: '../../../server/.env'});
-// const crypto = require('crypto');
-// var jwt = require('jsonwebtoken');
-// var cookieParser = require('cookie-parser')
-//
-// const encryptData = (data) => {
-//     const keyBuffer = Buffer.from(process.env.CIPHER_SECRET, 'hex');
-//     const iv = crypto.randomBytes(16);
-//     const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
-//     let encrypted = cipher.update(data, 'utf8', 'hex');
-//     encrypted += cipher.final('hex');
-//     const authTag = cipher.getAuthTag();
-//     return iv.toString('hex') + authTag.toString('hex') + encrypted;
-// }
-//
-//
-// const decryptedData = (encryptedData) => {
-//     const keyBuffer = Buffer.from(process.env.CIPHER_SECRET, 'hex');
-//     const iv = Buffer.from(encryptedData.slice(0, 32), 'hex');
-//     const authTag = Buffer.from(encryptedData.slice(32, 64), 'hex');
-//     const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
-//     decipher.setAuthTag(authTag);
-//     try {
-//         let decryptedData = decipher.update(encryptedData.slice(64), 'hex', 'utf8');
-//         decryptedData += decipher.final('utf8');
-//         return decryptedData;
-//     } catch (error) {
-//         console.error('Error during decryption:', error.message);
-//         return null;
-//     }
-// }
-//
-// const data = {
-//     name: 'Kehinde',
-//     id: uuid4(),
-//     isAdmin: true,
-// }
-//
-// const accessToken = jwt.sign(data, process.env.JWT_ACCESS_SECRET, {expiresIn: '1d'});
-// console.log({accessToken});
-// const encryptedData = encryptData(accessToken);
-// console.log({encryptedData});
-// const decryptDT = decryptedData(encryptedData);
-// console.log({decryptDT});
-//
-
-
-// console.log(crypto.randomBytes(32).toString('hex'));
-
-// script to create all the sites
+require('dotenv').config({path: '../../../server/.env'});
+const {v4: uuidv4} = require('uuid');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Site = require('../models/Sites');
+const Staff = require('../models/Staff'); // Adjust the path to your Staff model
+
+
+var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser')
+
+const encryptData = (data) => {
+    const keyBuffer = Buffer.from(process.env.CIPHER_SECRET, 'hex');
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-gcm', keyBuffer, iv);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    const authTag = cipher.getAuthTag();
+    return iv.toString('hex') + authTag.toString('hex') + encrypted;
+}
+
+const decryptedData = (encryptedData) => {
+    const keyBuffer = Buffer.from(process.env.CIPHER_SECRET, 'hex');
+    const iv = Buffer.from(encryptedData.slice(0, 32), 'hex');
+    const authTag = Buffer.from(encryptedData.slice(32, 64), 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-gcm', keyBuffer, iv);
+    decipher.setAuthTag(authTag);
+    try {
+        let decryptedData = decipher.update(encryptedData.slice(64), 'hex', 'utf8');
+        decryptedData += decipher.final('utf8');
+        return decryptedData;
+    } catch (error) {
+        console.error('Error during decryption:', error.message);
+        return null;
+    }
+}
+
+const data = {
+    name: 'Kehinde',
+    id: uuid4(),
+    isAdmin: true,
+}
+
+const accessToken = jwt.sign(data, process.env.JWT_ACCESS_SECRET, {expiresIn: '1d'});
+console.log({accessToken});
+const encryptedData = encryptData(accessToken);
+console.log({encryptedData});
+const decryptDT = decryptedData(encryptedData);
+console.log({decryptDT});
+// console.log(crypto.randomBytes(32).toString('hex'));
+
+
+
 const allSitesData = {
     'BIRNIN-GWARI': [
         {siteId: "BGR001", location: "BRININ GWARI"},
@@ -130,6 +129,7 @@ const allSiteStates = [
     'KADUNA',
 ];
 
+// script to create all the sites
 (async function () {
     try {
         await mongoose.connect('mongodb://localhost:27017/YalmarMgt', {});
@@ -160,5 +160,50 @@ const allSiteStates = [
     }
 })();
 
-
-
+// script for updating staff FullName
+(async function () {
+    try {
+        await mongoose.connect('mongodb://localhost:27017/YalmarMgt', {});
+        console.log('Connected to the database successfully.');
+        
+        // Fetch all staff documents
+        const staffMembers = await Staff.find({});
+        console.log(`Found ${staffMembers.length} staff members.`);
+        
+        // Function to generate full name
+        function generateFullName(doc) {
+            const {title, firstName, middleName, lastName} = doc;
+            let fullName = '';
+            
+            if (title) {
+                fullName += `${title} `;
+            }
+            if (firstName) {
+                fullName += `${firstName} `;
+            }
+            if (middleName) {
+                fullName += `${middleName} `;
+            }
+            if (lastName) {
+                fullName += lastName;
+            }
+            
+            return fullName.trim();
+        }
+        
+        // Iterate over each staff document and update the fullName
+        for (const staff of staffMembers) {
+            staff.fullName = generateFullName(staff);
+            await staff.save();
+            console.log(`Updated fullName for staff: ${staff._id}`);
+        }
+        
+        console.log('All staff full names updated successfully.');
+    } catch (error) {
+        console.error('Error updating staff fullName:', error);
+    } finally {
+        await mongoose.disconnect();
+        console.log('Disconnected from the database.');
+        process.exit();
+    }
+})();

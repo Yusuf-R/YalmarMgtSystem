@@ -1,5 +1,5 @@
 import FuellingReportLandingPage
-    from "@/components/FuellingComponents/FuellingReportLandingPage/FuellingReportLandingPage";
+    from "@/components/ReportComponents/FuellingComponents/FuellingReportLandingPage/FuellingReportLandingPage";
 
 function FuelReport() {
     return (

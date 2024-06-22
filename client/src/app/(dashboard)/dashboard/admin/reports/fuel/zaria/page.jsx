@@ -1,4 +1,4 @@
-import FuelReportZaria from "@/components/FuellingComponents/FuellingReport-Zaria/FuelReportZaria";
+import FuelReportZaria from "@/components/ReportComponents/FuellingComponents/FuellingReport-Zaria/FuelReportZaria";
 
 function ZariaFuelReport() {
     return (

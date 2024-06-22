@@ -1,12 +1,34 @@
 const mongoose = require('mongoose');
 const staffMethods = require('./methods/staffMethods');
 
+// Function to generate full name
+function generateFullName(doc) {
+    const {title, firstName, middleName, lastName} = doc;
+    let fullName = '';
+    
+    if (title) {
+        fullName += `${title} `;
+    }
+    if (firstName) {
+        fullName += `${firstName} `;
+    }
+    if (middleName) {
+        fullName += `${middleName} `;
+    }
+    if (lastName) {
+        fullName += lastName;
+    }
+    
+    return fullName.trim();
+}
+
 const staff = {
     title: {type: String, enum: ['Miss', 'Mr', 'Mrs'], required: true},
     // staffName: {type: String, unique: true},
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     middleName: {type: String},
+    fullName: {type: String}, // Added fullName field
     dob: {type: String, default: Date, required: true},
     gender: {type: String, enum: ['Male', 'Female'], required: true},
     religion: {type: String, enum: ['Christianity', 'Islam', 'Others'], required: true},
@@ -123,6 +145,22 @@ const staff = {
     resetOTP: String,
 };
 const staffSchema = new mongoose.Schema(staff, {timestamps: true});
+
+// Pre-save hook to generate fullName before saving
+staffSchema.pre('save', function (next) {
+    this.fullName = generateFullName(this);
+    next();
+});
+
+// Pre-update hook to ensure fullName is updated on relevant fields change
+staffSchema.pre('findOneAndUpdate', function (next) {
+    const update = this.getUpdate();
+    if (update.title || update.firstName || update.middleName || update.lastName) {
+        const newFullName = generateFullName(update);
+        this.setUpdate({...update, fullName: newFullName});
+    }
+    next();
+});
 
 staffSchema.methods.generateOTP = staffMethods.generateOTP;
 staffSchema.methods.validateOTP = staffMethods.validateOTP;

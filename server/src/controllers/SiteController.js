@@ -31,11 +31,12 @@ class SiteController {
             }
             // get all the site in db
             const allSite = await Site.find({}).select('-__v -createdAt -updatedAt');
+            console.log(allSite);
             if (!allSite) {
                 return res.status(404).json({error: 'No site found'});
             }
             return res.status(200).json({
-                message: 'All staff retrieved successfully',
+                message: 'All site retrieved successfully',
                 allSite
             })
         } catch (error) {

@@ -6,7 +6,7 @@ import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
 import AdminUtils from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
 
-const FuelAnalytics = lazy(() => import("@/components/FuellingComponents/FuelAnalytics/FuelAnalytics"));
+const FuelAnalytics = lazy(() => import("@/components/ReportComponents/FuellingComponents/FuelAnalytics/FuelAnalytics"));
 
 function FuelAnalyticsDashboard() {
     const [decryptedSiteData, setDecryptedSiteData] = useState(null);

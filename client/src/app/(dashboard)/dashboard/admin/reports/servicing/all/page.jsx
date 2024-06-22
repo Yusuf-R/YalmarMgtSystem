@@ -5,12 +5,12 @@ import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
 import {Suspense, lazy} from "react";
 
-const FuellingReport = lazy(() => import("@/components/ReportComponents/FuellingComponents/FuellingReport/FuellingReport"))
+const ServicingReport = lazy(() => import("@/components/ReportComponents/ServicingComponents/ServicingReport/ServicingReport"))
 
-function FuelSuppliedReport() {
+function AllServicingReport() {
     const {isLoading, isError, data, error} = useQuery({
-        queryKey: ['AllFuelReport'],
-        queryFn: AdminUtils.AllFuelReport,
+        queryKey: ['AllServicingReports'],
+        queryFn: AdminUtils.AllServicingReports,
         staleTime: Infinity,
         refetchOnWindowFocus: false,
     });
@@ -24,15 +24,15 @@ function FuelSuppliedReport() {
         return <DataFetchError/>;
     }
     
-    const {allFuelReport} = data;
+    const {allServicingReport} = data;
     
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <FuellingReport allFuelReport={allFuelReport}/>
+                <ServicingReport allServicingReport={allServicingReport}/>
             </Suspense>
         </>
     )
 }
 
-export default FuelSuppliedReport
+export default AllServicingReport

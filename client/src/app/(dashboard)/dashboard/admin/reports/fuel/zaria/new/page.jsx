@@ -1,4 +1,4 @@
-import NewFuellingReport from "@/components/FuellingComponents/NewFuellingReport/NewFuellingReport";
+import NewFuellingReport from "@/components/ReportComponents/FuellingComponents/NewFuellingReport/NewFuellingReport";
 
 function NewFuelSupply() {
     return (
