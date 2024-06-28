@@ -13,7 +13,7 @@ serviceRouter.use(cors(corsOptions));
 
 
 serviceRouter.get('/all', servicingController.getAllServicingReport);
-// serviceRouter.post('/new', servicingController.newFuelReport);
+serviceRouter.post('/new', servicingController.newServicingReport);
 // serviceRouter.patch('/update', servicingController.updateFuelReport);
 // serviceRouter.delete('/delete', servicingController.deleteFuelReport);
 

@@ -1,7 +1,7 @@
 'use client';
 // import AdvancedImageResizer from "@/components/AdvanceImageResizer/AdvanceImageResizer";
 // import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
-import {Controller} from "react-hook-form";
+import {Controller, useWatch} from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import * as yup from 'yup';
 import {mainSection} from "@/utils/data";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 const siteData = {
     "_id": "6669c9fb2fdadef23e5590e5",
@@ -69,6 +70,10 @@ function TestComponent() {
     };
     console.log({errors});
     
+    //gen1 frequency
+    const gen1Frequency = useWatch({control, name: 'frequency'});
+    
+    
     const submitUpdate = async (data) => {
         console.log({data});
         try {
@@ -122,7 +127,39 @@ function TestComponent() {
                             )}
                         />
                     </Grid>
-                
+                    <Grid item xs={3}>
+                        <Controller
+                            name="frequency"
+                            control={control}
+                            render={({field}) => (
+                                <TextField
+                                    {...field}
+                                    label="Operating frequency Reading"
+                                    type="number"
+                                    onChange={(e) => field.onChange(e.target.value)}
+                                    InputProps={{
+                                        sx: {
+                                            color: "#46F0F9",
+                                        }
+                                    }}
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: "#46F0F9",
+                                            "&.Mui-focused": {
+                                                color: "white",
+                                            },
+                                        }
+                                    }}
+                                    fullWidth
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="h6" sx={{mt: 2}}>
+                            Current Operating Frequency: {gen1Frequency || 'Not set'}
+                        </Typography>
+                    </Grid>
                 </Grid>
                 <br/><br/>
                 <Button type='submit' color='success' variant='contained'>Submit</Button>
