@@ -484,17 +484,14 @@ function Site({allSite}) {
                             </Tooltip>
                         </Button>
                     </Stack>
-                    <Dialog
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                            component: 'form',
-                            onSubmit: handleDelete,
-                            sx: {
-                                backgroundColor: '#0E1E1E'
-                            },
-                        }}
-                    >
+                    {/*Delete Dialogue*/}
+                    <Dialog open={dialogueDelete} onClose={CloseDeleteDialogue} PaperProps={{
+                        component: 'form',
+                        onSubmit: handleDelete,
+                        sx: {
+                            backgroundColor: '#0E1E1E'
+                        },
+                    }}>
                         <DialogTitle>
                             <Typography variant="button" display="block" gutterBottom
                                         sx={{color: 'red', fontWeight: 'bold', fontSize: '1.0em'}}>
@@ -542,7 +539,8 @@ function Site({allSite}) {
                         <DialogActions sx={{justifyContent: 'space-between'}}>
                             <Stack direction="row" gap={4} justifyContent='space-between'
                                    sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
-                                <Button onClick={handleClose} variant="contained" color="success">Cancel</Button>
+                                <Button onClick={CloseDeleteDialogue} variant="contained"
+                                        color="success">Cancel</Button>
                                 <Button type="submit" variant="contained" color="error"> Delete </Button>
                             </Stack>
                         </DialogActions>

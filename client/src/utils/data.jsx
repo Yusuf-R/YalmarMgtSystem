@@ -5,6 +5,68 @@ export const mainSection = {
     top: '70px',
     left: '200px',
 }
+
+export const mainSection2 = {
+    padding: '20px',
+    width: 'calc(100% - 250px)',
+    position: 'absolute',
+    top: '950px',
+    left: '200px',
+}
+
+export const mainSection3 = {
+    padding: '20px',
+    width: 'calc(100% - 250px)',
+    position: 'absolute',
+    top: '2500px',
+    left: '200px',
+}
+export const txProps = {
+    color: "white",
+    bgcolor: "#274e61",
+    borderRadius: "10px",
+    width: '250px',
+    fontSize: '16px',
+    fontStyle: 'bold',
+    '&:hover': {
+        bgcolor: '#051935',
+    },
+    fontFamily: 'Poppins',
+    "& .MuiInputBase-input": {
+        color: 'white',
+    },
+    "& .MuiFormHelperText-root": {
+        color: 'red',
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+        borderColor: 'green',
+    },
+    "& input:-webkit-autofill": {
+        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+        WebkitTextFillColor: 'white',
+    },
+};
+export const paperProps = {
+    alignCenter: 'center',
+    padding: '10px',
+    backgroundColor: '#274e61',
+    color: '#46F0F9',
+    borderRadius: '10px',
+    width: '100%',
+    height: 'auto',
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)'
+};
+export const modalStyle = {
+    position: 'absolute',
+    top: '51%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    boxShadow: 24,
+    // overflow: 'auto',
+    display: 'block',
+    borderRadius: '10px',
+    backgroundColor: 'white',
+};
 export const statesAndLGAs = {
     Abia: [
         "Aba North",

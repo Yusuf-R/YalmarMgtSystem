@@ -37,6 +37,7 @@ export const newServiceReportSchema = yup.object().shape({
     // siteGenModes
     siteGenModes: yup.string().oneOf(['GEN-1', 'GEN-1 and GEN-2'], 'Invalid site gen modes').required('Site gen modes is required'),
     
+    // generator PM
     generatorPM: yup.object().shape({
         defaultOperation: yup.string().oneOf(['Gen1', 'Gen2'], 'Invalid default operation').required('Default operation is required'),
         gen1Type: yup.string().oneOf(['CAT',
@@ -57,8 +58,8 @@ export const newServiceReportSchema = yup.object().shape({
             .required('Gen1 hour selection is required'),
         customGen1Hr: yup.number().when('gen1Hr', {
             is: 'Enter Value',
-            then: yup.number().positive().required('Custom Gen1 hour is required'),
-            otherwise: yup.number().strip(),
+            then: () => yup.number().positive().required('Custom Gen1 hour is required'),
+            otherwise: () => yup.number().strip(),
         }),
         gen1OperatingVoltage: yup.number().positive('Must be a positive number').required('Gen1 operating voltage is required'),
         gen1OperatingFrequency: yup.number().positive('Must be a positive number').required('Gen1 operating frequency is required'),
@@ -81,8 +82,8 @@ export const newServiceReportSchema = yup.object().shape({
             .required('Gen2 hour selection is required'),
         customGen2Hr: yup.number().when('gen2Hr', {
             is: 'Enter Value',
-            then: yup.number().positive().required('Custom Gen2 hour is required'),
-            otherwise: yup.number().strip(),
+            then: () => yup.number().positive().required('Custom Gen2 hour is required'),
+            otherwise: () => yup.number().strip(),
         }),
         gen2OperatingVoltage: yup.number().when('gen2Type', {
             is: 'NOT-APPLICABLE',
@@ -129,8 +130,8 @@ export const newServiceReportSchema = yup.object().shape({
     }),
     
     shelterPM: yup.object().shape({
-        siteCleaningStatus: yup.string().oneOf(['OK', 'NOT OK', 'NOT-APPLICABLE'], 'Invalid cleaning status').required('Site cleaning status is required'),
-        shelterCleaningStatus: yup.string().oneOf(['OK', 'NOT OK', 'NOT-APPLICABLE'], 'Invalid cleaning status').required('Shelter cleaning status is required'),
+        siteCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid site cleaning status').required('Site cleaning status is required'),
+        shelterCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid shelter cleaning status').required('Shelter cleaning status is required'),
     }),
     
     lightningPM: yup.object().shape({
@@ -158,7 +159,7 @@ export const newServiceReportSchema = yup.object().shape({
         backUpBatteries: yup.string().oneOf(batOpt, 'Invalid back up battery selection').required('Back up batteries is required'),
         count: yup.number().when('backUpBatteries', {
                 is: 'YES',
-                // its value must be a positive number of any  of this value [4, 8, 12, 16, 24, 32, 48]
+                // its value must be a positive number of this value [4, 8, 12, 16, 24, 32, 48, 'NOT-APPLICABLE']
                 then: () => yup.number().required('Number of batteries is required').positive('Must be a positive number').oneOf([0, 4, 8, 12, 16, 24, 32, 48], 'Invalid number of batteries'),
                 otherwise: () => yup.number().nullable(),
             },
@@ -172,7 +173,7 @@ export const newServiceReportSchema = yup.object().shape({
     }),
     
     otherPM: yup.object().shape({
-        feederCableStatus: yup.string().oneOf(otherOpt, 'Invalid fedder cable status').required('Feeder cable status is required'),
+        feederCableStatus: yup.string().oneOf(otherOpt, 'Invalid feeder cable status').required('Feeder cable status is required'),
         changeOverSwitchStatus: yup.string().oneOf(otherOpt, 'Invalid change over switch status').required('Change over switch status is required'),
         earthingCableStatus: yup.string().oneOf(otherOpt, 'Invalid earthing cable status').required('Earthing cable status is required'),
         earthingStatus: yup.string().oneOf(otherOpt, 'Invalid earthing status').required('Earthing status is required'),
@@ -185,4 +186,5 @@ export const newServiceReportSchema = yup.object().shape({
     }),
     
     summary: yup.string().required('Summary is required'),
+    images: yup.array().of(yup.string()).required('Images are required'),
 });

@@ -64,12 +64,14 @@ class ServicingController {
             if (error) {
                 // Format Joi error messages
                 console.log('validation error');
-                console.log(error);
-                const formattedErrors = error.details.map(detail => {
-                    // Remove slashes and display more readable messages
-                    return detail.message.replace(/["\\]/g, '');
-                });
-                return res.status(400).json({error: formattedErrors});
+                const errMsg = error.details;
+                console.log(req.body);
+                console.log(errMsg);
+                // const formattedErrors = error.details.map(detail => {
+                //     // Remove slashes and display more readable messages
+                //     return detail.message.replace(/["\\]/g, '');
+                // });
+                return res.status(400).json({error: errMsg});
             }
             console.log('BackEnd Verification Passed');
             console.log({value});

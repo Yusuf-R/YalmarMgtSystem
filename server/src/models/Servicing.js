@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
-const opt1 = ['OK', "NOT OK", 'NOT APPLICABLE'];
-const opt2 = ['YES', "NO", 'NOT APPLICABLE'];
-const opt3 = ['WORKING', "NOT-WORKING", 'NOT APPLICABLE'];
+const opt1 = ['OK', "NOT-OK", 'NOT-APPLICABLE'];
+const opt2 = ['YES', "NO", 'NOT-APPLICABLE'];
+const opt3 = ['WORKING', "NOT-WORKING", 'NOT-APPLICABLE'];
 
-const hrOptions = ['Enter Value', 'FAULTY TELLYS', 'NOT APPLICABLE'];
+const hrOptions = ['Enter Value', 'FAULTY TELLYS', 'NOT-APPLICABLE'];
 
 // Custom validation for genHr fields
 const validateGenHr = {
     validator: function (value) {
-        return typeof value === 'number' || ["FAULTY TELLYS", 'NOT APPLICABLE'].includes(value);
+        return typeof value === 'number' || ["FAULTY TELLYS", 'NOT-APPLICABLE'].includes(value);
     },
     message: props => `${props.value} is not a valid value for genHr.`
 };
@@ -84,7 +84,7 @@ const serviceOps = {
             ],
             required: true,
         },
-        gen1Display: {type: String, enum: ['OK', "NOT OK", 'NOT APPLICABLE']},
+        gen1Display: {type: String, enum: ['OK', "NOT-OK", 'NOT-APPLICABLE']},
         gen1Hr: {
             type: Schema.Types.Mixed,
             validate: {
@@ -102,22 +102,23 @@ const serviceOps = {
             type: Number,
             required: true,
         },
-        gen1WorkingStatus: {type: String, enum: ['OK', "NOT OK", 'WEAK GEN', 'NOT APPLICABLE']},
+        gen1WorkingStatus: {type: String, enum: ['OK', "NOT-OK", 'WEAK-GEN', 'NOT-APPLICABLE']},
         
         // gen2 info
         gen2Type: {
             type: String,
             enum: [
                 'CAT',
-                'Mantrac',
-                'Lista-Peter',
-                'FG-Wilson',
-                'Jubali-Bros',
-                'Mikano',
-                'Younes',
-                'Perkins',
+                'MANTRAC',
+                'LISTA-PETER',
+                'FG-WILSON',
+                'JUBALI-BROS',
+                'MIKANO',
+                'YOUNES',
+                'PERKINGS',
                 'SDMO',
-                'Others',
+                'OTHERS',
+                'NOT-APPLICABLE'
             ],
             required: function () {
                 return this.siteGenModes === 'GEN-1 and GEN-2';
@@ -126,7 +127,7 @@ const serviceOps = {
         },
         gen2Display: {
             type: String,
-            enum: ['OK', "NOT OK", 'NOT APPLICABLE'],
+            enum: ['OK', "NOT-OK", 'NOT-APPLICABLE'],
             required: function () {
                 return this.siteGenModes === 'GEN-1 and GEN-2';
             }
@@ -157,7 +158,7 @@ const serviceOps = {
         },
         gen2WorkingStatus: {
             type: String,
-            enum: ['OK', "NOT OK", 'WEAK GEN', 'NOT APPLICABLE'],
+            enum: ['OK', "NOT-OK", 'WEAK GEN', 'NOT-APPLICABLE'],
             required: function () {
                 return this.siteGenModes === 'GEN-1 and GEN-2';
             }
@@ -231,7 +232,7 @@ const serviceOps = {
         // },
         backUpBatteries: {
             type: String,
-            enum: ['YES', 'NO', 'NOT APPLICABLE'],
+            enum: ['YES', 'NO', 'NOT-APPLICABLE'],
             required: true,
         },
         // count: number and only required when backUpBatteries is YES
@@ -250,17 +251,17 @@ const serviceOps = {
             },
             default: 0,
         },
-        //status : OK, NOT OK, NOT APPLICABLE, only required if backUpBatteries is YES
+        //status: OK, NOT-OK, NOT-APPLICABLE, only required if backUpBatteries is YES
         status: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: function () {
                 return this.dcSystem.backUpBatteries === 'YES';
             },
         },
         rectifierStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
     },
@@ -268,38 +269,39 @@ const serviceOps = {
     otherPM: {
         feederCableStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
         changeOverSwitchStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
         earthingCableStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
         earthingStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
         fireExtinguisherStatus: {
             type: String,
-            enum: ['OK', 'NOT OK', 'NOT APPLICABLE'],
+            enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
         
     },
     
     securityPM: {
-        securityStatus: {type: String, enum: ['AVAILABLE', "NOT-AVAILABLE", 'NOT APPLICABLE']},
-        siteAccess: {type: String, enum: ['LOCKED', "ACCESS-GRANTED", 'UN-AVAILABLE', 'NOT APPLICABLE']},
+        securityStatus: {type: String, enum: ['AVAILABLE', "NOT-AVAILABLE", 'NOT-APPLICABLE']},
+        siteAccess: {type: String, enum: ['LOCKED', "ACCESS-GRANTED", 'UN-AVAILABLE', 'NOT-APPLICABLE']},
     },
     
     summary: {type: String, required: true},
+    images: Array,
 };
 
 const serviceOpsSchema = new mongoose.Schema(serviceOps, {timestamps: true});

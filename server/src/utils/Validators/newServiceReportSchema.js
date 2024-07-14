@@ -1,22 +1,10 @@
 const Joi = require('joi');
 
-const otherOpt = ['OK', 'NOT-OK', 'NOT-APPLICABLE'];
 // Define a custom validation for gen1Hr to accept either a valid string or a positive number including zero
 const genHrSchema = Joi.alternatives().try(
     Joi.string().valid('Enter Value', 'FAULTY-TELLYS', 'NOT-APPLICABLE'),
-    Joi.number().min(0).positive()
+    Joi.number().min(0)
 );
-
-// Custom validation for generator hours
-const validateGenHr = (value, helpers) => {
-    if (value === '') {
-        return true; // Allow empty value
-    }
-    if (typeof value === 'number' || ["FAULTY-TELLYS", 'NOT-APPLICABLE'].includes(value)) {
-        return value;
-    }
-    return helpers.error('any.invalid');
-};
 
 export const newServiceReportSchemaValidator = Joi.object({
     // Staff info
@@ -95,14 +83,14 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Gen1 display status is required'
         }),
         gen1Hr: genHrSchema.required(),
-        gen1OperatingVoltage: Joi.number().positive().min(0).required().messages({
+        gen1OperatingVoltage: Joi.number().min(0).required().messages({
             'number.base': 'Gen1 operating voltage is required',
-            'number.positive': 'Must be a positive number',
+            'number.min': 'Must be zero or a positive number',
             'any.required': 'Gen1 operating voltage is required'
         }),
-        gen1OperatingFrequency: Joi.number().positive().min(0).required().messages({
+        gen1OperatingFrequency: Joi.number().min(0).required().messages({
             'number.base': 'Gen1 operating frequency is required',
-            'number.positive': 'Must be a positive number',
+            'number.min': 'Must be zero or a positive number',
             'any.required': 'Gen1 operating frequency is required'
         }),
         gen1WorkingStatus: Joi.string().valid('OK', 'NOT-OK', 'WEAK-GEN', 'NOT-APPLICABLE').required().messages({
@@ -127,19 +115,15 @@ export const newServiceReportSchemaValidator = Joi.object({
             'any.only': 'Invalid gen2 display status',
             'string.empty': 'Gen2 display status is required'
         }),
-        gen2Hr: Joi.when('siteGenModes', {
-            is: 'GEN-1 and GEN-2',
-            then: genHrSchema.required(),
-            otherwise: Joi.string().valid('NOT-APPLICABLE').required()
-        }),
-        gen2OperatingVoltage: Joi.number().positive().min(0).required().messages({
+        gen2Hr: genHrSchema.required(),
+        gen2OperatingVoltage: Joi.number().min(0).required().messages({
             'number.base': 'Gen1 operating voltage is required',
-            'number.positive': 'Must be a positive number',
+            'number.min': 'Must be zero or a positive number',
             'any.required': 'Gen1 operating voltage is required'
         }),
-        gen2OperatingFrequency: Joi.number().positive().min(0).required().messages({
+        gen2OperatingFrequency: Joi.number().min(0).required().messages({
             'number.base': 'Gen1 operating frequency is required',
-            'number.positive': 'Must be a positive number',
+            'number.min': 'Must be zero or a positive number',
             'any.required': 'Gen1 operating frequency is required'
         }),
         gen2WorkingStatus: Joi.string().valid('OK', 'NOT-OK', 'WEAK-GEN', 'NOT-APPLICABLE').required().messages({
@@ -153,9 +137,9 @@ export const newServiceReportSchemaValidator = Joi.object({
             'any.only': 'Invalid AC installed status',
             'string.empty': 'AC installed status is required'
         }),
-        noOfACInstalled: Joi.number().positive().min(0).required().messages({
+        noOfACInstalled: Joi.number().min(0).required().messages({
             'number.base': 'Number of AC is required',
-            'number.positive': 'Must be a positive number',
+            'number.min': 'Must be zero or a positive number',
             'any.required': 'Number of AC installed is required'
         }),
         ac1Status: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
