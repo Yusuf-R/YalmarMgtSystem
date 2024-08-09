@@ -80,11 +80,11 @@ class ServicingController {
                 // });
                 return res.status(400).json({error: errMsg});
             }
-            // send image files to cloudinary, use the returned urls to save to the database
             // Construct folder path based on site ID, PM instance, and servicing date
             const servicingDate = new Date(value.servicingDate);
             const monthName = servicingDate.toLocaleString('en-US', {month: 'long'}); // Get month name, e.g., "August"
             const folderPath = `YalmarMgtSystem/ServicingReports/${value.siteId}/${servicingDate.getFullYear()}/${monthName}/${value.pmInstance}/${value.servicingDate}/images`;
+            // send image files to cloudinary, use the returned urls to save to the database
             const uploadPromises = req.files.map(file =>
                 cloudinary.uploader.upload(file.path, {
                     folder: folderPath,
@@ -125,7 +125,9 @@ class ServicingController {
                     });
                 });
             }
+            // Update the images array in the request body
             value.images = uploadedImages;
+            // Save the servicing report to the database
             const newServiceReport = await Servicing.create(value);
             if (!newServiceReport) {
                 return res.status(500).json({error: 'Servicing report creation failed'});
