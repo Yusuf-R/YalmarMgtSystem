@@ -58,13 +58,15 @@
     "react-image-crop": "^11.0.5",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.23.1",
+    "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",
     "sharp": "^0.33.4",
     "styled-components": "^6.1.8",
     "use-count-up": "^3.0.1",
     "xior": "^0.3.12",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.3.1",

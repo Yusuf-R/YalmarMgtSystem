@@ -23,6 +23,7 @@ function Step1ReportingStaff({allStaff, txProps}) {
             setValue('fullName', selectedFullName);
             setValue('email', selectedStaff.email);
             setValue('role', selectedStaff.role);
+            setValue('staff_id', selectedStaff._id);
             clearErrors('fullName');
             clearErrors('email');
             clearErrors('role');

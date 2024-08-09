@@ -142,7 +142,7 @@ function Step6ShelterPM({txProps}) {
     const handleAwlWorkingStatus = (event) => {
         event.preventDefault();
         const awlWorkingStatusValue = event.target.value;
-        setValue('lightningPM.awlWorkingStatus', awlWorkingStatusValue);
+        setValue('lightningPM.awl', awlWorkingStatusValue);
         clearErrors('lightningPM.awlWorkingStatus');
     }
     

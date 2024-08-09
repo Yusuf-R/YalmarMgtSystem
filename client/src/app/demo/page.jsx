@@ -1,7 +1,14 @@
 'use client';
 import Box from '@mui/material/Box';
-import AdvImgResizerMultiFile from "@/components/AdvImgResizerMultiFile/AdvImgResizerMultiFile";
-import AdvImageResizerV2 from "@/components/AdvImageResizerV2/AdvImageResizerV2";
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+// import AdvImgResizerMultiFile from "@/components/AdvImgResizerMultiFile/AdvImgResizerMultiFile";
+// import AdvImageResizerV2 from "@/components/AdvImageResizerV2/AdvImageResizerV2";
+import LazySubmitting from "@/components/LazySubmitting/LazySubmitting";
+import RingLoader from "react-spinners/RingLoader";
+import {mainSection} from "@/utils/data";
+
+
 
 function TestComponent() {
     const txProps = {
@@ -31,10 +38,7 @@ function TestComponent() {
     };
     return (
         <>
-            <Box>
-                <AdvImageResizerV2/>
-            </Box>
-        
+            <LazySubmitting/>
         </>
     )
 }

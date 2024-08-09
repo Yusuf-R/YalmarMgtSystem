@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import {mainSection} from "@/utils/data"
 import MultiStepForm from "@/components/ReportComponents/ServicingComponents/MulitStepForm/MultiStepForm";
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 
 function NewServicingReport({allStaff, allSite}) {
     return (
@@ -23,7 +24,22 @@ function NewServicingReport({allStaff, allSite}) {
                         New Servicing Report
                     </Typography>
                 </Paper>
-                <br/><br/>
+                <br/>
+                <ArrowCircleLeftIcon
+                    sx={{
+                        color: '#00cc99',
+                        fontSize: '40px',
+                        cursor: 'pointer',
+                        '&:hover': {
+                            color: '#00ffcc',
+                        },
+                    }}
+                    onClick={() => window.history.back()}
+                    titleAccess="Back"
+                    aria-label="Back"
+                    role="button"
+                />
+                <br/><br/><br/>
                 <MultiStepForm allSite={allSite} allStaff={allStaff}/>
             </Box>
         </>

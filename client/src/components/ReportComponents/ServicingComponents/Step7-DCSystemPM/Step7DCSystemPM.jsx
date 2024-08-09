@@ -24,8 +24,8 @@ function Step7DCSystemPM({txProps}) {
     ] = watch([
         'dcSystem.rectifierStatus',
         'dcSystem.backUpBatteries',
-        'dcSystem.count',
-        'dcSystem.status',
+        'dcSystem.batteryCount',
+        'dcSystem.batteryStatus',
     ]);
     // DC system PM
     // back up batteries
@@ -42,8 +42,8 @@ function Step7DCSystemPM({txProps}) {
         const backUpBatteriesValue = event.target.value;
         console.log({backUpBatteriesValue});
         // handle default when back-up batteries is NO or NOT-APPLICABLE
-        setValue('shelterPM.backUpBatteries', backUpBatteriesValue);
-        clearErrors('shelterPM.backUpBatteries');
+        setValue('dcSystem.backUpBatteries', backUpBatteriesValue);
+        clearErrors('dcSystem.backUpBatteries');
     }
     // counter
     const getBatteryCount = () => {
@@ -57,8 +57,8 @@ function Step7DCSystemPM({txProps}) {
     const handleBatteryCount = (event) => {
         event.preventDefault();
         const batteryCountValue = event.target.value;
-        setValue('shelterPM.batteryCount', batteryCountValue);
-        clearErrors('shelterPM.batteryCount');
+        setValue('dcSystem.batteryCount', batteryCountValue);
+        clearErrors('dcSystem.batteryCount');
     }
     // status
     const getBatteryStatus = () => {
@@ -72,8 +72,8 @@ function Step7DCSystemPM({txProps}) {
     const handleBatteryStatus = (event) => {
         event.preventDefault();
         const batteryStatusValue = event.target.value;
-        setValue('shelterPM.batteryStatus', batteryStatusValue);
-        clearErrors('shelterPM.batteryStatus');
+        setValue('dcSystem.batteryStatus', batteryStatusValue);
+        clearErrors('dcSystem.batteryStatus');
     }
     
     // rectifier
@@ -88,14 +88,14 @@ function Step7DCSystemPM({txProps}) {
     const handleRectifierStatus = (event) => {
         event.preventDefault();
         const rectifierStatusValue = event.target.value;
-        setValue('shelterPM.rectifierStatus', rectifierStatusValue);
-        clearErrors('shelterPM.rectifierStatus');
+        setValue('dcSystem.rectifierStatus', rectifierStatusValue);
+        clearErrors('dcSystem.rectifierStatus');
     }
     
     useEffect(() => {
         if (backUpBatteries === 'NO' || backUpBatteries === 'NOT-APPLICABLE') {
-            setValue('dcSystem.count', Number(0));
-            setValue('dcSystem.status', 'NOT-APPLICABLE');
+            setValue('dcSystem.batteryCount', Number(0));
+            setValue('dcSystem.batteryStatus', 'NOT-APPLICABLE');
         }
     }, [backUpBatteries]);
     
@@ -190,7 +190,7 @@ function Step7DCSystemPM({txProps}) {
                                 <>
                                     <Grid item xs={2.4}>
                                         <Controller
-                                            name="dcSystem.count"
+                                            name="dcSystem.batteryCount"
                                             control={control}
                                             render={({field}) => (
                                                 <FormControl fullWidth>
@@ -204,10 +204,10 @@ function Step7DCSystemPM({txProps}) {
                                                         }}
                                                         required
                                                         label="Battery Count"
-                                                        error={!!errors.dcSystem?.count}
-                                                        helperText={errors.dcSystem?.count ? (
+                                                        error={!!errors.dcSystem?.batteryCount}
+                                                        helperText={errors.dcSystem?.batteryCount ? (
                                                             <span style={{color: "#fc8947"}}>
-                                                                                {errors.dcSystem?.count.message}
+                                                                                {errors.dcSystem?.batteryCount.message}
                                                                                 </span>
                                                         ) : ''}
                                                         InputProps={{
@@ -261,7 +261,7 @@ function Step7DCSystemPM({txProps}) {
                                 <>
                                     <Grid item xs={2.4}>
                                         <Controller
-                                            name="dcSystem.status"
+                                            name="dcSystem.batteryStatus"
                                             control={control}
                                             render={({field}) => (
                                                 <FormControl fullWidth>
@@ -275,10 +275,10 @@ function Step7DCSystemPM({txProps}) {
                                                         }}
                                                         required
                                                         label="Battery Status"
-                                                        error={!!errors.dcSystem?.status}
-                                                        helperText={errors.dcSystem?.status ? (
+                                                        error={!!errors.dcSystem?.batteryStatus}
+                                                        helperText={errors.dcSystem?.batteryStatus ? (
                                                             <span style={{color: "#fc8947"}}>
-                                                                                {errors.dcSystem?.status.message}
+                                                                                {errors.dcSystem?.batteryStatus.message}
                                                                                 </span>
                                                         ) : ''}
                                                         InputProps={{

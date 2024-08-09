@@ -55,7 +55,11 @@ function Step2SiteInfo({allSite, txProps}) {
     
     const handleSiteIdChange = (event) => {
         const newSiteId = event.target.value;
+        const site_id = allSite.filter(site => site.siteId === newSiteId).map(site => site._id)[0];
+        console.log(site_id);
+        setValue('site_id', site_id);
         setValue('siteId', newSiteId);
+        
     };
     
     return (

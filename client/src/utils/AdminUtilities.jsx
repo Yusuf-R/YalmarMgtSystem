@@ -616,6 +616,9 @@ class AdminUtils {
             const response = await axiosPrivate({
                 method: "POST",
                 url: '/service/new',
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
                 data: obj,
             })
             

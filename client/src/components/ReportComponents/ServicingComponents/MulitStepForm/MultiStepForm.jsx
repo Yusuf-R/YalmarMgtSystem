@@ -1,5 +1,5 @@
 // MultiStepForm.js
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -27,6 +27,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import Stack from "@mui/material/Stack";
 import AdvImgResizerMultiFile from "@/components/AdvImgResizerMultiFile/AdvImgResizerMultiFile";
 import {merge} from 'lodash';
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import AdminUtils from "@/utils/AdminUtilities";
+import {useRouter} from "next/navigation";
+import dayjs from "dayjs";
+import LazySubmitting from "@/components/LazySubmitting/LazySubmitting";
 
 const steps = [
     'Reporting Staff-Info',
@@ -40,7 +45,6 @@ const steps = [
     'Picture-Upload',
     'Admin-Approval',
     'Data-Preview',
-    'Submit'
 ];
 const txProps = {
     color: "white",
@@ -69,7 +73,9 @@ const txProps = {
 };
 
 function MultiStepForm({allStaff, allSite}) {
+    const router = useRouter()
     const [activeStep, setActiveStep] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
         adminFullName: '',
@@ -120,6 +126,12 @@ function MultiStepForm({allStaff, allSite}) {
             floodLightAvailability: '',
             floodLightStatus: null,
         },
+        dcSystem: {
+            rectifierStatus: '',
+            backUpBatteries: '',
+            batteryCount: '',
+            batteryStatus: '',
+        },
         securityPM: {
             securityStatus: '',
             siteAccess: '',
@@ -131,7 +143,8 @@ function MultiStepForm({allStaff, allSite}) {
             earthingCableStatus: '',
             fireExtinguisherStatus: '',
         },
-        images: [] // This will store the uploaded images
+        images: [], // This will store the uploaded images.
+        summary: '',
     });
     const memoizedImages = useMemo(() => formData.images, [formData.images]);
     
@@ -142,8 +155,12 @@ function MultiStepForm({allStaff, allSite}) {
         reValidateMode: 'onChange',
     });
     
+    useEffect(() => {
+        const stepData = methods.getValues();
+        setFormData(prevData => merge({}, prevData, stepData));
+    }, [activeStep, methods]);
+    
     const handleNext = async () => {
-        console.log(activeStep)
         const currentStepFields = getFieldsForStep(activeStep);
         const stepIsValid = await methods.trigger(currentStepFields);
         if (stepIsValid) {
@@ -151,11 +168,11 @@ function MultiStepForm({allStaff, allSite}) {
                 toast.error("Please upload at least one image before proceeding.");
                 return;
             }
-            console.log({formData});
             const stepData = methods.getValues(currentStepFields);
             // Deep merge stepData into formData
             setFormData(prevData => merge({}, prevData, stepData));
             setActiveStep(prevActiveStep => prevActiveStep + 1);
+            
         } else {
             console.log("Please fill all required fields correctly");
         }
@@ -210,8 +227,8 @@ function MultiStepForm({allStaff, allSite}) {
                 return [
                     'dcSystem.rectifierStatus',
                     'dcSystem.backUpBatteries',
-                    'dcSystem.count',
-                    'dcSystem.status',
+                    'dcSystem.batteryCount',
+                    'dcSystem.batteryStatus',
                 ];
             case 7:
                 return [
@@ -295,6 +312,12 @@ function MultiStepForm({allStaff, allSite}) {
                 securityStatus: '',
                 siteAccess: '',
             },
+            dcSystem: {
+                rectifierStatus: '',
+                backUpBatteries: '',
+                batteryCount: '',
+                batteryStatus: '',
+            },
             otherPM: {
                 feederCableStatus: '',
                 changeOverSwitchStatus: '',
@@ -309,38 +332,97 @@ function MultiStepForm({allStaff, allSite}) {
         setActiveStep(0);
         methods.reset();
     };
-    const onSubmit = async (data) => {
-        if (activeStep === steps.length - 1) {
-            // Final submission logic here
-            console.log("Final form data:", {...formData, ...data});
-        } else {
-            
-            const isStepValid = await methods.trigger();
-            if (isStepValid) {
-                setFormData((prevData) => ({...prevData, ...methods.getValues()}));
-                setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                console.log({formData});
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationKey: ['NewServicingReport'],
+        mutationFn: AdminUtils.NewServicingReport,
+    });
+    
+    const onSubmit = async () => {
+        setIsLoading(true);  // Start loading
+        // Final submission logic here
+        const servicingDate = dayjs(formData.servicingDate).format('DD-MMM-YYYY');
+        //we need a for data object to send the array of images as contained in the images array
+        const formDataObj = new FormData();
+        
+        // Append images
+        formData.images.forEach((img, index) => {
+            formDataObj.append('images', img.file, img.file.name);
+        });
+        // object image credential to uniquely identify the image
+        const imageCredential = `${formData.siteId}-${servicingDate}-${formData.pmInstance}`;
+        formDataObj.append('imageCredential', imageCredential);
+        
+        if (formData.generatorPM.gen1Hr === 'Enter Value' && formData.generatorPM.customGen1Hr) {
+            formData.generatorPM.gen1Hr = Number(formData.generatorPM.customGen1Hr);
+            delete formData.generatorPM.customGen1Hr;
+        }
+        if (formData.generatorPM.gen1Hr === 'NOT-APPLICABLE' || formData.generatorPM.gen1Hr === 'FAULTY-TELLYS') {
+            delete formData.generatorPM.customGen1Hr;
+        }
+        if (formData.generatorPM.gen2Hr === 'Enter Value' && formData.generatorPM.customGen2Hr) {
+            formData.generatorPM.gen2Hr = Number(formData.generatorPM.customGen2Hr);
+            delete formData.generatorPM.customGen2Hr;
+        }
+        if (formData.generatorPM.gen2Hr === 'NOT-APPLICABLE') {
+            delete formData.generatorPM.customGen2Hr;
+        }
+        if (formData.type) {
+            delete formData.type;
+        }
+        // Function to append nested objects
+        const appendNestedObjects = (obj, parentKey = '') => {
+            Object.keys(obj).forEach(key => {
+                const value = obj[key];
+                const formKey = parentKey ? `${parentKey}[${key}]` : key;
+                if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                    appendNestedObjects(value, formKey);
+                } else {
+                    formDataObj.append(formKey, value);
+                }
+            });
+        };
+        
+        // Append the rest of the form data to the FormData object, excluding indexed keys and images
+        Object.keys(formData).forEach(key => {
+            if (key !== 'images' && isNaN(Number(key))) {
+                if (typeof formData[key] === 'object' && formData[key] !== null) {
+                    appendNestedObjects(formData[key], key);
+                } else {
+                    formDataObj.append(key, formData[key]);
+                }
             }
+        });
+        // we need to append servicingDate
+        // const servicingDate = dayjs(formData.servicingDate).format('DD/MMM/YYYY');
+        // formDataObj.append('servicingDate', dayjs(formData.servicingDate).format('DD/MMM/YYYY'));
+        formDataObj.append('servicingDate', dayjs(formData.servicingDate).format('DD/MMM/YYYY'));
+        // Log the FormData object (for debugging purposes)
+        for (let pair of formDataObj.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+        // we can now send the formDataObj to the server
+        try {
+            await mutation.mutateAsync(formDataObj);
+            toast.success("Report submitted successfully");
+            await queryClient.invalidateQueries('NewServicingReport');
+            router.push('/dashboard/admin/reports/servicing/all');
+        } catch (error) {
+            console.error("An error occurred while submitting the report", error);
+            toast.error("An error occurred while submitting the report");
+        } finally {
+            setIsLoading(false);  // End loading
         }
     };
-    // const handleImagesChange = (newImages) => {
-    //     // setFormData((prevData) => ({...prevData, images: newImages}));
-    //     // methods.setValue('images', newImages);
-    //     // Assuming `formData` is your centralized form data state
-    //     setFormData(prevData => ({
-    //         ...prevData,
-    //         images: newImages.map(image => {
-    //             // Find the corresponding existing image
-    //             const existingImage = prevData.images.find(existingImage => existingImage.id === image.id);
-    //
-    //             // Update the existing image if found, otherwise add a new image
-    //             return existingImage ? {...existingImage, ...image} : image;
-    //         })
-    //     }));
-    //
-    //     // Update the form values in react-hook-form
-    //     methods.setValue("images", newImages);
-    // };
+    
+    useEffect(() => {
+        console.log({formData});
+    }, [formData]);
+    
+    useEffect(() => {
+        console.log({activeStep});
+    }, [activeStep]);
+    
     const handleImagesChange = useCallback((newImages) => {
         setFormData(prevData => {
             const updatedImages = newImages.map(newImage => {
@@ -389,7 +471,7 @@ function MultiStepForm({allStaff, allSite}) {
                                 />
                             )}
                             {activeStep === 9 && <Step10AdminApproval allStaff={allStaff} txProps={txProps}/>}
-                            {activeStep === 10 && <Step11DataPreview allStaff={allStaff} txProps={txProps}/>}
+                            {activeStep === 10 && <Step11DataPreview formData={formData}/>}
                             <br/><br/>
                             <Stack direction='row' gap={4} sx={{marginBottom: '75px'}}>
                                 <Button
@@ -405,9 +487,19 @@ function MultiStepForm({allStaff, allSite}) {
                                     variant="contained"
                                     color='error'
                                     onClick={handleNext}
+                                    disabled={activeStep === 10}
                                 >
-                                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                                    Next
                                 </Button>
+                                <Button
+                                    variant="contained"
+                                    color='error'
+                                    onClick={onSubmit}
+                                    disabled={activeStep !== 10 || isLoading}
+                                >
+                                    Submit
+                                </Button>
+                                {isLoading && <LazySubmitting/>}
                             </Stack>
                         </>
                     )}
@@ -416,5 +508,7 @@ function MultiStepForm({allStaff, allSite}) {
         </FormProvider>
     );
 }
+
+
 
 export default MultiStepForm;

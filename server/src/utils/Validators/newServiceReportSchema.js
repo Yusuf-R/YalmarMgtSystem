@@ -221,12 +221,12 @@ export const newServiceReportSchemaValidator = Joi.object({
             'any.only': 'Invalid backup battery status',
             'string.empty': 'Backup battery status is required'
         }),
-        count: Joi.number().valid(0, 4, 8, 12, 16, 24, 32, 48,).positive().min(0).required().messages({
+        batteryCount: Joi.number().valid(0, 4, 8, 12, 16, 24, 32, 48,).positive().min(0).required().messages({
             'number.base': 'Backup battery count is required',
             'number.positive': 'Must be a positive number',
             'any.required': 'Backup battery count is required'
         }),
-        status: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
+        batteryStatus: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid battery status',
             'string.empty': 'Battery status is required'
         }),
@@ -286,6 +286,9 @@ export const newServiceReportSchemaValidator = Joi.object({
     
     admin_id: Joi.string().required().messages({
         'string.empty': 'Staff ID is required'
+    }),
+    imageCredential: Joi.string().required().messages({
+        'string.empty': 'Image credential is required'
     }),
     
 });

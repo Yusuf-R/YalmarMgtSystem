@@ -157,14 +157,14 @@ export const newServiceReportSchema = yup.object().shape({
         
         rectifierStatus: yup.string().oneOf(otherOpt, 'Invalid rectifier status').required('Rectifier status is required'),
         backUpBatteries: yup.string().oneOf(batOpt, 'Invalid back up battery selection').required('Back up batteries is required'),
-        count: yup.number().when('backUpBatteries', {
+        batteryCount: yup.number().when('backUpBatteries', {
                 is: 'YES',
                 // its value must be a positive number of this value [4, 8, 12, 16, 24, 32, 48, 'NOT-APPLICABLE']
                 then: () => yup.number().required('Number of batteries is required').positive('Must be a positive number').oneOf([0, 4, 8, 12, 16, 24, 32, 48], 'Invalid number of batteries'),
                 otherwise: () => yup.number().nullable(),
             },
         ),
-        status: yup.string().when('backUpBatteries', {
+        batteryStatus: yup.string().when('backUpBatteries', {
                 is: 'YES',
                 then: () => yup.string().oneOf(otherOpt, 'Invalid battery status').required('Battery status is required'),
                 otherwise: () => yup.string().nullable(),

@@ -5,16 +5,25 @@ const opt1 = ['OK', "NOT-OK", 'NOT-APPLICABLE'];
 const opt2 = ['YES', "NO", 'NOT-APPLICABLE'];
 const opt3 = ['WORKING', "NOT-WORKING", 'NOT-APPLICABLE'];
 
-const hrOptions = ['Enter Value', 'FAULTY TELLYS', 'NOT-APPLICABLE'];
+const hrOptions = ['Enter Value', 'FAULTY-TELLYS', 'NOT-APPLICABLE'];
 
 // Custom validation for genHr fields
 const validateGenHr = {
     validator: function (value) {
-        return typeof value === 'number' || ["FAULTY TELLYS", 'NOT-APPLICABLE'].includes(value);
+        return typeof value === 'number' || ["FAULTY-TELLYS", 'NOT-APPLICABLE'].includes(value);
     },
     message: props => `${props.value} is not a valid value for genHr.`
 };
 
+let floodLightStatus = {
+    type: String,
+    enum: opt3,
+    require: function () {
+        return this.floodLightAvailability === 'YES';
+    },
+    // allow empty string
+    default: null,
+};
 const serviceOps = {
     // staff info
     staff_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true},
@@ -59,7 +68,7 @@ const serviceOps = {
     },
     
     // service info
-    serviceDate: {type: String, default: Date, required: true},
+    servicingDate: {type: String, default: Date, required: true},
     nextServiceDate: {type: String, default: Date, required: true},
     
     // gen PM
@@ -214,15 +223,7 @@ const serviceOps = {
             type: String,
             enum: opt2,
         },
-        floodLightStatus: {
-            type: String,
-            enum: opt3,
-            require: function () {
-                return this.floodLightAvailability === 'YES';
-            },
-            // allow empty string
-            default: null,
-        }
+        floodLightStatus: floodLightStatus
     },
     
     dcSystem: {
@@ -236,7 +237,7 @@ const serviceOps = {
             required: true,
         },
         // count: number and only required when backUpBatteries is YES
-        count: {
+        batteryCount: {
             type: Number,
             required: function () {
                 return this.dcSystem.backUpBatteries === 'YES';
@@ -252,7 +253,7 @@ const serviceOps = {
             default: 0,
         },
         //status: OK, NOT-OK, NOT-APPLICABLE, only required if backUpBatteries is YES
-        status: {
+        batteryStatus: {
             type: String,
             enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: function () {
@@ -292,7 +293,6 @@ const serviceOps = {
             enum: ['OK', 'NOT-OK', 'NOT-APPLICABLE'],
             required: true,
         },
-        
     },
     
     securityPM: {
