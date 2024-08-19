@@ -55,7 +55,7 @@ const upload = multer({
 
 serviceRouter.get('/all', servicingController.getAllServicingReport);
 serviceRouter.post('/new', upload.array('images', 10), servicingController.newServicingReport);
-
+serviceRouter.post('/get', servicingController.getServicingReport);
 // serviceRouter.patch('/update', servicingController.updateFuelReport);
 // serviceRouter.delete('/delete', servicingController.deleteFuelReport);
 

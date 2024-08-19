@@ -6,6 +6,12 @@ const genHrSchema = Joi.alternatives().try(
     Joi.number().min(0)
 );
 
+const validMonths = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+];
+
+
 export const newServiceReportSchemaValidator = Joi.object({
     // Staff info
     fullName: Joi.string().required().messages({
@@ -291,5 +297,40 @@ export const newServiceReportSchemaValidator = Joi.object({
         'string.empty': 'Image credential is required'
     }),
     
+});
+
+
+export const getServiceRecordSchemaValidator = Joi.object({
+    state: Joi.string().required().messages({
+        'string.empty': 'State is required',
+        'any.required': 'State is required'
+    }),
+    cluster: Joi.string().required().messages({
+        'string.empty': 'Cluster is required',
+        'any.required': 'Cluster is required'
+    }),
+    siteId: Joi.string().required().messages({
+        'string.empty': 'Site ID is required',
+        'any.required': 'Site ID is required'
+    }),
+    month: Joi.string().valid(...validMonths.map(month => month.toLowerCase())).insensitive().required().messages({
+        'any.only': 'Month must be a valid month (January to December)',
+        'string.empty': 'Month is required',
+        'any.required': 'Month is required'
+    }),
+    year: Joi.string().required().messages({
+        'string.empty': 'Year is required',
+        'any.required': 'Year is required'
+    }),
+    pmInstance: Joi.string().valid('PM1', 'PM2').required().messages({
+        'any.only': 'PM Instance must be either PM1 or PM2',
+        'string.empty': 'PM Instance is required',
+        'any.required': 'PM Instance is required'
+    }),
+    siteType: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC').required().messages({
+        'any.only': 'Invalid site type',
+        'string.empty': 'Site type is required'
+    }),
+    location: Joi.string().optional().allow('').allow(null),
 });
 

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Site = require('../models/Sites');
 const Staff = require('../models/Staff'); // Adjust the path to your Staff model
+const Servicing = require('../models/Servicing')
 
 
 var jwt = require('jsonwebtoken');
@@ -207,3 +208,32 @@ const allSiteStates = [
         process.exit();
     }
 })();
+
+// function to update the serviceing date to date object type
+async function upDate() {
+    try {
+        await mongoose.connect('mongodb://localhost:27017/YalmarMgt', {});
+        console.log('Connected to the database successfully.');
+        
+        const allServiceRecords = await Servicing.find({});
+        for (const record of allServiceRecords) {
+            const servicingDate = new Date(record.servicingDate);
+            const nextServiceDate = new Date(record.nextServiceDate);
+            
+            // Update the record
+            await Servicing.updateOne(
+                {_id: record._id},
+                {$set: {servicingDate, nextServiceDate}}
+            );
+        }
+        console.log('Date strings converted to Date objects successfully.');
+    } catch (error) {
+        console.error('Error servicing date records:', error);
+    } finally {
+        await mongoose.disconnect();
+        console.log('Disconnected from the database.');
+        process.exit();
+    }
+};
+
+upDate();

@@ -1,241 +1,179 @@
 'use client';
 import Button from "@mui/material/Button";
-import EditIcon from '@mui/icons-material/Edit';
-import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import {useRouter} from "next/navigation";
-import Link from "next/link";
-import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import {createTheme, LinearProgress, ThemeProvider, useTheme} from '@mui/material';
-import {
-    MaterialReactTable,
-    useMaterialReactTable,
-    MRT_ToggleDensePaddingButton,
-    MRT_ToggleFullScreenButton,
-    MRT_ToggleGlobalFilterButton,
-    MRT_ToggleFiltersButton,
-    MRT_ShowHideColumnsButton,
-} from "material-react-table";
-import Tooltip from "@mui/material/Tooltip";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import AdminUtils from "@/utils/AdminUtilities";
-import {toast} from "react-toastify";
-import Modal from '@mui/material/Modal';
-import InputAdornment from "@mui/material/InputAdornment";
-import MapIcon from "@mui/icons-material/Map";
 import Grid from "@mui/material/Grid";
-import CellTowerIcon from '@mui/icons-material/CellTower';
-import KebabDiningIcon from '@mui/icons-material/KebabDining';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import {Controller, useForm, useWatch} from "react-hook-form";
 import MenuItem from "@mui/material/MenuItem";
-import {yupResolver} from "@hookform/resolvers/yup";
-import dayjs from "dayjs";
-import DateComponent from "@/components/DateComponent/DateComponent";
-import Divider from "@mui/material/Divider";
+import Popper from "@mui/material/Popper";
+import Stack from "@mui/material/Stack";
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import {useRouter} from "next/navigation";
+import Link from "next/link";
+import React, {useEffect, useMemo, useState} from "react";
 import {mainSection} from "@/utils/data";
-import {editFuelSupplyReportSchema} from "@/SchemaValidator/editFuelSupplyReport";
+import Autocomplete from '@mui/material/Autocomplete';
+import {autoCompleteSx} from "@/utils/data";
+import {Controller, useForm} from "react-hook-form";
+import FormControl from "@mui/material/FormControl";
+import YearDropdown from "@/components/Utilities/YearDropdown";
+import MonthDropdown from "@/components/Utilities/MonthDropdown";
+import * as yup from "yup";
+import {yupResolver} from "@hookform/resolvers/yup";
+import FormHelperText from "@mui/material/FormHelperText";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {toast} from "react-toastify";
+import AdminUtils from "@/utils/AdminUtilities";
+import ServicingReportRecord
+    from "@/components/ReportComponents/ServicingComponents/ServicingReportRecord/ServicingReportRecord"
+import LazyComponent from "@/components/LazyComponent/LazyComponent";
+import Divider from '@mui/material/Divider';
 
-function ServicingReport({allServicingReport}) {
+
+const CustomPopper = (props) => {
+    return (
+        <Popper
+            {...props}
+            sx={{
+                '& .MuiAutocomplete-listbox': {
+                    bgcolor: '#274e61', // Background color of the dropdown list
+                    color: 'white',
+                    fontSize: '16px',
+                    fontFamily: 'Poppins',
+                    fontWeight: '500',
+                },
+                '& .MuiAutocomplete-option': {
+                    '&[aria-selected="true"]': {
+                        bgcolor: '#051935 !important', // Background color of the selected option
+                        color: 'white !important', // Ensure the text color of the selected option is white
+                    },
+                    '&:hover': {
+                        bgcolor: '#1a3a4f !important', // Background color of the hovered option
+                        color: 'white !important', // Ensure the text color of the hovered option is white
+                    },
+                },
+            }}
+        />
+    );
+};
+
+function ServicingReport({allServicingReport, allSite}) {
     const router = useRouter();
+    const [reportData, setReportData] = useState(null);
+    const [loading, setLoading] = useState(false); // Add loading state
+    const [searchInitiated, setSearchInitiated] = useState(false);
+    const [stateMain, setStateMain] = useState('');
+    const [cluster, setClusterType] = useState('');
+    const [siteID, setSiteID] = useState('');
+    const [siteType, setSiteType] = useState('N/A');
+    const [location, setLocation] = useState('N/A');
+    const [pmInstance, setPmInstance] = useState('');
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/all');
-    const tableTheme = useMemo(
-        () =>
-            createTheme({
-                components: {
-                    MuiSwitch: {
-                        styleOverrides: {
-                            thumb: {
-                                // color: '#ff8c00',
-                                color: '#40ff00',
-                            },
-                            
-                        },
-                    },
-                    MuiFormControlLabel: {
-                        styleOverrides: {
-                            label: {
-                                fontSize: '1.1rem',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                '&:hover': {
-                                    color: '#fcc2fb',
-                                },
-                            },
-                        },
-                    },
-                    MuiButton: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff',
-                                fontWeight: 'bold',
-                            },
-                        },
-                    },
-                    MuiPaginationItem: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff',
-                                fontWeight: 'bold',
-                                border: '1px solid aqua',
-                                backgroundColor: '#03332b',
-                            },
-                        },
-                    },
-                    MuiTableSortLabel: {
-                        styleOverrides: {
-                            icon: {
-                                fontSize: '1.2rem',
-                                // backgroundColor: 'aqua !important',
-                                backgroundColor: '#FFF !important',
-                                color: '#FFF !important'
-                            },
-                        },
-                    },
-                    MuiSvgIcon: {
-                        styleOverrides: {
-                            root: {
-                                // color: 'aqua',
-                                color: '#FFF',
-                            },
-                        },
-                    },
-                    MuiInputLabel: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff',
-                            },
-                        },
-                    },
-                    MuiInputBase: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff',
-                                fontWeight: 'bold',
-                            },
-                            
-                        },
-                    },
-                    // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
-                    MuiTable: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff', // Change table text color
-                                padding: '2px',
-                            },
-                        },
-                    },
-                    // MuiTableRow: {
-                    //     styleOverrides: {
-                    //         root: {
-                    //             '&:nth-of-type(odd)': {
-                    //                 backgroundColor: '#2e2e2e', // Change row background color for odd rows
-                    //             },
-                    //             '&:nth-of-type(even)': {
-                    //                 backgroundColor: '#1e1e1e', // Change row background color for even rows
-                    //             },
-                    //             '&:hover': {
-                    //                 backgroundColor: '#333', // Change row background color on hover
-                    //             },
-                    //         },
-                    //     },
-                    // },
-                    MuiTableCell: {
-                        styleOverrides: {
-                            root: {
-                                color: '#fff',
-                            },
-                            // head: {
-                            //     backgroundColor: '#444', // Change header cell background color
-                            //     color: '#fff', // Change header cell text color
-                            //     fontWeight: 'bold', // Make header cell text bold
-                            // },
-                        },
-                    },
-                }
-            }),
-        [],
-    );
-    const headerKeys = [
-        'siteId',
-        'cluster',
-        'type',
-        'status',
-        'location',
-        'qtyInitial',
-        'qtySupplied',
-        'qtyNew',
-        'dateSupplied',
-        'nextDueDate',
-        'duration',
-        'cpd',
-    ];
-    // Function to capitalize the first letter of the key
-    const capitalizeFirstLetter = (key) => {
-        // if key not in our headerKeys array, it should skip that key
-        if (!headerKeys.includes(key) || !key) {
-            return '';
-        }
-        return key.charAt(0).toUpperCase() + key.slice(1);
+    const createNew = () => router.push('/dashboard/admin/reports/servicing/new');
+    const pmInstances = ['PM1', 'PM2'];
+    const serviceRecordSchema = yup.object().shape({
+        state: yup.string().required('State is required'),
+        cluster: yup.string().required('Cluster is required'),
+        siteId: yup.string().required('Site ID is required'),
+        month: yup.string().required('Month is required'),
+        year: yup.string().required('Year is required'),
+        pmInstance: yup.string().required('PM Instance is required'),
+        location: yup.string().required('Location is required'),
+        siteType: yup.string().required('Site Type is required'),
+    });
+    
+    const {
+        control, handleSubmit, formState: {errors}, watch, setError, reset, setValue, clearErrors,
+    } = useForm({
+        resolver: yupResolver(serviceRecordSchema),
+        mode: 'onTouched',
+        reValidateMode: 'onChange',
+    });
+    
+    
+    // Site Info Section
+    const states = Array.from(new Set(allSite.map(site => site.state)));
+    const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
+    const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
+    
+    // extract the site._id from allSite base on the selected siteIds
+    const site_id = allSite.filter(site => site.siteId === siteID).map(site => site._id)[0];
+    
+    // site State
+    const getState = () => {
+        return states.map((stateData) => (
+            <MenuItem key={stateData} value={stateData}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {stateData}
+            </MenuItem>
+        ));
     };
-    const columnFields = allServicingReport.length > 0 ? Object.keys(allServicingReport[0]) : [];
-    const columns = useMemo(() => columnFields.map((field) => ({
-            accessorKey: field,
-            header: capitalizeFirstLetter(field),
-            sortable: true,
-            size: 150,
-            // set the 'status' header to be color red
-            headerStyle: field === 'Status' ? {color: 'red'} : {},
-            Cell: ({cell}) => {
-                if (field === 'status') {
-                    let bgColor = '';
-                    let textColor = '#fff'; // Default text color is white
-                    switch (cell.getValue()) {
-                        case 'Active':
-                            bgColor = 'green';
-                            break;
-                        case 'Inactive':
-                            bgColor = '#ff9933';
-                            break;
-                        case 'Deactivated':
-                            bgColor = '#660029';
-                            break;
-                        default:
-                            bgColor = 'transparent';
-                    }
-                    return (
-                        <span style={{backgroundColor: bgColor, color: textColor, padding: '5px', borderRadius: '10px'}}>
-                            {cell.getValue()}
-                        </span>
-                    );
-                }
-                return cell.getValue();
-            },
-        }))
-            .filter((column) => column.header !== ''),
-        []
-    );
-    const tableData = useMemo(
-        () => allServicingReport.map((site) => {
-            const row = {};
-            columns.forEach((column) => {
-                row[column.accessorKey] = site[column.accessorKey];
-            });
-            row._id = site._id; // Include _id in the row data
-            return row;
-        }),
-        [columns, allServicingReport]
-    );
+    const handleState = (event) => {
+        event.preventDefault();
+        setStateMain(event.target.value);
+        setClusterType('');
+        setSiteID('');
+        setSiteType('N/A');
+        setLocation('N/A');
+    };
+    
+    // site cluster
+    const getCluster = () => {
+        if (!stateMain) {
+            return [];
+        }
+        return clusters.map((clusterData) => (
+            <MenuItem key={clusterData} value={clusterData}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {clusterData}
+            </MenuItem>
+        ));
+    };
+    const handleCluster = (event) => {
+        event.preventDefault();
+        setClusterType(event.target.value);
+        setSiteID('');
+        setSiteType('N/A');
+        setLocation('N/A');
+    };
+    
+    // site ID
+    const getSiteId = () => {
+        if (!stateMain || !cluster) {
+            return [];
+        }
+        return siteIds.map((siteIdData) => (
+            <MenuItem key={siteIdData} value={siteIdData}
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {siteIdData}
+            </MenuItem>
+        ));
+    };
+    const handleSiteId = (event) => {
+        event.preventDefault();
+        setSiteID(event.target.value);
+        const selectedSiteId = event.target.value;
+        setSiteID(selectedSiteId);
+        
+        const selectedSite = allSite.find(site => site.siteId === selectedSiteId);
+        if (selectedSite) {
+            const newLocation = selectedSite.location || 'N/A';
+            const newSiteType = selectedSite.type || 'N/A';
+            setLocation(newLocation);
+            setSiteType(newSiteType);
+            setValue('location', newLocation);
+            setValue('siteType', newSiteType);
+            // Clear errors for location and type
+            clearErrors('location');
+            clearErrors('siteType');
+        } else {
+            setSiteType('N/A');
+            setLocation('N/A');
+        }
+    };
+    
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -261,278 +199,108 @@ function ServicingReport({allServicingReport}) {
             WebkitTextFillColor: 'white',
         },
     }
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: '#274e61',
-        color: '#46F0F9',
-        borderRadius: '10px',
-        padding: '20px',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-        overflow: 'scroll',
-    };
-    const paperInnerStyle = {
-        padding: '5px',
-        backgroundColor: '#274e61',
-        color: '#46F0F9',
-        borderRadius: '10px',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-        margin: 0, // Ensure no margin
-    };
-    const gridStyle = {
-        padding: '5px', // Optional: Add padding inside the Grid to avoid overlapping borders
-    };
-    const gridItemStyle = {
-        padding: '5px', // Optional: Add padding inside the Grid item to avoid overlapping borders
-    };
-    const table = useMaterialReactTable({
-        columns,
-        data: tableData,
-        enableSorting: true,
-        enablePagination: true,
-        enableColumnFiltering: true,
-        enableColumnHiding: true,
-        enableRowSelection: true,
-        enableColumnActions: false,
-        enableRowNumbers: true,
-        rowNumberDisplayMode: "original",
-        enableRowExpand: true,
-        enableMultiRowSelection: true,
-        enableGlobalFilter: true,
-        enableGrouping: true,
-        enableColumnDragging: false,
-        enableEditing: true,
-        enableClickToCopy: true,
-        enableColumnReordering: true,
-        positionActionsColumn: 'first',
-        renderTopToolbarCustomActions: ({table}) => {
-            const mutation = useMutation({
-                mutationKey: ["DeleteServicingReport"],
-                mutationFn: AdminUtils.DeleteServicingReport,
-            });
-            const queryClient = useQueryClient();
-            const createNew = () => router.push('/dashboard/admin/reports/servicing/new');
-            const [open, setOpen] = useState(false);
-            const [email, setEmail] = useState('');
-            const [emailError, setEmailError] = useState('');
-            
-            const handleClose = () => {
-                setOpen(false);
-                setEmail('');
-                setEmailError('');
-            };
-            const handleOpen = () => setOpen(true);
-            const handleEmailChange = (event) => {
-                setEmail(event.target.value);
-                // Basic email validation regex
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(event.target.value)) {
-                    setEmailError('Invalid email address');
-                } else {
-                    setEmailError('');
-                }
-            };
-            const handleDelete = async (event) => {
-                event.preventDefault();
-                if (emailError || !email) {
-                    toast.error('Please enter a valid email address');
-                    return;
-                }
-                const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original._id);
-                const obj = {email, selectedIds};
-                mutation.mutate(obj, {
-                    onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllServicingReport"]});
-                        toast.success('Selected Sites Deleted Successfully');
-                        // reload the page
-                        handleClose();
-                        // perform hard reload
-                        window.location.reload();
-                    },
-                    onError: (error) => {
-                        toast.error('Error Deleting selected Site');
-                        console.error("Delete failed", error);
-                        handleClose();
-                    }
-                });
-            };
-            return (
-                <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
-                    <Button
-                        color="secondary"
-                        onClick={createNew}
-                        variant="contained"
-                    >
-                        Create New Fuel Report +
-                    </Button>
-                    <Button
-                        color="error"
-                        disabled={!table.getIsSomeRowsSelected()}
-                        onClick={handleOpen}
-                        variant="contained"
-                    >
-                        Delete Selected Report
-                    </Button>
-                    <Dialog
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                            component: 'form',
-                            onSubmit: handleDelete,
-                            sx: {backgroundColor: '#0E1E1E'},
-                        }}
-                    >
-                        <DialogTitle>
-                            <Typography variant="button" display="block" gutterBottom
-                                        sx={{
-                                            color: 'red',
-                                            fontWeight: 'bold',
-                                            fontSize: '1.0em',
-                                        }}>
-                                Confirm Deletion.
-                            </Typography>
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                <Typography variant="body1" gutterBottom
-                                            sx={{
-                                                color: 'red',
-                                                fontWeight: 'bold',
-                                                fontSize: '1.1em',
-                                            }}>
-                                    You are about to permanently delete the selected Site, Please enter your
-                                    email address to further confirm your actions.
-                                </Typography>
-                            </DialogContentText>
-                            <br/>
-                            <Stack direction="column" spacing={2}>
-                                <Typography variant="subtitle1" gutterBottom sx={{
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    fontSize: '1.1em',
-                                }}>
-                                    Email *</Typography>
-                                <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    fullWidth
-                                    variant="outlined"
-                                    value={email}
-                                    onChange={handleEmailChange}
-                                    error={!!emailError}
-                                    helperText={emailError}
-                                    InputProps={{
-                                        sx: txProps
-                                    }}
-                                    InputLabelProps={{
-                                        sx: {
-                                            color: "#46F0F9",
-                                            "&.Mui-focused": {
-                                                color: "white",
-                                            },
-                                        }
-                                    }}
-                                    sx={{
-                                        color: "#46F0F9",
-                                    }}
-                                
-                                />
-                            </Stack>
-                        </DialogContent>
-                        <DialogActions sx={{justifyContent: 'space-between'}}>
-                            <Stack direction="row" gap={4} justifyContent='space-between'
-                                   sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
-                                <Button onClick={handleClose} variant="contained" color="success">
-                                    Cancel
-                                </Button>
-                                <Button type="submit" variant="contained" color="error"> Delete </Button>
-                            </Stack>
-                        </DialogActions>
-                    </Dialog>
-                </Box>
-            );
-        },
-        renderToolbarInternalActions: ({table}) => {
-            return (
-                <Stack direction='row' sx={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
-                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
-                </Stack>
-            );
-        },
-        mrtTheme: {
-            baseBackgroundColor: '#304f61',
-            // baseBackgroundColor: '#00264d',
-            // selectedRowBackgroundColor: '#051e3b',
-        },
-        muiTableHeadCellProps: {
-            sx: {
-                color: '#21c6fc',
-                fontSize: '1.32em',
-                fontWeight: 'bold',
-                fontFamily: 'sans-serif',
-            },
-            align: 'center',
-        },
-        muiTableBodyCellProps: {
-            sx: {
-                color: 'white',
-                fontSize: '1.2em',
-                '&:hover': {
-                    color: '#fcc2fb',
-                },
-                padding: '2px 4px',
-                alignItems: 'center',
-            },
-            align: 'center',
-            
-        },
-        muiTableBodyRowProps: {
-            sx: {
-                height: '2px',
-            },
-        },
-        muiSearchTextFieldProps: {
-            InputLabelProps: {shrink: true},
-            label: 'Search',
-            placeholder: 'Site Details',
-            variant: 'outlined',
-            
-        },
-        muiFilterTextFieldProps: {
-            color: 'error',
-            borderColor: 'error',
-        },
-        muiPaginationProps: {
-            shape: 'rounded',
-            color: 'warning',
-            variant: 'text',
-            size: 'small',
-            rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
-            // set the table to display the first 100 data by default
-            rowsPerPage: 100,
-        },
-        paginationDisplayMode: 'pages',
-        positionPagination: "both",
-        initialState: {
-            pagination: {
-                pageIndex: 0,
-                pageSize: 100
-            },
-            density: 'compact',
-        }
+    const Clear = async () => {
+        // clear the form
+        reset();
+        setStateMain('');
+        setClusterType('');
+        setSiteID('');
+        setSiteType('N/A');
+        setLocation('N/A');
+        setReportData(null);
+        setSearchInitiated(false);
+        setLoading(false);
+    }
+    // Submit data using mutation
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationKey: ["GetServicingReport"],
+        mutationFn: AdminUtils.GetServicingReport,
     });
+    
+    const clearCache = async () => {
+        await queryClient.clear();
+    }
+    
+    const SearchRecords = async (data) => {
+        try {
+            setSearchInitiated(true);
+            setLoading(true);
+            // Validate data first
+            const isValid = await serviceRecordSchema.isValid(data);
+            if (!isValid) {
+                throw new Error('Validation failed');
+            }
+            console.log({data})
+            const cacheKey = ["GetServicingReport", data];
+            console.log({cacheKey})
+            // await clearCache();
+            // Check if data exists in the cache
+            const cachedData = queryClient.getQueryData(cacheKey);
+            if (cachedData) {
+                setReportData(cachedData);
+                if (cachedData.emptyBit) {
+                    toast.error('No Record found', {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                } else if (!cachedData.emptyBit) {
+                    toast.success('Record found', {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                }
+                setLoading(false);
+                return;
+            }
+            // If not found in cache, make the request
+            mutation.mutate(data, {
+                onSuccess: (response) => {
+                    // Set the query data in the cache with the correct key
+                    queryClient.setQueryData(cacheKey, response);
+                    // check if errorBit is true in the response
+                    if (response.emptyBit) {
+                        toast.error('No Record found', {
+                            position: "top-right",
+                            autoClose: 1000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    } else if (!response.emptyBit) {
+                        toast.success('Record found', {
+                            position: "top-right",
+                            autoClose: 1000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                    }
+                    setReportData(response);
+                    setLoading(false);
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                    setReportData({servicingReport: [], emptyBit: true});
+                    setLoading(false);
+                    setLoading(false);
+                },
+            });
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+    
     return (
         <>
             <Box sx={mainSection}>
@@ -559,10 +327,501 @@ function ServicingReport({allServicingReport}) {
                     width: '100%',
                     height: 'auto',
                 }}>
-                    <ThemeProvider theme={tableTheme}>
-                        <MaterialReactTable table={table}/>
-                    </ThemeProvider>
+                    <Stack direction='row' spacing={5}>
+                        <Typography variant='h6'
+                                    sx={{
+                                        fontFamily: 'Poppins',
+                                        fontWeight: 'bold',
+                                        color: '#FFF'
+                                    }}
+                        > Create a new servicing report
+                        </Typography>
+                        <Button
+                            color="secondary"
+                            onClick={createNew}
+                            variant="contained"
+                        >
+                            New +
+                        </Button>
+                    </Stack>
                 </Paper>
+                <br/><br/>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit(SearchRecords)}
+                    noValidate
+                >
+                    <Paper elevation={5} sx={{
+                        alignContent: 'start',
+                        padding: '10px',
+                        backgroundColor: 'inherit',
+                        color: '#46F0F9',
+                        borderRadius: '10px',
+                        width: '100%',
+                        height: 'auto',
+                    }}>
+                        {/* First Row (1 fields) prefix */}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Typography variant='h6'
+                                            sx={{
+                                                fontFamily: 'Poppins',
+                                                fontWeight: 'bold',
+                                                color: '#FFF'
+                                            }}
+                                > Select Site
+                                </Typography>
+                            </Grid>
+                            {/*Site State*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="state"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                {...field}
+                                                select
+                                                value={field.value}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleState(e);
+                                                }}
+                                                required
+                                                label="State"
+                                                error={!!errors.state}
+                                                helperText={errors.state ? (
+                                                    <span style={{color: "#fc8947"}}>
+                                                                                {errors.state.message}
+                                                                                </span>
+                                                ) : ''}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
+                                                                fontSize: '40px',
+                                                                
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                    textAlign: 'left',
+                                                }}>
+                                                {stateMain !== '' && (
+                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                        Select State
+                                                    </MenuItem>
+                                                )}
+                                                {getState()}
+                                            </TextField>
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            {/*Site cluster*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="cluster"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                {...field}
+                                                select
+                                                value={field.value}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleCluster(e);
+                                                }}
+                                                label="Cluster"
+                                                required
+                                                error={!!errors.cluster}
+                                                helperText={errors.cluster ? (
+                                                    <span style={{color: "#fc8947"}}>
+                                                                                {errors.cluster.message}
+                                                                                </span>
+                                                ) : ''}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
+                                                                
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                    textAlign: 'left',
+                                                }}>
+                                                {cluster !== '' && (
+                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                        Select Cluster
+                                                    </MenuItem>
+                                                )}
+                                                {getCluster()}
+                                            </TextField>
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            {/*Site ID*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="siteId"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                {...field}
+                                                select
+                                                value={field.value}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleSiteId(e);
+                                                }}
+                                                label="Site ID"
+                                                required
+                                                error={!!errors.siteId}
+                                                helperText={errors.siteId ? (
+                                                    <span style={{color: "#fc8947"}}>
+                                                                                {errors.siteId.message}
+                                                                                </span>
+                                                ) : ''}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
+                                                                
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                    textAlign: 'left',
+                                                }}>
+                                                {cluster !== '' && (
+                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                        Select SiteID
+                                                    </MenuItem>
+                                                )}
+                                                {getSiteId()}
+                                            </TextField>
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            {/*Site Type if available*/}
+                            {siteID && (
+                                <Grid item xs={2}>
+                                    <Controller
+                                        name="siteType"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        }
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="Site Type"
+                                                variant="outlined"
+                                                error={!!errors.siteType}
+                                                helperText={errors.siteType ? errors.siteType.message : ''}
+                                                type="text"
+                                                value={siteType}
+                                                readOnly
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            )}
+                            {/*Location if available*/}
+                            {siteID && (
+                                <Grid item xs={4}>
+                                    <Controller
+                                        name="location"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: {
+                                                        ...txProps,
+                                                        width: '500px',
+                                                    }
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        }
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="Location"
+                                                variant="outlined"
+                                                error={!!errors.location}
+                                                helperText={errors.location ? errors.location.message : ''}
+                                                type="text"
+                                                value={location}
+                                                readOnly
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            )}
+                        </Grid>
+                        <br/><br/>
+                        {/* First Row (1 fields) prefix */}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Typography variant='h6'
+                                            sx={{
+                                                fontFamily: 'Poppins',
+                                                fontWeight: 'bold',
+                                                color: '#FFF'
+                                            }}
+                                > Select Year, Month and PM Instance
+                                </Typography>
+                            </Grid>
+                            {/*Select Year*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="year"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field: {onChange, value}}) => (
+                                        <FormControl fullWidth>
+                                            <YearDropdown
+                                                value={value}
+                                                onChange={(newValue) => {
+                                                    onChange(newValue);
+                                                }}
+                                            />
+                                            {errors.year && (
+                                                <FormHelperText style={{color: "#fc8947"}}>
+                                                    {errors.year.message}
+                                                </FormHelperText>
+                                            )}
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            {/*Select Month*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="month"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field: {onChange, value}}) => (
+                                        <FormControl fullWidth>
+                                            <MonthDropdown
+                                                value={value}
+                                                onChange={(newValue) => {
+                                                    onChange(newValue);
+                                                }}
+                                            />
+                                            {errors.month && (
+                                                <FormHelperText style={{color: "#fc8947"}}>
+                                                    {errors.month.message}
+                                                </FormHelperText>
+                                            )}
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            {/*Select PM instance*/}
+                            <Grid item xs={2}>
+                                <Controller
+                                    name="pmInstance"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <FormControl fullWidth>
+                                            <Autocomplete
+                                                {...field}
+                                                options={pmInstances}
+                                                PopperComponent={CustomPopper}
+                                                renderInput={(params) => <
+                                                    TextField {...params} label="PM Instance" variant="outlined"
+                                                              sx={autoCompleteSx}/>}
+                                                onChange={(event, value) => {
+                                                    field.onChange(value);
+                                                    setPmInstance(value);
+                                                    clearErrors('pmInstance');
+                                                }}
+                                            />
+                                            {errors.pmInstance && (
+                                                <FormHelperText style={{color: "#fc8947"}}>
+                                                    {errors.pmInstance.message}
+                                                </FormHelperText>
+                                            )}
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Stack direction="row" spacing={3}>
+                                    <Button
+                                        endIcon={<SearchRoundedIcon/>}
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            bgcolor: '#1a3a4f',
+                                            '&:hover': {
+                                                bgcolor: '#051935',
+                                            },
+                                            borderRadius: '10px',
+                                            display: 'flex',
+                                            paddingTop: 3,
+                                            justifyContent: 'flex-end', // Align the content to the bottom
+                                            alignItems: 'flex-start', // Align text to the left within the button
+                                        }}
+                                        size='large'
+                                        type='submit'
+                                        title='Submit'
+                                    >
+                                        Search
+                                    </Button>
+                                    <Button
+                                        endIcon={<SearchOffIcon/>}
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            bgcolor: '#1a3a4f',
+                                            '&:hover': {
+                                                bgcolor: '#051935',
+                                            },
+                                            borderRadius: '10px',
+                                            display: 'flex',
+                                            paddingTop: 3,
+                                            justifyContent: 'flex-end', // Align the content to the bottom
+                                            alignItems: 'flex-start', // Align text to the left within the button
+                                        }}
+                                        title='Clear'
+                                        type='reset'
+                                        size='large'
+                                        onClick={Clear}
+                                    >
+                                        Clear
+                                    </Button>
+                                </Stack>
+                            </Grid>
+                            {loading && <LazyComponent Command={"Searching"}/>}
+                            {searchInitiated ? (
+                                reportData && !reportData.emptyBit ? (
+                                    <>
+                                        <Grid item xs={12}>
+                                            <Box>
+                                                <ServicingReportRecord data={reportData.servicingReport}/>
+                                            </Box>
+                                        </Grid>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Typography variant='h6'
+                                                    sx={{
+                                                        fontFamily: 'Poppins',
+                                                        fontWeight: 'bold',
+                                                        color: '#FFF',
+                                                        ml: 70,
+                                                        mt: 5,
+                                                        p: 2,
+                                                        border: '1px solid rgb(255, 153, 153)',
+                                                        borderRadius: 10,
+                                                    }}>
+                                            Oops!!! No Record for the selected criteria
+                                        </Typography>
+                                    </>
+                                )
+                            ) : null}
+                        </Grid>
+                    </Paper>
+                </Box>
                 <br/><br/>
                 {/*</Card>*/}
                 <Stack direction='row' spacing={5}>

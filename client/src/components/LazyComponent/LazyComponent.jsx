@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import RingLoader from "react-spinners/RingLoader";
 
-function LazySubmitting() {
+function LazyComponent({Command}) {
     return (
         <Box sx={mainSection}>
             <Box
@@ -28,7 +28,7 @@ function LazySubmitting() {
                                     fontWeight: 'bold',
                                     color: '#FFF',
                                 }}>
-                        Submitting...
+                        {Command}...
                     </Typography>
                     <RingLoader color="#07ebf1" size={30}/>
                 </Stack>
@@ -37,4 +37,4 @@ function LazySubmitting() {
     )
 }
 
-export default LazySubmitting;
+export default LazyComponent;

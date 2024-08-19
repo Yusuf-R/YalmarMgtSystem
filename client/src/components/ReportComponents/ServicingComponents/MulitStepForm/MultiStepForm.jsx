@@ -31,7 +31,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {useRouter} from "next/navigation";
 import dayjs from "dayjs";
-import LazySubmitting from "@/components/LazySubmitting/LazySubmitting";
+import LazyComponent from "@/components/LazyComponent/LazyComponent";
 
 const steps = [
     'Reporting Staff-Info',
@@ -401,6 +401,40 @@ function MultiStepForm({allStaff, allSite}) {
         for (let pair of formDataObj.entries()) {
             console.log(`${pair[0]}: ${pair[1]}`);
         }
+        // we also need to construct our cache key to see if this entry already exist
+        // Example data object
+        //{
+        //         "siteType": "TERMINAL",
+        //         "location": "AIR FORCE BASE",
+        //         "pmInstance": "PM1",
+        //         "year": "2024",
+        //         "month": "August",
+        //         "siteId": "KAD020",
+        //         "cluster": "KADUNA-CENTRAL",
+        //         "state": "KADUNA"
+        //}
+        // we need to construct month and year from the servicingDate for our cache key
+        // month -- August, year -- 2024
+        // we can get the month and year from the servicingDate
+        const month = dayjs(formData.servicingDate).format('MMMM');
+        const year = dayjs(formData.servicingDate).format('YYYY');
+        
+        const data = {
+            siteType: formData.siteType,
+            location: formData.location,
+            pmInstance: formData.pmInstance,
+            siteId: formData.siteId,
+            cluster: formData.cluster,
+            state: formData.state,
+            year: year,
+            month: month,
+        };
+        const cacheKey = ["GetServicingReport", data];
+        const cachedData = queryClient.getQueryData(cacheKey);
+        if (cachedData) {
+            // clear this cache data
+            queryClient.removeQueries(cacheKey);
+        }
         // we can now send the formDataObj to the server
         try {
             await mutation.mutateAsync(formDataObj);
@@ -499,7 +533,7 @@ function MultiStepForm({allStaff, allSite}) {
                                 >
                                     Submit
                                 </Button>
-                                {isLoading && <LazySubmitting/>}
+                                {isLoading && <LazyComponent Command='Submitting'/>}
                             </Stack>
                         </>
                     )}

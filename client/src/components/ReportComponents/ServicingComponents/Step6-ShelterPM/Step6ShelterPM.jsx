@@ -148,7 +148,7 @@ function Step6ShelterPM({txProps}) {
     
     // if security light availability is NO, then set the status to NOT-APPLICABLE
     useEffect(() => {
-        if (securityLightAvailability === 'NO') {
+        if (securityLightAvailability === 'NO' || securityLightAvailability === 'NOT-APPLICABLE') {
             setValue('lightningPM.securityLightStatus', 'NOT-APPLICABLE');
             clearErrors('lightningPM.securityLightStatus');
         }
@@ -156,7 +156,7 @@ function Step6ShelterPM({txProps}) {
     
     // if floodlight availability is NO, then set the status to NOT-APPLICABLE
     useEffect(() => {
-        if (floodLightAvailability === 'NO') {
+        if (floodLightAvailability === 'NO' || floodLightAvailability === 'NOT-APPLICABLE') {
             setValue('lightningPM.floodLightStatus', 'NOT-APPLICABLE');
             clearErrors('lightningPM.floodLightStatus');
         }

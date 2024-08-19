@@ -68,8 +68,9 @@ const serviceOps = {
     },
     
     // service info
-    servicingDate: {type: String, default: Date, required: true},
-    nextServiceDate: {type: String, default: Date, required: true},
+    servicingDate: {type: Date, required: true},
+    nextServiceDate: {type: Date, required: true},
+    
     
     // gen PM
     generatorPM: {
@@ -305,6 +306,26 @@ const serviceOps = {
 };
 
 const serviceOpsSchema = new mongoose.Schema(serviceOps, {timestamps: true});
+// Creating a compound index to improve search performance
+//     pmInstance,
+//     siteId,
+//     cluster,
+//     state,
+//     location,
+//     siteType,
+//     servicingDate
+
+serviceOpsSchema.index({
+    pmInstance: 1,
+    siteId: 1,
+    cluster: 1,
+    state: 1,
+    location: 1,
+    siteType: 1,
+    servicingDate: 1
+}, {
+    unique: true
+});
 
 const Servicing = mongoose.model('Servicing', serviceOpsSchema);
 

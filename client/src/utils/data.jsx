@@ -22,7 +22,7 @@ export const mainSection3 = {
     left: '200px',
 }
 export const txProps = {
-    color: "white",
+    color: "red",
     bgcolor: "#274e61",
     borderRadius: "10px",
     width: '250px',
@@ -1411,3 +1411,33 @@ export const type = [
     'TERMINAL-HUB',
     'BSC',
 ]
+export const autoCompleteSx = {
+    bgcolor: "#274e61",
+    borderRadius: "10px",
+    width: '250px',
+    "& .MuiInputLabel-root": {
+        color: '#46F0F9', // Label text color
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+        color: '#FFF', // Label text color when focused
+    },
+    // text color to white after selecting from the dropdown list
+    "& .MuiInputBase-input": {
+        color: '#FFF',
+        fontSize: '16px',
+        fontFamily: 'Poppins',
+        fontWeight: '500',
+    },
+    "& .MuiAutocomplete-endAdornment": {
+        color: '#FFF',
+    },
+    "& .MuiAutocomplete-clearIndicator": {
+        color: '#FFF',
+    },
+    "& .MuiAutocomplete-popupIndicator": {
+        color: '#FFF',
+    },
+    '&:hover': {
+        bgcolor: '#051935',
+    },
+};

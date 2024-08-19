@@ -8,6 +8,10 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 function Step11DataPreview({formData}) {
     console.log({formData});
@@ -21,6 +25,8 @@ function Step11DataPreview({formData}) {
         height: 'auto',
         border: '2px solid #4db8ff',
     }
+    // Split the summary into an array of sentences
+    const summaryLines = formData.summary.split('\r\n');
     return (
         <>
             <br/><br/>
@@ -238,11 +244,60 @@ function Step11DataPreview({formData}) {
                                     Status:</strong> {formData.otherPM.feederCableStatus}</Typography>
                                 <Typography variant="body1"><strong>Change Over Switch
                                     Status:</strong> {formData.otherPM.changeOverSwitchStatus}</Typography>
-                                <Typography variant="body1"><strong>Earthing:</strong> {formData.otherPM.earthing}
+                                <Typography variant="body1"><strong>Earthing Cable
+                                    Status:</strong> {formData.otherPM.earthingCableStatus}
                                 </Typography>
-                                <Typography variant="body1"><strong>Other
-                                    Issues:</strong> {formData.otherPM.otherIssues}
+                                <Typography variant="body1"><strong>Earthing
+                                    Status:</strong> {formData.otherPM.earthingStatus}
                                 </Typography>
+                                <Typography variant="body1"><strong>Fire Extinguisher
+                                    Status:</strong> {formData.otherPM.fireExtinguisherStatus}
+                                </Typography>
+                                <Typography variant="body1"><strong>Earthing
+                                    Status:</strong> {formData.otherPM.earthingStatus}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    
+                    {/*Security PM*/}
+                    <Grid item xs={12}>
+                        <Card sx={cardSx}>
+                            <CardContent>
+                                <Typography variant="h5" gutterBottom>Security PM</Typography>
+                                <Divider/>
+                                <Typography variant="body1"><strong>Security
+                                    Status:</strong> {formData.securityPM.securityStatus}</Typography>
+                                <Typography variant="body1"><strong>Site
+                                    Access:</strong> {formData.securityPM.siteAccess}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    {/*Summary*/}
+                    <Grid item xs={12}>
+                        <Card sx={cardSx}>
+                            <CardContent>
+                                <Typography variant="h5" gutterBottom>Summary</Typography>
+                                <Divider/>
+                                {summaryLines.map((line, index) => (
+                                    <List>
+                                        <ListItem sx={{margin: 0, p: 0,}} key={index}>
+                                            <ListItemIcon sx={{mr: -1}}>
+                                                <PlaylistAddCheckIcon
+                                                    sx={{color: "lime", fontSize: "32px"}}/>
+                                            </ListItemIcon>
+                                            <Typography sx={{
+                                                fontWeight: 'bold',
+                                                // color: 'white',
+                                                fontFamily: 'Poppins',
+                                                fontSize: '16px',
+                                                m: -1,
+                                            }}>
+                                                {line}
+                                            </Typography>
+                                        </ListItem>
+                                    </List>
+                                ))}
                             </CardContent>
                         </Card>
                     </Grid>
