@@ -11,6 +11,10 @@ import {cloudinary} from "../utils/cloudinary";
 import * as fs from "node:fs";
 import redisClient from "../utils/redis";
 import dayjs from "dayjs";
+import Staff from "../models/Staff";
+
+const _ = require('lodash');
+
 
 const {ObjectId} = mongoose.Types;
 
@@ -90,7 +94,7 @@ class ServicingController {
             }
             // Note for future debugging: - the month is in lower case due to passing it through joi validation
             // generate a unique key for caching
-            const cacheKey = JSON.stringify(value);
+            const cacheKey = JSON.stringify(value, Object.keys(value).sort());
             // check if the key exists in the cache
             const cachedData = await redisClient.get(cacheKey);
             if (cachedData) {
@@ -130,7 +134,7 @@ class ServicingController {
             if (servicingReport.length === 0) {
                 emptyBit = true;
             }
-            // cache the data
+            // cache the data as a json object
             await redisClient.set(cacheKey, JSON.stringify(servicingReport), 3600); // cache for 1-hour
             res.status(201).json({
                 message: 'Report fetched successfully',
@@ -182,13 +186,9 @@ class ServicingController {
                 return res.status(400).json({error: errMsg});
             }
             // we need to construct the cacheKey base on this example format
-            //cacheKey: '{"siteType":"TERMINAL","location":"AIR FORCE BASE","pmInstance":"PM2","year":"2024","month":"august","siteId":"KAD020","cluster":"KADUNA-CENTRAL","state":"KADUNA"}'
-            // }
-            // check if this data already exists in our redisCache
-            // we need to construct month example -- august, and also year example -- 2024 from the servicing Date using dayjs
             const month = dayjs(value.servicingDate).format('MMMM').toLowerCase();
             const year = dayjs(value.servicingDate).format('YYYY');
-            const cacheKey = JSON.stringify({
+            const constructedValue = {
                 siteType: value.siteType,
                 location: value.location,
                 pmInstance: value.pmInstance,
@@ -197,7 +197,8 @@ class ServicingController {
                 state: value.state,
                 month,
                 year
-            });
+            }
+            const cacheKey = JSON.stringify(constructedValue, Object.keys(constructedValue).sort());
             const cachedData = await redisClient.get(cacheKey);
             const data = JSON.parse(cachedData);
             // check if cacheData array is not empty
@@ -267,6 +268,139 @@ class ServicingController {
             // unexpected error
             return res.status(500).json({error: error.message});
         }
+    }
+    
+    static async deleteServiceReport(req, res) {
+        try {
+            const verifiedJwt = await AuthController.currPreCheck(req);
+            if (verifiedJwt instanceof Error) {
+                return res.status(400).json({error: verifiedJwt.message});
+            }
+            const {id} = verifiedJwt;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            const admin = await AuthController.AdminCheck(new ObjectId(id));
+            if (admin instanceof Error) {
+                return res.status(400).json({error: admin.message});
+            }
+            // extract the content of the req.body
+            const {email, selectedIds} = req.body;
+            if (!email || !selectedIds) {
+                return res.status(400).json({error: 'Missing email or objectIds'});
+            }
+            // Basic email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json('Invalid email address');
+            }
+            // validates the email is indeed a staff and this staff is an admin or superAdmin
+            const staff = await Staff.findOne({email});
+            if (!staff) {
+                return res.status(400).json({error: 'Invalid email credentials'});
+            }
+            if (staff.role !== 'Admin' && staff.role !== 'SuperAdmin') {
+                return res.status(400).json({error: 'You are not authorized to delete this record'});
+            }
+            if (admin.email !== staff.email) {
+                return res.status(400).json({error: 'You are not authorized to delete this record'});
+            }
+            // validates the staffIds in the array, array must not be empty
+            if (selectedIds.length === 0) {
+                return res.status(400).json({error: 'Missing servicing Records Ids'});
+            }
+            // Call the external async function to delete the cache
+            await ServicingController.deleteServiceCache(selectedIds);
+            // Call the external async function to delete the cloudinary images
+            await ServicingController.deleteServiceCloudinaryImages(selectedIds);
+            // // then we can be sure to delete
+            const deleted = await Servicing.deleteMany({_id: {$in: selectedIds}});
+            if (deleted.deletedCount === 0) {
+                return res.status(500).json({error: 'Servicing deletion failed'});
+            }
+            res.status(200).json({message: 'Servicing Record deleted successfully'});
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            // unexpected error
+            return res.status(500).json({error: error.message});
+        }
+    }
+    
+    static async deleteServiceCache(pmdIds) {
+        for (const ids of pmdIds) {
+            const serviceRecordObj = await Servicing.findOne({_id: ids});
+            if (!serviceRecordObj) {
+                throw new Error('Servicing deletion failed');
+            }
+            const month = dayjs(serviceRecordObj.servicingDate).format('MMMM').toLowerCase();
+            const year = dayjs(serviceRecordObj.servicingDate).format('YYYY');
+            const constructedValue = {
+                siteType: serviceRecordObj.siteType,
+                location: serviceRecordObj.location,
+                pmInstance: serviceRecordObj.pmInstance,
+                siteId: serviceRecordObj.siteId,
+                cluster: serviceRecordObj.cluster,
+                state: serviceRecordObj.state,
+                month,
+                year
+            }
+            const cacheKey = JSON.stringify(constructedValue, Object.keys(constructedValue).sort());
+            const cachedData = await redisClient.get(cacheKey);
+            const data = JSON.parse(cachedData);
+            // check if cacheData array is not empty
+            if (data && data.length > 0) {
+                // clear it
+                await redisClient.del(cacheKey);
+                console.log('cache entry deleted successfully');
+            }
+        }
+        return;
+    };
+    
+    static async deleteServiceCloudinaryImages(pmIds) {
+        console.log('I got to cloudinary');
+        for (const ids of pmIds) {
+            const serviceRecordObj = await Servicing.findOne({_id: ids});
+            console.log({serviceRecordObj});
+            if (!serviceRecordObj) {
+                throw new Error('Servicing deletion failed');
+            }
+            const servicingDate = new Date(serviceRecordObj.servicingDate);
+            console.log({servicingDate});
+            const monthName = servicingDate.toLocaleString('en-US', {month: 'long'}); // Get month name, e.g., "August"
+            console.log({monthName});
+            // We need to delete all the files in the pmInstance folder
+            const folderPath = `YalmarMgtSystem/ServicingReports/${serviceRecordObj.siteId}/${servicingDate.getFullYear()}/${monthName}/${serviceRecordObj.pmInstance}/${serviceRecordObj.servicingDate}/images`;
+            
+            console.log({folderPath});
+            
+            // 1. List all resources (images, files) in the folder and subfolders
+            const {resources} = await cloudinary.api.resources({
+                type: 'upload',
+                prefix: folderPath,
+                max_results: 500,
+            });
+            console.log({resources});
+            // 2. Delete each resource found in the list
+            const deletePromises = resources.map((resource) => {
+                const publicId = resource.public_id;
+                console.log(`Deleting ${publicId}`);
+                return cloudinary.uploader.destroy(publicId);
+            });
+            
+            await Promise.all(deletePromises);
+            
+            // 3. Delete the folder itself
+            // Since Cloudinary doesn’t allow direct folder deletion, ensure it’s empty
+            await cloudinary.api.delete_folder(folderPath);
+        }
+        
     }
 }
 

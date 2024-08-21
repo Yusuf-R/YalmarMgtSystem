@@ -28,6 +28,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import dayjs from 'dayjs';
 import Divider from "@mui/material/Divider";
+import ArrowBackSharpIcon from "@mui/icons-material/ArrowBackSharp";
 
 function ServicingReportRecord({data}) {
     const theme = useTheme();
@@ -74,7 +75,7 @@ function ServicingReportRecord({data}) {
         summary,
         servicingDate,
         nextServiceDate,
-    } = data[0];
+    } = data[0] || data;
     
     // format servicingDate to a more readable format
     const formattedServicingDate = dayjs(servicingDate).format('DD/MMM/YYYY');
@@ -117,7 +118,9 @@ function ServicingReportRecord({data}) {
             handleNext();
         }
     };
-    
+    const goPrev = () => {
+        window.history.back();
+    }
     return (
         <>
             <br/>
@@ -136,9 +139,10 @@ function ServicingReportRecord({data}) {
                             p: 2,
                             border: '1px solid rgb(255, 153, 153)',
                             borderRadius: 10,
-                            width: '35%'
+                            width: '36%'
                         }}>
-                Report Data for {siteId}-{pmInstance} : {formattedServicingDate}
+                Report Data for {siteId}-{pmInstance} : {formattedServicingDate} <IconButton><ArrowBackSharpIcon
+                sx={{color: 'lime', fontSize: 30}} onClick={goPrev}/></IconButton>
             </Typography>
             <br/>
             <Grid container spacing={3}>

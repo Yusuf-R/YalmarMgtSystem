@@ -77,6 +77,7 @@ function Step3ServiceInfo({txProps}) {
         setShowCalendar(false); // Hide the date picker after selecting a date
     };
     
+    
     return (
         <>
             <br/><br/><br/>
@@ -264,9 +265,35 @@ function Step3ServiceInfo({txProps}) {
                                     <>
                                         <DayPicker
                                             mode="single"
+                                            captionLayout="dropdown"
                                             selected={servicingDate}
                                             onSelect={handleDateSelect}
                                             onToggle={handleToggleCalendar}
+                                            numberOfMonths={2}
+                                            required
+                                            modifiers={{
+                                                today: new Date(),
+                                            }}
+                                            style={{
+                                                '--rdp-background-color': '#cc00cc',
+                                            }}
+                                            styles={{
+                                                caption: {
+                                                    color: '#FFF',
+                                                },
+                                                day: {
+                                                    color: '#FFF',
+                                                },
+                                            }}
+                                            modifiersStyles={{
+                                                today: {
+                                                    color: '#FFF',
+                                                    backgroundColor: 'red',
+                                                },
+                                                selected: {
+                                                    backgroundColor: 'rgb(0, 153, 0)',
+                                                },
+                                            }}
                                         />
                                     </>
                                 )}
