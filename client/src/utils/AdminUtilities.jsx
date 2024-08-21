@@ -1,5 +1,6 @@
 // 'use server';
 import {axiosPrivate, axiosPublic} from "@/utils/AxiosInstance";
+import {useQueryClient} from "@tanstack/react-query";
 
 const idSecret = process.env.ID_SECRET;
 const dataSecret = process.env.DATA_SECRET;
@@ -616,9 +617,25 @@ class AdminUtils {
             const response = await axiosPrivate({
                 method: "POST",
                 url: '/service/new',
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
                 data: obj,
             })
             
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async GetServicingReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/service/get',
+                data: obj,
+            })
             return response.data;
         } catch (error) {
             throw new Error(error);
@@ -632,7 +649,6 @@ class AdminUtils {
                 url: '/service/update',
                 data: obj,
             })
-            
             return response.data;
         } catch (error) {
             throw new Error(error);

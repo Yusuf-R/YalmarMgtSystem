@@ -220,7 +220,6 @@ function NewFuellingReport({allSite}) {
             });
         }
     }
-    console.log({errors});
     
     return (
         <>

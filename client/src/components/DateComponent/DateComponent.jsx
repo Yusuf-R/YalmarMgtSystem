@@ -145,6 +145,7 @@ const DateComponent = ({name, control, errors, label, setDate, labelText, defaul
                                         }
                                     },
                                 }}
+                            
                             />
                         </DemoContainer>
                     </ThemeProvider>
