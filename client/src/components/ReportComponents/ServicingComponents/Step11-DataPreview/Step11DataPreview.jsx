@@ -14,7 +14,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 function Step11DataPreview({formData}) {
-    console.log({formData});
     const servicingDate = new Date(formData.servicingDate).toLocaleDateString();
     const cardSx = {
         alignContent: 'start',
@@ -26,7 +25,11 @@ function Step11DataPreview({formData}) {
         border: '2px solid #4db8ff',
     }
     // Split the summary into an array of sentences
-    const summaryLines = formData.summary.split('\r\n');
+    const summaryLines = formData.summary.split('\n');
+    const warningMsg = [
+        'Please ensure you have filled out all the required fields correctly before submitting.',
+        'Document can not be edited after submission'
+    ];
     return (
         <>
             <br/><br/>
@@ -318,10 +321,45 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
+                    
+                    {/*Submission Warning*/}
+                    <Grid item xs={12}>
+                        <Card sx={cardSx}>
+                            <CardContent>
+                                <Typography sx={{
+                                    fontWeight: 'bold',
+                                    color: 'rgb(255, 128, 128)',
+                                    fontFamily: 'Poppins',
+                                    fontSize: '36px',
+                                    m: -1,
+                                }}>Submission Warning</Typography>
+                                <Divider/>
+                                {warningMsg.map((msg, index) => (
+                                    <List>
+                                        <ListItem sx={{margin: 0, p: 0,}} key={index}>
+                                            <ListItemIcon sx={{mr: -1}}>
+                                                <PlaylistAddCheckIcon
+                                                    sx={{color: "lime", fontSize: "32px"}}/>
+                                            </ListItemIcon>
+                                            <Typography sx={{
+                                                fontWeight: 'bold',
+                                                color: 'white',
+                                                fontFamily: 'Poppins',
+                                                fontSize: '22px',
+                                                m: -1,
+                                            }}>
+                                                {msg}
+                                            </Typography>
+                                        </ListItem>
+                                    </List>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 </Grid>
             </Paper>
         </>
     );
-};
+}
 
 export default Step11DataPreview;

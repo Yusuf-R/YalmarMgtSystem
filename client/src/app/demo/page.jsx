@@ -4,7 +4,9 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 import RingLoader from "react-spinners/RingLoader";
+import ConfirmationDialog from "@/components/Utilities/ConfirmationDialog";
 import {mainSection} from "@/utils/data";
+import AdvImageResizerV2 from "@/components/AdvImageResizerV2/AdvImageResizerV2";
 
 
 function TestComponent() {
@@ -35,7 +37,8 @@ function TestComponent() {
     };
     return (
         <>
-            <LazyComponent Command={"Testing"}/>
+            {/*<LazyComponent Command={"Testing"}/>*/}
+            <AdvImageResizerV2/>
             <br/><br/>
         </>
     )

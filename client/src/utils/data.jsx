@@ -1,24 +1,10 @@
+import Popper from "@mui/material/Popper";
+
 export const mainSection = {
     padding: '20px',
     width: 'calc(100% - 250px)',
     position: 'absolute',
     top: '70px',
-    left: '200px',
-}
-
-export const mainSection2 = {
-    padding: '20px',
-    width: 'calc(100% - 250px)',
-    position: 'absolute',
-    top: '950px',
-    left: '200px',
-}
-
-export const mainSection3 = {
-    padding: '20px',
-    width: 'calc(100% - 250px)',
-    position: 'absolute',
-    top: '2500px',
     left: '200px',
 }
 export const txProps = {
@@ -45,16 +31,6 @@ export const txProps = {
         WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
         WebkitTextFillColor: 'white',
     },
-};
-export const paperProps = {
-    alignCenter: 'center',
-    padding: '10px',
-    backgroundColor: '#274e61',
-    color: '#46F0F9',
-    borderRadius: '10px',
-    width: '100%',
-    height: 'auto',
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)'
 };
 export const modalStyle = {
     position: 'absolute',
@@ -1412,7 +1388,7 @@ export const type = [
     'BSC',
 ]
 export const autoCompleteSx = {
-    bgcolor: "#274e61",
+    backgroundColor: "#274e61",
     borderRadius: "10px",
     width: '250px',
     "& .MuiInputLabel-root": {
@@ -1440,4 +1416,30 @@ export const autoCompleteSx = {
     '&:hover': {
         bgcolor: '#051935',
     },
+};
+export const CustomPopper = (props) => {
+    return (
+        <Popper
+            {...props}
+            sx={{
+                '& .MuiAutocomplete-listbox': {
+                    bgcolor: '#274e61', // Background color of the dropdown list
+                    color: 'white',
+                    fontSize: '16px',
+                    fontFamily: 'Poppins',
+                    fontWeight: '500',
+                },
+                '& .MuiAutocomplete-option': {
+                    '&[aria-selected="true"]': {
+                        bgcolor: '#051935 !important', // Background color of the selected option
+                        color: 'white !important', // Ensure the text color of the selected option is white
+                    },
+                    '&:hover': {
+                        bgcolor: '#1a3a4f !important', // Background color of the hovered option
+                        color: 'white !important', // Ensure the text color of the hovered option is white
+                    },
+                },
+            }}
+        />
+    );
 };

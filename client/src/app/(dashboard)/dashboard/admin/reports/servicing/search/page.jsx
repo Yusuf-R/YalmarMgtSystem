@@ -5,17 +5,11 @@ import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
 import {Suspense, lazy} from "react";
 
-const ServicingReport = lazy(() => import("@/components/ReportComponents/ServicingComponents/ServicingReport/ServicingReport"))
+const SearchServiceReport = lazy(() => import("@/components/ReportComponents/ServicingComponents/SearchServiceReport/SearchServiceReport"));
 
-function AllServicingReport() {
+
+function SearchServiceRecord() {
     const queryClient = useQueryClient();
-    
-    const {isLoading, isError, data, error} = useQuery({
-        queryKey: ['AllServicingReports'],
-        queryFn: AdminUtils.AllServicingReports,
-        staleTime: Infinity,
-        refetchOnWindowFocus: false,
-    });
     
     const allSite = queryClient.getQueryData(['AllSite']);
     const {isLoading: isLoadingSite, isError: isErrorSite, data: siteData} = useQuery({
@@ -26,31 +20,23 @@ function AllServicingReport() {
         enabled: !allSite,
     });
     
-    if (isLoading || isLoadingSite) {
+    if (isLoadingSite) {
         return <LazyLoading/>
     }
     
-    if (isError || !data) {
-        console.error('Error fetching user data');
-        return <DataFetchError/>;
-    }
-    
     if (isErrorSite) {
-        console.error('Error fetching user data');
+        console.error('Error fetching site data');
         return <DataFetchError/>;
     }
     
-    const {allServicingReport} = data;
     const effectiveSiteData = allSite || siteData.allSite;
-    
-    
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <ServicingReport allServicingReport={allServicingReport} allSite={effectiveSiteData.allSite}/>
+                <SearchServiceReport allSite={effectiveSiteData.allSite}/>
             </Suspense>
         </>
     )
 }
 
-export default AllServicingReport
+export default SearchServiceRecord;

@@ -1,10 +1,14 @@
-import ReportLandingPage
-    from "@/components/ReportComponents/ReportLandingPage/ReportLandingPage";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import {Suspense, lazy} from "react";
+
+const ReportLandingPage = lazy(() => import ("@/components/ReportComponents/ReportLandingPage/ReportLandingPage"))
 
 function ReportManagement() {
     return (
         <>
-            <ReportLandingPage/>
+            <Suspense fallback={<LazyLoading/>}>
+                <ReportLandingPage/>
+            </Suspense>
         </>
     )
 }

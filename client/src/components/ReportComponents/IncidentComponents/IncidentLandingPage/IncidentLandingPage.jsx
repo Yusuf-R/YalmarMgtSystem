@@ -1,23 +1,13 @@
+import Box from "@mui/material/Box";
+import {mainSection} from "@/utils/data";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
+import Grid from "@mui/material/Grid";
 import Link from "next/link";
-import Image from "next/image";
-import {mainSection} from "@/utils/data";
 import Avatar from "@mui/material/Avatar";
 
-function ReportLandingPage() {
-    const paperSx = {
-        alignCenter: 'center',
-        textAlign: 'center',
-        backgroundColor: '#274e61',
-        color: '#46F0F9',
-        borderRadius: '10px',
-        width: '60%',
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-    }
+function IncidentLandingPage() {
     return (
         <>
             <Box sx={mainSection}>
@@ -38,7 +28,7 @@ function ReportLandingPage() {
                                     fontWeight: 'bold',
                                     fontSize: '25px',
                                 }}>
-                        Operational Report Center</Typography>
+                        Incident Report Center</Typography>
                 </Paper>
                 <br/><br/>
                 <Stack spacing={2} direction='column'
@@ -46,32 +36,35 @@ function ReportLandingPage() {
                     <Grid container spacing={1}>
                         <Grid item xs={4}>
                             <Stack direction='column' spacing={2} sx={{alignItems: 'left'}}>
-                                <Link href='/dashboard/admin/reports/servicing'>
-                                    <Avatar src='/Servicing.svg' alt='Servicing' sx={{width: 250, height: 250,}}/>
+                                <Link href='/dashboard/admin/reports/incident/all'>
+                                    <Avatar src='/AllIncident-1.jpg' alt='AllIncident'
+                                            sx={{width: 250, height: 250, borderRadius: 10}}/>
                                 </Link>
-                                <Link href='/dashboard/admin/reports/servicing'>
+                                <Link href='/dashboard/admin/reports/incident/all'>
                                     <Typography variant='h6' textAlign='center'
                                                 sx={{
                                                     fontFamily: 'Poppins',
                                                     fontWeight: 'bold',
                                                     borderRadius: 5,
-                                                    ml: 3,
+                                                    ml: -1,
+                                                    mt: 2,
                                                     p: '5px',
                                                     bgcolor: '#0059b3',
                                                     color: '#FFF',
                                                     width: '50%',
                                                 }}>
-                                        Servicing Reports
+                                        All Reports
                                     </Typography>
                                 </Link>
                             </Stack>
                         </Grid>
                         <Grid item xs={4}>
                             <Stack direction='column' spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel'>
-                                    <Avatar src='/Fuelling-2.svg' alt='Fuelling' sx={{width: 250, height: 250,}}/>
+                                <Link href='/dashboard/admin/reports/incident/current'>
+                                    <Avatar src='/AllIncident.svg' alt='CurrentIncident'
+                                            sx={{width: 250, height: 250, borderRadius: 10, border: '1px solid #FFF'}}/>
                                 </Link>
-                                <Link href='/dashboard/admin/reports/fuel'>
+                                <Link href='/dashboard/admin/reports/incident/current'>
                                     <Typography variant='h6' textAlign='center'
                                                 sx={{
                                                     fontFamily: 'Poppins',
@@ -82,30 +75,10 @@ function ReportLandingPage() {
                                                     bgcolor: '#0059b3',
                                                     color: '#FFF',
                                                     width: '50%',
-                                                    ml: 3,
+                                                    ml: -1,
+                                                    mt: 2,
                                                     
-                                                }}>Fuelling Reports</Typography>
-                                </Link>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={4}>
-                            <Stack direction='column' spacing={2}>
-                                <Link href='/dashboard/admin/reports/incident'>
-                                    <Avatar src='/Incident.svg' alt='Incident' sx={{width: 250, height: 250,}}/>
-                                </Link>
-                                <Link href='/dashboard/admin/reports/incident'>
-                                    <Typography variant='h6' textAlign='center'
-                                                sx={{
-                                                    fontFamily: 'Poppins',
-                                                    fontWeight: 'bold',
-                                                    // color: '#46F0F9',
-                                                    borderRadius: 5,
-                                                    p: '5px',
-                                                    bgcolor: '#0059b3',
-                                                    color: '#FFF',
-                                                    width: '50%',
-                                                    ml: 3,
-                                                }}>Incident-Reports</Typography>
+                                                }}>Current Month Reports</Typography>
                                 </Link>
                             </Stack>
                         </Grid>
@@ -117,4 +90,4 @@ function ReportLandingPage() {
     )
 }
 
-export default ReportLandingPage
+export default IncidentLandingPage;

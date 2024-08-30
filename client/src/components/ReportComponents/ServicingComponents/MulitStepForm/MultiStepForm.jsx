@@ -6,6 +6,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+
 import {useForm, FormProvider} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {newServiceReportSchema} from '@/SchemaValidator/newServiceReport';
@@ -394,28 +395,12 @@ function MultiStepForm({allStaff, allSite}) {
             }
         });
         // we need to append servicingDate
-        // const servicingDate = dayjs(formData.servicingDate).format('DD/MMM/YYYY');
-        // formDataObj.append('servicingDate', dayjs(formData.servicingDate).format('DD/MMM/YYYY'));
         formDataObj.append('servicingDate', dayjs(formData.servicingDate).format('DD/MMM/YYYY'));
         // Log the FormData object (for debugging purposes)
         for (let pair of formDataObj.entries()) {
             console.log(`${pair[0]}: ${pair[1]}`);
         }
         // we also need to construct our cache key to see if this entry already exist
-        // Example data object
-        //{
-        //         "siteType": "TERMINAL",
-        //         "location": "AIR FORCE BASE",
-        //         "pmInstance": "PM1",
-        //         "year": "2024",
-        //         "month": "August",
-        //         "siteId": "KAD020",
-        //         "cluster": "KADUNA-CENTRAL",
-        //         "state": "KADUNA"
-        //}
-        // we need to construct month and year from the servicingDate for our cache key
-        // month -- August, year -- 2024
-        // we can get the month and year from the servicingDate
         const month = dayjs(formData.servicingDate).format('MMMM');
         const year = dayjs(formData.servicingDate).format('YYYY');
         
@@ -432,10 +417,8 @@ function MultiStepForm({allStaff, allSite}) {
         const cacheKey = ["GetServicingReport", data];
         const cachedData = queryClient.getQueryData(cacheKey);
         if (cachedData) {
-            // clear this cache data
             queryClient.removeQueries(cacheKey);
         }
-        // we can now send the formDataObj to the server
         try {
             await mutation.mutateAsync(formDataObj);
             toast.success("Report submitted successfully");
