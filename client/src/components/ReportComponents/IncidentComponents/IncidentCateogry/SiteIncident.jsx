@@ -14,6 +14,9 @@ import Card from "@mui/material/Card";
 import React, {useState} from "react";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {siteIncidentSchema} from "@/SchemaValidator/IncidentValidators/siteIncidentSchema";
+
 
 function SiteIncident({allSite}) {
     const [siteInfo, setSiteInfo] = useState({
@@ -24,14 +27,15 @@ function SiteIncident({allSite}) {
         location: '',
         type: '',
     });
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
+        mode: 'onTouch',
+        reValidateMode: 'onChange',
+        resolver: yupResolver(siteIncidentSchema),
+    });
     // Site Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === siteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === siteInfo.cluster).map(site => site.siteId);
-    
-    // extract the site._id from allSite base on the selected siteIds
-    const site_id = allSite.filter(site => site.siteId === siteInfo.siteId).map(site => site._id)[0];
     
     // site State
     const getState = () => {
@@ -120,9 +124,9 @@ function SiteIncident({allSite}) {
     // category
     const catReport = ['Shelter', 'Security', 'Others']
     const getCatReport = () => {
-        if (!siteInfo.state || !siteInfo.cluster) {
-            return [];
-        }
+        // if (!siteInfo.state || !siteInfo.cluster) {
+        //     return [];
+        // }
         return catReport.map((category) => (
             <MenuItem key={category} value={category}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
@@ -132,7 +136,8 @@ function SiteIncident({allSite}) {
     };
     const handleCatReport = (event) => {
         event.preventDefault();
-        setValue('categorySite', event.target.value);
+        setValue('siteIncidentInfo.category', event.target.value);
+        clearErrors('siteIncidentInfo.category');
     };
     
     const catSec = ['Theft', 'Vandalism', 'Intrusion', 'Others']
@@ -146,7 +151,8 @@ function SiteIncident({allSite}) {
     }
     const handleCatSec = (event) => {
         event.preventDefault();
-        setValue('categorySecurity', event.target.value);
+        setValue('siteIncidentInfo.subCategory.security', event.target.value);
+        clearErrors('siteIncidentInfo.subCategory.security');
     }
     
     const catShe = ['Fire', 'Flooding', 'Structural-Damage', 'Others']
@@ -160,11 +166,12 @@ function SiteIncident({allSite}) {
     }
     const handleCatShe = (event) => {
         event.preventDefault();
-        setValue('categoryShelter', event.target.value);
+        setValue('siteIncidentInfo.subCategory.shelter', event.target.value);
+        clearErrors('siteIncidentInfo.subCategory.shelter');
     }
     
     
-    const catSelector = watch('categorySite');
+    const catSelector = watch('siteIncidentInfo.category');
     const accordionSx = {
         bgcolor: '#274e61',
     }
@@ -551,7 +558,7 @@ function SiteIncident({allSite}) {
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         <Grid item xs={4}>
                                             <Controller
-                                                name="categorySite"
+                                                name="siteIncidentInfo.category"
                                                 control={control}
                                                 defaultValue=""
                                                 render={({field}) => (
@@ -567,10 +574,10 @@ function SiteIncident({allSite}) {
                                                             }}
                                                             required
                                                             label="Action"
-                                                            error={!!errors.fullName}
-                                                            helperText={errors.fullName ? (
+                                                            error={!!errors.siteIncidentInfo?.category}
+                                                            helperText={errors.siteIncidentInfo?.category ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.siteIncidentInfo?.category.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -623,7 +630,7 @@ function SiteIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryShelter"
+                                                        name="siteIncidentInfo.subCategory.shelter"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -639,10 +646,10 @@ function SiteIncident({allSite}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.siteIncidentInfo?.subCategory?.shelter}
+                                                                    helperText={errors.siteIncidentInfo?.subCategory?.shelter ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.siteIncidentInfo?.subCategory?.shelter?.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -699,7 +706,7 @@ function SiteIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categorySecurity"
+                                                        name="siteIncidentInfo.subCategory.security"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -715,10 +722,10 @@ function SiteIncident({allSite}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.siteIncidentInfo?.subCategory?.security}
+                                                                    helperText={errors.siteIncidentInfo?.subCategory?.security ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.siteIncidentInfo?.subCategory?.security?.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -773,7 +780,7 @@ function SiteIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categorySiteOthers"
+                                                        name="siteIncidentInfo.subCategory.others"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
@@ -793,8 +800,8 @@ function SiteIncident({allSite}) {
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 required
-                                                                error={!!errors.categorySiteOthers}
-                                                                helperText={errors.categorySiteOthers ? errors.categorySiteOthers.message : ''}
+                                                                error={!!errors.siteIncidentInfo?.subCategory?.others}
+                                                                helperText={errors.siteIncidentInfo?.subCategory?.others ? errors.siteIncidentInfo.subCategory.others.message : ''}
                                                             />
                                                         )}
                                                     />

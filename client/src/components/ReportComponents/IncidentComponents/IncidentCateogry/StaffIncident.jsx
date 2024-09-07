@@ -15,9 +15,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Stack from "@mui/material/Stack";
 import CardHeader from "@mui/material/CardHeader";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {staffIncidentSchema} from "@/SchemaValidator/IncidentValidators/staffIncidentSchema";
 
 function StaffIncident({allStaff}) {
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
+        mode: 'onTouched',
+        resolver: yupResolver(staffIncidentSchema),
+        reValidateMode: 'onChange',
+    });
     // Full Name
     const fullNames = Array.from(new Set(allStaff.map(staff => staff.fullName)));
     const getFullName = () => fullNames.map((fullName) => (
@@ -29,13 +35,13 @@ function StaffIncident({allStaff}) {
         const selectedFullName = event.target.value;
         const selectedStaff = allStaff.find(staff => staff.fullName === selectedFullName);
         if (selectedStaff) {
-            setValue('fullName', selectedFullName);
-            setValue('email', selectedStaff.email);
-            setValue('role', selectedStaff.role);
-            setValue('staff_id', selectedStaff._id);
-            clearErrors('fullName');
-            clearErrors('email');
-            clearErrors('role');
+            setValue('staffInfo.fullName', selectedFullName);
+            setValue('staffInfo.email', selectedStaff.email);
+            setValue('staffInfo.role', selectedStaff.role);
+            setValue('staffInfo.staff_id', selectedStaff._id);
+            clearErrors('staffInfo.fullName');
+            clearErrors('staffInfo.email');
+            clearErrors('staffInfo.role');
         }
     };
     
@@ -52,10 +58,10 @@ function StaffIncident({allStaff}) {
     ));
     const handleCat = (event) => {
         const selectedClassAction = event.target.value;
-        setValue('classAction', selectedClassAction);
-        clearErrors('cat');
+        setValue('staffIncidentInfo.classAction', selectedClassAction);
+        clearErrors('staffIncidentInfo.classAction');
     };
-    const selectedClassAction = watch('classAction');
+    const selectedClassAction = watch('staffIncidentInfo.classAction');
     
     // categoryEmployment
     const getCatE = () => catE.map((catOpt) => (
@@ -65,8 +71,9 @@ function StaffIncident({allStaff}) {
     ))
     const handleCatE = (event) => {
         const selectedCatE = event.target.value;
-        setValue('categoryEmployment', selectedCatE);
-        clearErrors('catE');
+        console.log({selectedCatE});
+        setValue('staffIncidentInfo.category.employment', selectedCatE);
+        clearErrors('staffIncidentInfo.category.employment');
     }
     
     // categoryRole
@@ -77,8 +84,8 @@ function StaffIncident({allStaff}) {
     ))
     const handleCatR = (event) => {
         const selectedCatR = event.target.value;
-        setValue('categoryRole', selectedCatR);
-        clearErrors('catR');
+        setValue('staffIncidentInfo.category.role', selectedCatR);
+        clearErrors('staffIncidentInfo.category.role');
     }
     
     // categoryViolence
@@ -89,8 +96,8 @@ function StaffIncident({allStaff}) {
     ))
     const handleCatV = (event) => {
         const selectedCatV = event.target.value;
-        setValue('categoryViolence', selectedCatV);
-        clearErrors('catV');
+        setValue('staffIncidentInfo.category.violence', selectedCatV);
+        clearErrors('staffIncidentInfo.category.violence');
     }
     
     const accordionSx = {
@@ -155,7 +162,7 @@ function StaffIncident({allStaff}) {
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         <Grid item xs={4}>
                                             <Controller
-                                                name="fullName"
+                                                name="staffInfo.fullName"
                                                 control={control}
                                                 defaultValue=""
                                                 render={({field}) => (
@@ -171,10 +178,10 @@ function StaffIncident({allStaff}) {
                                                             }}
                                                             required
                                                             label="FullName"
-                                                            error={!!errors.fullName}
-                                                            helperText={errors.fullName ? (
+                                                            error={!!errors.staffInfo?.fullName}
+                                                            helperText={errors.staffInfo?.fullName ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.staffInfo?.fullName?.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -223,11 +230,11 @@ function StaffIncident({allStaff}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {watch('fullName') !== '' && (
+                                        {watch('staffInfo.fullName') !== '' && (
                                             <>
                                                 <Grid item xs={4}>
                                                     <Controller
-                                                        name="email"
+                                                        name="staffInfo.email"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
@@ -255,22 +262,22 @@ function StaffIncident({allStaff}) {
                                                                 }}
                                                                 label="Email"
                                                                 variant="outlined"
-                                                                error={!!errors.email}
-                                                                helperText={errors.email ? errors.email.message : ''}
+                                                                error={!!errors.staffInfo?.email}
+                                                                helperText={errors.staffInfo?.email ? errors.staffInfo.email.message : ''}
                                                             />
                                                         )}
                                                     />
                                                 </Grid>
                                                 <Grid item xs={4}>
                                                     <Controller
-                                                        name="role"
+                                                        name="staffInfo.role"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
                                                                 {...field}
                                                                 label="Role"
-                                                                error={!!errors.role}
-                                                                helperText={errors.role?.message}
+                                                                error={!!errors.staffInfo?.role}
+                                                                helperText={errors.staffInfo?.role?.message}
                                                                 InputProps={{
                                                                     sx: {
                                                                         ...txProps,
@@ -318,7 +325,7 @@ function StaffIncident({allStaff}) {
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         <Grid item xs={4}>
                                             <Controller
-                                                name="classAction"
+                                                name="staffIncidentInfo.classAction"
                                                 control={control}
                                                 defaultValue=""
                                                 render={({field}) => (
@@ -334,10 +341,10 @@ function StaffIncident({allStaff}) {
                                                             }}
                                                             required
                                                             label="Action"
-                                                            error={!!errors.fullName}
-                                                            helperText={errors.fullName ? (
+                                                            error={!!errors.staffIncidentInfo?.classAction}
+                                                            helperText={errors.staffIncidentInfo?.classAction ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.staffIncidentInfo?.classAction?.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -390,7 +397,7 @@ function StaffIncident({allStaff}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryEmployment"
+                                                        name="staffIncidentInfo.category.employment"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -406,10 +413,10 @@ function StaffIncident({allStaff}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.staffIncidentInfo?.category?.employment}
+                                                                    helperText={errors.staffIncidentInfo?.category?.employment ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.staffIncidentInfo?.category?.employment?.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -464,7 +471,7 @@ function StaffIncident({allStaff}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryRoles"
+                                                        name="staffIncidentInfo.category.role"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -480,10 +487,10 @@ function StaffIncident({allStaff}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.staffIncidentInfo?.category?.role}
+                                                                    helperText={errors.staffIncidentInfo?.category?.role ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.staffIncidentInfo?.category?.role?.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -538,7 +545,7 @@ function StaffIncident({allStaff}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryViolence"
+                                                        name="staffIncidentInfo.category.violence"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -554,10 +561,10 @@ function StaffIncident({allStaff}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.staffIncidentInfo?.category?.violence}
+                                                                    helperText={errors.staffIncidentInfo?.category?.violence ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.staffIncidentInfo?.category?.violence?.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -612,7 +619,7 @@ function StaffIncident({allStaff}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryStaffOthers"
+                                                        name="staffIncidentInfo.category.others"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
@@ -632,8 +639,8 @@ function StaffIncident({allStaff}) {
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 required
-                                                                error={!!errors.others}
-                                                                helperText={errors.categoryStaffOthers ? errors.categoryStaffOthers.message : ''}
+                                                                error={!!errors.staffIncidentInfo?.category?.others}
+                                                                helperText={errors.staffIncidentInfo?.staffIncidentInfo?.category?.others ? errors.staffIncidentInfo.category.others.message : ''}
                                                             />
                                                         )}
                                                     />

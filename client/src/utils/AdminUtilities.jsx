@@ -667,6 +667,35 @@ class AdminUtils {
             throw new Error(error);
         }
     }
+    
+    // Incident Report API----Incident------  ///
+    static async AllIncidentReport() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/incident/all',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
+    static async NewIncidentReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/incident/new',
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;

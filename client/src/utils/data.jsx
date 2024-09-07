@@ -1443,3 +1443,23 @@ export const CustomPopper = (props) => {
         />
     );
 };
+export const baseFields = [
+    'adminFullName', 'adminEmail', 'adminRole', 'incidentDate', 'reportCategory', 'severity',
+    'reportDescription', 'images', 'admin_id'
+];
+export const categoryFields = {
+    Others: [],
+    Fuel: [
+        'fuelSiteInfo', 'categoryFuel', 'categoryTheft', 'categoryQuality', 'categoryIntervention', 'categoryFuelOthers'
+    ],
+    Site: [
+        'siteInfo', 'categorySite', 'categorySecurity', 'categoryShelter', 'categorySiteOthers'
+    ],
+    Service: [
+        'serviceSiteInfo', 'categoryService', 'categoryMaintenance', 'categoryRepair', 'categoryOverhauling', 'categoryReplacement', 'categoryServiceOthers'
+    ],
+    Staff: [
+        'staff_id', 'fullName', 'email', 'role', 'classAction',
+        'categoryEmployment', 'categoryRole', 'categoryViolence', 'categoryStaffOthers'
+    ],
+};

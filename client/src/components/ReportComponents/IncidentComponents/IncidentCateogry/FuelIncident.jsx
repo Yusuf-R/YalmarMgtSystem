@@ -13,6 +13,10 @@ import {FormControl} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import React, {useEffect, useState} from "react";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {fuelIncidentSchema} from "@/SchemaValidator/IncidentValidators/fuelIncidentSchema";
+
+// setting up yupSchema for my fuelIncident form
 
 function FuelIncident({allSite}) {
     const [fuelSiteInfo, setFuelSiteInfo] = useState({
@@ -23,14 +27,17 @@ function FuelIncident({allSite}) {
         location: '',
         type: '',
     });
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext(
+        {
+            mode: 'onTouched',
+            resolver: yupResolver(fuelIncidentSchema),
+            reValidateMode: "onChange",
+        }
+    );
     // Site Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === fuelSiteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === fuelSiteInfo.cluster).map(site => site.siteId);
-    
-    // extract the site._id from allSite base on the selected siteIds
-    const site_id = allSite.filter(site => site.siteId === fuelSiteInfo.siteId).map(site => site._id)[0];
     
     // site State
     const getState = () => {
@@ -179,7 +186,7 @@ function FuelIncident({allSite}) {
     ));
     const handleCat = (event) => {
         event.preventDefault();
-        setValue('categoryFuel', event.target.value);
+        setValue('fuelIncidentInfo.category', event.target.value);
     }
     
     // Quality
@@ -192,7 +199,7 @@ function FuelIncident({allSite}) {
     ));
     const handleCatQ = (event) => {
         event.preventDefault();
-        setValue('qualityFuel', event.target.value);
+        setValue('fuelIncidentInfo.subCategory.quality.action', event.target.value);
     }
     
     // Intervention
@@ -205,31 +212,31 @@ function FuelIncident({allSite}) {
     ));
     const handleCatI = (event) => {
         event.preventDefault();
-        setValue('categoryIntervention.action', event.target.value);
+        setValue('fuelIncidentInfo.subCategory.intervention.action', event.target.value);
     }
     
     //
-    const oldQ = useWatch({control, name: 'categoryIntervention.oldQty', defaultValue: 0});
-    const addedQ = useWatch({control, name: 'categoryIntervention.qtyAdded', defaultValue: 0});
+    const oldQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.intervention.oldQty', defaultValue: 0});
+    const addedQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.intervention.qtyAdded', defaultValue: 0});
     const newQ = (Number(oldQ) + Number(addedQ)) || 0;
     
     //
-    const oldQt = useWatch({control, name: 'categoryTheft.oldQty', defaultValue: 0});
-    const stolenQ = useWatch({control, name: 'categoryTheft.qtyStolen', defaultValue: 0});
+    const oldQt = useWatch({control, name: 'fuelIncidentInfo.subCategory.theft.oldQty', defaultValue: 0});
+    const stolenQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.theft.qtyStolen', defaultValue: 0});
     const newQt = (Number(oldQt) - Number(stolenQ)) || 0;
     
     useEffect(() => {
         // Set the calculated value to the newQty field
-        setValue('categoryIntervention.newQty', newQ);
+        setValue('fuelIncidentInfo.subCategory.intervention.newQty', newQ);
     }, [newQ, setValue]);
     
     useEffect(() => {
         // Set the calculated value to the newQty field
-        setValue('categoryTheft.newQty', newQt);
+        setValue('fuelIncidentInfo.subCategory.theft.newQty', newQt);
     }, [newQt, setValue]);
     // Consumption
     
-    const catSelector = watch('categoryFuel');
+    const catSelector = watch('fuelIncidentInfo.category');
     
     return (
         <>
@@ -281,10 +288,10 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             required
                                                             label="State"
-                                                            error={!!errors.state}
-                                                            helperText={errors.state ? (
+                                                            error={!!errors.fuelSiteInfo?.state}
+                                                            helperText={errors.fuelSiteInfo?.state ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.state.message}
+                                                                                {errors.fuelSiteInfo.state.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -350,10 +357,10 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             label="Cluster"
                                                             required
-                                                            error={!!errors.cluster}
-                                                            helperText={errors.cluster ? (
+                                                            error={!!errors.fuelSiteInfo?.cluster}
+                                                            helperText={errors.fuelSiteInfo?.cluster ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.cluster.message}
+                                                                                {errors.fuelSiteInfo.cluster.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -418,10 +425,10 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             label="Site ID"
                                                             required
-                                                            error={!!errors.siteId}
-                                                            helperText={errors.siteId ? (
+                                                            error={!!errors.sitfuelSiteInfo?.siteIdeId}
+                                                            helperText={errors.fuelSiteInfo?.siteId ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.siteId.message}
+                                                                                {errors.fuelSiteInfo.siteId.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -494,8 +501,6 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             label="Site Type"
                                                             variant="outlined"
-                                                            error={!!errors.siteType}
-                                                            helperText={errors.siteType ? errors.siteType.message : ''}
                                                             type="text"
                                                             value={fuelSiteInfo.type}
                                                             readOnly
@@ -533,8 +538,6 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             label="Location"
                                                             variant="outlined"
-                                                            error={!!errors.location}
-                                                            helperText={errors.location ? errors.location.message : ''}
                                                             type="text"
                                                             value={fuelSiteInfo.location}
                                                             readOnly
@@ -566,7 +569,7 @@ function FuelIncident({allSite}) {
                                         {/*Site State*/}
                                         <Grid item xs={2}>
                                             <Controller
-                                                name="categoryFuel"
+                                                name="fuelIncidentInfo.category"
                                                 control={control}
                                                 defaultValue=""
                                                 render={({field}) => (
@@ -581,10 +584,10 @@ function FuelIncident({allSite}) {
                                                             }}
                                                             required
                                                             label="Category"
-                                                            error={!!errors.state}
-                                                            helperText={errors.state ? (
+                                                            error={!!errors.fuelIncidentInfo?.category}
+                                                            helperText={errors.fuelIncidentInfo?.category ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.state.message}
+                                                                                {errors.fuelIncidentInfo.category.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -637,7 +640,7 @@ function FuelIncident({allSite}) {
                                                 {/*action Taken*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryIntervention.action"
+                                                        name="fuelIncidentInfo.subCategory.intervention.action"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -653,10 +656,10 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.fullName}
-                                                                    helperText={errors.fullName ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.intervention?.action}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.intervention?.action ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.fullName.message}
+                                                                                {errors.fuelIncidentInfo.subCategory.intervention.action.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -708,7 +711,7 @@ function FuelIncident({allSite}) {
                                                 {/*oldQty - Estimated*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryIntervention.oldQty"
+                                                        name="fuelIncidentInfo.subCategory.intervention.oldQty"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -718,10 +721,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryIntervention?.oldQty}
-                                                                    helperText={errors.categoryIntervention?.oldQty ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.intervention?.oldQty}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.intervention?.oldQty ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryIntervention?.oldQty.message}
+                                                                                {errors.fuelIncidentInfo.subCategory?.intervention?.oldQty.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -747,7 +750,7 @@ function FuelIncident({allSite}) {
                                                 {/*QtyAdded*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryIntervention.qtyAdded"
+                                                        name="fuelIncidentInfo.subCategory.intervention.qtyAdded"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -757,10 +760,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryIntervention?.qtyAdded}
-                                                                    helperText={errors.categoryIntervention?.qtyAdded ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.intervention?.qtyAdded}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.intervention?.qtyAdded ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryIntervention?.qtyAdded.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.intervention?.qtyAdded.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -786,7 +789,7 @@ function FuelIncident({allSite}) {
                                                 {/*NewQty*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryIntervention.newQty"
+                                                        name="fuelIncidentInfo.subCategory.intervention.newQty"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -796,10 +799,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryIntervention?.newQty}
-                                                                    helperText={errors.categoryIntervention?.newQty ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.intervention?.newQty}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.intervention?.newQty ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryIntervention?.newQty.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.intervention?.newQty.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -830,7 +833,7 @@ function FuelIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryQuality.quality"
+                                                        name="fuelIncidentInfo.subCategory.quality"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -846,10 +849,10 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.categoryQuality?.quality}
-                                                                    helperText={errors.categoryQuality?.quality ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.quality}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.quality ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryQuality.quality.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.quality.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -905,7 +908,7 @@ function FuelIncident({allSite}) {
                                                 {/*oldQty - Estimated*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryTheft.oldQty"
+                                                        name="fuelIncidentInfo.subCategory.theft.oldQty"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -915,10 +918,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryTheft?.oldQty}
-                                                                    helperText={errors.categoryTheft?.oldQty ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.theft?.oldQty}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.theft?.oldQty ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryTheft?.oldQty.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.theft?.oldQty.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -944,7 +947,7 @@ function FuelIncident({allSite}) {
                                                 {/*QtyAdded*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryTheft.qtyStolen"
+                                                        name="fuelIncidentInfo.subCategory.theft.qtyStolen"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -954,10 +957,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryTheft?.qtyStolen}
-                                                                    helperText={errors.categoryTheft?.qtyStolen ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.theft?.qtyStolen}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.theft?.qtyStolen ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryIntervention?.qtyAdded.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.theft?.qtyStolen.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -983,7 +986,7 @@ function FuelIncident({allSite}) {
                                                 {/*NewQty*/}
                                                 <Grid item xs={2}>
                                                     <Controller
-                                                        name="categoryTheft.newQty"
+                                                        name="fuelIncidentInfo.subCategory.theft.newQty"
                                                         control={control}
                                                         render={({field}) => (
                                                             <FormControl fullWidth>
@@ -993,10 +996,10 @@ function FuelIncident({allSite}) {
                                                                     type="number"
                                                                     onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                                     required
-                                                                    error={!!errors.categoryTheft?.newQty}
-                                                                    helperText={errors.categoryTheft?.newQty ? (
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.theft?.newQty}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.theft?.newQty ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryTheft?.newQty.message}
+                                                                                {errors.fuelIncidentInfo?.subCategory?.theft?.newQty.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -1027,7 +1030,7 @@ function FuelIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryFuelOthers"
+                                                        name="fuelIncidentInfo.subCategory.others"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
@@ -1047,8 +1050,8 @@ function FuelIncident({allSite}) {
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 required
-                                                                error={!!errors.categoryFuelOthers}
-                                                                helperText={errors.categoryFuelOthers ? errors.categoryFuelOthers.message : ''}
+                                                                error={!!errors.fuelIncidentInfo?.subCategory?.others}
+                                                                helperText={errors.fuelIncidentInfo?.subCategory?.others ? errors.fuelIncidentInfo?.subCategory?.others?.message : ''}
                                                             />
                                                         )}
                                                     />

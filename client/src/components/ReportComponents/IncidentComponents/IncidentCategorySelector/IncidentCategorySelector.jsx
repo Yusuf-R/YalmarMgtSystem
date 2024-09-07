@@ -17,6 +17,36 @@ import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import {autoCompleteSx} from "@/utils/data";
 import "react-day-picker/dist/style.css";
+import {yupResolver} from '@hookform/resolvers/yup';
+import {categorySelectorSchema} from "@/SchemaValidator/IncidentValidators/categorySelectorSchema";
+
+
+// Category fields mapping based on the provided schema
+const categoryFields = {
+    Staff: [
+        'staff_id', 'fullName', 'email', 'role', 'classAction',
+        'categoryEmployment', 'categoryRole', 'categoryViolence', 'categoryStaffOthers'
+    ],
+    Site: [
+        'siteInfo.site_id', 'siteInfo.siteId', 'siteInfo.state', 'siteInfo.cluster',
+        'siteInfo.location', 'siteInfo.type', 'categorySite', 'categorySecurity',
+        'categoryShelter', 'categorySiteOthers'
+    ],
+    Fuel: [
+        'fuelSiteInfo.site_id', 'fuelSiteInfo.siteId', 'fuelSiteInfo.state', 'fuelSiteInfo.cluster',
+        'fuelSiteInfo.location', 'fuelSiteInfo.type', 'categoryFuel', 'categoryTheft.oldQty',
+        'categoryTheft.newQty', 'categoryTheft.qtyStolen', 'categoryQuality.quality',
+        'categoryIntervention.action', 'categoryIntervention.oldQty', 'categoryIntervention.newQty',
+        'categoryIntervention.qtyAdded', 'categoryFuelOthers'
+    ],
+    Service: [
+        'serviceSiteInfo.site_id', 'serviceSiteInfo.siteId', 'serviceSiteInfo.state', 'serviceSiteInfo.cluster',
+        'serviceSiteInfo.location', 'serviceSiteInfo.type', 'categoryService', 'categoryMaintenance.action',
+        'categoryRepair.action', 'categoryOverhauling.action', 'categoryReplacement.action',
+        'categoryServiceOthers'
+    ],
+    Others: []
+};
 
 function IncidentCategorySelector({
                                       incidentReportsCategory,
@@ -24,11 +54,16 @@ function IncidentCategorySelector({
                                       customStyles,
                                       onCategoryChange,
                                   }) {
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}, resetField} = useFormContext({
+        mode: 'onTouched',
+        resolver: yupResolver(categorySelectorSchema),
+        revalidateMode: 'onChange',
+    });
     
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState([]);
-    const incidentDate = watch('incidentDate');
+    const incidentDate = watch('incidentDate')
+    
     
     const handleToggleCalendar = () => {
         setShowCalendar(!showCalendar);
@@ -37,9 +72,19 @@ function IncidentCategorySelector({
     const handleDateSelect = (date) => {
         setValue('incidentDate', date);
         setShowCalendar(false); // Hide the date picker after selecting a date
+        clearErrors('incidentDate');
     };
     
     const handleCategoryChange = (event, newValue) => {
+        const removedCategories = selectedCategories.filter(cat => !newValue.includes(cat));
+        
+        removedCategories.forEach(category => {
+            if (categoryFields[category]) {
+                categoryFields[category].forEach(field => {
+                    resetField(field); // Reset field for deselected categories
+                });
+            }
+        });
         setSelectedCategories(newValue);
         setValue('reportCategory', newValue);
         clearErrors('reportCategory');
@@ -69,12 +114,17 @@ function IncidentCategorySelector({
                     <Controller
                         name="incidentDate"
                         control={control}
-                        render={({field}) => (
+                        render={({onChange}) => (
                             <TextField
-                                {...field}
-                                onClick={handleToggleCalendar}
+                                onFocus={handleToggleCalendar}
                                 value={incidentDate ? incidentDate.toLocaleDateString() : 'Enter Incident Date'}
                                 InputProps={{sx: customStyles.txProps, readOnly: true}}
+                                error={!!errors.incidentDate}
+                                helperText={errors.incidentDate ? (
+                                    <span style={{color: "#fc8947"}}>
+                                            {errors.incidentDate.message}
+                                        </span>
+                                ) : ''}
                                 label="Incident Date"
                                 InputLabelProps={{
                                     sx: {
@@ -103,6 +153,7 @@ function IncidentCategorySelector({
                             captionLayout="dropdown"
                             selected={incidentDate}
                             onSelect={handleDateSelect}
+                            onToggle={handleToggleCalendar}
                             numberOfMonths={2}
                             required
                             modifiers={{today: new Date()}}

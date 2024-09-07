@@ -5,9 +5,19 @@ import {Controller, useFormContext} from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import {txProps} from "@/utils/data";
 import React from "react";
+import {descriptionSchema} from "@/SchemaValidator/IncidentValidators/descriptionSchema";
+import {yupResolver} from "@hookform/resolvers/yup";
+
+
+
 
 function IncidentDescription({customStyles}) {
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
+        mode: 'onTouched',
+        reValidateMode: 'onChange',
+        resolver: yupResolver(descriptionSchema),
+        
+    });
     return (
         <>
             <Paper sx={customStyles.paperSx}>

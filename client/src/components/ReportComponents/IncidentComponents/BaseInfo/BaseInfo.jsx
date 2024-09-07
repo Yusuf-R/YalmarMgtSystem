@@ -7,9 +7,16 @@ import {txProps} from "@/utils/data";
 import Paper from "@mui/material/Paper";
 import React from "react";
 import MenuItem from "@mui/material/MenuItem";
+import {yupResolver} from '@hookform/resolvers/yup';
+import {baseInfoSchema} from "@/SchemaValidator/IncidentValidators/baseInfoSchema";
+
 
 function BaseInfo({allStaff}) {
-    const {control, watch, setValue, clearErrors, formState: {errors}} = useFormContext();
+    const {control, watch, setValue, clearErrors, formState: {errors}} = useFormContext({
+        resolver: yupResolver(baseInfoSchema),
+        mode: 'onTouched',
+        reValidateMode: 'onChange',
+    });
     const adminFullNames = allStaff.filter(staff => staff.role === 'Admin' || staff.role === 'SuperAdmin').map(staff => staff.fullName);
     
     // admin FullName

@@ -11,11 +11,11 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AdvImgMultiFile from "@/components/AdvImgMultiFile/AdvImgMultiFile";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {v4 as uuidv4} from 'uuid';
 
 
-function ImageUpload() {
+function ImageUpload({onImagesChange}) {
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -35,7 +35,8 @@ function ImageUpload() {
     const [isCropping, setIsCropping] = useState(false);
     const [currentImage, setCurrentImage] = useState(null);
     
-    const {register} = useFormContext(); // Use useFormContext to access form methods
+    const {register, setValue, watch} = useFormContext(); // Use useFormContext to access form methods
+    
     
     const handleImageUpload = (event) => {
         const files = Array.from(event.target.files);
@@ -82,20 +83,41 @@ function ImageUpload() {
     const handleSaveCroppedImage = (croppedSrc) => {
         setImages((prevImages) =>
             prevImages.map((img) =>
-                img.id === currentImage.id ? {...img, croppedSrc} : img
+                img.id === currentImage.id ? {...img, croppedSrc, isCropped: true} : img
             )
         );
         setIsCropping(false);
         setCurrentImage(null);
     };
     
+    const [isInitialized, setIsInitialized] = useState(false); // Track if images are initialized
+    
+    useEffect(() => {
+        if (isInitialized) {
+            const finalImages = images.map(image => ({
+                src: image.croppedSrc || image.src,
+                isCropped: !!image.croppedSrc,
+            }));
+            onImagesChange(finalImages); // Pass the prepared images to the parent component
+        } else {
+            setIsInitialized(true); // Initialize once
+        }
+    }, [images]);
+    
     return (
         <>
-            <Paper sx={{padding: '30px', backgroundColor: 'inherit', borderRadius: '10px'}}>
+            <Paper sx={paperSx}>
                 {/* Images upload */}
                 <Grid container spacing={4}>
                     <Grid item xs={12}>
-                        <Typography variant="subtitle 4" sx={{color: '#FFF'}}>Optional: Attach Relevant
+                        <Typography variant="subtitle 4" sx={{
+                            fontWeight: 'bold',
+                            fontFamily: 'Poppins',
+                            fontSize: '16px',
+                            borderRadius: '30px',
+                            textAlign: 'left',
+                            // color: '#46F0F9',
+                        }}>Optional: Attach Relevant
                             Images</Typography>
                     </Grid>
                     <Grid item xs={12}>

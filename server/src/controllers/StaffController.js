@@ -930,7 +930,7 @@ class StaffController {
             });
         }
         return res.status(201).json({
-            message: 'Password resetpassword token sent successfully', email: staff.email, resetToken,
+            message: 'Reset password token sent successfully', email: staff.email, resetToken,
         });
     }
     
