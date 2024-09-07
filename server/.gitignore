@@ -176,3 +176,6 @@ next-env.d.ts
 # locks
 yarn.lock
 package-lock.json
+
+# playground files
+pg.js
