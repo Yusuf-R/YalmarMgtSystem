@@ -191,9 +191,13 @@ function NewIncidentReport({allStaff, allSite}) {
         if (uploadedImages && uploadedImages.length > 0) {
             uploadedImages.forEach((image, index) => {
                 const img = image.isCropped ? image.croppedSrc : image.src;
+                // Extract the original filename, if present, from the image object (or data)
+                let originalFilename = image.file?.name || `image_${index}`; // Fallback if no filename
                 // Extract the file extension (e.g., png or jpg) from the base64 string
                 const ext = img.match(/\/(png|jpeg|jpg);base64/)[1];
-                const filename = `image_${index}.${ext}`;
+                // Append a unique identifier to prevent overwriting (e.g., timestamp or random string)
+                const uniqueIdentifier = Date.now();
+                const filename = `${originalFilename.replace(/\.[^/.]+$/, "")}_${uniqueIdentifier}.${ext}`;
                 // Convert the base64 string to a File object
                 const file = base64ToFile(img, filename);
                 // Append the file to the formData
