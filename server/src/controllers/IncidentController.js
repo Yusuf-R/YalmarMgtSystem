@@ -4,8 +4,7 @@ import mongoose from "mongoose";
 import {validateIncident} from "../utils/Validators/newIncidentReportSchema";
 
 import dayjs from "dayjs";
-import {cloudinary} from "../utils/cloudinary";
-import fs from "node:fs";
+// import fs from "node:fs";
 
 const {
     Incident,
@@ -18,6 +17,9 @@ const {
 
 
 const {ObjectId} = mongoose.Types;
+const {fork} = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 class IncidentController {
     
@@ -137,84 +139,86 @@ class IncidentController {
             } else {
                 folderPath = `YalmarMgtSystem/IncidentReports/Others/${year}/${month}/images`;
             }
-            const uploadPromises = req.files.map(file =>
-                cloudinary.uploader.upload(file.path, {
-                    folder: folderPath,
-                    use_filename: true,
-                    unique_filename: false,
-                    overwrite: true,
-                    invalidate: true,
-                    transformation: [
-                        {width: 500, height: 500, crop: 'fill'},
-                        {quality: 'auto', fetch_format: 'auto'},
-                    ],
-                    secure: true
-                })
-            );
-            let uploadedImages = [];
-            try {
-                const results = await Promise.all(uploadPromises);
-                uploadedImages = results.map(result => result.secure_url);
-            } catch (uploadError) {
-                // Rollback: Delete any successfully uploaded images if any failure occurs
-                if (uploadedImages.length > 0) {
-                    const deletePromises = uploadedImages.map(image => {
-                        const publicId = image.split('/').pop().split('.')[0]; // Extract public ID from URL
-                        return cloudinary.uploader.destroy(publicId);
-                    });
-                    await Promise.all(deletePromises);
+            // Get the paths of uploaded files, but only proceed with images if they are uploaded
+            const filePaths = req.files ? req.files.map(file => file.path) : [];
+            
+            // If no images are provided, we proceed with report creation without image processing
+            if (filePaths.length === 0) {
+                try {
+                    // Save the incident report without images
+                    await IncidentController.saveIncidentReport(value);
+                    return res.status(201).json({message: 'Incident report created successfully without images'});
+                } catch (err) {
+                    console.log('Error saving incident:', err);
+                    return res.status(500).json({error: 'Failed to save incident'});
                 }
-                return res.status(500).json({error: 'Image upload failed'});
-            } finally {
-                // Always delete temp files
-                req.files.forEach(file => {
-                    fs.unlink(file.path, err => {
-                        if (err) {
-                            console.error('Failed to delete temp file:', err);
-                        }
-                    });
-                });
-            }
-            // Update the images array in the request body
-            value.images = uploadedImages;
-            // Create a new incident report
-            if (value.reportCategory.includes('Staff')) {
-                // Create and save a StaffIncident
-                const staffIncident = new StaffIncident(value);
-                await staffIncident.save();
             }
             
-            if (value.reportCategory.includes('Fuel')) {
-                // Create and save a FuelIncident
-                const fuelIncident = new FuelIncident(value);
-                await fuelIncident.save();
-            }
+            // If images are provided, we process and upload them
+            const workerProcess = fork(path.resolve(__dirname, '../workers/imageWorker.js'));
             
-            if (value.reportCategory.includes('Site')) {
-                // Create and save a SiteIncident
-                const siteIncident = new SiteIncident(value);
-                await siteIncident.save();
-            }
+            workerProcess.on('error', (error) => {
+                console.error('Worker process error:', error);
+                return res.status(500).json({error: 'Image processing failed'});
+            });
             
-            if (value.reportCategory.includes('Service')) {
-                // Create and save a ServiceIncident
-                const serviceIncident = new ServiceIncident(value);
-                await serviceIncident.save();
-            }
+            workerProcess.on('exit', (code) => {
+                if (code !== 0) {
+                    console.error(`Worker exited with code ${code}`);
+                    return res.status(500).json({error: 'Worker process failed'});
+                }
+            });
             
-            if (value.reportCategory.includes('Others')) {
-                // Create and save an OthersIncident
-                const othersIncident = new OthersIncident(value);
-                await othersIncident.save();
-            }
-            res.status(201).json({message: 'Incident report created successfully'});
-            console.log('Incident report created successfully');
+            // Send the file paths and other required data to the worker process
+            workerProcess.send({
+                filePaths,
+                folderPath: folderPath,
+            });
+            
+            workerProcess.on('message', async (uploadedImages) => {
+                if (uploadedImages.error) {
+                    return res.status(500).json({error: 'Image upload failed'});
+                }
+                
+                // Add the uploaded images to the incident report
+                value.images = uploadedImages;
+                
+                // Create the incident report with the images
+                try {
+                    await IncidentController.saveIncidentReport(value);
+                    return res.status(201).json({message: 'Incident report created successfully with images'});
+                } catch (err) {
+                    console.log('Error saving incident:', err);
+                    return res.status(500).json({error: 'Failed to save incident'});
+                }
+            });
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
+            } else {
+                console.log(error);
+                return res.status(500).json({error: error.message});
             }
-            console.log(error);
-            return res.status(500).json({error: error.message});
+        }
+    }
+    
+    // Helper function to save the incident report based on its category
+    static async saveIncidentReport(incidentData) {
+        if (incidentData.reportCategory.includes('Staff')) {
+            const staffIncident = new StaffIncident(incidentData);
+            await staffIncident.save();
+        } else if (incidentData.reportCategory.includes('Fuel')) {
+            const fuelIncident = new FuelIncident(incidentData);
+            await fuelIncident.save();
+        } else if (incidentData.reportCategory.includes('Site')) {
+            const siteIncident = new SiteIncident(incidentData);
+            await siteIncident.save();
+        } else if (incidentData.reportCategory.includes('Service')) {
+            const serviceIncident = new ServiceIncident(incidentData);
+            await serviceIncident.save();
+        } else if (incidentData.reportCategory.includes('Others')) {
+            const othersIncident = new OthersIncident(incidentData);
+            await othersIncident.save();
         }
     }
 }

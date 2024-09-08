@@ -154,7 +154,7 @@ function IncidentCategorySelector({
                             selected={incidentDate}
                             onSelect={handleDateSelect}
                             onToggle={handleToggleCalendar}
-                            numberOfMonths={2}
+                            numberOfMonths={1}
                             required
                             modifiers={{today: new Date()}}
                             styles={{
