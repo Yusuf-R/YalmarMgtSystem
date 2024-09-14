@@ -30,6 +30,10 @@ import {categorySelectorSchema} from "@/SchemaValidator/IncidentValidators/categ
 import {descriptionSchema} from "@/SchemaValidator/IncidentValidators/descriptionSchema";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
+import {usePathname} from "next/navigation";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Link from "next/link";
 
 
 function cleanData(data, selectedCategories) {
@@ -162,6 +166,17 @@ function NewIncidentReport({allStaff, allSite}) {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadedImages, setUploadedImages] = useState([]);
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident');
+    
+    const pathname = usePathname();
+    // useEffect or handling navigation between new and staff
+    useEffect(() => {
+        if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/reports/incident/new');
+        } else {
+            setActiveTab('/dashboard/admin/incident');
+        }
+    }, [pathname]);
     
     const methods = useForm({
         resolver: yupResolver(generateSchema(selectedCategories)),
@@ -304,6 +319,50 @@ function NewIncidentReport({allStaff, allSite}) {
                             New Incident Report Form
                         </Typography>
                     </Paper>
+                    <br/>
+                    {/*Navigation Tabs */}
+                    <Stack direction='row' spacing={2} sx={{
+                        justifyContent: 'flex-start',
+                    }}>
+                        <Tabs
+                            value={activeTab}
+                            onChange={(e, newValue) => setActiveTab(newValue)}
+                            centered
+                            sx={{
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: '#46F0F9',
+                                },
+                            }}
+                        >
+                            
+                            <Tab
+                                label="Home"
+                                component={Link}
+                                href="/dashboard/admin/reports/incident"
+                                value="/dashboard/admin/reports/incident"
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: 'bold',
+                                    "&.Mui-selected": {
+                                        color: "#46F0F9",
+                                    },
+                                }}
+                            />
+                            <Tab
+                                label="New"
+                                component={Link}
+                                href="/dashboard/admin/reports/incident/new"
+                                value="/dashboard/admin/reports/incident/new"
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: 'bold',
+                                    "&.Mui-selected": {
+                                        color: "#46F0F9",
+                                    },
+                                }}
+                            />
+                        </Tabs>
+                    </Stack>
                     <br/>
                     <Box
                         component='form'

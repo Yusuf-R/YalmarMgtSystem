@@ -18,12 +18,10 @@ import ReportRendering from "@/components/ReportComponents/ServicingComponents/S
 function ServicingReport({allServicingReport, allSite}) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/all');
-    
     const createNew = () => router.push('/dashboard/admin/reports/servicing/new');
     const searchRecord = () => router.push('/dashboard/admin/reports/servicing/search');
     const currMonth = new Date().toLocaleString('default', {month: 'long'});
     const currYear = new Date().getFullYear();
-    
     const pathname = usePathname();
     
     // useEffect or handling navigation between new and staff

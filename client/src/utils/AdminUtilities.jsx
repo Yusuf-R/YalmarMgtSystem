@@ -696,6 +696,19 @@ class AdminUtils {
             throw new Error(error);
         }
     }
+    
+    static async DeleteIncidentReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/incident/delete',
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 export default AdminUtils;
