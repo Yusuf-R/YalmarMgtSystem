@@ -32,11 +32,11 @@ function IncidentAllSite() {
     useEffect(() => {
         if (data) {
             const {allIncidentReport} = data;
-            const fuelIncidents = allIncidentReport.filter(
-                (incident) => incident.incidentType === "FuelIncident"
+            const siteIncidents = allIncidentReport.filter(
+                (incident) => incident.incidentType === "SiteIncident"
             );
-            setSiteIncidentData(fuelIncidents);
-            queryClient.setQueryData(["FuelIncidentData"], fuelIncidents);
+            setSiteIncidentData(siteIncidents);
+            queryClient.setQueryData(["SiteIncidentData"], siteIncidents);
         }
     }, [data, setSiteIncidentData, queryClient]);
     
