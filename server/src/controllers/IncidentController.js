@@ -22,7 +22,7 @@ const path = require('path');
 const fs = require('fs');
 
 class IncidentController {
-    
+
     static async getAllIncidentReport(req, res) {
         try {
             // perform full current check
@@ -55,7 +55,7 @@ class IncidentController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async newIncidentReport(req, res) {
         try {
             // perform full current check
@@ -78,10 +78,10 @@ class IncidentController {
             req.body.incidentDate = dayjs(req.body.incidentDate.split('T')[0]).format('YYYY-MM-DD')
             const restoreData = (data) => {
                 const restoredData = {};
-                
+
                 Object.keys(data).forEach((key) => {
                     let value = data[key];
-                    
+
                     // Convert JSON strings back to objects or arrays
                     try {
                         if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
@@ -95,10 +95,10 @@ class IncidentController {
                 });
                 return restoredData;
             };
-            
+
             // Convert incoming data
             const originalData = restoreData(req.body);
-            
+
             // If you expect images to be handled separately, you may need to process them differently
             if (originalData.images && Array.isArray(originalData.images)) {
                 originalData.images = originalData.images.map(img => {
@@ -107,6 +107,7 @@ class IncidentController {
                 });
             }
             originalData.incidentDate = dayjs(originalData.incidentDate).format('YYYY-MM-DD');
+            console.log(originalData.serviceIncidentInfo);
             const {error, value} = validateIncident(originalData);
             if (error) {
                 console.log('validation error');
@@ -120,7 +121,7 @@ class IncidentController {
             const reportCategory = value.reportCategory[0];
             let siteId = '';
             let folderPath = '';
-            
+
             if (reportCategory === 'Staff') {
                 const {classAction} = value.staffIncidentInfo;
                 folderPath = `YalmarMgtSystem/IncidentReports/Staff/${classAction}/${year}/${month}/images`;
@@ -141,7 +142,7 @@ class IncidentController {
             }
             // Get the paths of uploaded files, but only proceed with images if they are uploaded
             const filePaths = req.files ? req.files.map(file => file.path) : [];
-            
+
             // If no images are provided, we proceed with report creation without image processing
             if (filePaths.length === 0) {
                 try {
@@ -153,36 +154,36 @@ class IncidentController {
                     return res.status(500).json({error: 'Failed to save incident'});
                 }
             }
-            
+
             // If images are provided, we process and upload them
             const workerProcess = fork(path.resolve(__dirname, '../workers/imageWorker.js'));
-            
+
             workerProcess.on('error', (error) => {
                 console.error('Worker process error:', error);
                 return res.status(500).json({error: 'Image processing failed'});
             });
-            
+
             workerProcess.on('exit', (code) => {
                 if (code !== 0) {
                     console.error(`Worker exited with code ${code}`);
                     return res.status(500).json({error: 'Worker process failed'});
                 }
             });
-            
+
             // Send the file paths and other required data to the worker process
             workerProcess.send({
                 filePaths,
                 folderPath: folderPath,
             });
-            
+
             workerProcess.on('message', async (uploadedImages) => {
                 if (uploadedImages.error) {
                     return res.status(500).json({error: 'Image upload failed'});
                 }
-                
+
                 // Add the uploaded images to the incident report
                 value.images = uploadedImages;
-                
+
                 // Create the incident report with the images
                 try {
                     await IncidentController.saveIncidentReport(value);
@@ -201,24 +202,28 @@ class IncidentController {
             }
         }
     }
-    
+
     // Helper function to save the incident report based on its category
     static async saveIncidentReport(incidentData) {
-        if (incidentData.reportCategory.includes('Staff')) {
-            const staffIncident = new StaffIncident(incidentData);
-            await staffIncident.save();
-        } else if (incidentData.reportCategory.includes('Fuel')) {
-            const fuelIncident = new FuelIncident(incidentData);
-            await fuelIncident.save();
-        } else if (incidentData.reportCategory.includes('Site')) {
-            const siteIncident = new SiteIncident(incidentData);
-            await siteIncident.save();
-        } else if (incidentData.reportCategory.includes('Service')) {
-            const serviceIncident = new ServiceIncident(incidentData);
-            await serviceIncident.save();
-        } else if (incidentData.reportCategory.includes('Others')) {
-            const othersIncident = new OthersIncident(incidentData);
-            await othersIncident.save();
+        const categoryMap = {
+            'Staff': StaffIncident,
+            'Fuel': FuelIncident,
+            'Site': SiteIncident,
+            'Service': ServiceIncident,
+            'Others': OthersIncident,
+            // Add more categories here as needed
+        };
+
+        // Loop through each category in the array
+        for (const category of incidentData.reportCategory) {
+            const IncidentModel = categoryMap[category];
+            if (IncidentModel) {
+                console.log(`Saving ${category} incident`);
+                const incident = new IncidentModel(incidentData);
+                await incident.save();
+            } else {
+                console.warn(`Unknown category: ${category}`);
+            }
         }
     }
 }

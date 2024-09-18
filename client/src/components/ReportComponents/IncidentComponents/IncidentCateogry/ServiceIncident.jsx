@@ -34,8 +34,8 @@ function ServiceIncident({allSite}) {
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === serviceSiteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === serviceSiteInfo.cluster).map(site => site.siteId);
-    
-    
+
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -45,7 +45,7 @@ function ServiceIncident({allSite}) {
             </MenuItem>
         ));
     };
-    
+
     const handleState = (event) => {
         const newState = event.target.value;
         setServiceSiteInfo(prevState => ({
@@ -58,7 +58,7 @@ function ServiceIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!serviceSiteInfo.state) {
@@ -82,7 +82,7 @@ function ServiceIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!serviceSiteInfo.state || !serviceSiteInfo.cluster) {
@@ -130,7 +130,7 @@ function ServiceIncident({allSite}) {
         event.preventDefault();
         setValue('serviceIncidentInfo.category', event.target.value);
     }
-    
+
     //Maintenance
     const catM = ['Routine', 'Scheduled', 'Unscheduled'];
     const getCatM = () => catM.map((catOpt) => (
@@ -143,7 +143,7 @@ function ServiceIncident({allSite}) {
         event.preventDefault();
         setValue('serviceIncidentInfo.subCategory.maintenance.action', event.target.value);
     }
-    
+
     //Repair
     const catR = ['Minor', 'Major'];
     const getCatR = () => catR.map((catOpt) => (
@@ -156,7 +156,7 @@ function ServiceIncident({allSite}) {
         event.preventDefault();
         setValue('serviceIncidentInfo.subCategory.repair.action', event.target.value);
     }
-    
+
     const catO = ['Partial', 'Complete'];
     const getCatO = () => catO.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}
@@ -168,7 +168,7 @@ function ServiceIncident({allSite}) {
         event.preventDefault();
         setValue('serviceIncidentInfo.subCategory.overhauling.action', event.target.value);
     }
-    
+
     // Replacement
     const getCatRep = () => catR.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}
@@ -180,9 +180,9 @@ function ServiceIncident({allSite}) {
         event.preventDefault();
         setValue('serviceIncidentInfo.subCategory.replacement.action', event.target.value);
     }
-    
+
     const catSelector = watch('serviceIncidentInfo.category');
-    
+
     const accordionSx = {
         bgcolor: '#274e61',
     }
@@ -193,7 +193,7 @@ function ServiceIncident({allSite}) {
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -202,7 +202,7 @@ function ServiceIncident({allSite}) {
         textAlign: 'left',
         ml: '30px',
     };
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -236,8 +236,8 @@ function ServiceIncident({allSite}) {
         width: '100%',
         height: 'auto',
     }
-    
-    
+
+
     return (
         <>
             <Paper elevation={5} sx={paperSx}>
@@ -315,7 +315,7 @@ function ServiceIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -383,7 +383,7 @@ function ServiceIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -451,7 +451,7 @@ function ServiceIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -615,7 +615,7 @@ function ServiceIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -648,7 +648,7 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatM(e);
@@ -722,7 +722,7 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatR(e);
@@ -796,7 +796,7 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatO(e);
@@ -870,7 +870,7 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value || null}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatRep(e);
