@@ -234,7 +234,6 @@ function RenderedData({data}) {
         adminFullName,
         adminEmail,
         adminRole,
-        incidentType,
         incidentDate,
         siteInfo,
         siteIncidentInfo,
@@ -260,11 +259,22 @@ function RenderedData({data}) {
     // Split the summary into an array of sentences
     const description = reportDescription.split('\r\n');
 
-    // handle modal opening and closing
-    const handleOpenModal = () => {
+
+    // const handleOpenModal = () => {
+    //     setIsModalOpen(true);
+    // };
+    //
+    // const handleCloseModal = () => {
+    //     setIsModalOpen(false);
+    // };
+
+    // // handle modal opening
+    const handleOpenModal = (index) => {
+        setCurrentIndex(index);
         setIsModalOpen(true);
     };
 
+    // handle modal closing
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
@@ -539,55 +549,59 @@ function RenderedData({data}) {
             {/* Image Carousel Section */}
             {
                 images.length > 0 && (
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} {...handlers}>
-                            <Typography sx={{
-                                fontWeight: 'bold',
-                                color: '#FFF',
-                                fontFamily: 'Poppins',
-                                fontSize: '20px',
-                            }} align="center">
-                                Report Images
-                            </Typography>
-                            <Box sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-                                <IconButton onClick={handlePrevious}>
-                                    <ArrowBackIosNewIcon sx={{color: 'lime'}}/>
-                                </IconButton>
-                                {/*<Tooltip title="Click to view larger" placement="top">*/}
-                                <Card
-                                    onClick={handleOpenModal}
-                                    sx={{
-                                        bgcolor: '#274e61',
-                                        color: 'white',
-                                        m: 2,
-                                        border: '2px solid #FFF',
-                                        borderRadius: 3
-                                    }}>
-                                    <Box
-                                        component="img"
+                    <Box sx={{
+                        bgcolor: '#274e61',
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
+                        borderRadius: 5,
+                        border: '1px solid rgb(163, 163, 117)',
+                        p: 0.1,
+                    }}>
+                        <Typography sx={{
+                            fontWeight: 'bold',
+                            color: '#FFF',
+                            fontFamily: 'Poppins',
+                            fontSize: '20px',
+                            mt: 1,
+                            p: 4,
+                        }} align="left">
+                            Report Images
+                        </Typography>
+                        <br/>
+                        <Grid container spacing={5} sx={{
+                            p: 3,
+                        }}>
+                            {images.map((img, index) => (
+                                <Grid item xs={12} sm={4} key={index}>
+                                    <Card
+                                        onClick={() => handleOpenModal(index)}
                                         sx={{
-                                            width: "100%",
-                                            maxWidth: "500px",
-                                            height: "auto",
-                                            borderRadius: 2,
-                                            boxShadow: 3,
-                                        }}
-                                        src={images[currentIndex]}
-                                        alt={`Image ${currentIndex + 1}`}
-                                    />
-                                </Card>
-                                {/*</Tooltip>*/}
-                                <IconButton onClick={handleNext}>
-                                    <ArrowForwardIosIcon sx={{color: 'lime'}}/>
-                                </IconButton>
-                            </Box>
-                            <Typography align="center" sx={{mt: 1}}>
-                                {currentIndex + 1} / {images.length}
-                            </Typography>
+                                            bgcolor: '#274e61',
+                                            color: 'white',
+                                            border: '2px solid #FFF',
+                                            borderRadius: 3,
+                                            cursor: 'pointer',
+                                            maxWidth: '100%',
+                                        }}>
+                                        <Box
+                                            component="img"
+                                            sx={{
+                                                width: "100%",
+                                                height: "auto",
+                                                borderRadius: 2,
+                                                boxShadow: 3,
+                                            }}
+                                            src={img}
+                                            alt={`Image ${index + 1}`}
+                                        />
+                                    </Card>
+                                </Grid>
+                            ))}
                         </Grid>
-                    </Grid>
+                    </Box>
                 )
             }
+
+            {/* Modal for enlarged image */}
             <Dialog
                 open={isModalOpen}
                 onClose={handleCloseModal}
@@ -603,7 +617,7 @@ function RenderedData({data}) {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        bgcolor: '#000', // Dark background for better visibility of the image
+                        bgcolor: '#000',
                         p: 2,
                     }}
                 >
@@ -633,7 +647,7 @@ function RenderedData({data}) {
                     <Box
                         component="img"
                         sx={{
-                            maxHeight: '80vh', // Ensure it fits within the screen height
+                            maxHeight: '80vh',
                             maxWidth: '200%',
                             objectFit: 'contain',
                             borderRadius: 2,
