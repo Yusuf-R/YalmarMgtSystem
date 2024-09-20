@@ -23,7 +23,6 @@ import {usePathname} from "next/navigation";
 
 function IncidentLandingPage({allIncidentReport}) {
     const router = useRouter();
-    console.log('Data got here', {allIncidentReport});
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -49,11 +48,11 @@ function IncidentLandingPage({allIncidentReport}) {
             setActiveTab('/dashboard/admin/incident');
         }
     }, [pathname]);
-    
+
     return (
         <>
             <Box sx={mainSection}>
-                
+
                 {/*Header*/}
                 <Paper elevation={5} sx={{
                     alignCenter: 'center',
@@ -261,7 +260,7 @@ function IncidentLandingPage({allIncidentReport}) {
                         </Grid>
                     </Grid>
                 </Stack>
-            
+
             </Box>
         </>
     )

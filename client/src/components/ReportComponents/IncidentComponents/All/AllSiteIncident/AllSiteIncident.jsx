@@ -35,10 +35,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
+import useIncidentStore from "@/store/useIncidentStore";
 
 
 function AllSiteIncident({siteIncidentData}) {
-    console.log({siteIncidentData});
     const router = useRouter();
     const queryClient = useQueryClient();
     const pathname = usePathname();
@@ -47,18 +47,45 @@ function AllSiteIncident({siteIncidentData}) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [selectedRow, setSelectedRow] = useState(null); // To track the row being acted upon
-    
-    const {setSelectedReport} = useServiceReportStore();
-    
+
+    const {setViewSiteIncidentReport} = useIncidentStore();
+    const txProps = {
+        color: "white",
+        bgcolor: "#274e61",
+        borderRadius: "10px",
+        // width: '250px',
+        fontSize: '16px',
+        fontStyle: 'bold',
+        '&:hover': {
+            bgcolor: '#051935',
+        },
+        fontFamily: 'Poppins',
+        "& .MuiInputBase-input": {
+            color: 'white',
+        },
+        "& .MuiFormHelperText-root": {
+            color: 'red',
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'green',
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+            WebkitTextFillColor: 'white',
+        },
+    }
+
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('site')) {
             setActiveTab('/dashboard/admin/reports/incident/site');
+        } else if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/reports/incident/new');
         } else {
             setActiveTab('/dashboard/admin/reports/incident');
         }
     }, [pathname]);
-    
+
     const tableTheme = useMemo(
         () =>
             createTheme({
@@ -69,7 +96,6 @@ function AllSiteIncident({siteIncidentData}) {
                                 // color: '#ff8c00',
                                 color: '#40ff00',
                             },
-                            
                         },
                     },
                     MuiFormControlLabel: {
@@ -133,7 +159,7 @@ function AllSiteIncident({siteIncidentData}) {
                                 color: '#fff',
                                 fontWeight: 'bold',
                             },
-                            
+
                         },
                     },
                     // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
@@ -159,20 +185,18 @@ function AllSiteIncident({siteIncidentData}) {
     // Mutation outside renderRowActions
     const mutation = useMutation({
         mutationKey: ["DeleteIncidentReport"],
-        mutationFn: AdminUtilities.DeleteIncidentReport, // Adjust this to match your delete function
+        mutationFn: AdminUtilities.DeleteIncidentReport,
     });
-    
+
     const handleOpen = (row) => {
         setSelectedRow(row); // Store the row being acted upon
         setOpen(true);
     };
-    
     const handleClose = () => {
         setOpen(false);
         setEmail('');
         setEmailError('');
     };
-    
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
         // Basic email validation regex
@@ -183,7 +207,6 @@ function AllSiteIncident({siteIncidentData}) {
             setEmailError('');
         }
     };
-    
     const handleDelete = async (event) => {
         event.preventDefault();
         if (emailError || !email) {
@@ -194,7 +217,7 @@ function AllSiteIncident({siteIncidentData}) {
         const obj = {email, selectedIds};
         // for each of the selected ids, we need to get the full object and then construct our key to clear the cache after deletion
         selectedIds.map((id) => {
-            const obj = allServicingReport.find((obj) => obj._id === id);
+            const obj = siteIncidentData.find((obj) => obj._id === id);
             const month = dayjs(obj.servicingDate).format('MMMM');
             const year = dayjs(obj.servicingDate).format('YYYY');
             const data = {
@@ -213,7 +236,7 @@ function AllSiteIncident({siteIncidentData}) {
                 queryClient.removeQueries({queryKey: cacheKey});
             }
         })
-        
+
         mutation.mutate(obj, {
             onSuccess: () => {
                 queryClient.invalidateQueries({queryKey: ["AllServicingReport"]});
@@ -230,23 +253,26 @@ function AllSiteIncident({siteIncidentData}) {
             }
         });
     };
-    
-    
-    const columns = [
+    const handleViewRecord = (objData) => {
+        setViewSiteIncidentReport(objData);
+        router.push('/dashboard/admin/reports/incident/site/view');
+    }
+
+    const columns = useMemo(() => [
         {
             accessorKey: 'siteInfo.siteId',
             header: 'Site ID',
-            Cell: ({row}) => row.original.siteInfo?.siteId || 'N/A', // Use optional chaining and provide a fallback
+            Cell: ({row}) => row.original.siteInfo?.siteId || 'N/A',
         },
         {
             accessorKey: 'siteInfo.cluster',
             header: 'Cluster',
-            Cell: ({row}) => row.original.siteInfo?.cluster || 'N/A', // Safe access and fallback
+            Cell: ({row}) => row.original.siteInfo?.cluster || 'N/A',
         },
         {
             accessorKey: 'siteInfo.type',
             header: 'Type',
-            Cell: ({row}) => row.original.siteInfo?.type || 'N/A', // Safe access and fallback
+            Cell: ({row}) => row.original.siteInfo?.type || 'N/A',
         },
         {
             accessorKey: 'severity',
@@ -256,15 +282,17 @@ function AllSiteIncident({siteIncidentData}) {
             accessorKey: 'incidentDate',
             header: 'Incident Date',
             Cell: ({cell}) => {
-                // Format the date to DD/MMM/YYYY
                 return dayjs(cell.getValue()).format('DD/MMM/YYYY');
             },
         },
-    ];
-    
-    const table = useMemo(() => useMaterialReactTable({
+    ], []);
+
+    // Memoize tableData to prevent unnecessary re-renders
+    const tableData = useMemo(() => siteIncidentData || [], [siteIncidentData]);
+
+    const table = useMaterialReactTable({
         columns,
-        data: siteIncidentData,
+        data: tableData,
         enableSorting: true,
         enablePagination: true,
         enableColumnFiltering: true,
@@ -285,14 +313,10 @@ function AllSiteIncident({siteIncidentData}) {
         renderRowActions: ({row}) => {
             const objID = row.original._id;
             const objData = siteIncidentData.find((obj) => obj._id === objID);
-            const handleViewRecord = () => {
-                setSelectedReport(objData);
-                router.push('/dashboard/admin/reports/servicing/view');
-            }
             return (
                 <>
                     <Stack direction='row'>
-                        <Button onClick={handleViewRecord}>
+                        <Button onClick={() => handleViewRecord(objData)}>
                             <Tooltip title="View" arrow>
                                 <LocalLibraryIcon sx={{color: '#E997F9', cursor: 'pointer'}}/>
                             </Tooltip>
@@ -329,7 +353,7 @@ function AllSiteIncident({siteIncidentData}) {
                                                 fontSize: '1.1em',
                                                 fontStyle: 'Poppins',
                                                 fontFamily: 'Poppins',
-                                                
+
                                             }}>
                                     You are about to permanently delete the selected Service
                                     Record. <br/><br/>
@@ -414,7 +438,7 @@ function AllSiteIncident({siteIncidentData}) {
                                                     fontSize: '1.1em',
                                                     fontStyle: 'Poppins',
                                                     fontFamily: 'Poppins',
-                                                    
+
                                                 }}>
                                         You are about to permanently delete one or more service record. <br/><br/>
                                         Enter your email address to further confirm your actions.
@@ -454,7 +478,7 @@ function AllSiteIncident({siteIncidentData}) {
                                         sx={{
                                             color: "#46F0F9",
                                         }}
-                                    
+
                                     />
                                 </Stack>
                             </DialogContent>
@@ -505,8 +529,7 @@ function AllSiteIncident({siteIncidentData}) {
             }
             ,
             align: 'center',
-        }
-        ,
+        },
         muiTableBodyCellProps: {
             sx: {
                 color: 'white',
@@ -523,16 +546,14 @@ function AllSiteIncident({siteIncidentData}) {
             }
             ,
             align: 'center',
-            
-        }
-        ,
+
+        },
         muiTableBodyRowProps: {
             sx: {
                 height: '2px',
             }
             ,
-        }
-        ,
+        },
         muiSearchTextFieldProps: {
             InputLabelProps: {
                 shrink: true
@@ -543,15 +564,13 @@ function AllSiteIncident({siteIncidentData}) {
                 'Site Details',
             variant:
                 'outlined',
-            
-        }
-        ,
+
+        },
         muiFilterTextFieldProps: {
             color: 'error',
             borderColor:
                 'error',
-        }
-        ,
+        },
         muiPaginationProps: {
             shape: 'rounded',
             color:
@@ -565,8 +584,7 @@ function AllSiteIncident({siteIncidentData}) {
             // set the table to display the first 100 data by default
             rowsPerPage:
                 100,
-        }
-        ,
+        },
         paginationDisplayMode: 'pages',
         positionPagination:
             "both",
@@ -579,35 +597,9 @@ function AllSiteIncident({siteIncidentData}) {
                 }
                 ,
                 density: 'compact',
-            }
-        // other render functions...
-    }), [siteIncidentData, open, email, setSelectedReport, router, txProps]);
-    
-    const txProps = {
-        color: "white",
-        bgcolor: "#274e61",
-        borderRadius: "10px",
-        // width: '250px',
-        fontSize: '16px',
-        fontStyle: 'bold',
-        '&:hover': {
-            bgcolor: '#051935',
-        },
-        fontFamily: 'Poppins',
-        "& .MuiInputBase-input": {
-            color: 'white',
-        },
-        "& .MuiFormHelperText-root": {
-            color: 'red',
-        },
-        "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: 'green',
-        },
-        "& input:-webkit-autofill": {
-            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
-            WebkitTextFillColor: 'white',
-        },
-    }
+            },
+    });
+
     return (
         <>
             <Box sx={mainSection}>
@@ -658,6 +650,19 @@ function AllSiteIncident({siteIncidentData}) {
                             component={Link}
                             href="/dashboard/admin/reports/incident/site"
                             value="/dashboard/admin/reports/incident/site"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="New"
+                            component={Link}
+                            href="/dashboard/admin/reports/incident/new"
+                            value="/dashboard/admin/reports/incident/new"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',

@@ -32,7 +32,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    
+
     fileFilter: function (req, file, cb) {
         if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
             cb(null, true)
@@ -49,4 +49,5 @@ const upload = multer({
 
 incidentRouter.get('/all', incidentController.getAllIncidentReport);
 incidentRouter.post('/new', upload.array('images', 30), incidentController.newIncidentReport);
+incidentRouter.post('/delete', incidentController.deleteIncidentReport);
 module.exports = incidentRouter;

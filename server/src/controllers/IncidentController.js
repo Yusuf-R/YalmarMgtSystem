@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import {validateIncident} from "../utils/Validators/newIncidentReportSchema";
 
 import dayjs from "dayjs";
+import Staff from "../models/Staff";
 // import fs from "node:fs";
 
 const {
@@ -107,7 +108,6 @@ class IncidentController {
                 });
             }
             originalData.incidentDate = dayjs(originalData.incidentDate).format('YYYY-MM-DD');
-            console.log(originalData.serviceIncidentInfo);
             const {error, value} = validateIncident(originalData);
             if (error) {
                 console.log('validation error');
@@ -224,6 +224,59 @@ class IncidentController {
             } else {
                 console.warn(`Unknown category: ${category}`);
             }
+        }
+    }
+
+    static async deleteIncidentReport(req, res) {
+        try {
+            const verifiedJwt = await AuthController.currPreCheck(req);
+            if (verifiedJwt instanceof Error) {
+                return res.status(400).json({error: verifiedJwt.message});
+            }
+            const {id} = verifiedJwt;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            const admin = await AuthController.AdminCheck(new ObjectId(id));
+            if (admin instanceof Error) {
+                return res.status(400).json({error: admin.message});
+            }
+            // extract the content of the req.body
+            const {email, selectedIds} = req.body;
+            if (!email || !selectedIds) {
+                return res.status(400).json({error: 'Missing email or objectIds'});
+            }
+            // Basic email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return res.status(400).json('Invalid email address');
+            }
+            // validates the email is indeed a staff and this staff is an admin or superAdmin
+            const staff = await Staff.findOne({email});
+            if (!staff) {
+                return res.status(400).json({error: 'Invalid email credentials'});
+            }
+            if (staff.role !== 'Admin' && staff.role !== 'SuperAdmin') {
+                return res.status(400).json({error: 'You are not authorized to delete this record'});
+            }
+            if (admin.email !== staff.email) {
+                return res.status(400).json({error: 'You are not authorized to delete this record'});
+            }
+            // validates the staffIds in the array, array must not be empty
+            if (selectedIds.length === 0) {
+                return res.status(400).json({error: 'Missing incident Records Ids'});
+            }
+
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            // unexpected error
+            return res.status(500).json({error: error.message});
         }
     }
 }
