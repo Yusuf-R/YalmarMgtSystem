@@ -45,6 +45,33 @@ const useIncidentStore = create((set) => ({
     clearViewFuelIncidentReport: () => set({viewFuelIncidentReport: null}),
     clearViewServiceIncidentReport: () => set({viewServiceIncidentReport: null}),
     clearViewOthersIncidentReport: () => set({viewOthersIncidentReport: null}),
+
+    // one command to clear all the viewXXXIncident data
+    clearAllViewIncidentReports: () => {
+        set({
+            viewSiteIncidentReport: null,
+            viewStaffIncidentReport: null,
+            viewFuelIncidentReport: null,
+            viewServiceIncidentReport: null,
+            viewOthersIncidentReport: null,
+        });
+    },
+    // RESET EVERYTHING ABOUT THE STORE
+    resetStore: () => {
+        set({
+            allIncidentData: null,
+            staffIncidentData: null,
+            siteIncidentData: null,
+            fuelIncidentData: null,
+            serviceIncidentData: null,
+            othersIncidentData: null,
+            viewSiteIncidentReport: null,
+            viewStaffIncidentReport: null,
+            viewFuelIncidentReport: null,
+            viewServiceIncidentReport: null,
+            viewOthersIncidentReport: null,
+        });
+    },
 }));
 
 export default useIncidentStore;

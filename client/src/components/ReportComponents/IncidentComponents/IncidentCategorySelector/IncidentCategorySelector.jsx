@@ -59,25 +59,25 @@ function IncidentCategorySelector({
         resolver: yupResolver(categorySelectorSchema),
         revalidateMode: 'onChange',
     });
-    
+
     const [showCalendar, setShowCalendar] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const incidentDate = watch('incidentDate')
-    
-    
+
+
     const handleToggleCalendar = () => {
         setShowCalendar(!showCalendar);
     };
-    
+
     const handleDateSelect = (date) => {
         setValue('incidentDate', date);
         setShowCalendar(false); // Hide the date picker after selecting a date
         clearErrors('incidentDate');
     };
-    
+
     const handleCategoryChange = (event, newValue) => {
         const removedCategories = selectedCategories.filter(cat => !newValue.includes(cat));
-        
+
         removedCategories.forEach(category => {
             if (categoryFields[category]) {
                 categoryFields[category].forEach(field => {
@@ -90,13 +90,15 @@ function IncidentCategorySelector({
         clearErrors('reportCategory');
         onCategoryChange(newValue);
     };
-    
+
     const handleIncidentReportSeverity = (event) => {
         const selectedSeverity = event.target.value;
         setValue('severity', selectedSeverity);
         clearErrors('severity');
     };
-    
+
+    const today = new Date();
+
     return (
         <Paper elevation={5} sx={customStyles.paperSx}>
             <Grid container spacing={4}>
@@ -154,6 +156,7 @@ function IncidentCategorySelector({
                             selected={incidentDate}
                             onSelect={handleDateSelect}
                             onToggle={handleToggleCalendar}
+                            disabledDays={{after: today}}
                             numberOfMonths={1}
                             required
                             modifiers={{today: new Date()}}

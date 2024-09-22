@@ -11,7 +11,7 @@ import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
 import {createTheme, ThemeProvider} from "@mui/material";
 import dayjs from "dayjs";
-import useServiceReportStore from "@/store/useServiceReportStore";
+
 import {
     MaterialReactTable,
     MRT_ShowHideColumnsButton,
@@ -47,7 +47,8 @@ function AllSiteIncident({siteIncidentData}) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [selectedRow, setSelectedRow] = useState(null); // To track the row being acted upon
-
+    // Hook to reset store
+    const resetStore = useIncidentStore((state) => state.resetStore);
     const {setViewSiteIncidentReport} = useIncidentStore();
     const txProps = {
         color: "white",
@@ -188,18 +189,8 @@ function AllSiteIncident({siteIncidentData}) {
         mutationFn: AdminUtilities.DeleteIncidentReport,
     });
 
-    const handleOpen = (row) => {
-        setSelectedRow(row); // Store the row being acted upon
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-        setEmail('');
-        setEmailError('');
-    };
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
-        // Basic email validation regex
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(event.target.value)) {
             setEmailError('Invalid email address');
@@ -207,56 +198,43 @@ function AllSiteIncident({siteIncidentData}) {
             setEmailError('');
         }
     };
-    const handleDelete = async (event) => {
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => {
+        setOpen(false);
+        setEmail('');
+        setEmailError('');
+    };
+
+    const handleDelete = async (event, objID) => {
         event.preventDefault();
         if (emailError || !email) {
             toast.error('Please enter a valid email address');
             return;
         }
-        const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original._id);
-        const obj = {email, selectedIds};
-        // for each of the selected ids, we need to get the full object and then construct our key to clear the cache after deletion
-        selectedIds.map((id) => {
-            const obj = siteIncidentData.find((obj) => obj._id === id);
-            const month = dayjs(obj.servicingDate).format('MMMM');
-            const year = dayjs(obj.servicingDate).format('YYYY');
-            const data = {
-                siteType: obj.siteType,
-                location: obj.location,
-                pmInstance: obj.pmInstance,
-                siteId: obj.siteId,
-                cluster: obj.cluster,
-                state: obj.state,
-                year: year,
-                month: month,
-            };
-            const cacheKey = ["GetServicingReport", data];
-            const cachedData = queryClient.getQueryData(cacheKey);
-            if (cachedData) {
-                queryClient.removeQueries({queryKey: cacheKey});
-            }
-        })
-
+        const obj = {email, selectedIds: [objID]};
         mutation.mutate(obj, {
             onSuccess: () => {
-                queryClient.invalidateQueries({queryKey: ["AllServicingReport"]});
-                toast.success('Selected Sites Deleted Successfully');
-                // reload the page
+                queryClient.invalidateQueries({queryKey: ["AllIncidentReport"]});
+                toast.success('Selected Report Deleted Successfully');
+                resetStore();
                 handleClose();
-                // perform hard reload
+                // hard reload
                 window.location.reload();
             },
             onError: (error) => {
-                toast.error('Error Deleting selected Site');
+                toast.error('Error deleting service record account');
                 console.error("Delete failed", error);
                 handleClose();
             }
         });
     };
+
     const handleViewRecord = (objData) => {
         setViewSiteIncidentReport(objData);
         router.push('/dashboard/admin/reports/incident/site/view');
-    }
+    };
+
 
     const columns = useMemo(() => [
         {
@@ -321,18 +299,19 @@ function AllSiteIncident({siteIncidentData}) {
                                 <LocalLibraryIcon sx={{color: '#E997F9', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
-                        <Button>
-                            <Tooltip title="Delete" arrow onClick={handleOpen}>
+                        <Button onClick={handleOpen}>
+                            <Tooltip title="Delete" arrow>
                                 <DeleteIcon sx={{color: '#f7564a', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
                     </Stack>
+
                     <Dialog
                         open={open}
                         onClose={handleClose}
                         PaperProps={{
                             component: 'form',
-                            onSubmit: handleDelete,
+                            onSubmit: (event) => handleDelete(event, objID),
                             sx: {
                                 backgroundColor: '#0E1E1E'
                             },
@@ -351,12 +330,10 @@ function AllSiteIncident({siteIncidentData}) {
                                                 color: 'red',
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
-                                                fontStyle: 'Poppins',
                                                 fontFamily: 'Poppins',
-
                                             }}>
-                                    You are about to permanently delete the selected Service
-                                    Record. <br/><br/>
+                                    You are about to permanently delete the selected Service Record.
+                                    <br/><br/>
                                     Enter your Email address to further confirm your actions.
                                 </Typography>
                             </DialogContentText>
@@ -394,129 +371,174 @@ function AllSiteIncident({siteIncidentData}) {
                         </DialogActions>
                     </Dialog>
                 </>
-            )
+            );
         },
         renderTopToolbarCustomActions: ({table}) => {
+            const
+                mutation = useMutation({
+                    mutationKey: ["DeleteIncidentReport"],
+                    mutationFn: AdminUtilities.DeleteIncidentReport, // Adjust this to match your delete function
+                });
+            const [open, setOpen] = useState(false);
+            const [email, setEmail] = useState('');
+            const [emailError, setEmailError] = useState('');
+            const
+                handleClose = () => {
+                    setOpen(false);
+                    setEmail('');
+                    setEmailError('');
+                };
+            const handleOpen = () => setOpen(true);
+            const handleEmailChange = (event) => {
+                setEmail(event.target.value);
+                // Basic email validation regex
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(event.target.value)) {
+                    setEmailError('Invalid email address');
+                } else {
+                    setEmailError('');
+                }
+            };
+            const handleDelete = async (event) => {
+                event.preventDefault();
+                if (emailError || !email) {
+                    toast.error('Please enter a valid email address');
+                    return;
+                }
+                const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original._id);
+                const obj = {email, selectedIds};
+
+                mutation.mutate(obj, {
+                    onSuccess: () => {
+                        queryClient.invalidateQueries({queryKey: ["AllIncidentReport"]});
+                        toast.success('Selected Report Deleted Successfully');
+                        handleClose();
+                        resetStore();
+                        window.location.reload();
+                    },
+                    onError: (error) => {
+                        toast.error('Error Deleting selected Site');
+                        console.error("Delete failed", error);
+                        handleClose();
+                    }
+                });
+            };
             return (
-                <>
-                    <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
-                        <Button
-                            color="error"
-                            disabled={!table.getIsSomeRowsSelected()}
-                            onClick={handleOpen}
-                            variant="contained"
-                        >
-                            Delete Selected Report
-                        </Button>
-                        <Dialog
-                            open={open}
-                            onClose={handleClose}
-                            PaperProps={{
-                                component: 'form',
-                                onSubmit: handleDelete,
-                                sx: {backgroundColor: '#0E1E1E'},
-                            }}
-                        >
-                            <DialogTitle>
-                                <Typography variant="button" display="block" gutterBottom
+                <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
+                    <Button
+                        color="error"
+                        disabled={!table.getIsSomeRowsSelected()}
+                        onClick={handleOpen}
+                        variant="contained"
+                    >
+                        Delete Selected Report
+                    </Button>
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        PaperProps={{
+                            component: 'form',
+                            onSubmit: handleDelete,
+                            sx: {backgroundColor: '#0E1E1E'},
+                        }}
+                    >
+                        <DialogTitle>
+                            <Typography variant="button" display="block" gutterBottom
+                                        sx={{
+                                            color: 'red',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.1em',
+                                            fontStyle: 'Poppins',
+                                            fontFamily: 'Poppins',
+                                        }}>
+                                Confirm Deletion.
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                <Typography variant="body1" gutterBottom
                                             sx={{
                                                 color: 'red',
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
                                                 fontStyle: 'Poppins',
                                                 fontFamily: 'Poppins',
+
                                             }}>
-                                    Confirm Deletion.
+                                    You are about to permanently delete one or more service record. <br/><br/>
+                                    Enter your email address to further confirm your actions.
                                 </Typography>
-                            </DialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    <Typography variant="body1" gutterBottom
-                                                sx={{
-                                                    color: 'red',
-                                                    fontWeight: 'bold',
-                                                    fontSize: '1.1em',
-                                                    fontStyle: 'Poppins',
-                                                    fontFamily: 'Poppins',
-
-                                                }}>
-                                        You are about to permanently delete one or more service record. <br/><br/>
-                                        Enter your email address to further confirm your actions.
-                                    </Typography>
-                                </DialogContentText>
-                                <br/>
-                                <Stack direction="column" spacing={2}>
-                                    <Typography variant="subtitle1" gutterBottom sx={{
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                        fontSize: '1.1em',
-                                    }}>
-                                        Email *</Typography>
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        fullWidth
-                                        variant="outlined"
-                                        value={email}
-                                        onChange={handleEmailChange}
-                                        error={!!emailError}
-                                        helperText={emailError}
-                                        InputProps={{
-                                            sx: txProps
-                                        }}
-                                        InputLabelProps={{
-                                            sx: {
-                                                color: "#46F0F9",
-                                                "&.Mui-focused": {
-                                                    color: "white",
-                                                },
-                                            }
-                                        }}
-                                        sx={{
+                            </DialogContentText>
+                            <br/>
+                            <Stack direction="column" spacing={2}>
+                                <Typography variant="subtitle1" gutterBottom sx={{
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '1.1em',
+                                }}>
+                                    Email *</Typography>
+                                <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    fullWidth
+                                    variant="outlined"
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    error={!!emailError}
+                                    helperText={emailError}
+                                    InputProps={{
+                                        sx: txProps
+                                    }}
+                                    InputLabelProps={{
+                                        sx: {
                                             color: "#46F0F9",
-                                        }}
+                                            "&.Mui-focused": {
+                                                color: "white",
+                                            },
+                                        }
+                                    }}
+                                    sx={{
+                                        color: "#46F0F9",
+                                    }}
 
-                                    />
-                                </Stack>
-                            </DialogContent>
-                            <DialogActions sx={{justifyContent: 'space-between'}}>
-                                <Stack direction="row" gap={4} justifyContent='space-between'
-                                       sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
-                                    <Button onClick={handleClose} variant="contained" color="success">
-                                        Cancel
-                                    </Button>
-                                    <Button type="submit" variant="contained" color="error"> Delete </Button>
-                                </Stack>
-                            </DialogActions>
-                        </Dialog>
-                    </Box>
-                </>
+                                />
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions sx={{justifyContent: 'space-between'}}>
+                            <Stack direction="row" gap={4} justifyContent='space-between'
+                                   sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
+                                <Button onClick={handleClose} variant="contained" color="success">
+                                    Cancel
+                                </Button>
+                                <Button type="submit" variant="contained" color="error"> Delete </Button>
+                            </Stack>
+                        </DialogActions>
+                    </Dialog>
+                </Box>
             );
         },
         renderToolbarInternalActions: ({table}) => {
             return (
-                <>
-                    <Stack direction='row' sx={{
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}>
-                        <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                        <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                        <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                        <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                        <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
-                    </Stack>
-                </>
+                <Stack direction='row' sx={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}>
+                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
+                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
+                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
+                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
+                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
+                </Stack>
             );
         },
-        mrtTheme:
-            {
-                baseBackgroundColor: '#304f61',
-            }
-        ,
+        mrtTheme: {
+            baseBackgroundColor: '#304f61',
+            // baseBackgroundColor: '#00264d',
+            // selectedRowBackgroundColor: '#051e3b',
+        },
         muiTableHeadCellProps: {
             sx: {
                 color: '#21c6fc',
@@ -586,18 +608,16 @@ function AllSiteIncident({siteIncidentData}) {
                 100,
         },
         paginationDisplayMode: 'pages',
-        positionPagination:
-            "both",
-        initialState:
-            {
-                pagination: {
-                    pageIndex: 0,
-                    pageSize:
-                        100
-                }
-                ,
-                density: 'compact',
-            },
+        positionPagination: "both",
+        initialState: {
+            pagination: {
+                pageIndex: 0,
+                pageSize:
+                    100
+            }
+            ,
+            density: 'compact',
+        },
     });
 
     return (

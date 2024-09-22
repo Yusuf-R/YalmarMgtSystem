@@ -49,5 +49,5 @@ const upload = multer({
 
 incidentRouter.get('/all', incidentController.getAllIncidentReport);
 incidentRouter.post('/new', upload.array('images', 30), incidentController.newIncidentReport);
-incidentRouter.post('/delete', incidentController.deleteIncidentReport);
+incidentRouter.delete('/delete', incidentController.deleteIncidentReport);
 module.exports = incidentRouter;

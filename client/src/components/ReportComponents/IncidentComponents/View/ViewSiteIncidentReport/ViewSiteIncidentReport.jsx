@@ -303,8 +303,7 @@ function RenderedData({data}) {
                             width: '36%'
                         }}>
                 Incident Report Data for {siteInfo.siteId} : {formattedDate}
-                <IconButton><ArrowBackSharpIcon
-                    sx={{color: 'lime', fontSize: 30}} onClick={goPrev}/></IconButton>
+                <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
             </Typography>
             <br/>
             {/*Submission Info*/}
@@ -519,26 +518,29 @@ function RenderedData({data}) {
                                         fontSize: '16px',
                                     }}>Description Details</Typography>
                                 </AccordionSummary>
-                                <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
-                                    {description.map((line, index) => (
-                                        <List>
-                                            <ListItem sx={{margin: 0, p: 0,}} key={index}>
+                                <AccordionDetails sx={{bgcolor: '#274e61', color: 'white'}}>
+                                    <List> {/* Wrap all ListItems in one List */}
+                                        {description.map((line, indexA) => (
+                                            <ListItem sx={{margin: 0, p: 0}} key={`list-item-${indexA}`}>
                                                 <ListItemIcon sx={{mr: -1}}>
                                                     <PlaylistAddCheckIcon
-                                                        sx={{color: "lime", fontSize: "32px"}}/>
+                                                        sx={{color: "lime", fontSize: "32px"}}
+                                                    />
                                                 </ListItemIcon>
-                                                <Typography sx={{
-                                                    fontWeight: 'bold',
-                                                    color: 'white',
-                                                    fontFamily: 'Poppins',
-                                                    fontSize: '16px',
-                                                    m: -1,
-                                                }}>
+                                                <Typography
+                                                    sx={{
+                                                        fontWeight: 'bold',
+                                                        color: 'white',
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: '16px',
+                                                        m: -1,
+                                                    }}
+                                                >
                                                     {line}
                                                 </Typography>
                                             </ListItem>
-                                        </List>
-                                    ))}
+                                        ))}
+                                    </List>
                                 </AccordionDetails>
                             </Accordion>
                         </CardContent>
