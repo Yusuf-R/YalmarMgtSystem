@@ -13,6 +13,8 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Grid from "@mui/material/Grid";
 import {FormControl} from "@mui/material";
 import TextField from "@mui/material/TextField";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {serviceIncidentSchema} from "@/SchemaValidator/IncidentValidators/serviceIncidentSchema";
 
 function ServiceIncident({allSite}) {
     const [serviceSiteInfo, setServiceSiteInfo] = useState({
@@ -23,15 +25,17 @@ function ServiceIncident({allSite}) {
         location: '',
         type: '',
     });
-    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext();
+    const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
+        mode: 'onTouched',
+        resolver: yupResolver(serviceIncidentSchema),
+        reValidateMode: 'onChanged'
+    });
     // Site Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === serviceSiteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === serviceSiteInfo.cluster).map(site => site.siteId);
-    
-    // extract the site._id from allSite base on the selected siteIds
-    const site_id = allSite.filter(site => site.siteId === serviceSiteInfo.siteId).map(site => site._id)[0];
-    
+
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -41,7 +45,7 @@ function ServiceIncident({allSite}) {
             </MenuItem>
         ));
     };
-    
+
     const handleState = (event) => {
         const newState = event.target.value;
         setServiceSiteInfo(prevState => ({
@@ -54,7 +58,7 @@ function ServiceIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!serviceSiteInfo.state) {
@@ -78,7 +82,7 @@ function ServiceIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!serviceSiteInfo.state || !serviceSiteInfo.cluster) {
@@ -124,9 +128,9 @@ function ServiceIncident({allSite}) {
     ));
     const handleCat = (event) => {
         event.preventDefault();
-        setValue('categoryService', event.target.value);
+        setValue('serviceIncidentInfo.category', event.target.value);
     }
-    
+
     //Maintenance
     const catM = ['Routine', 'Scheduled', 'Unscheduled'];
     const getCatM = () => catM.map((catOpt) => (
@@ -137,9 +141,9 @@ function ServiceIncident({allSite}) {
     ));
     const handleCatM = (event) => {
         event.preventDefault();
-        setValue('categoryMaintenance.action', event.target.value);
+        setValue('serviceIncidentInfo.subCategory.maintenance.action', event.target.value);
     }
-    
+
     //Repair
     const catR = ['Minor', 'Major'];
     const getCatR = () => catR.map((catOpt) => (
@@ -150,9 +154,9 @@ function ServiceIncident({allSite}) {
     ));
     const handleCatR = (event) => {
         event.preventDefault();
-        setValue('categoryRepair.action', event.target.value);
+        setValue('serviceIncidentInfo.subCategory.repair.action', event.target.value);
     }
-    
+
     const catO = ['Partial', 'Complete'];
     const getCatO = () => catO.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}
@@ -162,9 +166,9 @@ function ServiceIncident({allSite}) {
     ));
     const handleCatO = (event) => {
         event.preventDefault();
-        setValue('categoryOverhauling.action', event.target.value);
+        setValue('serviceIncidentInfo.subCategory.overhauling.action', event.target.value);
     }
-    
+
     // Replacement
     const getCatRep = () => catR.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}
@@ -174,11 +178,11 @@ function ServiceIncident({allSite}) {
     ));
     const handleCatRep = (event) => {
         event.preventDefault();
-        setValue('categoryReplacement.action', event.target.value);
+        setValue('serviceIncidentInfo.subCategory.replacement.action', event.target.value);
     }
-    
-    const catSelector = watch('categoryService');
-    
+
+    const catSelector = watch('serviceIncidentInfo.category');
+
     const accordionSx = {
         bgcolor: '#274e61',
     }
@@ -189,7 +193,7 @@ function ServiceIncident({allSite}) {
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -198,7 +202,7 @@ function ServiceIncident({allSite}) {
         textAlign: 'left',
         ml: '30px',
     };
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -232,8 +236,8 @@ function ServiceIncident({allSite}) {
         width: '100%',
         height: 'auto',
     }
-    
-    
+
+
     return (
         <>
             <Paper elevation={5} sx={paperSx}>
@@ -285,10 +289,10 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             required
                                                             label="State"
-                                                            error={!!errors.state}
-                                                            helperText={errors.state ? (
+                                                            error={!!errors.serviceSiteInfo?.state}
+                                                            helperText={errors.serviceSiteInfo?.state ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.state.message}
+                                                                                {errors.serviceSiteInfo.state.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -311,7 +315,7 @@ function ServiceIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -354,10 +358,10 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             label="Cluster"
                                                             required
-                                                            error={!!errors.cluster}
-                                                            helperText={errors.cluster ? (
+                                                            error={!!errors.serviceSiteInfo?.cluster}
+                                                            helperText={errors.serviceSiteInfo?.cluster ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.cluster.message}
+                                                                                {errors.serviceSiteInfo.cluster.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -379,7 +383,7 @@ function ServiceIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -422,10 +426,10 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             label="Site ID"
                                                             required
-                                                            error={!!errors.siteId}
-                                                            helperText={errors.siteId ? (
+                                                            error={!!errors.serviceSiteInfo?.siteId}
+                                                            helperText={errors.serviceSiteInfo?.siteId ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.siteId.message}
+                                                                                {errors.serviceSiteInfo?.siteId.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -447,7 +451,7 @@ function ServiceIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -476,7 +480,7 @@ function ServiceIncident({allSite}) {
                                         {serviceSiteInfo.siteId && (
                                             <Grid item xs={2}>
                                                 <Controller
-                                                    name="siteInfo.type"
+                                                    name="serviceSiteInfo.type"
                                                     control={control}
                                                     defaultValue=""
                                                     render={({field}) => (
@@ -498,8 +502,8 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             label="Site Type"
                                                             variant="outlined"
-                                                            error={!!errors.siteType}
-                                                            helperText={errors.siteType ? errors.siteType.message : ''}
+                                                            error={!!errors.serviceSiteInfo?.type}
+                                                            helperText={errors.serviceSiteInfo?.type ? errors.serviceSiteInfo.type.message : ''}
                                                             type="text"
                                                             value={serviceSiteInfo.type}
                                                             readOnly
@@ -512,7 +516,7 @@ function ServiceIncident({allSite}) {
                                         {serviceSiteInfo.siteId && (
                                             <Grid item xs={4}>
                                                 <Controller
-                                                    name="siteInfo.location"
+                                                    name="serviceSiteInfo.location"
                                                     control={control}
                                                     defaultValue=""
                                                     render={({field}) => (
@@ -537,8 +541,8 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             label="Location"
                                                             variant="outlined"
-                                                            error={!!errors.location}
-                                                            helperText={errors.location ? errors.location.message : ''}
+                                                            error={!!errors.serviceSiteInfo?.location}
+                                                            helperText={errors.serviceSiteInfo?.location ? errors.serviceSiteInfo.location.message : ''}
                                                             type="text"
                                                             value={serviceSiteInfo.location}
                                                             readOnly
@@ -570,7 +574,7 @@ function ServiceIncident({allSite}) {
                                         {/*Site State*/}
                                         <Grid item xs={2}>
                                             <Controller
-                                                name="categoryService"
+                                                name="serviceIncidentInfo.category"
                                                 control={control}
                                                 defaultValue=""
                                                 render={({field}) => (
@@ -585,10 +589,10 @@ function ServiceIncident({allSite}) {
                                                             }}
                                                             required
                                                             label="Category"
-                                                            error={!!errors.categoryService}
-                                                            helperText={errors.categoryService ? (
+                                                            error={!!errors.serviceIncidentInfo?.category}
+                                                            helperText={errors.serviceIncidentInfo?.category ? (
                                                                 <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryService.message}
+                                                                                {errors.serviceIncidentInfo?.category.message}
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
@@ -611,7 +615,7 @@ function ServiceIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -635,7 +639,7 @@ function ServiceIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryMaintenance.action"
+                                                        name="serviceIncidentInfo.subCategory.maintenance.action"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -644,17 +648,17 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatM(e);
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.categoryMaintenance?.action}
-                                                                    helperText={errors.categoryMaintenance?.action ? (
+                                                                    error={!!errors.serviceIncidentInfo?.subCategory?.maintenance?.action}
+                                                                    helperText={errors.serviceIncidentInfo?.subCategory?.maintenance?.action ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryMaintenance.action.message}
+                                                                                {errors.serviceIncidentInfo?.subCategory?.maintenance?.action.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -709,7 +713,7 @@ function ServiceIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryRepair.action"
+                                                        name="serviceIncidentInfo.subCategory.repair.action"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -718,17 +722,17 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatR(e);
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.categoryRepair?.action}
-                                                                    helperText={errors.categoryRepair?.action ? (
+                                                                    error={!!errors.serviceIncidentInfo?.subCategory?.repair?.action}
+                                                                    helperText={errors.serviceIncidentInfo?.subCategory?.repair?.action ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryRepair.action.message}
+                                                                                {errors.serviceIncidentInfo?.subCategory?.repair?.action.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -783,7 +787,7 @@ function ServiceIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryOverhauling.action"
+                                                        name="serviceIncidentInfo.subCategory.overhauling.action"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -792,17 +796,17 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatO(e);
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.categoryOverhauling?.action}
-                                                                    helperText={errors.categoryOverhauling?.action ? (
+                                                                    error={!!errors.serviceIncidentInfo?.subCategory?.overhauling?.action}
+                                                                    helperText={errors.serviceIncidentInfo?.subCategory?.overhauling?.action ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryOverhauling.action.message}
+                                                                                {errors.serviceIncidentInfo?.subCategory?.overhauling?.action.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -857,7 +861,7 @@ function ServiceIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryReplacement.action"
+                                                        name="serviceIncidentInfo.subCategory.replacement.action"
                                                         control={control}
                                                         defaultValue=""
                                                         render={({field}) => (
@@ -866,17 +870,17 @@ function ServiceIncident({allSite}) {
                                                                     {...field}
                                                                     select
                                                                     defaultValue='' // <-- Set default value to an empty string
-                                                                    value={field.value || ''}
+                                                                    value={field.value || null}
                                                                     onChange={(e) => {
                                                                         field.onChange(e);
                                                                         handleCatRep(e);
                                                                     }}
                                                                     required
                                                                     label="Sub-Action"
-                                                                    error={!!errors.categoryReplacement?.action}
-                                                                    helperText={errors.categoryReplacement?.action ? (
+                                                                    error={!!errors.serviceIncidentInfo?.subCategory?.replacement?.action}
+                                                                    helperText={errors.serviceIncidentInfo?.subCategory?.replacement?.action ? (
                                                                         <span style={{color: "#fc8947"}}>
-                                                                                {errors.categoryReplacement.action.message}
+                                                                                {errors.serviceIncidentInfo?.subCategory?.replacement?.action.message}
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
@@ -931,7 +935,7 @@ function ServiceIncident({allSite}) {
                                             <>
                                                 <Grid item xs={6}>
                                                     <Controller
-                                                        name="categoryServiceOthers"
+                                                        name="serviceIncidentInfo.subCategory.others"
                                                         control={control}
                                                         render={({field}) => (
                                                             <TextField
@@ -951,8 +955,8 @@ function ServiceIncident({allSite}) {
                                                                 variant="outlined"
                                                                 fullWidth
                                                                 required
-                                                                error={!!errors.categoryServiceOthers}
-                                                                helperText={errors.categoryServiceOthers ? errors.categoryServiceOthers.message : ''}
+                                                                error={!!errors.serviceIncidentInfo?.subCategory?.others}
+                                                                helperText={errors.serviceIncidentInfo?.serviceIncidentInfo?.subCategory?.others.others ? errors.categoryServiceOthers.message : ''}
                                                             />
                                                         )}
                                                     />

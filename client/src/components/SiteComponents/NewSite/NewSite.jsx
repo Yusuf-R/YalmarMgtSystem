@@ -150,9 +150,9 @@ function NewSite() {
                 onSuccess: (response) => {
                     if (response) {
                         toast.success('New Site Entry Created Successfully');
-                        //     refresh the query that fetched all the staff
+                        // refresh the query that fetched all the staff
                         queryClient.invalidateQueries({queryKey: ["AllSite"]});
-                        //     clear the form fields
+                        // clear the form fields
                         Clear();
                         router.push('/dashboard/admin/site/all');
                     } else {

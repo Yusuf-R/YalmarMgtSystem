@@ -66,7 +66,7 @@ class ServicingController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async getServicingReport(req, res) {
         let emptyBit = false;
         try {
@@ -115,7 +115,7 @@ class ServicingController {
             // Construct the start and end of the month in the string format
             const startDate = new Date(`Fri ${monthAbbr} 01 ${value.year} 00:00:00 GMT+0100 (West Africa Standard Time)`);
             const endDate = new Date(`Sun ${monthAbbr} 31 ${value.year} 23:59:59 GMT+0100 (West Africa Standard Time)`);
-            
+
             // create the query object
             const query = {
                 pmInstance: value.pmInstance,
@@ -149,7 +149,7 @@ class ServicingController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async newServicingReport(req, res) {
         try {
             // perform full current check
@@ -269,7 +269,7 @@ class ServicingController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async deleteServiceReport(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -331,7 +331,7 @@ class ServicingController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async deleteServiceCache(pmdIds) {
         for (const ids of pmdIds) {
             const serviceRecordObj = await Servicing.findOne({_id: ids});
@@ -362,45 +362,36 @@ class ServicingController {
         }
         return;
     };
-    
+
     static async deleteServiceCloudinaryImages(pmIds) {
-        console.log('I got to cloudinary');
         for (const ids of pmIds) {
             const serviceRecordObj = await Servicing.findOne({_id: ids});
-            console.log({serviceRecordObj});
             if (!serviceRecordObj) {
                 throw new Error('Servicing deletion failed');
             }
             const servicingDate = new Date(serviceRecordObj.servicingDate);
-            console.log({servicingDate});
             const monthName = servicingDate.toLocaleString('en-US', {month: 'long'}); // Get month name, e.g., "August"
-            console.log({monthName});
             // We need to delete all the files in the pmInstance folder
             const folderPath = `YalmarMgtSystem/ServicingReports/${serviceRecordObj.siteId}/${servicingDate.getFullYear()}/${monthName}/${serviceRecordObj.pmInstance}/${serviceRecordObj.servicingDate}/images`;
-            
-            console.log({folderPath});
-            
             // 1. List all resources (images, files) in the folder and subfolders
             const {resources} = await cloudinary.api.resources({
                 type: 'upload',
                 prefix: folderPath,
                 max_results: 500,
             });
-            console.log({resources});
             // 2. Delete each resource found in the list
             const deletePromises = resources.map((resource) => {
                 const publicId = resource.public_id;
                 console.log(`Deleting ${publicId}`);
                 return cloudinary.uploader.destroy(publicId);
             });
-            
+
             await Promise.all(deletePromises);
-            
             // 3. Delete the folder itself
             // Since Cloudinary doesn’t allow direct folder deletion, ensure it’s empty
             await cloudinary.api.delete_folder(folderPath);
         }
-        
+
     }
 }
 

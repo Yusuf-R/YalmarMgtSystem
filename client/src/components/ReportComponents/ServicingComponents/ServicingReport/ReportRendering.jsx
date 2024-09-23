@@ -48,7 +48,7 @@ function ReportRendering({allServicingReport}) {
                                 // color: '#ff8c00',
                                 color: '#40ff00',
                             },
-                            
+
                         },
                     },
                     MuiFormControlLabel: {
@@ -112,7 +112,7 @@ function ReportRendering({allServicingReport}) {
                                 color: '#fff',
                                 fontWeight: 'bold',
                             },
-                            
+
                         },
                     },
                     // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
@@ -254,8 +254,7 @@ function ReportRendering({allServicingReport}) {
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
-            
-            
+
             const mutation = useMutation({
                 mutationKey: ["DeleteServicingReport"],
                 mutationFn: AdminUtilities.DeleteServicingReport, // Adjust this to match your delete function
@@ -284,7 +283,7 @@ function ReportRendering({allServicingReport}) {
                     // we also need to construct our cache key to see if this entry already exist
                     const month = dayjs(objData.servicingDate).format('MMMM');
                     const year = dayjs(objData.servicingDate).format('YYYY');
-                    
+
                     const data = {
                         siteType: objData.siteType,
                         location: objData.location,
@@ -359,7 +358,7 @@ function ReportRendering({allServicingReport}) {
                                                 fontSize: '1.1em',
                                                 fontStyle: 'Poppins',
                                                 fontFamily: 'Poppins',
-                                                
+
                                             }}>
                                     You are about to permanently delete the selected Service
                                     Record. <br/><br/>
@@ -457,7 +456,7 @@ function ReportRendering({allServicingReport}) {
                         queryClient.removeQueries({queryKey: cacheKey});
                     }
                 })
-                
+
                 mutation.mutate(obj, {
                     onSuccess: () => {
                         queryClient.invalidateQueries({queryKey: ["AllServicingReport"]});
@@ -514,7 +513,7 @@ function ReportRendering({allServicingReport}) {
                                                 fontSize: '1.1em',
                                                 fontStyle: 'Poppins',
                                                 fontFamily: 'Poppins',
-                                                
+
                                             }}>
                                     You are about to permanently delete one or more service record. <br/><br/>
                                     Enter your email address to further confirm your actions.
@@ -554,7 +553,7 @@ function ReportRendering({allServicingReport}) {
                                     sx={{
                                         color: "#46F0F9",
                                     }}
-                                
+
                                 />
                             </Stack>
                         </DialogContent>
@@ -570,8 +569,7 @@ function ReportRendering({allServicingReport}) {
                     </Dialog>
                 </Box>
             );
-        }
-        ,
+        },
         renderToolbarInternalActions: ({table}) => {
             return (
                 <Stack direction='row' sx={{
@@ -623,7 +621,7 @@ function ReportRendering({allServicingReport}) {
             }
             ,
             align: 'center',
-            
+
         }
         ,
         muiTableBodyRowProps: {
@@ -643,7 +641,7 @@ function ReportRendering({allServicingReport}) {
                 'Site Details',
             variant:
                 'outlined',
-            
+
         }
         ,
         muiFilterTextFieldProps: {

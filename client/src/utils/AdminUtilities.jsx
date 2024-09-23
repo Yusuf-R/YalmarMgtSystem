@@ -27,7 +27,7 @@ class AdminUtils {
         );
         // Initialization Vector (IV): ensures the same plaintext encrypts to different ciphertexts each time
         const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Initialization vector
-        
+
         // The user ID is encoded into bytes and encrypted using crypto.subtle.encrypt with the specified IV and key.
         // The encrypted data is combined with the IV to ensure that decryption can be done correctly later.
         const encrypted = await window.crypto.subtle.encrypt(
@@ -38,33 +38,33 @@ class AdminUtils {
             key,
             new TextEncoder().encode(userID)
         );
-        
+
         // Combine the iv and encrypted data
         // The IV and encrypted data are concatenated into a single array and converted to a base64 string using btoa.
         const encryptedDataWithIv = new Uint8Array(iv.length + new Uint8Array(encrypted).length);
         encryptedDataWithIv.set(iv);
         encryptedDataWithIv.set(new Uint8Array(encrypted), iv.length);
-        
+
         // Convert to base64 string and return
         return btoa(String.fromCharCode(...encryptedDataWithIv));
     }
-    
+
     static async decryptUserID(encryptedUserID) {
         // Decode the Base64 String
         // The encrypted base64 string is decoded back into a byte array using atob
         // and then mapped to their character codes to form a Uint8Array.
         const encryptedDataWithIv = new Uint8Array(atob(encryptedUserID).split('').map(char => char.charCodeAt(0)));
-        
+
         // Extract the iv and encrypted data
         const iv = encryptedDataWithIv.slice(0, 12);
         const encryptedData = encryptedDataWithIv.slice(12);
-        
+
         // Hash the idSecret to get a 256-bit key
         const keyMaterial = await window.crypto.subtle.digest(
             'SHA-256',
             new TextEncoder().encode(idSecret)
         );
-        
+
         // The hashed key is imported for use with AES-GCM encryption using crypto.subtle.importKey.
         const key = await window.crypto.subtle.importKey(
             'raw',
@@ -75,7 +75,7 @@ class AdminUtils {
             true,
             ['decrypt']
         );
-        
+
         // Decrypt the encryptedData using the key and iv
         const decrypted = await window.crypto.subtle.decrypt(
             {
@@ -85,11 +85,11 @@ class AdminUtils {
             key,
             encryptedData
         );
-        
+
         // Convert the decrypted data to a string
         return new TextDecoder().decode(decrypted);
     }
-    
+
     static async encryptData(data) {
         // Hash the secret to get a 256-bit key
         const keyMaterial = await window.crypto.subtle.digest(
@@ -120,7 +120,7 @@ class AdminUtils {
         encryptedDataWithIv.set(new Uint8Array(encrypted), iv.length);
         return btoa(String.fromCharCode(...encryptedDataWithIv)); // Convert to base64 string
     }
-    
+
     static async decryptData(encryptedData) {
         const encryptedDataWithIv = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
         // Extract the iv and encrypted data
@@ -150,7 +150,7 @@ class AdminUtils {
         );
         return JSON.parse(new TextDecoder().decode(decrypted));
     }
-    
+
     // middleware verification
     static async verifyCredentials(request) {
         try {
@@ -177,7 +177,7 @@ class AdminUtils {
             throw new Error('Access Denied');
         }
     }
-    
+
     static async authGuard(request) {
         try {
             return await AdminUtils.verifyCredentials(request);
@@ -186,7 +186,7 @@ class AdminUtils {
             throw new Error('Access Denied.');
         }
     }
-    
+
     // image utils
     static async createImage(url) {
         new Promise((resolve, reject) => {
@@ -196,15 +196,15 @@ class AdminUtils {
             image.src = url;
         })
     };
-    
+
     static async getCroppedImg(imageSrc, pixelCrop) {
         const image = await AdminUtils.createImage(imageSrc);
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         canvas.width = pixelCrop.width;
         canvas.height = pixelCrop.height;
-        
+
         ctx.drawImage(
             image,
             pixelCrop.x,
@@ -216,7 +216,7 @@ class AdminUtils {
             pixelCrop.width,
             pixelCrop.height
         );
-        
+
         return new Promise((resolve, reject) => {
             canvas.toBlob(file => {
                 if (!file) {
@@ -228,7 +228,7 @@ class AdminUtils {
             }, 'image/jpeg');
         });
     }
-    
+
     // Login API ---- Staff-------
     static async StaffLogin(obj) {
         // Encode username and password in base64
@@ -252,7 +252,7 @@ class AdminUtils {
             throw new Error(error.response.data.message);
         }
     }
-    
+
     static async StaffLogout() {
         try {
             const response = await axiosPrivate({
@@ -266,7 +266,7 @@ class AdminUtils {
             throw new Error('Logout Failed');
         }
     }
-    
+
     static async staffDashboard() {
         try {
             const response = await axiosPrivate({
@@ -281,7 +281,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async privateCheck(request) {
         try {
             const response = await axiosPrivate({
@@ -294,7 +294,7 @@ class AdminUtils {
             throw new Error('Access Denied');
         }
     }
-    
+
     static async NewStaff(obj) {
         // if obj is null, return an error
         if (!obj) {
@@ -314,7 +314,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async Profile() {
         try {
             const response = await axiosPrivate({
@@ -327,7 +327,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async AllStaff() {
         try {
             const response = await axiosPrivate({
@@ -340,7 +340,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async UpdateStaff(obj) {
         try {
             const response = await axiosPrivate({
@@ -354,7 +354,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async DeleteStaff(obj, onUploadProgress) {
         try {
             const response = await axiosPrivate({
@@ -369,7 +369,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async UpdateProfilePicture(obj) {
         try {
             const response = await axiosPrivate({
@@ -386,7 +386,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     static async LeaveRequestOps(obj) {
         console.log({obj});
         try {
@@ -402,7 +402,7 @@ class AdminUtils {
             throw new Error(errData);
         }
     }
-    
+
     // get all leave request from the DB
     static async AllLeaveRequest() {
         try {
@@ -415,7 +415,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     // get a staff request
     static async StaffLeaveRequest() {
         try {
@@ -428,7 +428,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async ConfirmStaffLeaveRequest(obj) {
         try {
             return await axiosPrivate({
@@ -440,21 +440,21 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async UpdateStaffLeaveRequest(obj) {
         try {
             return await axiosPrivate({
                 method: "PUT",
                 url: '/leave-request/update'
             });
-            
+
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     /// site API----------Sites-----------  ///
-    
+
     static async AllSite() {
         try {
             const response = await axiosPrivate({
@@ -462,12 +462,12 @@ class AdminUtils {
                 url: '/site/all',
             });
             return response.data;
-            
+
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async BGwariSite() {
         try {
             const response = await axiosPrivate({
@@ -475,12 +475,12 @@ class AdminUtils {
                 url: '/site/birnin-gwari',
             });
             return response.data;
-            
+
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async KdCentralSite() {
         try {
             const response = await axiosPrivate({
@@ -488,12 +488,12 @@ class AdminUtils {
                 url: '/site/kaduna-central',
             });
             return response.data;
-            
+
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async ZariaSite() {
         try {
             const response = await axiosPrivate({
@@ -501,12 +501,12 @@ class AdminUtils {
                 url: '/site/zaria',
             });
             return response.data;
-            
+
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async NewSite(obj) {
         try {
             const response = await axiosPrivate({
@@ -519,7 +519,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async UpdateSite(obj) {
         try {
             const response = await axiosPrivate({
@@ -532,7 +532,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async DeleteSite(obj) {
         try {
             const response = await axiosPrivate({
@@ -545,7 +545,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     // Fuelling API----Fuelling------  ///
     static async AllFuelReport() {
         try {
@@ -558,7 +558,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async NewFuelSupplyReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -566,13 +566,13 @@ class AdminUtils {
                 url: '/fuel/new',
                 data: obj,
             })
-            
+
             return response.data;
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async UpdateFuelSupplyReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -580,13 +580,13 @@ class AdminUtils {
                 url: '/fuel/update',
                 data: obj,
             })
-            
+
             return response.data;
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async DeleteFuelSupplyReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -599,7 +599,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async AllServicingReports() {
         try {
             const response = await axiosPrivate({
@@ -611,7 +611,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async NewServicingReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -622,13 +622,13 @@ class AdminUtils {
                 },
                 data: obj,
             })
-            
+
             return response.data;
         } catch (error) {
             throw new Error(error);
         }
     }
-    
+
     static async GetServicingReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -641,7 +641,7 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async UpdateServicingReport(obj) {
         try {
             const response = await axiosPrivate({
@@ -654,12 +654,54 @@ class AdminUtils {
             throw new Error(error);
         }
     }
-    
+
     static async DeleteServicingReport(obj) {
         try {
             const response = await axiosPrivate({
                 method: "DELETE",
                 url: '/service/delete',
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    // Incident Report API----Incident------  ///
+    static async AllIncidentReport() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/incident/all',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    static async NewIncidentReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "POST",
+                url: '/incident/new',
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                data: obj,
+            })
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    static async DeleteIncidentReport(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/incident/delete',
                 data: obj,
             })
             return response.data;

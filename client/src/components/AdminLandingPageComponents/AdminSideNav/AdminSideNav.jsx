@@ -22,10 +22,8 @@ import Button from "@mui/material/Button";
 import {useLogout} from "@/customHooks/useLogout";
 import {FcCustomerSupport} from "react-icons/fc";
 
-
 function AdminSideNav() {
     const [confirmExit, setConfirmExit] = useState(false);
-    
     const handleLogout = useLogout();
     const router = useRouter();
     const handleDialog = () => {
@@ -45,8 +43,7 @@ function AdminSideNav() {
                 height: 'calc(100vh - 48px)', /* Adjust the height as needed */
                 overflowY: 'auto',
                 zIndex: '20',
-            }}
-            >
+            }}>
                 <ListItem>
                     <ListItemButton
                         sx={{
@@ -64,7 +61,6 @@ function AdminSideNav() {
                         <ListItemText primary="Dashboard"/>
                     </ListItemButton>
                 </ListItem>
-                
                 <ListItem>
                     <ListItemButton sx={{
                         bgcolor: selectedNav === '/dashboard/admin/staff' ? '#2c74f2' : null,
@@ -81,7 +77,6 @@ function AdminSideNav() {
                         <ListItemText primary="Staff"/>
                     </ListItemButton>
                 </ListItem>
-                
                 <ListItem>
                     <ListItemButton sx={{
                         bgcolor: selectedNav === '/dashboard/admin/site' ? '#2c74f2' : null,
@@ -108,7 +103,6 @@ function AdminSideNav() {
                             bgcolor: '#2c74f2',
                         },
                         "&.Mui-selected": {bgcolor: '#2c74f2'},
-                        
                     }}
                                     onClick={() => {
                                         router.push('/dashboard/admin/reports');
@@ -118,7 +112,7 @@ function AdminSideNav() {
                         <ListItemIcon sx={{fontSize: 28, m: -2}}>
                             <FcExpired/>
                         </ListItemIcon>
-                        <ListItemText primary="Operatioinal Reports"/>
+                        <ListItemText primary="Reports"/>
                     </ListItemButton>
                 </ListItem>
                 {/*Request HelpDesk*/}
@@ -140,8 +134,6 @@ function AdminSideNav() {
                         <ListItemText primary="HelpDesk"/>
                     </ListItemButton>
                 </ListItem>
-                
-                
                 <ListItem>
                     <ListItemButton sx={{
                         bgcolor: selectedNav === '/dashboard/admin/settings' ? '#2c74f2' : null,
@@ -160,7 +152,6 @@ function AdminSideNav() {
                         <ListItemText primary="Settings"/>
                     </ListItemButton>
                 </ListItem>
-                
                 <ListItem>
                     <ListItemButton sx={{
                         bgcolor: selectedNav === '/dashboard/admin/logout' ? '#2c74f2' : null,

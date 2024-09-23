@@ -26,7 +26,6 @@ class SiteController {
             // ensure this is an only admin permissible action
             const admin = await AuthController.AdminCheck(new ObjectId(id));
             if (admin instanceof Error) {
-                console.log('Hi here');
                 return res.status(400).json({error: admin.message});
             }
             // get all the site in db
@@ -69,7 +68,6 @@ class SiteController {
             // We will check if the url contain "b-gwari" or "zaria" or "kaduna-central"
             // and return the site based on the cluster
             const ogURL = req.originalUrl
-            console.log({ogURL});
             const allowedULR = ['/birnin-gwari', '/kaduna-central', '/zaria'];
             if (!allowedULR.includes(ogURL)) {
                 return res.status(404).json({error: 'Forbidden Operation'});
@@ -92,7 +90,6 @@ class SiteController {
     }
     
     static async newSite(req, res) {
-        console.log('Mew Site');
         try {
             // perform full current check
             const verifiedJwt = await AuthController.currPreCheck(req);
