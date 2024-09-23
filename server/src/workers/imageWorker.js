@@ -12,7 +12,7 @@ process.on('message', async (data) => {
             overwrite: true,
             invalidate: true,
             transformation: [
-                {width: 500, height: 500, crop: 'fill'},
+                {width: 500, height: 500},
                 {quality: 'auto', fetch_format: 'auto'},
             ],
             secure: true

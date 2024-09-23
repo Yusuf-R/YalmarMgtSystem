@@ -15,12 +15,11 @@ import Dialog from "@mui/material/Dialog";
 import CropIcon from '@mui/icons-material/Crop';
 
 const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
-    console.log({image});
     const [croppedImage, setCroppedImage] = useState(null);
     const cropperRef = useRef(null);
     const [aspect, setAspect] = useState(1);
-    
-    
+
+
     // Handle cropping
     const handleCrop = () => {
         const cropper = cropperRef.current;
@@ -32,8 +31,8 @@ const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
             }
         }
     };
-    
-    
+
+
     // Handle saving the cropped image
     const handleSave = () => {
         const cropper = cropperRef.current;
@@ -46,12 +45,12 @@ const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
             }
         }
     };
-    
+
     // Close the dialog without saving
     const handleClose = () => {
         onClose();
     };
-    
+
     const paperProps = {
         alignCenter: 'center',
         textAlign: 'center',
@@ -59,6 +58,8 @@ const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
         backgroundColor: '#274e61',
         borderRadius: '10px',
     };
+
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth='lg' fullWidth sx={{
             overflow: 'hidden',
@@ -87,7 +88,7 @@ const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
                         <Grid item xs={6}>
                             <Paper sx={paperProps}>
                                 <Typography variant='subtitle1'
-                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>Original
+                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>Cropped
                                     Image</Typography>
                             </Paper>
                         </Grid>

@@ -124,10 +124,8 @@ class IncidentController {
             const month = dayjs(value.incidentDate).format('MMM').toUpperCase();
             const year = dayjs(value.incidentDate).format('YYYY');
             const currTime = dayjs(new Date()).format('LT');
-            console.log({currTime});
 
             const dateVar = dayjs(value.incidentDate).format('MMMM-DD-YYYY') + '-' + currTime.replace(/ /g, '-');
-            console.log({dateVar});
             const reportCategory = value.reportCategory[0];
             let siteId = '';
             let folderPath = '';
@@ -180,8 +178,6 @@ class IncidentController {
                 }
             });
 
-            console.log({folderPath});
-
             // Send the file paths and other required data to the worker process
             workerProcess.send({
                 filePaths,
@@ -227,7 +223,10 @@ class IncidentController {
 
         // If images are included in the incident, update the reference count
         if (incidentData.images && incidentData.images.length > 0) {
-            await IncidentController.updateImageReferences(incidentData.images);
+            for (const cnt of incidentData.reportCategory) {
+                await IncidentController.updateImageReferences(incidentData.images);
+            }
+
         }
 
         // Loop through each category in the array
@@ -320,7 +319,6 @@ class IncidentController {
 
                     // Delete the specific incident
                     await IncidentModel.deleteOne({_id: id});
-
                 }
             }
             return res.status(200).json({message: 'Incident report(s) deleted successfully'});
@@ -342,11 +340,9 @@ class IncidentController {
 
     // Function to decrement image references and delete if count reaches zero
     static async decrementImageReferences(images) {
-        console.log('I got here decremental references');
         for (const image of images) {
             const existingImage = await Images.findOne({url: image});
             if (existingImage) {
-                console.log('I got here A');
                 // Check if the image is referenced by only one incident before decrementing
                 if (existingImage.referenceCount === 1) {
                     // If this is the last reference, delete the image from both Cloudinary and the database

@@ -45,7 +45,7 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
     const [currentImage, setCurrentImage] = useState(null);
     const [open, setOpen] = useState(false);
     const cropperRef = useRef(null);
-    
+
     const handleClear = () => {
         setCurrentImage(null);
         setOpen(false);
@@ -55,7 +55,7 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
         setImages(newImages);
         onImagesChange(newImages);
     }, [onImagesChange]);
-    
+
     const onFileSelect = (event) => {
         const selectedFiles = Array.from(event.target.files);
         const validImages = selectedFiles.filter(file => {
@@ -63,7 +63,7 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
             const fileSize = file.size;
             return fileSize <= 2000000 && ['image/png', 'image/jpeg', 'image/svg', 'image/svg+xml', 'image/jpg'].includes(fileType);
         });
-        
+
         const imagePromises = validImages.map(file => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -72,28 +72,28 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
                 reader.readAsDataURL(file);
             });
         });
-        
+
         Promise.all(imagePromises).then(results => {
             updateImages([...images, ...results]);
         }).catch(error => {
             console.error('Error reading files', error);
         });
     };
-    
+
     const handleOpen = (image) => {
         setCurrentImage(image);
         setOpen(true);
     };
-    
+
     const handleClose = () => {
         setOpen(false);
     };
-    
+
     const handleSave = () => {
         if (!cropperRef.current) {
             return;
         }
-        
+
         const canvas = cropperRef.current.getCanvas();
         if (canvas) {
             const croppedImage = canvas.toDataURL('image/jpeg');
@@ -101,7 +101,7 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
             handleClose();
         }
     };
-    
+
     const handleCropChange = () => {
         if (cropperRef.current) {
             const canvas = cropperRef.current.getCanvas();
@@ -111,21 +111,21 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
             }
         }
     };
-    
+
     useEffect(() => {
         onImagesChange(images);
     }, [images, onImagesChange]);
-    
+
     useEffect(() => {
         if (currentImage) {
             handleCropChange();
         }
     }, [currentImage]);
-    
+
     const handleRemoveImage = (imageToRemove) => {
         updateImages(images.filter(image => image !== imageToRemove));
     };
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData();
@@ -133,7 +133,7 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
             formData.append('images', image.croppedSrc || image.src);
         });
     };
-    
+
     return (
         <>
             <Box>
@@ -191,19 +191,6 @@ function AdvImgResizerMultiFile({initialImages = [], onImagesChange}) {
                                     Upload Pictures
                                     <VisuallyHiddenInput type="file" multiple onChange={onFileSelect}/>
                                 </Button>
-                                {/*<Button*/}
-                                {/*    component="label"*/}
-                                {/*    variant="contained"*/}
-                                {/*    tabIndex={-1}*/}
-                                {/*    startIcon={<SendIcon/>}*/}
-                                {/*    disabled={images.length === 0}*/}
-                                {/*    color='error'*/}
-                                {/*    type='submit'*/}
-                                {/*    title='Submit'*/}
-                                {/*    onClick={handleSubmit}*/}
-                                {/*>*/}
-                                {/*    Submit*/}
-                                {/*</Button>*/}
                             </Stack>
                             <br/>
                         </Stack>

@@ -34,10 +34,10 @@ function ImageUpload({onImagesChange}) {
     const [images, setImages] = useState([]);
     const [isCropping, setIsCropping] = useState(false);
     const [currentImage, setCurrentImage] = useState(null);
-    
+
     const {register, setValue, watch} = useFormContext(); // Use useFormContext to access form methods
-    
-    
+
+
     const handleImageUpload = (event) => {
         const files = Array.from(event.target.files);
         const validImages = files.filter((file) => {
@@ -45,7 +45,7 @@ function ImageUpload({onImagesChange}) {
             const fileSize = file.size;
             return fileSize <= 20000000 && ["image/png", "image/jpeg", "image/jpg"].includes(fileType);
         });
-        
+
         const imagePromises = validImages.map(file => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -61,7 +61,7 @@ function ImageUpload({onImagesChange}) {
                 reader.readAsDataURL(file);
             });
         });
-        
+
         Promise.all(imagePromises)
             .then((newImages) => {
                 setImages((prevImages) => [...prevImages, ...newImages]);
@@ -70,16 +70,16 @@ function ImageUpload({onImagesChange}) {
                 console.error("Error reading files", error);
             });
     };
-    
+
     const handleRemoveImage = (imageId) => {
         setImages((prevImages) => prevImages.filter((img) => img.id !== imageId));
     };
-    
+
     const handleOpenCrop = (image) => {
         setCurrentImage(image);
         setIsCropping(true);
     };
-    
+
     const handleSaveCroppedImage = (croppedSrc) => {
         setImages((prevImages) =>
             prevImages.map((img) =>
@@ -89,21 +89,17 @@ function ImageUpload({onImagesChange}) {
         setIsCropping(false);
         setCurrentImage(null);
     };
-    
+
     const [isInitialized, setIsInitialized] = useState(false); // Track if images are initialized
-    
+
     useEffect(() => {
         if (isInitialized) {
-            const finalImages = images.map(image => ({
-                src: image.croppedSrc || image.src,
-                isCropped: !!image.croppedSrc,
-            }));
-            onImagesChange(finalImages); // Pass the prepared images to the parent component
+            onImagesChange(images); // Pass the prepared images to the parent component
         } else {
             setIsInitialized(true); // Initialize once
         }
     }, [images]);
-    
+
     return (
         <>
             <Paper sx={paperSx}>

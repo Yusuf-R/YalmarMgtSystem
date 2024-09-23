@@ -38,25 +38,25 @@ const goPrev = () => {
     window.history.back();
 }
 
-function ViewSiteIncidentReport() {
+function ViewFuelIncidentReport() {
     // get the siteIncidentReport from the useIncidentStore
-    const viewSiteIncidentReport = useIncidentStore(state => state.viewSiteIncidentReport);
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/site/view');
+    const viewFuelIncidentReport = useIncidentStore(state => state.viewFuelIncidentReport);
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/fuel/view');
     const pathname = usePathname();
 
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('view')) {
-            setActiveTab('/dashboard/admin/reports/incident/site/view');
-        } else if (pathname.includes('site')) {
-            setActiveTab('/dashboard/admin/reports/incident/site');
+            setActiveTab('/dashboard/admin/reports/incident/fuel/view');
+        } else if (pathname.includes('fuel')) {
+            setActiveTab('/dashboard/admin/reports/incident/fuel');
         } else {
             setActiveTab('/dashboard/admin/reports/incident');
         }
     }, [pathname]);
 
 
-    if (!viewSiteIncidentReport) {
+    if (!viewFuelIncidentReport) {
         return (
             <Box sx={mainSection}>
                 {/*Navigation Tabs */}
@@ -88,10 +88,10 @@ function ViewSiteIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Site"
+                            label="Fuel"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/site"
-                            value="/dashboard/admin/reports/incident/site"
+                            href="/dashboard/admin/reports/incident/fuel"
+                            value="/dashboard/admin/reports/incident/fuel"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -127,7 +127,7 @@ function ViewSiteIncidentReport() {
                                 p: 2,
                                 border: '1px solid rgb(255, 153, 153)',
                                 borderRadius: 10,
-                                width: '30%',
+                                width: '40%',
                                 textAlign: 'center',
                             }}>
                     Oops!!! No Report found. <IconButton><ArrowBackSharpIcon
@@ -169,10 +169,10 @@ function ViewSiteIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Site"
+                            label="Fuel"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/site"
-                            value="/dashboard/admin/reports/incident/site"
+                            href="/dashboard/admin/reports/incident/fuel"
+                            value="/dashboard/admin/reports/incident/fuel"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -185,8 +185,8 @@ function ViewSiteIncidentReport() {
                         <Tab
                             label="View"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/site/view"
-                            value="/dashboard/admin/reports/incident/site/view"
+                            href="/dashboard/admin/reports/incident/fuel/view"
+                            value="/dashboard/admin/reports/incident/fuel/view"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -203,7 +203,7 @@ function ViewSiteIncidentReport() {
                     backgroundColor: 'rgb(255, 153, 153)',
                     color: '#FFF'
                 }}/>
-                <RenderedData data={viewSiteIncidentReport}/>
+                <RenderedData data={viewFuelIncidentReport}/>
             </Box>
         </>
     )
@@ -235,8 +235,8 @@ function RenderedData({data}) {
         adminEmail,
         adminRole,
         incidentDate,
-        siteInfo,
-        siteIncidentInfo,
+        fuelSiteInfo,
+        fuelIncidentInfo,
         reportDescription,
         images,
     } = data;
@@ -258,15 +258,6 @@ function RenderedData({data}) {
 
     // Split the summary into an array of sentences
     const description = reportDescription.split('\r\n');
-
-
-    // const handleOpenModal = () => {
-    //     setIsModalOpen(true);
-    // };
-    //
-    // const handleCloseModal = () => {
-    //     setIsModalOpen(false);
-    // };
 
     // // handle modal opening
     const handleOpenModal = (index) => {
@@ -302,7 +293,7 @@ function RenderedData({data}) {
                             borderRadius: 10,
                             width: '40%'
                         }}>
-                Incident Report Data for {siteInfo.siteId} : {formattedDate}
+                Incident Report Data for {fuelSiteInfo.siteId} : {formattedDate}
                 <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
             </Typography>
             <br/>
@@ -387,22 +378,22 @@ function RenderedData({data}) {
                                     <List>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Site ID: ${siteInfo.siteId}`}
+                                                {`Site ID: ${fuelSiteInfo.siteId}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Cluster: ${siteInfo.cluster}`}
+                                                {`Cluster: ${fuelSiteInfo.cluster}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`SiteType: ${siteInfo.type}`}
+                                                {`SiteType: ${fuelSiteInfo.type}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Location: ${siteInfo.location}`}
+                                                {`Location: ${fuelSiteInfo.location}`}
                                             </Typography>
                                         </ListItem>
                                     </List>
@@ -428,6 +419,7 @@ function RenderedData({data}) {
                             Site Incident Details:
                         </Typography>
                         <CardContent>
+                            {/* Category */}
                             <Accordion sx={accordionSx}>
                                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
                                                   sx={cardSx}>
@@ -443,12 +435,14 @@ function RenderedData({data}) {
                                     <List>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`${siteIncidentInfo.category}`}
+                                                {`${fuelIncidentInfo.category}`}
                                             </Typography>
                                         </ListItem>
                                     </List>
                                 </AccordionDetails>
                             </Accordion>
+
+                            {/* SubCategory */}
                             <br/>
                             <Accordion sx={accordionSx}>
                                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
@@ -463,24 +457,72 @@ function RenderedData({data}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <List>
-                                        {siteIncidentInfo.subCategory.shelter && (
+                                        {/* Check if theft data exists */}
+                                        {/* Check if theft exists and is relevant (not all zero) */}
+                                        {fuelIncidentInfo.subCategory?.theft &&
+                                            (fuelIncidentInfo.subCategory.theft.oldQty > 0 ||
+                                                fuelIncidentInfo.subCategory.theft.newQty > 0 ||
+                                                fuelIncidentInfo.subCategory.theft.qtyStolen > 0) && (
+                                                <>
+                                                    <ListItem>
+                                                        <Typography sx={typographyStyle}>
+                                                            {`Old Quantity (litres): ${fuelIncidentInfo.subCategory.theft.oldQty}`}
+                                                        </Typography>
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <Typography
+                                                            sx={{...typographyStyle, color: 'salmon'}}>
+                                                            {`Quantity Stolen (litres): ${fuelIncidentInfo.subCategory.theft.qtyStolen}`}
+                                                        </Typography>
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <Typography sx={typographyStyle}>
+                                                            {`New Quantity (litres): ${fuelIncidentInfo.subCategory.theft.newQty}`}
+                                                        </Typography>
+                                                    </ListItem>
+                                                </>
+                                            )}
+
+                                        {/* Check if quality action exists */}
+                                        {fuelIncidentInfo.subCategory?.quality?.action && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${siteIncidentInfo.subCategory.shelter}`}
+                                                    {`Quality Action: ${fuelIncidentInfo.subCategory.quality.action}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
-                                        {siteIncidentInfo.subCategory.security && (
-                                            <ListItem>
-                                                <Typography sx={typographyStyle}>
-                                                    {`${siteIncidentInfo.subCategory.security}`}
-                                                </Typography>
-                                            </ListItem>
+
+                                        {/* Check if intervention data exists */}
+                                        {fuelIncidentInfo.subCategory?.intervention?.action && (
+                                            <>
+                                                <ListItem>
+                                                    <Typography sx={typographyStyle}>
+                                                        {`Intervention Action: ${fuelIncidentInfo.subCategory.intervention.action}`}
+                                                    </Typography>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Typography sx={typographyStyle}>
+                                                        {`Old Quantity (litres): ${fuelIncidentInfo.subCategory.intervention.oldQty}`}
+                                                    </Typography>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Typography sx={{...typographyStyle, color: 'limegreen'}}>
+                                                        {`Added Quantity (litres): ${fuelIncidentInfo.subCategory.intervention.qtyAdded}`}
+                                                    </Typography>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Typography sx={typographyStyle}>
+                                                        {`New Quantity (litres): ${fuelIncidentInfo.subCategory.intervention.newQty}`}
+                                                    </Typography>
+                                                </ListItem>
+                                            </>
                                         )}
-                                        {siteIncidentInfo.subCategory.others && (
+
+                                        {/* Handle any others category */}
+                                        {fuelIncidentInfo.subCategory?.others && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${siteIncidentInfo.subCategory.others}`}
+                                                    {`Others: ${fuelIncidentInfo.subCategory.others}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
@@ -677,4 +719,4 @@ function RenderedData({data}) {
 
 }
 
-export default ViewSiteIncidentReport;
+export default ViewFuelIncidentReport;
