@@ -69,7 +69,7 @@ function FuellingReport({allFuelReport}) {
                                 // color: '#ff8c00',
                                 color: '#40ff00',
                             },
-                            
+
                         },
                     },
                     MuiFormControlLabel: {
@@ -133,7 +133,7 @@ function FuellingReport({allFuelReport}) {
                                 color: '#fff',
                                 fontWeight: 'bold',
                             },
-                            
+
                         },
                     },
                     // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
@@ -142,6 +142,8 @@ function FuellingReport({allFuelReport}) {
                             root: {
                                 color: '#fff', // Change table text color
                                 padding: '2px',
+                                fontFamily: 'Poppins',
+                                fontSize: '14px',
                             },
                         },
                     },
@@ -203,7 +205,7 @@ function FuellingReport({allFuelReport}) {
             accessorKey: field,
             header: capitalizeFirstLetter(field),
             sortable: true,
-            size: 150,
+            size: 250,
             // set the 'status' header to be color red
             headerStyle: field === 'Status' ? {color: 'red'} : {},
             Cell: ({cell}) => {
@@ -337,36 +339,36 @@ function FuellingReport({allFuelReport}) {
                 resolver: yupResolver(editFuelSupplyReportSchema),
                 reValidateMode: "onChange",
             });
-            
+
             // Fuel supply info Section
             const qtyInitial = useWatch({control, name: 'qtyInitial', defaultValue: siteData.qtyInitial});
             const qtySupplied = useWatch({control, name: 'qtySupplied', defaultValue: siteData.qtySupplied});
             const cpd = useWatch({control, name: 'cpd', defaultValue: siteData.cpd});
             const customCPD = useWatch({control, name: 'customCPD'});
-            
+
             const newAvailableQty = (Number(qtyInitial) + Number(qtySupplied)) || 0;
             const consumptionPerDay = cpd === 'Others' ? Number(customCPD) : Number(cpd) || 0;
             const duration = consumptionPerDay ? Math.ceil(newAvailableQty / consumptionPerDay) : 0;
             const nextDueDate = dateSupplied ? dayjs(dateSupplied).add(duration, 'day').format('DD/MMM/YYYY') : '';
-            
+
             useEffect(() => {
                 setValue('qtyNew', newAvailableQty);
                 setValue('duration', duration);
                 setValue('nextDueDate', nextDueDate);
             }, [newAvailableQty, consumptionPerDay, dateSupplied, setValue]);
-            
+
             if (Object.keys(errors).length > 0) {
                 console.log({errors});
             }
-            
+
             const Clear = () => {
                 // clear all the content of the fields of the box components
                 reset();
             }
-            
+
             const handleModalViewOpen = () => setModalViewOpen(true);
             const handleModalViewClose = () => setModalViewOpen(false);
-            
+
             const openDialogEdit = () => {
                 setDialogEditOpen(true);
             };
@@ -374,14 +376,14 @@ function FuellingReport({allFuelReport}) {
                 Clear();
                 setDialogEditOpen(false);
             };
-            
+
             const OpenDeleteDialogue = () => {
                 setDialogDelete(true)
             }
             const CloseDeleteDialogue = () => {
                 setDialogDelete(false)
             }
-            
+
             // handle email change
             const handleEmailChange = (event) => {
                 setEmail(event.target.value);
@@ -393,19 +395,19 @@ function FuellingReport({allFuelReport}) {
                     setEmailError('');
                 }
             };
-            
+
             // Update fuelReport instance
             const mutationUpdate = useMutation({
                 mutationKey: ["UpdateFuelSupplyReport"],
                 mutationFn: AdminUtils.UpdateFuelSupplyReport,
             });
-            
+
             // delete fuelReport instance
             const mutationDelete = useMutation({
                 mutationKey: ["DeleteFuelSupplyReport"],
                 mutationFn: AdminUtils.DeleteFuelSupplyReport,
             });
-            
+
             // handle delete
             const handleDelete = async (event) => {
                 event.preventDefault();
@@ -423,7 +425,7 @@ function FuellingReport({allFuelReport}) {
                     }
                 });
             };
-            
+
             // handle save edited data
             const submitUpdate = async (data) => {
                 try {
@@ -470,7 +472,7 @@ function FuellingReport({allFuelReport}) {
                     });
                 }
             };
-            
+
             //Analytics on the FuelData
             const ViewAnalytics = async () => {
                 // encrypt siteData in the local session storage
@@ -482,19 +484,19 @@ function FuellingReport({allFuelReport}) {
                 router.push('/dashboard/admin/reports/fuel/analytics');
                 handleModalViewClose();
             }
-            
+
             // Data Xcal
             const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQty, cpd) => {
                 initialQty = Number(initialQty);
                 suppliedQty = Number(suppliedQty);
                 cpd = Number(cpd);
-                
+
                 const today = dayjs();
                 const dateSuppliedDayjs = dayjs(dateSupplied, "DD/MMM/YYYY");
                 const nextDueDateDayjs = dayjs(nextDueDate, "DD/MMM/YYYY");
-                
+
                 const totalQty = initialQty + suppliedQty;
-                
+
                 // if supply was done in future(not today), return no analytics
                 if (today.isBefore(dateSuppliedDayjs)) {
                     return ({dataError: 'Unavailable Analytics: Consumption has not started'})
@@ -503,18 +505,18 @@ function FuellingReport({allFuelReport}) {
                 if (initialQty < 0 || suppliedQty < 0) {
                     return ({dataError: 'Error: Initial and supplied quantities must be non-negative.'})
                 }
-                
+
                 // Calculate days passed only if the dateSupplied is in the past or today
                 const daysPassed = today.isAfter(dateSuppliedDayjs) ? today.diff(dateSuppliedDayjs, 'day') : 0;
                 const consumptionSoFar = daysPassed * cpd;
-                
+
                 // Ensure that the consumption so far does not exceed the total quantity available
                 const currentFuelAvailable = Math.max(0, totalQty - consumptionSoFar);
                 const remainingFuelDuration = Math.floor(currentFuelAvailable / cpd);
-                
+
                 let bufferStockStatus = "";
                 let bufferStockColor = "";
-                
+
                 if (remainingFuelDuration <= 1) {
                     bufferStockStatus = "SITE DOWN";
                     bufferStockColor = "red";
@@ -525,11 +527,11 @@ function FuellingReport({allFuelReport}) {
                     bufferStockStatus = "ACTIVE OPERATION";
                     bufferStockColor = "green";
                 }
-                
+
                 const fuelToDatePercentage = (currentFuelAvailable / totalQty) * 100;
                 let fuelToDateColor = "";
                 let fuelToDateText = "";
-                
+
                 if (fuelToDatePercentage <= 20) {
                     fuelToDateColor = "#ff3300";
                     fuelToDateText = "<= 20% left";
@@ -543,7 +545,7 @@ function FuellingReport({allFuelReport}) {
                     fuelToDateColor = "#33cc33";
                     fuelToDateText = "75-100% left";
                 }
-                
+
                 return {
                     currentFuelAvailable,
                     consumptionSoFar,
@@ -566,7 +568,7 @@ function FuellingReport({allFuelReport}) {
                                        gridItemStyle
                                    }) => {
                 const analytics = calculateFuelAnalytics(dateSupplied, nextDueDate, initialQty, suppliedQty, cpd);
-                
+
                 if (analytics.dataError) {
                     return (
                         <>
@@ -625,7 +627,7 @@ function FuellingReport({allFuelReport}) {
                                         defaultValue={analytics.currentFuelAvailable + ' litres'}
                                         InputLabelProps={{
                                             sx: {
-                                                
+
                                                 color: "#46F0F9",
                                                 fontSize: '14px',
                                                 "&.Mui-focused": {
@@ -806,12 +808,12 @@ function FuellingReport({allFuelReport}) {
                                     </Typography>
                                 </Stack>
                             </Grid>
-                        
+
                         </Grid>
                     </Paper>
                 );
             };
-            
+
             const handleCPDChange = (e) => {
                 const {value} = e.target;
                 setValue('cpd', value);
@@ -819,7 +821,7 @@ function FuellingReport({allFuelReport}) {
                     setValue('customCPD', '');
                 }
             };
-            
+
             return (
                 <>
                     <Stack direction='row'
@@ -978,7 +980,7 @@ function FuellingReport({allFuelReport}) {
                                                     sx: {
                                                         color: "#46F0F9",
                                                         fontSize: '18px',
-                                                        
+
                                                     },
                                                 }}
                                                 variant="filled"
@@ -1404,7 +1406,7 @@ function FuellingReport({allFuelReport}) {
                                                             }}
                                                             sx={{
                                                                 color: "#46F0F9",
-                                                                
+
                                                             }}
                                                             label="Initial Quantity"
                                                             type="number"
@@ -1518,7 +1520,7 @@ function FuellingReport({allFuelReport}) {
                                                         Set New CPD
                                                     </Typography>
                                                 </Divider>
-                                            
+
                                             </Grid>
                                             <Grid item xs={3} sx={{display: 'flex', flexDirection: 'column'}}>
                                                 {/* CPD selection */}
@@ -1756,7 +1758,7 @@ function FuellingReport({allFuelReport}) {
                             </Stack>
                         </DialogActions>
                     </Dialog>
-                
+
                 </>
             )
         },
@@ -1770,7 +1772,7 @@ function FuellingReport({allFuelReport}) {
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
-            
+
             const handleClose = () => {
                 setOpen(false);
                 setEmail('');
@@ -1893,7 +1895,7 @@ function FuellingReport({allFuelReport}) {
                                     sx={{
                                         color: "#46F0F9",
                                     }}
-                                
+
                                 />
                             </Stack>
                         </DialogContent>
@@ -1949,7 +1951,7 @@ function FuellingReport({allFuelReport}) {
                 alignItems: 'center',
             },
             align: 'center',
-            
+
         },
         muiTableBodyRowProps: {
             sx: {
@@ -1961,7 +1963,7 @@ function FuellingReport({allFuelReport}) {
             label: 'Search',
             placeholder: 'Site Details',
             variant: 'outlined',
-            
+
         },
         muiFilterTextFieldProps: {
             color: 'error',
@@ -1984,7 +1986,8 @@ function FuellingReport({allFuelReport}) {
                 pageSize: 100
             },
             density: 'compact',
-        }
+        },
+
     });
     return (
         <>

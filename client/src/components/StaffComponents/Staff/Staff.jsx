@@ -12,7 +12,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import {useMemo, useState} from "react";
+import React, {useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -32,6 +32,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import {mainSection} from "@/utils/data";
+import Paper from "@mui/material/Paper";
 
 function Staff({allStaff}) {
     const router = useRouter();
@@ -110,23 +111,22 @@ function Staff({allStaff}) {
                             root: {
                                 color: '#fff',
                                 fontWeight: 'bold',
+                                fontFamily: 'Poppins',
+                                fontSize: '14px',
                             },
-                            
+
                         },
                     },
                 },
             }),
         [],
     );
-    const headerKeys = ['_id', 'firstName', 'lastName', 'email', 'phone', 'role', 'employment'];
+    const headerKeys = ['firstName', 'lastName', 'email', 'phone', 'role', 'employment'];
     // Function to capitalize the first letter of the key
     const capitalizeFirstLetter = (key) => {
         // if key not in our headerKeys array, it should skip that key
         if (!headerKeys.includes(key) || !key) {
             return '';
-        }
-        if (key === '_id') {
-            return 'ID';
         }
         return key.charAt(0).toUpperCase() + key.slice(1);
     };
@@ -176,7 +176,7 @@ function Staff({allStaff}) {
         enableColumnReordering: true,
         positionActionsColumn: 'last',
         renderRowActions: ({row}) => {
-            const staffID = row.getValue('_id');
+            const staffID = row.original._id;
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
@@ -368,7 +368,7 @@ function Staff({allStaff}) {
                     toast.error('Please enter a valid email address');
                     return;
                 }
-                const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.getValue('_id'));
+                const selectedIds = table.getSelectedRowModel().flatRows.map((row) => row.original._id);
                 const obj = {email, selectedIds};
                 mutation.mutate(obj, {
                     onSuccess: () => {
@@ -465,7 +465,7 @@ function Staff({allStaff}) {
                                     sx={{
                                         color: "#46F0F9",
                                     }}
-                                
+
                                 />
                             </Stack>
                         </DialogContent>
@@ -518,7 +518,7 @@ function Staff({allStaff}) {
                 alignItems: 'center',
             },
             align: 'center',
-            
+
         },
         muiTableBodyRowProps: {
             sx: {
@@ -557,6 +557,19 @@ function Staff({allStaff}) {
     return (
         <>
             <Box sx={mainSection}>
+                <Paper elevation={5} sx={{
+                    alignCenter: 'center',
+                    textAlign: 'center',
+                    padding: '10px',
+                    backgroundColor: '#274e61',
+                    color: '#46F0F9',
+                    borderRadius: '10px',
+                    width: '100%',
+                    height: 'auto',
+                }}>
+                    <Typography variant='h5'>Staff Management Center</Typography>
+                </Paper>
+                <br/><br/>
                 <Stack direction='column' spacing={2}>
                     <Card sx={{
                         padding: '10px',
@@ -572,9 +585,6 @@ function Staff({allStaff}) {
                             alignItems: 'center',
                             padding: '10px',
                         }}>
-                            <Typography variant="h5" component="p">
-                                Staff List
-                            </Typography>
                             <Stack direction='row' gap={4} sx={{
                                 justifyContent: 'space-between',
                                 alignItems: 'center',

@@ -38,25 +38,25 @@ const goPrev = () => {
     window.history.back();
 }
 
-function ViewStaffIncidentReport() {
+function ViewServiceIncidentReport() {
     // get the siteIncidentReport from the useIncidentStore
-    const viewStaffIncidentReport = useIncidentStore(state => state.viewStaffIncidentReport);
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/staff/view');
+    const viewServiceIncidentReport = useIncidentStore(state => state.viewServiceIncidentReport);
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/service/view');
     const pathname = usePathname();
 
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('view')) {
-            setActiveTab('/dashboard/admin/reports/incident/staff/view');
-        } else if (pathname.includes('staff')) {
-            setActiveTab('/dashboard/admin/reports/incident/staff');
+            setActiveTab('/dashboard/admin/reports/incident/service/view');
+        } else if (pathname.includes('service')) {
+            setActiveTab('/dashboard/admin/reports/incident/service');
         } else {
             setActiveTab('/dashboard/admin/reports/incident');
         }
     }, [pathname]);
 
 
-    if (!viewStaffIncidentReport) {
+    if (!viewServiceIncidentReport) {
         return (
             <Box sx={mainSection}>
                 {/*Navigation Tabs */}
@@ -88,10 +88,10 @@ function ViewStaffIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Staff"
+                            label="Service"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/staff"
-                            value="/dashboard/admin/reports/incident/staff"
+                            href="/dashboard/admin/reports/incident/service"
+                            value="/dashboard/admin/reports/incident/service"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -104,8 +104,8 @@ function ViewStaffIncidentReport() {
                         <Tab
                             label="View"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/staff/view"
-                            value="/dashboard/admin/reports/incident/staff/view"
+                            href="/dashboard/admin/reports/incident/service/view"
+                            value="/dashboard/admin/reports/incident/service/view"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -127,7 +127,7 @@ function ViewStaffIncidentReport() {
                                 p: 2,
                                 border: '1px solid rgb(255, 153, 153)',
                                 borderRadius: 10,
-                                width: '32%',
+                                width: '40%',
                                 textAlign: 'center',
                             }}>
                     Oops!!! No Report found. <IconButton><ArrowBackSharpIcon
@@ -169,10 +169,10 @@ function ViewStaffIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Staff"
+                            label="Service"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/staff"
-                            value="/dashboard/admin/reports/incident/staff"
+                            href="/dashboard/admin/reports/incident/service"
+                            value="/dashboard/admin/reports/incident/service"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -185,8 +185,8 @@ function ViewStaffIncidentReport() {
                         <Tab
                             label="View"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/staff/view"
-                            value="/dashboard/admin/reports/incident/staff/view"
+                            href="/dashboard/admin/reports/incident/service/view"
+                            value="/dashboard/admin/reports/incident/service/view"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -203,7 +203,7 @@ function ViewStaffIncidentReport() {
                     backgroundColor: 'rgb(255, 153, 153)',
                     color: '#FFF'
                 }}/>
-                <RenderedData data={viewStaffIncidentReport}/>
+                <RenderedData data={viewServiceIncidentReport}/>
             </Box>
         </>
     )
@@ -235,8 +235,8 @@ function RenderedData({data}) {
         adminEmail,
         adminRole,
         incidentDate,
-        staffInfo,
-        staffIncidentInfo,
+        serviceSiteInfo,
+        serviceIncidentInfo,
         reportDescription,
         images,
     } = data;
@@ -291,9 +291,9 @@ function RenderedData({data}) {
                             p: 2,
                             border: '1px solid rgb(255, 153, 153)',
                             borderRadius: 10,
-                            width: '32%'
+                            width: '40%'
                         }}>
-                Incident Report Data : {formattedDate}
+                Incident Report Data for {serviceSiteInfo.siteId} : {formattedDate}
                 <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
             </Typography>
             <br/>
@@ -360,7 +360,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Staff Info:
+                            Site Info:
                         </Typography>
                         <CardContent sx={{color: 'white', margin: '5px',}}>
                             <Accordion sx={accordionSx}>
@@ -378,17 +378,22 @@ function RenderedData({data}) {
                                     <List>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`FullName: ${staffInfo.fullName}`}
+                                                {`Site ID: ${serviceSiteInfo.siteId}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Email: ${staffInfo.email}`}
+                                                {`Cluster: ${serviceSiteInfo.cluster}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Role: ${staffInfo.role}`}
+                                                {`SiteType: ${serviceSiteInfo.type}`}
+                                            </Typography>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Typography sx={typographyStyle}>
+                                                {`Location: ${serviceSiteInfo.location}`}
                                             </Typography>
                                         </ListItem>
                                     </List>
@@ -434,7 +439,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Staff Incident Details:
+                            Site Incident Details:
                         </Typography>
                         <CardContent>
                             {/* Category */}
@@ -447,13 +452,13 @@ function RenderedData({data}) {
                                         fontFamily: 'Poppins',
                                         ml: '30px',
                                         fontSize: '16px',
-                                    }}>ClassAction</Typography>
+                                    }}>Category</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <List>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`${staffIncidentInfo.classAction}`}
+                                                {`${serviceIncidentInfo.category}`}
                                             </Typography>
                                         </ListItem>
                                     </List>
@@ -471,35 +476,42 @@ function RenderedData({data}) {
                                         fontFamily: 'Poppins',
                                         ml: '30px',
                                         fontSize: '16px',
-                                    }}>Category</Typography>
+                                    }}>SubCategory</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <List>
-                                        {staffIncidentInfo.category.employment && (
+                                        {serviceIncidentInfo.subCategory.maintenance.action && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${staffIncidentInfo.category.employment}`}
+                                                    {`${serviceIncidentInfo.subCategory.maintenance.action}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
-                                        {staffIncidentInfo.category.role && (
+                                        {serviceIncidentInfo.subCategory.repair.action && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${staffIncidentInfo.category.role}`}
+                                                    {`${serviceIncidentInfo.subCategory.repair.action}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
-                                        {staffIncidentInfo.category.violence && (
+                                        {serviceIncidentInfo.subCategory.overhauling.action && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${staffIncidentInfo.category.violence}`}
+                                                    {`${serviceIncidentInfo.subCategory.overhauling.action}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
-                                        {staffIncidentInfo.category.others && (
+                                        {serviceIncidentInfo.subCategory.replacement.action && (
                                             <ListItem>
                                                 <Typography sx={typographyStyle}>
-                                                    {`${staffIncidentInfo.category.others}`}
+                                                    {`${serviceIncidentInfo.subCategory.replacement.action}`}
+                                                </Typography>
+                                            </ListItem>
+                                        )}
+                                        {serviceIncidentInfo.subCategory.others && (
+                                            <ListItem>
+                                                <Typography sx={typographyStyle}>
+                                                    {`${serviceIncidentInfo.subCategory.others}`}
                                                 </Typography>
                                             </ListItem>
                                         )}
@@ -696,4 +708,4 @@ function RenderedData({data}) {
 
 }
 
-export default ViewStaffIncidentReport;
+export default ViewServiceIncidentReport;

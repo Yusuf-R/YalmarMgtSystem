@@ -73,6 +73,8 @@ function AllFuelIncident({fuelIncidentData}) {
     useEffect(() => {
         if (pathname.includes('fuel')) {
             setActiveTab('/dashboard/admin/reports/incident/fuel');
+        } else if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/reports/incident/new');
         } else {
             setActiveTab('/dashboard/admin/reports/incident');
         }
@@ -160,6 +162,8 @@ function AllFuelIncident({fuelIncidentData}) {
                             root: {
                                 color: '#fff', // Change table text color
                                 padding: '2px',
+                                fontFamily: 'Poppins',
+                                fontSize: '14px',
                             },
                         },
                     },
@@ -658,6 +662,19 @@ function AllFuelIncident({fuelIncidentData}) {
                             component={Link}
                             href="/dashboard/admin/reports/incident/fuel"
                             value="/dashboard/admin/reports/incident/fuel"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="New"
+                            component={Link}
+                            href="/dashboard/admin/reports/incident/new"
+                            value="/dashboard/admin/reports/incident/new"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',

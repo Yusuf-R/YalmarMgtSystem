@@ -48,8 +48,12 @@ function IncidentFuel() {
     }, [cachedData, fuelIncidentData, setFuelIncidentData]);
     
     // Loading and Error handling
-    if (isLoading) return <LazyLoading/>;
-    if (error || (!fuelIncidentData && !cachedData)) return <DataFetchError/>;
+    if (isLoading) {
+      return <LazyLoading/>;
+    }
+    if (error || (!fuelIncidentData && !cachedData)) {
+      return <DataFetchError/>;
+    }
     
     return (
         <>

@@ -34,7 +34,19 @@ import {usePathname} from "next/navigation";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
+const warningMsg = [
+    'Please ensure you have filled out all the required fields correctly before submitting.',
+    'Document can not be edited after submission'
+];
 
 function cleanData(data, selectedCategories) {
     const cleanedData = {};
@@ -426,6 +438,42 @@ function NewIncidentReport({allStaff, allSite}) {
                         <br/>
                         {/*Image Upload*/}
                         <ImageUpload onImagesChange={onImagesChange}/>
+                        <br/>
+                        {/*Submission Warning*/}
+
+                        <Grid item xs={12}>
+                            <Card sx={cardSx}>
+                                <CardContent>
+                                    <Typography sx={{
+                                        fontWeight: 'bold',
+                                        color: 'rgb(255, 128, 128)',
+                                        fontFamily: 'Poppins',
+                                        fontSize: '36px',
+                                        m: -1,
+                                    }}>Submission Warning</Typography>
+                                    <Divider/>
+                                    {warningMsg.map((msg, index) => (
+                                        <List>
+                                            <ListItem sx={{margin: 0, p: 0,}} key={index}>
+                                                <ListItemIcon sx={{mr: -1}}>
+                                                    <PlaylistAddCheckIcon
+                                                        sx={{color: "lime", fontSize: "32px"}}/>
+                                                </ListItemIcon>
+                                                <Typography sx={{
+                                                    fontWeight: 'bold',
+                                                    color: 'white',
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '22px',
+                                                    m: -1,
+                                                }}>
+                                                    {msg}
+                                                </Typography>
+                                            </ListItem>
+                                        </List>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         <br/>
                         {/*Loading submission screen*/}
                         {isSubmitting && <LazyComponent Command='Submitting'/>}

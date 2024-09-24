@@ -18,12 +18,18 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {useState, useEffect} from 'react';
 import {useRouter} from "next/navigation";
 import {useLogout} from "@/customHooks/useLogout";
-
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 
 
 function DashboardTopNav({staffData}) {
+    const handleLogout = useLogout();
     const router = useRouter();
-    
+    const [confirmExit, setConfirmExit] = useState(false);
+
     const [imgSrc, setImgSrc] = useState('');
     // const staffData = JSON.parse(Cookies.get('staffData') ? Cookies.get('staffData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
@@ -41,7 +47,6 @@ function DashboardTopNav({staffData}) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const handleLogout = useLogout()
     useEffect(() => {
         if (staffData.imgURL !== '') {
             setImgSrc(staffData.imgURL);
@@ -49,6 +54,11 @@ function DashboardTopNav({staffData}) {
             setImgSrc(fallbackImg);
         }
     }, [staffData.imgURL]);
+
+    const handleDialog = () => {
+        setConfirmExit(true);
+    }
+
     return (
         <>
             <Box className={styleTopNav.parent} sx={{
@@ -62,7 +72,7 @@ function DashboardTopNav({staffData}) {
                             width={75}
                             height={75}
                             quality={100}
-                        
+
                         />
                     </div>
                     <div>
@@ -139,18 +149,13 @@ function DashboardTopNav({staffData}) {
                 transformOrigin={{horizontal: 'right', vertical: 'top'}}
                 anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => router.push('/dashboard/admin/settings/biodata/view')}>
                     <Avatar sx={{
                         color: 'black',
                     }}/> Profile
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
-                    <Avatar sx={{
-                        color: 'black',
-                    }}/> My account
-                </MenuItem>
                 <Divider/>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => router.push('/dashboard/admin/settings')}>
                     <ListItemIcon>
                         <Settings fontSize="small" sx={{
                             color: 'black',
@@ -158,7 +163,7 @@ function DashboardTopNav({staffData}) {
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem onClick={handleLogout} sx={{
+                <MenuItem onClick={handleDialog} sx={{
                     color: 'red',
                 }}>
                     <ListItemIcon>
@@ -169,6 +174,18 @@ function DashboardTopNav({staffData}) {
                     Logout
                 </MenuItem>
             </Menu>
+            <Dialog open={confirmExit}>
+                <DialogTitle>Confirm Logout</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to logout?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmExit(false)}>No</Button>
+                    <Button onClick={handleLogout}>Yes</Button>
+                </DialogActions>
+            </Dialog>
         </>
     )
 }

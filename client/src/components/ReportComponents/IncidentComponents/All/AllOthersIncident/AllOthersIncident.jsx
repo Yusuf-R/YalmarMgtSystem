@@ -4,23 +4,19 @@ import {mainSection} from "@/utils/data";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import React, {useEffect, useMemo, useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
 import Stack from "@mui/material/Stack";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
+import {usePathname, useRouter} from "next/navigation";
 import {createTheme, ThemeProvider} from "@mui/material";
 import {
     MaterialReactTable,
-    MRT_ShowHideColumnsButton,
-    MRT_ToggleDensePaddingButton,
-    MRT_ToggleFiltersButton,
-    MRT_ToggleFullScreenButton,
+    MRT_ShowHideColumnsButton, MRT_ToggleDensePaddingButton, MRT_ToggleFiltersButton, MRT_ToggleFullScreenButton,
     MRT_ToggleGlobalFilterButton,
     useMaterialReactTable
 } from "material-react-table";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import useIncidentStore from "@/store/useIncidentStore";
 import AdminUtilities from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import dayjs from "dayjs";
@@ -34,28 +30,20 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
+import useIncidentStore from "@/store/useIncidentStore";
 
-function AllServiceIncident({serviceIncidentData}) {
+function AllOthersIncident({othersIncidentData}) {
     const pathname = usePathname();
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/service');
-    const router = useRouter();
-    const queryClient = useQueryClient();
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/others');
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
-
+    const [selectedRow, setSelectedRow] = useState(null); // To track the row being acted upon
+    const queryClient = useQueryClient();
+    // Hook to reset store
     const resetStore = useIncidentStore((state) => state.resetStore);
-    const {setViewServiceIncidentReport} = useIncidentStore();
-    // useEffect or handling navigation between new and staff
-    useEffect(() => {
-        if (pathname.includes('service')) {
-            setActiveTab('/dashboard/admin/reports/incident/service');
-        } else {
-            setActiveTab('/dashboard/admin/reports/incident');
-        }
-    }, [pathname]);
-
-
+    const {setViewOthersIncidentReport} = useIncidentStore();
+    const router = useRouter();
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -82,7 +70,16 @@ function AllServiceIncident({serviceIncidentData}) {
         },
     }
 
-
+    // useEffect or handling navigation between new and staff
+    useEffect(() => {
+        if (pathname.includes('others')) {
+            setActiveTab('/dashboard/admin/reports/incident/others');
+        } else if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/reports/incident/new');
+        } else {
+            setActiveTab('/dashboard/admin/reports/incident');
+        }
+    }, [pathname]);
     const tableTheme = useMemo(
         () =>
             createTheme({
@@ -140,6 +137,7 @@ function AllServiceIncident({serviceIncidentData}) {
                             root: {
                                 // color: 'aqua',
                                 color: '#FFF',
+
                             },
                         },
                     },
@@ -229,25 +227,20 @@ function AllServiceIncident({serviceIncidentData}) {
     };
 
     const handleViewRecord = (objData) => {
-        setViewServiceIncidentReport(objData);
-        router.push('/dashboard/admin/reports/incident/service/view');
+        setViewOthersIncidentReport(objData);
+        router.push('/dashboard/admin/reports/incident/others/view');
     };
+
 
     const columns = useMemo(() => [
         {
-            accessorKey: 'serviceSiteInfo.siteId',
-            header: 'Site ID',
-            Cell: ({row}) => row.original.serviceSiteInfo?.siteId || 'N/A',
-        },
-        {
-            accessorKey: 'serviceSiteInfo.cluster',
-            header: 'Cluster',
-            Cell: ({row}) => row.original.serviceSiteInfo?.cluster || 'N/A',
-        },
-        {
-            accessorKey: 'serviceSiteInfo.type',
-            header: 'Type',
-            Cell: ({row}) => row.original.serviceSiteInfo?.type || 'N/A',
+            accessorKey: 'reportDescription',
+            header: 'Header',
+            Cell: ({cell}) => {
+                const description = cell.getValue();
+                // Split by newline and get the first part
+                return description ? description.split(/\r?\n/)[0] : '';
+            },
         },
         {
             accessorKey: 'severity',
@@ -263,7 +256,8 @@ function AllServiceIncident({serviceIncidentData}) {
     ], []);
 
     // Memoize tableData to prevent unnecessary re-renders
-    const tableData = useMemo(() => serviceIncidentData || [], [serviceIncidentData]);
+    const tableData = useMemo(() => othersIncidentData || [], [othersIncidentData]);
+
     const table = useMaterialReactTable({
         columns,
         data: tableData,
@@ -286,7 +280,7 @@ function AllServiceIncident({serviceIncidentData}) {
         positionActionsColumn: 'first',
         renderRowActions: ({row}) => {
             const objID = row.original._id;
-            const objData = serviceIncidentData.find((obj) => obj._id === objID);
+            const objData = othersIncidentData.find((obj) => obj._id === objID);
             return (
                 <>
                     <Stack direction='row'>
@@ -413,7 +407,7 @@ function AllServiceIncident({serviceIncidentData}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Site');
+                        toast.error('Error Deleting selected Others');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -579,7 +573,7 @@ function AllServiceIncident({serviceIncidentData}) {
             ,
             label: 'Search',
             placeholder:
-                'Site Details',
+                'Others Details',
             variant:
                 'outlined',
 
@@ -599,7 +593,6 @@ function AllServiceIncident({serviceIncidentData}) {
                 'small',
             rowsPerPageOptions:
                 [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
-            // set the table to display the first 100 data by default
             rowsPerPage:
                 100,
         },
@@ -629,7 +622,7 @@ function AllServiceIncident({serviceIncidentData}) {
                     height: 'auto',
                 }}>
                     <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                        All Service Incident Report Form
+                        All Others Incident Report Form
                     </Typography>
                 </Paper>
                 <br/>
@@ -648,7 +641,7 @@ function AllServiceIncident({serviceIncidentData}) {
                         }}
                     >
                         <Tab
-                            label="Home"
+                            label="Incident"
                             component={Link}
                             href="/dashboard/admin/reports/incident"
                             value="/dashboard/admin/reports/incident"
@@ -661,10 +654,10 @@ function AllServiceIncident({serviceIncidentData}) {
                             }}
                         />
                         <Tab
-                            label="Service"
+                            label="Others"
                             component={Link}
-                            href="/dashboard/admin/reports/incident/service"
-                            value="/dashboard/admin/reports/incident/service"
+                            href="/dashboard/admin/reports/incident/others"
+                            value="/dashboard/admin/reports/incident/others"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -709,5 +702,4 @@ function AllServiceIncident({serviceIncidentData}) {
     )
 }
 
-
-export default AllServiceIncident;
+export default AllOthersIncident;
