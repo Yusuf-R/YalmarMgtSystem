@@ -1,13 +1,14 @@
 /* eslint-disable new-cap */
 const mongoose = require('mongoose');
 const {v4: uuid} = require('uuid');
-const User = require('../Staff');
+const Staff = require('../Staff');
 
 async function generateOTP() {
     this.resetPwd = true;
     this.resetTTL = Date.now() + (1000 * 60 * 5); // 5 minutes validity
     this.resetOTP = uuid().slice(-7, -1); // random 6-character token
     await this.save();
+    console.log('OTP generated successfully');
     return this.resetOTP;
 }
 
@@ -43,17 +44,9 @@ async function changePassword(newPassword) {
     return this.save();
 }
 
-async function updateProfile(attributes) {
-    for (const [key, value] of Object.entries(attributes)) {
-        this[key] = value;
-    }
-    return this.save();
-}
-
 module.exports = {
     generateOTP,
     validateOTP,
     resetPassword,
     changePassword,
-    updateProfile,
 };

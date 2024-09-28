@@ -5,7 +5,7 @@ const staffMethods = require('./methods/staffMethods');
 function generateFullName(doc) {
     const {title, firstName, middleName, lastName} = doc;
     let fullName = '';
-    
+
     if (title) {
         fullName += `${title} `;
     }
@@ -18,7 +18,7 @@ function generateFullName(doc) {
     if (lastName) {
         fullName += lastName;
     }
-    
+
     return fullName.trim();
 }
 
@@ -166,7 +166,6 @@ staffSchema.methods.generateOTP = staffMethods.generateOTP;
 staffSchema.methods.validateOTP = staffMethods.validateOTP;
 staffSchema.methods.resetPassword = staffMethods.resetPassword;
 staffSchema.methods.changePassword = staffMethods.changePassword;
-staffSchema.methods.updateProfile = staffMethods.updateProfile;
 
 const Staff = mongoose.model('Staff', staffSchema);
 

@@ -2,30 +2,38 @@ require('dotenv').config({path: '../../../server/.env'});
 const crypto = require('crypto');
 const {log} = console;
 
+const util = require('util');
+const dataSecret = process.env.DATA_SECRET; // Make sure this matches the secret used in the frontend
+
+const digest = util.promisify(crypto.subtle.digest);
+const importKey = util.promisify(crypto.subtle.importKey);
+const decrypt = util.promisify(crypto.subtle.decrypt);
+
 class SecurityConfig {
     constructor() {
         this.secretKey = process.env.CIPHER_SECRET;
+
     }
-    
+
     // generating any random secret key
     generateSecret() {
         return crypto.randomBytes(256).toString('hex');
     }
-    
+
     // generating cipher secret
     generateCipherSecret() {
         return crypto.randomBytes(32).toString('hex');
     }
-    
+
     base64Encode(str) {
         return Buffer.from(str).toString('base64');
     }
-    
+
     encodeB64(email, pwd) {
         const obj = `${email}:${pwd}`;
         return this.base64Encode(obj);
     }
-    
+
     decodeB64(data64) {
         const dataDecode = Buffer.from(data64, 'base64').toString().split(':');
         if (dataDecode.length !== 2) {
@@ -35,7 +43,7 @@ class SecurityConfig {
         const password = dataDecode[1];
         return {email, password};
     }
-    
+
     encryptData(data) {
         const keyBuffer = Buffer.from(this.secretKey, 'hex');
         const iv = crypto.randomBytes(16);
@@ -45,7 +53,7 @@ class SecurityConfig {
         const authTag = cipher.getAuthTag();
         return iv.toString('hex') + authTag.toString('hex') + encrypted;
     }
-    
+
     decryptData(encryptedData) {
         const keyBuffer = Buffer.from(this.secretKey, 'hex');
         const iv = Buffer.from(encryptedData.slice(0, 32), 'hex');
@@ -61,7 +69,68 @@ class SecurityConfig {
             return null;
         }
     }
-    
+
+    // Function to decrypt data (AES-GCM decryption)
+    static async decryptedLoginData(encryptedData) {
+        const rawKey = process.env.PRIVATE_KEY;
+        const privateKeyPem = SecurityConfig.formatPrivateKey(rawKey);
+
+        try {
+            const buffer = Buffer.from(encryptedData, 'base64');
+            const decrypted = crypto.privateDecrypt(
+                {
+                    key: privateKeyPem,
+                    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                    oaepHash: "sha256",
+                },
+                buffer
+            );
+
+            const jsonString = decrypted.toString('utf8');
+            // Parse the JSON string
+            return JSON.parse(jsonString);
+        } catch (error) {
+            console.error("Decryption error:", error);
+            throw error;
+        }
+    }
+
+
+    static formatPrivateKey(rawKey) {
+        // Remove any existing header and footer
+        const cleanKey = rawKey.replace(/-----BEGIN PRIVATE KEY-----/, '')
+            .replace(/-----END PRIVATE KEY-----/, '')
+            .replace(/\s/g, '');
+
+        // Split the key into 64-character lines
+        const formattedKey = cleanKey.match(/.{1,64}/g).join('\n');
+
+        // Add header and footer
+        return `-----BEGIN PRIVATE KEY-----\n${formattedKey}\n-----END PRIVATE KEY-----`;
+    }
+
+    static async generatePEMKeyPair() {
+        return new Promise((resolve, reject) => {
+            crypto.generateKeyPair('rsa', {
+                modulusLength: 4096,
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem'
+                }
+            }, (err, publicKey, privateKey) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({publicKey, privateKey});
+                }
+            });
+        });
+    }
+
     get corsOptions() {
         return {
             origin: 'http://localhost:3000',
@@ -81,7 +150,6 @@ class SecurityConfig {
         };
     }
 }
-
 
 
 export default SecurityConfig;

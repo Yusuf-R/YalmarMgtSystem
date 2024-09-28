@@ -18,6 +18,8 @@ const upload = multer({
 staffRouter.post('/login', staffController.login);
 staffRouter.post('/logout', staffController.logout);
 staffRouter.post('/new', staffController.createNew);
+staffRouter.post('/reset-password', staffController.resetPasswordRequest);
+staffRouter.post('/set-password', staffController.setPassword);
 staffRouter.get('/profile', staffController.getStaffData);
 staffRouter.get('/all', staffController.getAllStaff);
 staffRouter.delete('/delete', staffController.deleteStaff);
@@ -26,10 +28,6 @@ staffRouter.put('/update', staffController.updateStaff);
 staffRouter.post('/avatar', upload.single('avatar'), staffController.setAvatar);
 
 
-
-
-staffRouter.post('/resetpassword', staffController.resetPassword);
-staffRouter.put('/newpassword', staffController.newPassword);
 staffRouter.put('/changepassword', staffController.changePassword);
 staffRouter.post('/uploadimage', imageController.uploadNewImage);
 staffRouter.get('/signature', imageController.getSignature);
@@ -39,7 +37,6 @@ staffRouter.get('/signature', imageController.getSignature);
 // staffRouter.delete('/profile', staffController.deleteProfile);
 
 // staffRouter.patch('/password', staffController.updatePassword);
-
 
 
 module.exports = staffRouter;

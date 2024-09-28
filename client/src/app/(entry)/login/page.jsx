@@ -1,13 +1,10 @@
 import Login from "@/components/HomeComponents/Login/Login";
-import styleSignIn from "./SiginIn.module.css";
-import {ToastContainer} from 'react-toastify';
+import Box from '@mui/material/Box';
 
 function SignIn() {
     return (
         <>
-            <div className={styleSignIn.singnIn}>
-                <Login/>
-            </div>
+            <Login/>
         </>
     )
 }

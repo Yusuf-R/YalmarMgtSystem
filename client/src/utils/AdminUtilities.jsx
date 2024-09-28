@@ -2,8 +2,8 @@
 import {axiosPrivate, axiosPublic} from "@/utils/AxiosInstance";
 import {useQueryClient} from "@tanstack/react-query";
 
-const idSecret = process.env.ID_SECRET;
-const dataSecret = process.env.DATA_SECRET;
+const idSecret = process.env.NEXT_PUBLIC_ID_SECRET;
+const dataSecret = process.env.NEXT_PUBLIC_DATA_SECRET;
 
 class AdminUtils {
     // encryption utils
@@ -121,6 +121,56 @@ class AdminUtils {
         return btoa(String.fromCharCode(...encryptedDataWithIv)); // Convert to base64 string
     }
 
+    // Login and SetPassword Specific
+    static async encryptLoginData(data) {
+        const publicKeyPem = process.env.NEXT_PUBLIC_PUBLIC_KEY;
+        // Convert PEM to ArrayBuffer
+        // sourcery skip: avoid-function-declarations-in-blocks
+        function pemToArrayBuffer(pem) {
+            const b64 = pem.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\n|\r/g, '');
+            const binary = window.atob(b64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Serialize the data properly
+        const jsonString = JSON.stringify(data);
+
+        const encoder = new TextEncoder();
+        const dataBuffer = encoder.encode(jsonString);
+
+        try {
+            const publicKeyBuffer = pemToArrayBuffer(publicKeyPem);
+            const importedKey = await window.crypto.subtle.importKey(
+                "spki",
+                publicKeyBuffer,
+                {
+                    name: "RSA-OAEP",
+                    hash: "SHA-256",
+                },
+                false,
+                ["encrypt"]
+            );
+
+            const encryptedData = await window.crypto.subtle.encrypt(
+                {
+                    name: "RSA-OAEP"
+                },
+                importedKey,
+                dataBuffer
+            );
+
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(encryptedData)));
+        } catch (error) {
+            console.error("Encryption error:", error);
+            throw error;
+        }
+    }
+
+
     static async decryptData(encryptedData) {
         const encryptedDataWithIv = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
         // Extract the iv and encrypted data
@@ -153,6 +203,7 @@ class AdminUtils {
 
     // middleware verification
     static async verifyCredentials(request) {
+        console.log('FirstTime');
         try {
             // we will use fetch in this scenario since it supports edge runtime
             const response = await fetch(
@@ -165,15 +216,14 @@ class AdminUtils {
                     },
                 });
             if (response.status === 400) {
+                // delete the accessToken from the cookies since it is invalid;
                 return new Error('Access Denied');
             }
             if (response.status === 200) {
                 return await response.json();
             }
-            console.log('I came back with a null');
             return null;
         } catch (error) {
-            console.log(error.message)
             throw new Error('Access Denied');
         }
     }
@@ -264,6 +314,36 @@ class AdminUtils {
         } catch (error) {
             console.error('Logout failed:', error);
             throw new Error('Logout Failed');
+        }
+    }
+
+
+    static async StaffResetPassword(obj) {
+        try {
+            const response = await axiosPublic({
+                method: "POST",
+                url: '/staff/reset-password',
+                data: obj,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    static async StaffSetNewPassword(obj) {
+        try {
+            const response = await axiosPublic({
+                method: "POST",
+                url: '/staff/set-password',
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
         }
     }
 
@@ -388,7 +468,6 @@ class AdminUtils {
     }
 
     static async LeaveRequestOps(obj) {
-        console.log({obj});
         try {
             const response = await axiosPrivate({
                 method: "POST",
