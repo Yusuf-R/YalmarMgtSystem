@@ -1,78 +1,177 @@
-'use client'
-import styleForgot from "./ResetPassword.module.css"
-import { useRouter } from 'next/navigation'
-import { useForm } from "react-hook-form";
-import  { useState} from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import {schemaResetPassword, validateEmail} from "@/SchemaValidator/resetpassword";
-import { toast } from 'react-toastify';
-import {BsRocketTakeoff, BsRocketTakeoffFill} from "react-icons/bs";
+"use client";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import {MdOutlineMailLock} from "react-icons/md";
+import {Controller, useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import React, {useState} from "react";
+import {toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {useMutation} from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import AdminUtils from "@/utils/AdminUtilities";
+import styleReset from "./ResetPassword.module.css";
+import LazyComponent from "@/components/LazyComponent/LazyComponent";
+import * as yup from "yup";
 
-function ResetPassword(href, options) {
-    const [borderColor, setBorderColor] = useState("black")
-    const [typingTimeout, setTypingTimeout] = useState(null); // State for typing timeout
-    const { register, handleSubmit, formState } = useForm({
-        mode: "onBlur",
-        resolver: yupResolver(schemaResetPassword),
-    });
-    const { errors } = formState;
+
+const schemaResetPassword = yup.object().shape({
+    email: yup
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
+});
+
+function ResetPassword() {
     const router = useRouter();
-    
-    const onClickFxn = (data) => {
-        const { email } = data;
-        sessionStorage.setItem("email", email);
-        toast.info ("Reset token sent to your email", {
-            style: {
-                width: '20vw',
-                border : '2px solid cyan',
-            },
-            icon: <BsRocketTakeoff className={styleForgot.icons}/>
-        })
-        router.push(`/setpassword`);
-    }
-    const handleInputBlur = (e) => {
-        const { value } = e.target;
-        clearTimeout(typingTimeout);
-        setTypingTimeout(setTimeout(() => {
-            if (value) {
-                 if (value.match(validateEmail.pattern.value)) {
-                    setBorderColor("green");
-                }
-                else {
-                    setBorderColor("red");
+    const {
+        control,
+        handleSubmit,
+        formState: {errors},
+    } = useForm({
+        mode: "onTouched",
+        resolver: yupResolver(schemaResetPassword),
+        reValidateMode: "onChange",
+    });
+    const [isSubmit, setIsSubmit] = useState(false);
+    const mutation = useMutation({
+        mutationFn: AdminUtils.StaffResetPassword,
+        mutationKey: ["StaffResetPassword"],
+    });
 
-                }
-            }
-        }, 500));
-    }
-    
+    const ResetPassword = async (data) => {
+        const {email} = data;
+        // encrypt the email and store it in session storage
+        const encryptedEmail = await AdminUtils.encryptData(email);
+        setIsSubmit(true);
+        mutation.mutate(data, {
+            onSuccess: () => {
+                toast.success('Reset Token sent to your email');
+                sessionStorage.setItem("email", encryptedEmail);
+                setIsSubmit(false);
+                router.push('/setpassword')
+            },
+            onError: (error) => {
+                setIsSubmit(false);
+                console.error(error);
+                toast.error("Unauthorized credentials");
+            },
+        });
+    };
+
+    const txProps = {
+        color: "red",
+        bgcolor: "#274e61",
+        borderRadius: "10px",
+        width: "100%",
+        fontSize: "18px",
+        fontStyle: "bold",
+        "&:hover": {
+            bgcolor: "#051935",
+        },
+        fontFamily: "Poppins",
+        "& .MuiInputBase-input": {
+            color: "white",
+        },
+        "& .MuiFormHelperText-root": {
+            color: "red",
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "green",
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: "0 0 0 1000px #274e61 inset",
+            WebkitTextFillColor: "white",
+        },
+    };
+
     return (
         <>
-            <div className={styleForgot.container}>
-                <div className={styleForgot.wrapper}>
-                    <div className={styleForgot.formParent}>
-                        <form action="" onSubmit={handleSubmit(onClickFxn)} noValidate>
-                            <h5>Reset Password</h5>
-                            <div className={styleForgot.inputBox}>
-                                <input
-                                    type="email"
-                                    placeholder="Email"
-                                    {...register("email", validateEmail)}
-                                    onBlur={handleInputBlur}
-                                    style={{ borderColor: borderColor, borderWidth: "4px", borderStyle: "solid"}}
+            <Box
+                sx={{
+                    fontFamily: "Poppins",
+                    bgcolor: "#274e61",
+                    color: "white",
+                    height: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundImage: "url(/bg-6.jpg)",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    overflow: 'hidden',
+
+                }}
+            >
+                <Box className={styleReset.wrapper}>
+                    <Box className={styleReset.formParent}>
+                        <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
+                            Reset Password
+                        </Typography>
+                        <Box component="form" onSubmit={handleSubmit(ResetPassword)} noValidate sx={{mt: 10, mb: 10}}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                defaultValue=""
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        InputProps={{
+                                            sx: txProps,
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton edge="end" sx={{color: 'gold'}}>
+                                                        <MdOutlineMailLock size={24}/>
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: "#46F0F9",
+                                                "&.Mui-focused": {
+                                                    color: "white",
+                                                },
+                                            },
+                                        }}
+                                        sx={{marginBottom: 3}}
+                                        label="Email Address"
+                                        variant="outlined"
+                                        autoComplete="off"
+                                        error={!!errors.email}
+                                        helperText={errors.email ? errors.email.message : ""}
+                                        fullWidth
+                                        required
                                     />
-                                {errors.email && <p className={styleForgot.emailError}>{errors.email?.message}</p>}
-                            </div>
-                            <div className={styleForgot.btn}>
-                                <button type={"submit"}>Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {/*<DevTool control={control} placement="top-right" />*/}
+                                )}
+                            />
+                            <Button
+                                fullWidth
+                                type="submit"
+                                variant="contained"
+                                sx={{
+                                    mt: 3,
+                                    height: 50,
+                                    backgroundColor: "#3263b3",
+                                    ":hover": {backgroundColor: "#891f9c", color: "green"},
+                                    fontSize: "1.2rem",
+                                    color: "white",
+                                }}
+                            >
+                                Submit
+                            </Button>
+                        </Box>
+                    </Box>
+                    {isSubmit && <LazyComponent Command='Submitting...'/>}
+                </Box>
+            </Box>
         </>
-    )
+    );
 }
 
-export default ResetPassword
+export default ResetPassword;

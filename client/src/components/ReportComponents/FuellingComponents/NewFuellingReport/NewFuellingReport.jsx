@@ -28,7 +28,7 @@ function NewFuellingReport({allSite}) {
     const [siteType, setSiteType] = useState('N/A');
     const [location, setLocation] = useState('N/A');
     const [dateSupplied, setDateSupplied] = useState(null);
-    
+
     const {
         control, handleSubmit, formState: {errors}, setError, reset, setValue, clearErrors,
     } = useForm({
@@ -74,7 +74,7 @@ function NewFuellingReport({allSite}) {
             WebkitTextFillColor: 'white',
         },
     }
-    
+
     // Site Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
@@ -98,7 +98,7 @@ function NewFuellingReport({allSite}) {
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!stateMain) {
@@ -118,7 +118,7 @@ function NewFuellingReport({allSite}) {
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!stateMain || !cluster) {
@@ -136,7 +136,7 @@ function NewFuellingReport({allSite}) {
         setSiteID(event.target.value);
         const selectedSiteId = event.target.value;
         setSiteID(selectedSiteId);
-        
+
         const selectedSite = allSite.find(site => site.siteId === selectedSiteId);
         if (selectedSite) {
             const newLocation = selectedSite.location || 'N/A';
@@ -153,24 +153,24 @@ function NewFuellingReport({allSite}) {
             setLocation('N/A');
         }
     };
-    
+
     // Fuel supply info Section
     const qtyInitial = useWatch({control, name: 'qtyInitial', defaultValue: 0});
     const qtySupplied = useWatch({control, name: 'qtySupplied', defaultValue: 0});
     const cpd = useWatch({control, name: 'cpd'});
     const customCPD = useWatch({control, name: 'customCPD'});
-    
+
     const newAvailableQty = (Number(qtyInitial) + Number(qtySupplied)) || 0;
     const consumptionPerDay = cpd === 'Others' ? Number(customCPD) : Number(cpd) || 0;
     const duration = consumptionPerDay ? Math.ceil(newAvailableQty / consumptionPerDay) : 0;
     const nextDueDate = dateSupplied ? dayjs(dateSupplied).add(duration, 'day').format('DD/MMM/YYYY') : '';
-    
+
     useEffect(() => {
         setValue('qtyNew', newAvailableQty);
         setValue('duration', duration);
         setValue('nextDueDate', nextDueDate);
     }, [newAvailableQty, consumptionPerDay, dateSupplied]);
-    
+
     // submit data using mutation
     const queryClient = useQueryClient()
     const mutation = useMutation({
@@ -220,7 +220,10 @@ function NewFuellingReport({allSite}) {
             });
         }
     }
-    
+    const goPrev = () => {
+        window.history.back();
+    }
+
     return (
         <>
             <Box sx={mainSection}>
@@ -305,7 +308,7 @@ function NewFuellingReport({allSite}) {
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -373,7 +376,7 @@ function NewFuellingReport({allSite}) {
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -441,7 +444,7 @@ function NewFuellingReport({allSite}) {
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -713,7 +716,7 @@ function NewFuellingReport({allSite}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -838,17 +841,16 @@ function NewFuellingReport({allSite}) {
                                     </>
                                 )}
                             </Grid>
-                        
+
                         </Paper>
                     </Grid>
                     <br/><br/>
                     {/*Submitting button */}
                     <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
-                        <Button variant="contained" color='success' title='Back'
-                                onClick={() => window.location.href = '/dashboard/admin/reports/fuel/all'}>
+                        <Button variant="contained" color='success' title='Back' onClick={goPrev}>
                             Back
                         </Button>
-                        
+
                         <Button variant="contained" color='secondary' onClick={Clear} type='reset'
                                 title='Clear'> Clear </Button>
                         <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>

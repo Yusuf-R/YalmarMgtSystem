@@ -144,6 +144,7 @@ function AllSiteIncident({siteIncidentData}) {
                             root: {
                                 // color: 'aqua',
                                 color: '#FFF',
+
                             },
                         },
                     },
@@ -169,6 +170,8 @@ function AllSiteIncident({siteIncidentData}) {
                             root: {
                                 color: '#fff', // Change table text color
                                 padding: '2px',
+                                fontFamily: 'Poppins',
+                                fontSize: '14px',
                             },
                         },
                     },

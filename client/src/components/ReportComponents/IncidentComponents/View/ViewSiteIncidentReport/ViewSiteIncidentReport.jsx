@@ -300,7 +300,7 @@ function RenderedData({data}) {
                             p: 2,
                             border: '1px solid rgb(255, 153, 153)',
                             borderRadius: 10,
-                            width: '36%'
+                            width: '40%'
                         }}>
                 Incident Report Data for {siteInfo.siteId} : {formattedDate}
                 <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
@@ -409,6 +409,29 @@ function RenderedData({data}) {
                                 </AccordionDetails>
                             </Accordion>
                         </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
+            <br/>
+            {/*Severity*/}
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Card sx={{...cardSx, border: 'none',}}>
+                        <Typography variant='h6' sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            fontFamily: 'Poppins',
+                            ml: '30px',
+                            mt: '30px',
+                            mb: '30px',
+                            fontSize: '18px',
+                            backgroundColor: severity === 'Critical' ? 'hsl(12, 100%, 50%)' : severity === 'Major' ? 'hsl(240, 100%, 50%)' : severity === 'Minor' ? 'limegreen' : 'inherit',
+                            padding: '5px', // Optional: Add some padding for better readability
+                            borderRadius: '10px', // Optional: Add border-radius for rounded corners
+                            width: '15%',
+                        }}>
+                            Severity: {severity}
+                        </Typography>
                     </Card>
                 </Grid>
             </Grid>
@@ -566,7 +589,7 @@ function RenderedData({data}) {
                             mt: 1,
                             p: 4,
                         }} align="left">
-                            Report Images
+                            Reporting Images
                         </Typography>
                         <br/>
                         <Grid container spacing={5} sx={{

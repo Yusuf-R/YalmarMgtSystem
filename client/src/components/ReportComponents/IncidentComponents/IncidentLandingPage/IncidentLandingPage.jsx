@@ -134,7 +134,7 @@ function IncidentLandingPage({allIncidentReport}) {
                        }}>
                     <Grid container spacing={0.5}>
                         <Grid item xs={2}>
-                            <Stack spacing={0.5} direction='column'>
+                            <Stack spacing={10} direction='row'>
                                 <CardContent>
                                     <Accordion sx={accordionSx}>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}

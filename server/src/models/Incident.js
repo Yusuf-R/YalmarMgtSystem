@@ -72,7 +72,7 @@ const staffIncidentSchema = new mongoose.Schema({
             },
             others: {type: String, default: null},
         },
-    }
+    },
 });
 const StaffIncident = Incident.discriminator('StaffIncident', staffIncidentSchema);
 

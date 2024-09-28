@@ -13,29 +13,27 @@ export const useLogout = () => {
         mutationFn: AdminUtils.StaffLogout,
     });
     
-    const handleLogout = () => {
-        mutation.mutate(null, {
-            onSuccess: (response) => {
-                if (response) {
-                    toast.success('Logout successful');
-                    // Clear cookies and other user data
-                    Cookies.remove('accessToken');
-                    Cookies.remove('staffData');
-                    Cookies.remove('rememberMe');
-                    // Redirect to login page
-                    setTimeout(() => {
-                        router.push('/login');
-                    }, 500);
-                } else {
+    return () => {
+            mutation.mutate(null, {
+                onSuccess: (response) => {
+                    if (response) {
+                        toast.success('Logout successful');
+                        // Clear cookies and other user data
+                        Cookies.remove('accessToken');
+                        Cookies.remove('staffData');
+                        Cookies.remove('rememberMe');
+                        // Redirect to login page
+                        setTimeout(() => {
+                            router.push('/login');
+                        }, 500);
+                    } else {
+                        toast.error('Logout failed');
+                    }
+                },
+                onError: (error) => {
                     toast.error('Logout failed');
-                }
-            },
-            onError: (error) => {
-                toast.error('Logout failed');
-                router.push('/error/404');
-            },
-        });
-    };
-    
-    return handleLogout;
+                    router.push('/error/404');
+                },
+            });
+        };
 };

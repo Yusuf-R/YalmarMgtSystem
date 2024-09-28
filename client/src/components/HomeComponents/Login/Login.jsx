@@ -1,13 +1,18 @@
 "use client";
-import styleLogin from "./Login.module.css";
-import Link from "next/link";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {MdOutlineMailLock} from "react-icons/md";
-import styleSetPassword from "@/components/HomeComponents/SetPassword/SetPassword.module.css";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {schemaLogin} from "@/SchemaValidator/login";
-import {useState} from "react";
-import usePasswordToggle from "../../../customHooks/usePasswordToggle";
+import React, {useState} from "react";
 import {toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {useMutation} from "@tanstack/react-query";
@@ -15,13 +20,17 @@ import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
 import {FcRedo} from "react-icons/fc";
 import AdminUtils from "@/utils/AdminUtilities";
-
+import styleLogin from "./Login.module.css";
+import {schemaLogin} from "@/SchemaValidator/login";
+import LazyComponent from "@/components/LazyComponent/LazyComponent";
 
 function Login() {
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isSubmit, setIsSubmit] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    // using react-hook-form to validate the form
     const {
-        register,
+        control,
         handleSubmit,
         formState: {errors},
     } = useForm({
@@ -29,28 +38,21 @@ function Login() {
         resolver: yupResolver(schemaLogin),
         reValidateMode: "onChange",
     });
-    // using usePasswordToggle to toggle the visibility of the password
-    const [rememberMe, setRememberMe] = useState(false);
-    const [isSubmit, setIsSubmit] = useState(false);
-    
-    // using useMutation to send the data to the server, pass in email and password to the function
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleCheckBox = (e) => {
+        setRememberMe(e.target.checked);
+    };
     const mutation = useMutation({
         mutationKey: ["Login"],
         mutationFn: AdminUtils.StaffLogin,
     });
-    
-    
     const OnLogin = (loginData) => {
-        // Disable the button to prevent multiple clicks
         setIsSubmit(true);
-        // Call the mutate function to trigger the login request
         mutation.mutate(loginData, {
             onSuccess: (response) => {
-                // Handle successful login
                 if (response) {
-                    toast.success("Login successful", {
-                        icon: "🚀",
-                    });
+                    toast.success("Login successful 🚀");
                     toast.success("Redirecting to dashboard", {
                         icon: <FcRedo/>,
                     });
@@ -60,7 +62,8 @@ function Login() {
                     });
                     setTimeout(() => {
                         router.push("/dashboard");
-                    }, 3000);
+                    }, 2000);
+                    setIsSubmit(false);
                 } else {
                     toast.error("Unauthorized credentials");
                     setTimeout(() => {
@@ -70,92 +73,201 @@ function Login() {
                 }
             },
             onError: (error) => {
-                // Handle login error
                 setIsSubmit(false);
-                console.log('hehe');
-                toast.error(error.response.data.message);
-                setTimeout(() => {
-                    router.push("/login");
-                }, 3000);
-                
+                console.error(error);
+                toast.error("Unauthorized credentials");
             },
         });
     };
-    
-    const {
-        icon: passwordIcon,
-        inputType: passwordInputType,
-        toggleVisibility: togglePasswordVisibility,
-    } = usePasswordToggle();
-    const handleCheckBox = (e) => {
-        setRememberMe(e.target.checked);
+
+    const txProps = {
+        color: "red",
+        bgcolor: "#274e61",
+        borderRadius: "10px",
+        width: "100%",
+        fontSize: "18px",
+        fontStyle: "bold",
+        "&:hover": {
+            bgcolor: "#051935",
+        },
+        fontFamily: "Poppins",
+        "& .MuiInputBase-input": {
+            color: "white",
+        },
+        "& .MuiFormHelperText-root": {
+            color: "red",
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "green",
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: "0 0 0 1000px #274e61 inset",
+            WebkitTextFillColor: "white",
+        },
     };
+
     return (
         <>
-            <div className={styleLogin.loginContainer}>
-                <div className={styleLogin.wrapper}>
-                    <div className={styleLogin.formParent}>
-                        <form action="" onSubmit={handleSubmit(OnLogin)} noValidate={true}>
-                            <h1>Login</h1>
-                            <div className={styleLogin.inputBox}>
-                                <input
-                                    type="email"
-                                    placeholder="Email"
-                                    {...register("email")}
-                                    style={{borderColor: errors.email ? "red" : "green"}}
-                                />
-                                <MdOutlineMailLock className={styleLogin.icons}/>
-                            </div>
-                            {errors.email && (
-                                <p className={styleLogin.inputError}>{errors.email?.message}</p>
-                            )}
-                            <div className={styleLogin.inputBox}>
-                                <input
-                                    type={passwordInputType}
-                                    placeholder="Password"
-                                    {...register("password")}
-                                    style={{borderColor: errors.password ? "red" : "green"}}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={togglePasswordVisibility}
-                                    className={styleLogin.icons}
-                                >
-                                    {passwordIcon}
-                                </button>
-                            </div>
-                            {errors.password && (
-                                <p className={styleLogin.inputError}>
-                                    {errors.password?.message}
-                                </p>
-                            )}
-                            <div className={styleLogin.forgotPassword}>
-                                <label className={styleLogin.checkBox}>
-                                    <input type="checkbox" onClick={handleCheckBox}/>
-                                    <h1>Remember me</h1>
-                                </label>
-                                <Link href="/resetpassword">
-                                    <p> Forgot Password? </p>
-                                </Link>
-                            </div>
-                            <div className={styleLogin.submitButton}>
-                                <button disabled={isSubmit}>
-                                    {isSubmit ? "Logging in..." : "Login"}
-                                </button>
-                            </div>
-                        </form>
-                        <br/>
-                        <div>
-                            <label className={styleSetPassword.lbl}>
-                                <h5>Not Registered?</h5>
-                                <Link href="/register" className={styleSetPassword.nextLink}>
-                                    SignUp Here!
-                                </Link>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Box
+                sx={{
+                    fontFamily: "Poppins",
+                    bgcolor: "#274e61",
+                    color: "white",
+                    height: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundImage: "url(/bg-6.jpg)",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    overflow: 'hidden',
+
+                }}
+            >
+                <Box className={styleLogin.wrapper}>
+                    <Box className={styleLogin.formParent}>
+                        <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
+                            Yalmar Management System
+                        </Typography>
+                        <Box component="form" onSubmit={handleSubmit(OnLogin)} noValidate sx={{m: 4}}>
+                            {/* Email Field with Icon */}
+                            <Controller
+                                name="email"
+                                control={control}
+                                defaultValue=""
+                                render={({field}) => (
+                                    <TextField
+                                        fullWidth
+                                        {...field}
+                                        InputProps={{
+                                            sx: txProps,
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        edge="end"
+                                                        sx={{color: 'gold'}}
+                                                    >
+                                                        <MdOutlineMailLock size={24}/>
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: "#46F0F9",
+                                                "&.Mui-focused": {
+                                                    color: "white",
+                                                },
+                                            },
+                                            shrink: true,
+                                        }}
+                                        sx={{marginBottom: 5}}
+                                        label="Email"
+                                        variant="outlined"
+                                        autoComplete="off"
+                                        error={!!errors.email}
+                                        helperText={errors.email ? errors.email.message : ""}
+                                        required
+                                    />
+                                )}
+                            />
+
+                            {/* Password Field with Visibility Toggle */}
+                            <Controller
+                                name="password"
+                                control={control}
+                                defaultValue=""
+                                render={({field}) => (
+                                    <TextField
+                                        {...field}
+                                        fullWidth
+                                        InputProps={{
+                                            sx: txProps,
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        edge="end"
+                                                        color="error"
+                                                    >
+                                                        {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: "#46F0F9",
+                                                "&.Mui-focused": {
+                                                    color: "white",
+                                                },
+                                            },
+                                            shrink: true,
+                                        }}
+                                        sx={{marginBottom: 5}}
+                                        label="Password"
+                                        variant="outlined"
+                                        autoComplete="off"
+                                        error={!!errors.password}
+                                        helperText={errors.password ? errors.password.message : ""}
+                                        required
+                                        type={showPassword ? "text" : "password"}
+
+                                    />
+                                )}
+                            />
+                            <br/>
+                            {/* Remember Me Checkbox */}
+                            <Grid container alignItems="center">
+                                <Grid item xs={1}>
+                                    <Checkbox
+                                        checked={rememberMe}
+                                        onChange={handleCheckBox}
+                                        inputProps={{'aria-label': 'controlled'}}
+                                        sx={{color: "gold"}}
+                                    />
+                                </Grid>
+                                <Grid item xs={7}>
+                                    <Typography variant="subtitle1" sx={{color: "white"}}>
+                                        Remember me
+                                    </Typography>
+                                </Grid>
+
+                                <Grid item xs={4}>
+                                    <Typography variant="subtitle1" sx={{
+                                        color: "white",
+                                        cursor: "pointer",
+                                        textDecoration: "underline",
+                                        "&:hover": {color: "green"},
+                                    }} onClick={() => router.push('/resetpassword')}>
+                                        Forgot Password?
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                            <br/> <br/>
+
+                            <Button
+                                fullWidth
+                                type="submit"
+                                variant="contained"
+                                sx={{
+                                    height: 50,
+                                    backgroundColor: "#3263b3",
+                                    ":hover": {backgroundColor: "#891f9c", color: "green"},
+                                    fontSize: "1.2rem",
+                                    color: "white",
+                                }}
+                                disabled={isSubmit}
+                            >
+                                {isSubmit ? "Logging in..." : "Login"}
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+            {isSubmit && <LazyComponent Command='Logging in ...'/>}
         </>
     );
 }

@@ -3,9 +3,7 @@ import ResetPassword from '@/components/HomeComponents/RestPassword/ResetPasswor
 function ResetOldPassword() {
     return (
         <>
-            <div>
-                <ResetPassword/>
-            </div>
+            <ResetPassword/>
         </>
     )
 }

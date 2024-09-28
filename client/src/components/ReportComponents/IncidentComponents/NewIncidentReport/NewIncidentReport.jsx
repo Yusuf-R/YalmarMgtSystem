@@ -34,18 +34,30 @@ import {usePathname} from "next/navigation";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
+const warningMsg = [
+    'Please ensure you have filled out all the required fields correctly before submitting.',
+    'Document can not be edited after submission'
+];
 
 function cleanData(data, selectedCategories) {
     const cleanedData = {};
-    
+
     // Step 1: Add base fields to the cleaned data
     baseFields.forEach(field => {
         if (data[field] !== undefined) {
             cleanedData[field] = data[field];
         }
     });
-    
+
     // Step 2: Add fields related to the selected categories
     selectedCategories.forEach(category => {
         const fields = categoryFields[category];
@@ -55,7 +67,7 @@ function cleanData(data, selectedCategories) {
             }
         });
     });
-    
+
     return cleanedData;
 }
 
@@ -84,7 +96,7 @@ const filterReportData = (data) => {
         serviceIncidentInfo,
         serviceSiteInfo,
     } = data;
-    
+
     // Keep base credentials
     const filteredData = {
         adminFullName: data.adminFullName,
@@ -97,19 +109,19 @@ const filterReportData = (data) => {
         images: data.images,
         admin_id: data.admin_id,
     };
-    
+
     // Check if Staff category is selected, add only Staff-related info
     if (reportCategory.includes('Staff')) {
         filteredData.staffInfo = staffInfo;
         filteredData.staffIncidentInfo = staffIncidentInfo;
     }
-    
+
     // Check if Site category is selected, add only Site-related info
     if (reportCategory.includes('Site')) {
         filteredData.siteInfo = siteInfo;
         filteredData.siteIncidentInfo = siteIncidentInfo;
     }
-    
+
     // Check if Fuel category is selected, add only Fuel-related info
     if (reportCategory.includes('Fuel')) {
         filteredData.fuelSiteInfo = fuelSiteInfo;
@@ -119,9 +131,9 @@ const filterReportData = (data) => {
         filteredData.serviceSiteInfo = serviceSiteInfo;
         filteredData.serviceIncidentInfo = serviceIncidentInfo;
     }
-    
+
     // You can add similar checks for other categories like Service, Others, etc.
-    
+
     return filteredData;
 };
 const serializeObject = (obj) => {
@@ -146,7 +158,7 @@ function generateSchema(selectedCategories) {
         ...categorySelectorSchema.fields,
         ...descriptionSchema.fields,
     });
-    
+
     if (selectedCategories.includes('Staff')) {
         combinedSchema = combinedSchema.concat(staffIncidentSchema);
     }
@@ -167,7 +179,7 @@ function NewIncidentReport({allStaff, allSite}) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadedImages, setUploadedImages] = useState([]);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident');
-    
+
     const pathname = usePathname();
     // useEffect or handling navigation between new and staff
     useEffect(() => {
@@ -177,7 +189,7 @@ function NewIncidentReport({allStaff, allSite}) {
             setActiveTab('/dashboard/admin/incident');
         }
     }, [pathname]);
-    
+
     const methods = useForm({
         resolver: yupResolver(generateSchema(selectedCategories)),
         mode: 'onTouched',
@@ -188,9 +200,8 @@ function NewIncidentReport({allStaff, allSite}) {
         mutationKey: ["NewIncidentReport"],
         mutationFn: AdminUtils.NewIncidentReport
     });
-    
+
     const onSubmit = async (data) => {
-        console.log({data});
         setIsSubmitting(true);
         const filteredData = filterReportData(data);
         if (filteredData.images) {
@@ -206,21 +217,32 @@ function NewIncidentReport({allStaff, allSite}) {
         if (uploadedImages && uploadedImages.length > 0) {
             uploadedImages.forEach((image, index) => {
                 const img = image.isCropped ? image.croppedSrc : image.src;
-                // Extract the original filename, if present, from the image object (or data)
-                let originalFilename = image.file?.name || `image_${index}`; // Fallback if no filename
-                // Extract the file extension (e.g., png or jpg) from the base64 string
-                const ext = img.match(/\/(png|jpeg|jpg);base64/)[1];
-                // Append a unique identifier to prevent overwriting (e.g., timestamp or random string)
-                const uniqueIdentifier = Date.now();
-                const filename = `${originalFilename.replace(/\.[^/.]+$/, "")}_${uniqueIdentifier}.${ext}`;
-                // Convert the base64 string to a File object
-                const file = base64ToFile(img, filename);
-                // Append the file to the formData
-                formData.append('images', file);
+
+                if (img && img.includes("base64")) {
+                    // Extract the original filename, if present, from the image object (or data)
+                    let originalFilename = image.file?.name || `image_${index}`; // Fallback if no filename
+
+                    // Extract the file extension (e.g., png or jpg) from the base64 string
+                    const match = img.match(/\/(png|jpeg|jpg);base64/);
+                    if (!match) {
+                        console.error("Invalid base64 image format:", img);
+                        return;
+                    }
+                    const ext = match[1];
+
+                    // Append a unique identifier to prevent overwriting (e.g., timestamp or random string)
+                    const uniqueIdentifier = Date.now();
+                    const filename = `${originalFilename.replace(/\.[^/.]+$/, "")}_${uniqueIdentifier}.${ext}`;
+
+                    // Convert the base64 string to a File object
+                    const file = base64ToFile(img, filename);
+
+                    // Append the file to the formData
+                    formData.append('images', file);
+                } else {
+                    console.error("Invalid image format or missing base64 data");
+                }
             });
-        }
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
         }
         // sending the data to the BE
         mutation.mutate(formData, {
@@ -240,24 +262,23 @@ function NewIncidentReport({allStaff, allSite}) {
             },
         });
     };
-    
+
     useEffect(() => {
         methods.reset({}, {
             keepValues: true,
             resolver: yupResolver(generateSchema(selectedCategories)),
         });
     }, [selectedCategories]);
-    
-    
+
     // Report Category
     const incidentReportsCategory = ['Staff', 'Site', 'Fuel', 'Service', 'Others'];
     const onCategoryChange = (categories) => {
         setSelectedCategories(categories);
     };
-    
+
     // Severity
     const incidentReportSeverity = ['Critical', 'Major', 'Minor'];
-    
+
     const handleBack = () => {
         window.history.back();
     }
@@ -266,7 +287,7 @@ function NewIncidentReport({allStaff, allSite}) {
         setSelectedCategories([]);
         methods.clearErrors();
     }
-    
+
     const onImagesChange = (images) => {
         setUploadedImages(images); // Store the images in the parent component's state
     };
@@ -285,7 +306,7 @@ function NewIncidentReport({allStaff, allSite}) {
         width: '100%',
         height: 'auto',
     }
-    
+
     // Incident Section
     const accordionSx = {
         bgcolor: '#274e61',
@@ -297,10 +318,10 @@ function NewIncidentReport({allStaff, allSite}) {
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const {errors} = methods.formState;
     console.log(errors);
-    
+
     return (
         <>
             <FormProvider {...methods}>
@@ -334,7 +355,7 @@ function NewIncidentReport({allStaff, allSite}) {
                                 },
                             }}
                         >
-                            
+
                             <Tab
                                 label="Home"
                                 component={Link}
@@ -417,6 +438,42 @@ function NewIncidentReport({allStaff, allSite}) {
                         <br/>
                         {/*Image Upload*/}
                         <ImageUpload onImagesChange={onImagesChange}/>
+                        <br/>
+                        {/*Submission Warning*/}
+
+                        <Grid item xs={12}>
+                            <Card sx={cardSx}>
+                                <CardContent>
+                                    <Typography sx={{
+                                        fontWeight: 'bold',
+                                        color: 'rgb(255, 128, 128)',
+                                        fontFamily: 'Poppins',
+                                        fontSize: '36px',
+                                        m: -1,
+                                    }}>Submission Warning</Typography>
+                                    <Divider/>
+                                    {warningMsg.map((msg, index) => (
+                                        <List>
+                                            <ListItem sx={{margin: 0, p: 0,}} key={index}>
+                                                <ListItemIcon sx={{mr: -1}}>
+                                                    <PlaylistAddCheckIcon
+                                                        sx={{color: "lime", fontSize: "32px"}}/>
+                                                </ListItemIcon>
+                                                <Typography sx={{
+                                                    fontWeight: 'bold',
+                                                    color: 'white',
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: '22px',
+                                                    m: -1,
+                                                }}>
+                                                    {msg}
+                                                </Typography>
+                                            </ListItem>
+                                        </List>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        </Grid>
                         <br/>
                         {/*Loading submission screen*/}
                         {isSubmitting && <LazyComponent Command='Submitting'/>}

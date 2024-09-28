@@ -62,8 +62,8 @@ function Site({allSite}) {
     const [cluster, setClusterType] = useState('');
     const [status, setStatus] = useState('');
     const [siteType, setSiteType] = useState('');
-    
-    
+
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -80,7 +80,7 @@ function Site({allSite}) {
                                 // color: '#ff8c00',
                                 color: '#40ff00',
                             },
-                            
+
                         },
                     },
                     MuiFormControlLabel: {
@@ -144,7 +144,7 @@ function Site({allSite}) {
                                 color: '#fff',
                                 fontWeight: 'bold',
                             },
-                            
+
                         },
                     },
                     // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
@@ -153,6 +153,8 @@ function Site({allSite}) {
                             root: {
                                 color: '#fff', // Change table text color
                                 padding: '2px',
+                                fontFamily: 'Poppins',
+                                fontSize: '14px',
                             },
                         },
                     },
@@ -311,7 +313,7 @@ function Site({allSite}) {
                 resolver: yupResolver(newSiteSchema),
                 reValidateMode: "onChange",
             });
-            
+
             // set state
             const getState = () => {
                 return siteStates.map((stateName) => (
@@ -325,7 +327,7 @@ function Site({allSite}) {
                 setStateMain(event.target.value);
                 // Clear the cluster selection when a new state is selected
             }
-            
+
             // set cluster
             const getCluster = () => {
                 return Object.keys(sitesData).map((clusterName) => (
@@ -339,7 +341,7 @@ function Site({allSite}) {
                 event.preventDefault();
                 setClusterType(event.target.value);
             }
-            
+
             // set Type
             const getType = () => {
                 return type.map((types) => (
@@ -351,7 +353,7 @@ function Site({allSite}) {
                 event.preventDefault();
                 setSiteType(event.target.value);
             }
-            
+
             // set status
             const getStatus = () => {
                 return siteStatus.map((status) => (
@@ -364,27 +366,27 @@ function Site({allSite}) {
                 setStatus(event.target.value);
                 setCurrSiteStatus(event.target.value);
             }
-            
-            
+
+
             if (Object.keys(errors).length > 0) {
                 console.log({errors});
             }
-            
+
             const Clear = () => {
                 // clear all the content of the fields of the box components
                 reset();
             }
-            
+
             const handleModalViewOpen = () => setModalViewOpen(true);
             const handleModalViewClose = () => setModalViewOpen(false);
-            
+
             const handleModalEditOpen = () => setModalEditOpen(true)
             const handleModalEditClose = () => setModalEditOpen(false)
-            
+
             const OpenDeleteDialogue = () => setDialogueDelete(true)
             const CloseDeleteDialogue = () => setDialogueDelete(false)
-            
-            
+
+
             // handle email change
             const handleEmailChange = (event) => {
                 setEmail(event.target.value);
@@ -401,13 +403,13 @@ function Site({allSite}) {
                 mutationKey: ["UpdateSite"],
                 mutationFn: AdminUtils.UpdateSite,
             });
-            
+
             // delete Mutation instance
             const mutationDelete = useMutation({
                 mutationKey: ["UpdateSite"],
                 mutationFn: AdminUtils.DeleteSite,
             });
-            
+
             // handle delete
             const handleDelete = async (event) => {
                 event.preventDefault();
@@ -424,7 +426,7 @@ function Site({allSite}) {
                     }
                 });
             };
-            
+
             // handle save edited data
             const submitUpdate = async (data) => {
                 await newSiteSchema.validate(data, {abortEarly: false});
@@ -660,7 +662,7 @@ function Site({allSite}) {
                                                                                         sx={{color: '#FFF'}}/> :
                                                                                     <CloseIcon sx={{color: '#FFF'}}/>
                                                                             }
-                                                                        
+
                                                                         </InputAdornment>
                                                                     ),
                                                                     readOnly: true,
@@ -917,7 +919,7 @@ function Site({allSite}) {
                                                         </FormControl>
                                                     )}
                                                 />
-                                            
+
                                             </Grid>
                                             <Grid item xs={4}>
                                                 <Controller
@@ -961,7 +963,7 @@ function Site({allSite}) {
                                                                                 color: 'white',
                                                                                 maxHeight: 450,
                                                                                 overflow: 'auto',
-                                                                                
+
                                                                             },
                                                                         },
                                                                     },
@@ -1029,7 +1031,7 @@ function Site({allSite}) {
                                                                                 color: 'white',
                                                                                 maxHeight: 450,
                                                                                 overflow: 'auto',
-                                                                                
+
                                                                             },
                                                                         },
                                                                     },
@@ -1086,7 +1088,7 @@ function Site({allSite}) {
                                                                         "&.Mui-focused": {
                                                                             color: "white"
                                                                         },
-                                                                        
+
                                                                     }
                                                                 }}
                                                                 SelectProps={{
@@ -1097,7 +1099,7 @@ function Site({allSite}) {
                                                                                 color: 'white',
                                                                                 maxHeight: 450,
                                                                                 overflow: 'auto',
-                                                                                
+
                                                                             },
                                                                         },
                                                                     },
@@ -1167,7 +1169,7 @@ function Site({allSite}) {
                                                                                 color: 'white',
                                                                                 maxHeight: 450,
                                                                                 overflow: 'auto',
-                                                                                
+
                                                                             },
                                                                         },
                                                                     },
@@ -1297,7 +1299,7 @@ function Site({allSite}) {
                                                         </FormControl>
                                                     )}
                                                 />
-                                            
+
                                             </Grid>
                                         </Grid>
                                         <br/><br/><br/>
@@ -1314,7 +1316,7 @@ function Site({allSite}) {
                                             >
                                                 Cancel
                                             </Button>
-                                            
+
                                             <Button
                                                 variant="contained"
                                                 color="success"
@@ -1325,7 +1327,7 @@ function Site({allSite}) {
                                             </Button>
                                         </Stack>
                                     </Paper>
-                                
+
                                 </Grid>
                             </Box>
                         </Paper>
@@ -1343,7 +1345,7 @@ function Site({allSite}) {
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
-            
+
             const handleClose = () => {
                 setOpen(false);
                 setEmail('');
@@ -1375,7 +1377,7 @@ function Site({allSite}) {
                         // reload the page
                         handleClose();
                         router.refresh();
-                        
+
                     },
                     onError: (error) => {
                         toast.error('Error Deleting selected Site');
@@ -1466,7 +1468,7 @@ function Site({allSite}) {
                                     sx={{
                                         color: "#46F0F9",
                                     }}
-                                
+
                                 />
                             </Stack>
                         </DialogContent>
@@ -1522,7 +1524,7 @@ function Site({allSite}) {
                 alignItems: 'center',
             },
             align: 'center',
-            
+
         },
         muiTableBodyRowProps: {
             sx: {
@@ -1534,7 +1536,7 @@ function Site({allSite}) {
             label: 'Search',
             placeholder: 'Site Details',
             variant: 'outlined',
-            
+
         },
         muiFilterTextFieldProps: {
             color: 'error',
@@ -1557,7 +1559,7 @@ function Site({allSite}) {
                 pageSize: 100
             },
             density: 'compact',
-            
+
         }
     });
     const paperProps = {
@@ -1612,7 +1614,6 @@ function Site({allSite}) {
         </>
     );
 }
-
 
 
 export default Site;

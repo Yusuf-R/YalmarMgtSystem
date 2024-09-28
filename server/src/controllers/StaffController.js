@@ -17,7 +17,7 @@ const BioDataUpdateRequest = require('../models/BioDataUpdateRequest');
 const authClient = require('./AuthController');
 const RefreshToken = require('../models/RefreshToken');
 const dbClient = require('../utils/db');
-const mailClient = require('../utils/mailer');
+const MailClient = require('../utils/mailer');
 const securityConfig = new SecurityConfig();
 const staffRef = ['username', 'country', 'city', 'phone', 'isAdmin', 'img'];
 const forbiddenUpdate = ['email', 'dob', '_id', 'createdAt', 'updatedAt', '__v'];
@@ -30,7 +30,7 @@ class StaffController {
         if (data64 instanceof Error) {
             return res.status(400).json({error: data64.message});
         }
-        const decodeData = await authClient.singinDecrypt(data64);
+        const decodeData = await authClient.signInDecrypt(data64);
         if (decodeData.error) {
             return res.status(400).json({error: decodeData.error});
         }
@@ -77,7 +77,7 @@ class StaffController {
             }
             // encrypt our accessToken with our CIPHER_TOKEN_SECRET
             const encryptedAccessToken = securityConfig.encryptData(accessToken);
-            
+
             // set the encryptedAccessToken to be stored as a signed cookie
             res.cookie('accessToken', encryptedAccessToken, {
                 // httpOnly: true, // Prevent client-side access via JavaScript
@@ -102,7 +102,7 @@ class StaffController {
             return res.status(500).json({error: 'Internal Server Error'});
         }
     }
-    
+
     static async logout(req, res) {
         try {
             const verifiedToken = await authClient.currPreCheck(req);
@@ -132,7 +132,7 @@ class StaffController {
             return res.status(401).json({error: err.message});
         }
     }
-    
+
     static async createNew(req, res) {
         try {
             const verifiedJWT = await AuthController.currPreCheck(req);
@@ -200,7 +200,7 @@ class StaffController {
             return res.status(500).json({error: err.message});
         }
     }
-    
+
     // get a single staff data
     static async getStaffData(req, res) {
         try {
@@ -230,7 +230,7 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     // get all staff data
     static async getAllStaff(req, res) {
         try {
@@ -262,7 +262,7 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async updateStaff(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -340,7 +340,7 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async deleteStaff(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -391,12 +391,12 @@ class StaffController {
             }
             // delete every stored refreshToken associated with the ids in the DB
             await RefreshToken.deleteMany({userId: {$in: selectedIds}});
-            
+
             // delete every stored AccessToken in the redisClient
             // delete associated Redis keys
             const redisDeletePromises = selectedIds.map(id => redisClient.del(`auth_${id}`));
             await Promise.all(redisDeletePromises);
-            
+
             return res.status(201).json({
                 message: 'Staff deleted successfully',
                 deletedCount: deletedStaff.deletedCount
@@ -408,7 +408,7 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     // static async setAvatar(req, res) {
     //     try {
     //         const verifiedJWT = await AuthController.currPreCheck(req);
@@ -574,32 +574,32 @@ class StaffController {
             if (verifiedJWT instanceof Error) {
                 return res.status(400).json({error: verifiedJWT.message});
             }
-            
+
             const {id} = verifiedJWT;
             if (!id) {
                 return res.status(400).json({error: 'Invalid token'});
             }
-            
+
             const {avatar} = req.body;
             if (!avatar) {
                 return res.status(400).json({error: 'Missing file URL in the request'});
             }
-            
+
             // Decode the base64 image string
             const base64Data = avatar.replace(/^data:image\/\w+;base64,/, '');
             const buffer = Buffer.from(base64Data, 'base64');
-            
+
             // Create a new worker thread
             const worker = new Worker(path.resolve(__dirname, 'imageWorker.js'));
-            
+
             worker.postMessage(buffer);
-            
+
             worker.on('message', async (compressedBuffer) => {
                 try {
                     if (compressedBuffer.error) {
                         return res.status(500).json({error: compressedBuffer.error});
                     }
-                    
+
                     // Upload the processed image to Cloudinary
                     const result = await new Promise((resolve, reject) => {
                         cloudinary.uploader.upload_stream(
@@ -617,11 +617,11 @@ class StaffController {
                             }
                         ).end(compressedBuffer);
                     });
-                    
+
                     if (!result) {
                         return res.status(500).json({error: 'Internal Server Error'});
                     }
-                    
+
                     // if the object role is of type Admin or SuperAdmin
                     const staffObj = await Staff.findById(new ObjectId(id));
                     if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
@@ -636,7 +636,7 @@ class StaffController {
                                 upsert: true // creates the object if it doesn't exist
                             }
                         );
-                        
+
                         return res.status(201).json({
                             message: 'Profile Picture set successfully',
                             imgURL: result.secure_url,
@@ -653,7 +653,7 @@ class StaffController {
                                 upsert: true // creates the object if it doesn't exist
                             }
                         );
-                        
+
                         // create a bioDataUpdate for the Avatar-Confirmation
                         const bioDataUpdate = {
                             staffID: staffObj._id,
@@ -667,7 +667,7 @@ class StaffController {
                             category: 'Avatar-Confirmation',
                         }
                         await BioDataUpdateRequest.create(bioDataUpdate);
-                        
+
                         // send a notification of this created object to alert the admin
                         // to be implemented later
                         return res.status(201).json({
@@ -678,11 +678,11 @@ class StaffController {
                     return res.status(500).json({error: error.message});
                 }
             });
-            
+
             worker.on('error', (error) => {
                 return res.status(500).json({error: error.message});
             });
-            
+
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -690,8 +690,8 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
-    
+
+
     // delete avatar from cloudinary for direct admin and staff
     static async delAvatar(req, res) {
         try {
@@ -736,7 +736,7 @@ class StaffController {
                 return res.status(201).json({
                     message: 'Profile Picture deleted successfully',
                 });
-                
+
             }
             // find the staff with the id and update the imgURL with the secure_url from the result object
             const staff = await Staff.findById(new ObjectId(id));
@@ -746,7 +746,7 @@ class StaffController {
             if (!staff.imgURL) {
                 return res.status(404).json({error: 'No image found'});
             }
-            
+
             // delete the image from cloudinary
             const public_id = staff.imgURL.split('/')[staff.imgURL.split('/').length - 1].split('.')[0];
             const result = await cloudinary.uploader.destroy(public_id);
@@ -770,8 +770,9 @@ class StaffController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async dashboardData(req, res) {
+        console.log('dashboard data');
         try {
             const result = await authClient.apiPrecheck(req);
             if (result instanceof Error) {
@@ -780,7 +781,7 @@ class StaffController {
             }
             const {verifiedAccessToken, decryptedAccessToken} = result;
             const {id} = verifiedAccessToken;
-            
+
             const staffData = await authClient.dashBoardCheck(id);
             if (staffData instanceof Error) {
                 return res.status(400).json({error: staffData.message});
@@ -801,27 +802,64 @@ class StaffController {
             return res.status(401).json({error: err.message ? err.message : 'Unauthorized'});
         }
     }
-    
-    static async newPassword(req, res) {
-        const {token} = req.body;
-        if (!token) {
-            return res.status(400).json({error: 'Missing token'});
+
+    static async resetPasswordRequest(req, res) {
+        const {email} = req.body;
+        // Check if the email is provided
+        if (!email) {
+            return res.status(400).json({
+                error: 'Missing email address',
+            });
         }
-        const data64 = await authClient.signInPrecheck(req);
-        if (data64.error) {
-            return res.status(400).json({error: data64.error});
+        try {
+            // Find staff by email
+            const staff = await Staff.findOne({email});
+            if (!staff) {
+                return res.status(404).json({
+                    error: 'Staff with this email does not exist',
+                });
+            }
+
+            // Generate OTP token for reset
+            await staff.generateOTP();
+
+            // Send token via email
+            await MailClient.sendToken(staff);
+
+            return res.status(200).json({
+                message: 'Reset password token sent successfully',
+            });
+        } catch (error) {
+            console.error('Error requesting password reset:', error);
+            return res.status(500).json({
+                error: 'Server error. Please try again later.',
+            });
         }
-        const dataDecode = await authClient.singinDecrypt(data64);
-        if (dataDecode.error) {
-            return res.status(400).json({error: dataDecode.error});
+    }
+
+    static async setPassword(req, res) {
+        const {encryptedData} = req.body;
+        if (!encryptedData) {
+            return res.status(400).json({error: 'Missing data'});
         }
-        const {email, password} = dataDecode;
+        const dataDecode = await authClient.loginDecrypt(encryptedData);
+        const {email, password, token, confirmPassword} = dataDecode;
         if (!email) {
             return res.status(400).json({error: 'Missing email'});
         }
         if (!password) {
             return res.status(400).json({error: 'Missing password'});
         }
+        if (!token) {
+            return res.status(400).json({error: 'Missing token'});
+        }
+        if (!confirmPassword) {
+            return res.status(400).json({error: 'Missing confirm password'});
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({error: 'Passwords do not match'});
+        }
+
         try {
             // check if server is up before verifying
             if (!(await dbClient.isAlive())) {
@@ -843,14 +881,15 @@ class StaffController {
             }
             // proceed to reset password
             return res.status(201).json({
-                message: 'Password reset password successfully', email: staff.email,
+                message: 'Password reset password successfully'
             });
         } catch (err) {
             console.error(err);
             return res.status(400).json({error: err});
         }
     }
-    
+
+    // while currently logged into the system
     static async changePassword(req, res) {
         const id = await authClient.fullCurrCheck(req);
         if (id.error) {
@@ -905,36 +944,8 @@ class StaffController {
             message: 'Password changed successfully', accessToken, refreshToken,
         });
     }
-    
-    static async resetPassword(req, res) {
-        // check if the email is valid
-        const {email} = req.body;
-        if (!email) {
-            return res.status(400).json({
-                error: 'Missing email', resolve: 'Please provide your email', reqFormat: ' { email: <string> }',
-            });
-        }
-        const staff = await Staff.findOne({email});
-        if (!staff) {
-            return res.status(404).json({
-                error: 'Staff not found',
-            });
-        }
-        // Generate and send password reset password token
-        const resetToken = await staff.generateOTP();
-        try {
-            await mailClient.sendToken(staff);
-        } catch (err) {
-            return res.status(500).json({
-                error: 'Mail Client Error',
-            });
-        }
-        return res.status(201).json({
-            message: 'Reset password token sent successfully', email: staff.email, resetToken,
-        });
-    }
-    
-    
+
+
 }
 
 module.exports = StaffController;

@@ -21,7 +21,11 @@ export async function middleware(request) {
             try {
                 const data = await AdminUtils.authGuard(request);
                 if (!data || data instanceof Error) {
-                    return NextResponse.redirect(new URL('/error/404', request.url));
+                    // clear the cookies for accessToken and rememberMe
+                    const response = NextResponse.redirect(new URL('/error/404', request.url));
+                    response.cookies.set('accessToken', null, {maxAge: 0, path: '/'});
+                    response.cookies.set('rememberMe', null, {maxAge: 0, path: '/'});
+                    return response;
                 }
                 // log the url of the request
                 console.log('Middleware for url: ', request.url);

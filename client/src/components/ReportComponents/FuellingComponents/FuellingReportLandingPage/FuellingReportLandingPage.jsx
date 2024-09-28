@@ -40,7 +40,7 @@ function FuellingReportLandingPage() {
                                                 width: 250,
                                                 height: 250,
                                                 alignContent: 'center',
-                                                
+
                                             }}/>
                                 </Link>
                                 <Link href='/dashboard/admin/reports/fuel/all'>
@@ -64,16 +64,16 @@ function FuellingReportLandingPage() {
                                 justifyContent="center"
                                 alignItems="center"
                                 spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel/b-gwari'>
-                                    <Avatar src='/b-gwari.svg' alt='Birnin-Gwari'
+                                <Link href='/dashboard/admin/reports/fuel/new'>
+                                    <Avatar src='/Fuelling-1.svg' alt='New+'
                                             sx={{
                                                 width: 250,
                                                 height: 250,
                                                 alignContent: 'center',
-                                                
+
                                             }}/>
                                 </Link>
-                                <Link href='/dashboard/admin/reports/fuel/b-gwari'>
+                                <Link href='/dashboard/admin/reports/fuel/new'>
                                     <Typography variant='h6'
                                                 sx={{
                                                     // color: '#46F0F9',
@@ -83,67 +83,7 @@ function FuellingReportLandingPage() {
                                                     bgcolor: '#0059b3',
                                                     color: '#FFF',
                                                 }}>
-                                        Birnin-Gwari
-                                    </Typography>
-                                </Link>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Stack
-                                direction="column"
-                                justifyContent="center"
-                                alignItems="center"
-                                spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel/kd-central'>
-                                    <Avatar src='/kd-central.svg' alt='Kd-Central'
-                                            sx={{
-                                                width: 250,
-                                                height: 250,
-                                                alignContent: 'center',
-                                                
-                                            }}/>
-                                </Link>
-                                <Link href='/dashboard/admin/reports/fuel/kd-central'>
-                                    <Typography variant='h6'
-                                                sx={{
-                                                    // color: '#46F0F9',
-                                                    border: '2px solid #46F0F9',
-                                                    borderRadius: 5,
-                                                    p: '10px',
-                                                    bgcolor: '#0059b3',
-                                                    color: '#FFF',
-                                                }}>
-                                        Kaduna-Central
-                                    </Typography>
-                                </Link>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Stack
-                                direction="column"
-                                justifyContent="center"
-                                alignItems="center"
-                                spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel/zaria'>
-                                    <Avatar src='/zaria.svg' alt='Zaria'
-                                            sx={{
-                                                width: 250,
-                                                height: 250,
-                                                alignContent: 'center',
-                                                
-                                            }}/>
-                                </Link>
-                                <Link href='/dashboard/admin/reports/fuel/zaria'>
-                                    <Typography variant='h6'
-                                                sx={{
-                                                    // color: '#46F0F9',
-                                                    border: '2px solid #46F0F9',
-                                                    borderRadius: 5,
-                                                    p: '10px',
-                                                    bgcolor: '#0059b3',
-                                                    color: '#FFF',
-                                                }}>
-                                        Zaria
+                                        New Fuel Report +
                                     </Typography>
                                 </Link>
                             </Stack>
