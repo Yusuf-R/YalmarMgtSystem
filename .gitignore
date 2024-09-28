@@ -170,6 +170,6 @@ next-env.d.ts
 package-lock.json
 yarn.lock
 
-!/client/src/utils/playground.js
-!/server/src/utils /pg.js
-server/src/utils/pg.js
+/client/src/utils/playground.js
+/server/src/utils /pg.js
+server/src/utils/pg.js!/client/src/components/Demo/
