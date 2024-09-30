@@ -1,5 +1,4 @@
 'use client';
-import styleSetPassword from "./SetPassword.module.css";
 import {MdOutlineMailLock} from "react-icons/md";
 import {MdOutlineGeneratingTokens} from "react-icons/md";
 import {useState, useEffect} from "react"

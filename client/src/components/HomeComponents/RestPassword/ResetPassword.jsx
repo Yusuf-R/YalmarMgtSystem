@@ -14,7 +14,6 @@ import "react-toastify/dist/ReactToastify.css";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import AdminUtils from "@/utils/AdminUtilities";
-import styleReset from "./ResetPassword.module.css";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 import * as yup from "yup";
 import {keyframes} from "@mui/system";
