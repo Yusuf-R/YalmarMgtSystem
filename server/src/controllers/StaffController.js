@@ -26,26 +26,27 @@ const {ObjectId} = mongoose.Types;
 
 class StaffController {
     static async login(req, res) {
-        const data64 = await authClient.signInPrecheck(req);
-        if (data64 instanceof Error) {
-            return res.status(400).json({error: data64.message});
-        }
-        const decodeData = await authClient.signInDecrypt(data64);
-        if (decodeData.error) {
-            return res.status(400).json({error: decodeData.error});
-        }
-        const {email, password} = decodeData;
-        if (!email) {
-            return res.status(400).json({
-                error: 'Missing email address', reqFormat: ' { email:  <string>, password:  <string> }',
-            });
-        }
-        if (!password) {
-            return res.status(400).json({
-                error: 'Missing password', reqFormat: ' { email:  <string>, password:  <string> }',
-            });
+        const {encryptedData} = req.body;
+        if (!encryptedData) {
+            return res.status(400).json({error: 'Missing login data'});
         }
         try {
+            const decryptedData = await authClient.loginDecrypt(encryptedData);
+            // decrypt data
+            if (!decryptedData) {
+                return res.status(400).json({error: 'Invalid data'});
+            }
+            const {email, password} = decryptedData;
+            if (!email) {
+                return res.status(400).json({
+                    error: 'Missing email address', reqFormat: ' { email:  <string>, password:  <string> }',
+                });
+            }
+            if (!password) {
+                return res.status(400).json({
+                    error: 'Missing password', reqFormat: ' { email:  <string>, password:  <string> }',
+                });
+            }
             // check DB connection
             if (!(await dbClient.isAlive())) {
                 return res.status(500).json({error: 'Database connection failed'});
@@ -87,7 +88,6 @@ class StaffController {
             });
             return res.status(201).json({
                 message: 'Login successful',
-                accessToken: encryptedAccessToken,
             });
         } catch (err) {
             if (err.code === 11000) {
@@ -842,25 +842,24 @@ class StaffController {
         if (!encryptedData) {
             return res.status(400).json({error: 'Missing data'});
         }
-        const dataDecode = await authClient.loginDecrypt(encryptedData);
-        const {email, password, token, confirmPassword} = dataDecode;
-        if (!email) {
-            return res.status(400).json({error: 'Missing email'});
-        }
-        if (!password) {
-            return res.status(400).json({error: 'Missing password'});
-        }
-        if (!token) {
-            return res.status(400).json({error: 'Missing token'});
-        }
-        if (!confirmPassword) {
-            return res.status(400).json({error: 'Missing confirm password'});
-        }
-        if (password !== confirmPassword) {
-            return res.status(400).json({error: 'Passwords do not match'});
-        }
-
         try {
+            const dataDecode = await authClient.setNewPasswordDecrypt(encryptedData);
+            const {email, password, token, confirmPassword} = dataDecode;
+            if (!email) {
+                return res.status(400).json({error: 'Missing email'});
+            }
+            if (!password) {
+                return res.status(400).json({error: 'Missing password'});
+            }
+            if (!token) {
+                return res.status(400).json({error: 'Missing token'});
+            }
+            if (!confirmPassword) {
+                return res.status(400).json({error: 'Missing confirm password'});
+            }
+            if (password !== confirmPassword) {
+                return res.status(400).json({error: 'Passwords do not match'});
+            }
             // check if server is up before verifying
             if (!(await dbClient.isAlive())) {
                 return res.status(500).json({error: 'Database connection failed'});

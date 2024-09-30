@@ -1,8 +1,12 @@
 'use client';
-import SetPassword from "@/components/HomeComponents/SetPassword/SetPassword";
+
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from 'react';
 import AdminUtils from "@/utils/AdminUtilities";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import {Suspense, lazy} from "react";
+
+const SetPassword = lazy(() => import('@/components/HomeComponents/SetPassword/SetPassword'));
 
 function NewPassword() {
     const router = useRouter();
@@ -34,9 +38,15 @@ function NewPassword() {
 
     // Show loading state if email is still being decrypted
     if (!decryptedEmail) {
-        return <div>Loading...</div>;
+        return <LazyLoading/>
     }
-    return <SetPassword decryptedEmail={decryptedEmail}/>;
+    return (
+        <>
+            <Suspense fallback={<LazyLoading/>}>
+                <SetPassword decryptedEmail={decryptedEmail}/>
+            </Suspense>
+        </>
+    )
 }
 
 export default NewPassword;

@@ -17,6 +17,9 @@ import AdminUtils from "@/utils/AdminUtilities";
 import styleReset from "./ResetPassword.module.css";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 import * as yup from "yup";
+import {keyframes} from "@mui/system";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 const schemaResetPassword = yup.object().shape({
@@ -26,7 +29,24 @@ const schemaResetPassword = yup.object().shape({
         .required("Email is required"),
 });
 
+// Define the rotation animation
+const rotateAnimation = keyframes`
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+`;
+
 function ResetPassword() {
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
+    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
+    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
     const router = useRouter();
     const {
         control,
@@ -93,27 +113,62 @@ function ResetPassword() {
         <>
             <Box
                 sx={{
-                    fontFamily: "Poppins",
-                    bgcolor: "#274e61",
-                    color: "white",
-                    height: "100vh",
                     display: "flex",
-                    flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundImage: "url(/bg-6.jpg)",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    overflow: 'hidden',
-
+                    flexDirection: "column",
+                    color: "white",
+                    textAlign: "center",
+                    padding: isSmallScreen ? "16px" : isMediumScreen ? "16px" : isMobile ? "16px" : isTab ? "12px" : isTablet ? "15px" : "12px",
+                    marginTop: isSmallScreen ? "180px" : isMediumScreen ? "180px" : isMobile ? "180px" : isTab ? "350px" : isTablet ? "200px" : isLargestScreen ? "250px" : "300px",
                 }}
             >
-                <Box className={styleReset.wrapper}>
-                    <Box className={styleReset.formParent}>
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '500px',
+                        maxWidth: '90%',
+                        borderRadius: '15px',
+                        overflow: 'hidden',
+                        padding: '2px', // Increased padding to make room for thicker animation
+                        '&::before, &::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '-50%',
+                            left: '-50%',
+                            height: '200%',
+                            width: '200%',
+                            background: 'conic-gradient(transparent, transparent, transparent, #00ccff)',
+                            animation: `${rotateAnimation} 2s linear infinite`,
+                        },
+                        '&::after': {
+                            background: 'conic-gradient(transparent, transparent, transparent, #ff00ea)',
+                            animationDelay: '-1s',
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "25px",
+                            borderRadius: "15px",
+                            padding: isSmallScreen ? "15px" : "5px",
+                            width: "100%",
+                            background: "black",
+                            zIndex: 5,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            maxHeight: "100vh",
+                            // border: '2px solid gold',
+                        }}
+                    >
                         <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
                             Reset Password
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit(ResetPassword)} noValidate sx={{mt: 10, mb: 10}}>
+                        <Box component="form" onSubmit={handleSubmit(ResetPassword)} noValidate
+                             sx={{mt: 10, mb: 10}}>
                             <Controller
                                 name="email"
                                 control={control}

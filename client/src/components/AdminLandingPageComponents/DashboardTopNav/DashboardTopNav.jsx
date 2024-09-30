@@ -1,137 +1,109 @@
 'use client';
-import styleTopNav from './DashboardTopNav.module.css';
-import Image from "next/image";
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
-import Button from "@mui/material/Button";
-import Stack from '@mui/material/Stack';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {useState, useEffect} from 'react';
 import {useRouter} from "next/navigation";
 import {useLogout} from "@/customHooks/useLogout";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
-
+import {
+    Box,
+    Stack,
+    Typography,
+    Button,
+    Menu,
+    MenuItem,
+    Divider,
+    IconButton,
+    Avatar,
+    Tooltip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
+} from "@mui/material";
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ListItemIcon from "@mui/material/ListItemIcon";
+import MenuIcon from '@mui/icons-material/Menu';
+import Image from "next/image";
 
 function DashboardTopNav({staffData}) {
     const handleLogout = useLogout();
     const router = useRouter();
     const [confirmExit, setConfirmExit] = useState(false);
-
-    const [imgSrc, setImgSrc] = useState('');
-    // const staffData = JSON.parse(Cookies.get('staffData') ? Cookies.get('staffData') : '{}');
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    // Fallback image if Cloudinary image fails to load
-    let fallbackImg;
-    if (staffData.gender === 'Male') {
-        fallbackImg = '/Avatar-9.svg';
-    } else {
-        fallbackImg = '/Avatar-10.svg';
-    }
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    useEffect(() => {
-        if (staffData.imgURL !== '') {
-            setImgSrc(staffData.imgURL);
-        } else {
-            setImgSrc(fallbackImg);
-        }
-    }, [staffData.imgURL]);
 
-    const handleDialog = () => {
-        setConfirmExit(true);
-    }
+    const handleClick = (event) => setAnchorEl(event.currentTarget);
+    const handleClose = () => setAnchorEl(null);
+    const handleDialog = () => setConfirmExit(true);
+
+    const [imgSrc, setImgSrc] = useState('');
+    const fallbackImg = staffData.gender === 'Male' ? '/Avatar-9.svg' : '/Avatar-10.svg';
+
+    useEffect(() => {
+        setImgSrc(staffData.imgURL ? staffData.imgURL : fallbackImg);
+    }, [staffData.imgURL]);
 
     return (
         <>
-            <Box className={styleTopNav.parent} sx={{
-                width: '100vw',
+            {/* Top Navigation Bar */}
+            <Box sx={{
+                width: '100%',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                backgroundColor: '#355e75',
+                color: 'white',
+                zIndex: 20,
+                px: 2,
+                py: 1,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
             }}>
-                <Box className={styleTopNav.LHS}>
-                    <div>
-                        <Image
-                            src={"/YMS.png"}
-                            alt="YALMAR Logo"
-                            width={75}
-                            height={75}
-                            quality={100}
+                {/* Left Side: Logo and Title */}
+                <Stack direction="row" alignItems="center" spacing={2}>
+                    <Image src={"/YMS.png"} alt="YALMAR Logo" width={50} height={50} quality={100}/>
+                    <Typography variant="h5" component="h1" fontWeight="bold">
+                        YALMAR <br/> Management System
+                    </Typography>
+                </Stack>
 
-                        />
-                    </div>
-                    <div>
-                        <h3>YALMAR <br/>Management System</h3>
-                    </div>
-                </Box>
-                <Stack direction="row" spacing={8}>
-                    <Typography variant="h6" sx={{
-                        fontWeight: 'bold',
-                        paddingTop: '25px',
-                    }}>
+                {/* Right Side: Welcome and Avatar */}
+                <Stack direction="row" alignItems="center" spacing={4}>
+                    <Typography variant="h6" sx={{fontWeight: 'bold'}}>
                         Welcome {staffData.email || 'Anonymous'}
                     </Typography>
-                    <Tooltip title="Account-settings">
+
+                    <Tooltip title="Account Settings">
                         <Button
                             endIcon={<KeyboardArrowDownIcon sx={{color: 'salmon'}}/>}
                             onClick={handleClick}
                             size="small"
-                            sx={{ml: 2}}
-                            aria-controls={open ? 'account-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
+                            sx={{
+                                color: 'white',
+                                '&:hover': {backgroundColor: 'rgba(255, 255, 255, 0.1)'}
+                            }}
                         >
-                            <Image
-                                src={imgSrc}
-                                alt="Avatar"
-                                width={75}
-                                height={75}
-                                quality={80}
-                                style={{borderRadius: '50%'}}
-                                priority
-                            />
+                            <Avatar src={imgSrc} alt="Avatar" sx={{width: 40, height: 40}}/>
                         </Button>
                     </Tooltip>
-                    <IconButton>
-                        <>
-                            {/*    Will do something here later ON, perhaps the light/Dark mode toggle */}
-                        </>
-                    </IconButton>
                 </Stack>
             </Box>
+
+            {/* Dropdown Menu for Account Settings */}
             <Menu
                 anchorEl={anchorEl}
                 id="account-menu"
                 open={open}
                 onClose={handleClose}
-                onClick={handleClose}
                 PaperProps={{
-                    elevation: 0,
+                    elevation: 1,
                     sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                         mt: 1.5,
-                        '& .MuiAvatar-root': {
-                            width: 32,
-                            height: 32,
-                            ml: -0.5,
-                            mr: 1,
-                        },
+                        '& .MuiAvatar-root': {width: 32, height: 32},
                         '&::before': {
                             content: '""',
                             display: 'block',
@@ -142,7 +114,6 @@ function DashboardTopNav({staffData}) {
                             height: 10,
                             bgcolor: 'background.paper',
                             transform: 'translateY(-50%) rotate(45deg)',
-                            zIndex: 0,
                         },
                     },
                 }}
@@ -150,44 +121,36 @@ function DashboardTopNav({staffData}) {
                 anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             >
                 <MenuItem onClick={() => router.push('/dashboard/admin/settings/biodata/view')}>
-                    <Avatar sx={{
-                        color: 'black',
-                    }}/> Profile
+                    <Avatar sx={{color: 'black'}}/> Profile
                 </MenuItem>
                 <Divider/>
                 <MenuItem onClick={() => router.push('/dashboard/admin/settings')}>
                     <ListItemIcon>
-                        <Settings fontSize="small" sx={{
-                            color: 'black',
-                        }}/>
+                        <SettingsIcon fontSize="small" sx={{color: 'black'}}/>
                     </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem onClick={handleDialog} sx={{
-                    color: 'red',
-                }}>
+                <MenuItem onClick={handleDialog} sx={{color: 'red'}}>
                     <ListItemIcon>
-                        <Logout fontSize="small" sx={{
-                            color: 'red',
-                        }}/>
+                        <LogoutIcon fontSize="small" sx={{color: 'red'}}/>
                     </ListItemIcon>
                     Logout
                 </MenuItem>
             </Menu>
-            <Dialog open={confirmExit}>
+
+            {/* Logout Confirmation Dialog */}
+            <Dialog open={confirmExit} onClose={() => setConfirmExit(false)}>
                 <DialogTitle>Confirm Logout</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to logout?
-                    </DialogContentText>
+                    <DialogContentText>Are you sure you want to logout?</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setConfirmExit(false)}>No</Button>
-                    <Button onClick={handleLogout}>Yes</Button>
+                    <Button onClick={() => setConfirmExit(false)} variant="contained">No</Button>
+                    <Button onClick={handleLogout} color="error" variant="contained">Yes</Button>
                 </DialogActions>
             </Dialog>
         </>
-    )
+    );
 }
 
 export default DashboardTopNav;

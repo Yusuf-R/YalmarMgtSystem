@@ -121,7 +121,7 @@ class AdminUtils {
         return btoa(String.fromCharCode(...encryptedDataWithIv)); // Convert to base64 string
     }
 
-    // Login and SetPassword Specific
+    // to be used for Login and SetPassword Specific operations
     static async encryptLoginData(data) {
         const publicKeyPem = process.env.NEXT_PUBLIC_PUBLIC_KEY;
         // Convert PEM to ArrayBuffer
@@ -162,7 +162,6 @@ class AdminUtils {
                 importedKey,
                 dataBuffer
             );
-
             return btoa(String.fromCharCode.apply(null, new Uint8Array(encryptedData)));
         } catch (error) {
             console.error("Encryption error:", error);
@@ -281,25 +280,15 @@ class AdminUtils {
 
     // Login API ---- Staff-------
     static async StaffLogin(obj) {
-        // Encode username and password in base64
-        const encoded = Buffer.from(obj.email + ':' + obj.password).toString('base64');
-        const BasicAuth = `Basic ${encoded}`;
-        // use axios for http request
         try {
-            const response = await axiosPublic(
-                {
-                    method: "POST",
-                    url: '/staff/login',
-                    headers: {
-                        "Authorization": BasicAuth
-                    },
-                    data: obj,
-                    withCredentials: true // Include cookies in the request
-                });
+            const response = await axiosPublic({
+                method: "POST",
+                url: '/staff/login',
+                data: obj,
+            });
             return response.data;
         } catch (error) {
-            console.log(error);
-            throw new Error(error.response.data.message);
+            throw new Error(error);
         }
     }
 

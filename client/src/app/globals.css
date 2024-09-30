@@ -16,11 +16,11 @@
     list-style: none;
     text-decoration: none;
     scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 /* Apply global styles to body */
 body {
-    font-family: 'Poppins', sans-serif;
     justify-content: center;
     align-items: center;
     margin: 0;

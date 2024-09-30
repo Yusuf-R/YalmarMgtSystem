@@ -18,16 +18,25 @@ import "react-toastify/dist/ReactToastify.css";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
-import {FcRedo} from "react-icons/fc";
 import AdminUtils from "@/utils/AdminUtilities";
-import styleLogin from "./Login.module.css";
 import {schemaLogin} from "@/SchemaValidator/login";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {keyframes} from "@mui/system";
+import {FcRedo} from "react-icons/fc";
 
 function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
+    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
+    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
     const router = useRouter();
     const {
         control,
@@ -43,34 +52,42 @@ function Login() {
     const handleCheckBox = (e) => {
         setRememberMe(e.target.checked);
     };
+
+    // Define the rotation animation
+    const rotateAnimation = keyframes`
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    `;
+
+
     const mutation = useMutation({
         mutationKey: ["Login"],
         mutationFn: AdminUtils.StaffLogin,
     });
-    const OnLogin = (loginData) => {
+    const OnLogin = async (loginData) => {
+        console.log(loginData);
         setIsSubmit(true);
-        mutation.mutate(loginData, {
-            onSuccess: (response) => {
-                if (response) {
-                    toast.success("Login successful 🚀");
-                    toast.success("Redirecting to dashboard", {
-                        icon: <FcRedo/>,
-                    });
-                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
-                        secure: true,
-                        sameSite: "strict",
-                    });
-                    setTimeout(() => {
-                        router.push("/dashboard");
-                    }, 2000);
-                    setIsSubmit(false);
-                } else {
-                    toast.error("Unauthorized credentials");
-                    setTimeout(() => {
-                        router.push("/login");
-                    }, 3000);
-                    setIsSubmit(false);
-                }
+        // encrypt the login data
+        const encryptedData = await AdminUtils.encryptLoginData(loginData);
+        console.log(encryptedData);
+        mutation.mutate({encryptedData}, {
+            onSuccess: () => {
+                toast.success("Login successful 🚀");
+                toast.success("Redirecting to dashboard", {
+                    icon: <FcRedo/>,
+                });
+                Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                    secure: true,
+                    sameSite: "strict",
+                });
+                setTimeout(() => {
+                    router.push("/dashboard");
+                }, 2000);
+                setIsSubmit(false);
             },
             onError: (error) => {
                 setIsSubmit(false);
@@ -110,28 +127,64 @@ function Login() {
         <>
             <Box
                 sx={{
-                    fontFamily: "Poppins",
-                    bgcolor: "#274e61",
-                    color: "white",
-                    height: "100vh",
                     display: "flex",
-                    flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundImage: "url(/bg-6.jpg)",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    overflow: 'hidden',
-
+                    flexDirection: "column",
+                    color: "white",
+                    textAlign: "center",
+                    padding: isSmallScreen ? "16px" : isMediumScreen ? "16px" : isMobile ? "16px" : isTab ? "12px" : isTablet ? "15px" : "12px",
+                    marginTop: isSmallScreen ? "180px" : isMediumScreen ? "180px" : isMobile ? "180px" : isTab ? "350px" : isTablet ? "200px" : isLargestScreen ? "250px" : "300px",
                 }}
             >
-                <Box className={styleLogin.wrapper}>
-                    <Box className={styleLogin.formParent}>
-                        <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '500px',
+                        maxWidth: '90%',
+                        borderRadius: '15px',
+                        overflow: 'hidden',
+                        padding: '2px', // Increased padding to make room for thicker animation
+                        '&::before, &::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '-50%',
+                            left: '-50%',
+                            height: '200%',
+                            width: '200%',
+                            background: 'conic-gradient(transparent, transparent, transparent, #00ccff)',
+                            animation: `${rotateAnimation} 2s linear infinite`,
+                        },
+                        '&::after': {
+                            background: 'conic-gradient(transparent, transparent, transparent, #ff00ea)',
+                            animationDelay: '-1s',
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "25px",
+                            borderRadius: "15px",
+                            padding: "5px",
+                            width: "100%",
+                            background: "black",
+                            zIndex: 5,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            maxHeight: "100vh",
+                            // border: '2px solid gold',
+                        }}
+                    >
+                        <Typography variant={isMobile ? 'h6' : isTab ? "h6" : "h5"}
+                                    sx={{fontWeight: "bold", fontFamily: "Poppins", mt: 2}}>
                             Yalmar Management System
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit(OnLogin)} noValidate sx={{m: 4}}>
-                            {/* Email Field with Icon */}
+                        {/* Your form logic goes here */}
+                        <Box component="form" onSubmit={handleSubmit(OnLogin)} noValidate sx={{m: 0.5}}>
+                            {/* Email Field */}
                             <Controller
                                 name="email"
                                 control={control}
@@ -173,7 +226,7 @@ function Login() {
                                 )}
                             />
 
-                            {/* Password Field with Visibility Toggle */}
+                            {/* Password Field */}
                             <Controller
                                 name="password"
                                 control={control}
@@ -206,7 +259,7 @@ function Login() {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: isMobile ? 3 : 7}}
                                         label="Password"
                                         variant="outlined"
                                         autoComplete="off"
@@ -218,9 +271,9 @@ function Login() {
                                     />
                                 )}
                             />
-                            <br/>
+
                             {/* Remember Me Checkbox */}
-                            <Grid container alignItems="center">
+                            <Grid container alignItems="center" sx={{mb: 5}}>
                                 <Grid item xs={1}>
                                     <Checkbox
                                         checked={rememberMe}
@@ -229,25 +282,26 @@ function Login() {
                                         sx={{color: "gold"}}
                                     />
                                 </Grid>
-                                <Grid item xs={7}>
+                                <Grid item xs={isSmallScreen ? 4.3 : isMobile ? 3 : 3}>
                                     <Typography variant="subtitle1" sx={{color: "white"}}>
                                         Remember me
                                     </Typography>
                                 </Grid>
 
-                                <Grid item xs={4}>
+                                <Grid item xs={isSmallScreen ? 6.7 : isMobile ? 8 : 8}>
                                     <Typography variant="subtitle1" sx={{
                                         color: "white",
                                         cursor: "pointer",
                                         textDecoration: "underline",
+                                        ml: isSmallScreen ? 5 : 20,
                                         "&:hover": {color: "green"},
                                     }} onClick={() => router.push('/resetpassword')}>
                                         Forgot Password?
                                     </Typography>
                                 </Grid>
                             </Grid>
-                            <br/> <br/>
 
+                            {/* Submit Button */}
                             <Button
                                 fullWidth
                                 type="submit"
@@ -267,7 +321,6 @@ function Login() {
                     </Box>
                 </Box>
             </Box>
-            {isSubmit && <LazyComponent Command='Logging in ...'/>}
         </>
     );
 }

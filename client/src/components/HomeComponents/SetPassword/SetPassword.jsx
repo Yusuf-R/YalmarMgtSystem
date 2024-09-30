@@ -21,8 +21,28 @@ import Visibility from "@mui/icons-material/Visibility";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 import {useMutation} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {keyframes} from "@mui/system";
+
+// Define the rotation animation
+const rotateAnimation = keyframes`
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+`;
 
 function SetPassword({decryptedEmail}) {
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
+    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
+    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
     const [isSubmit, setIsSubmit] = useState(false);
     const [email, setEmail] = useState(decryptedEmail || '');
     const [showPasswordP1, setShowPasswordP1] = useState(false);
@@ -67,11 +87,6 @@ function SetPassword({decryptedEmail}) {
     const handleClickPassword2 = () => setShowPasswordP2((show) => !show);
 
 
-    useEffect(() => {
-        if (!email) {
-            router.push("/login");
-        }
-    }, [router]);
     const txProps = {
         color: "red",
         bgcolor: "#274e61",
@@ -102,23 +117,58 @@ function SetPassword({decryptedEmail}) {
         <>
             <Box
                 sx={{
-                    fontFamily: "Poppins",
-                    bgcolor: "#274e61",
-                    color: "white",
-                    height: "100vh",
                     display: "flex",
-                    flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundImage: "url(/bg-3.jpg)",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    overflow: 'hidden',
+                    flexDirection: "column",
+                    color: "white",
+                    textAlign: "center",
+                    padding: isSmallScreen ? "16px" : isMediumScreen ? "16px" : isMobile ? "16px" : isTab ? "12px" : isTablet ? "15px" : "12px",
+                    marginTop: isSmallScreen ? "80px" : isMediumScreen ? "80px" : isMobile ? "180px" : isTab ? "250px" : isTablet ? "200px" : isLargestScreen ? "250px" : "300px",
                 }}
             >
-                <Box className={styleSetPassword.wrapper}>
-                    <Box className={styleSetPassword.formParent}>
-                        <Typography variant="h5" sx={{
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '500px',
+                        maxWidth: '90%',
+                        borderRadius: '15px',
+                        overflow: 'hidden',
+                        padding: '2px', // Increased padding to make room for thicker animation
+                        '&::before, &::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '-50%',
+                            left: '-50%',
+                            height: '200%',
+                            width: '200%',
+                            background: 'conic-gradient(transparent, transparent, transparent, #00ccff)',
+                            animation: `${rotateAnimation} 2s linear infinite`,
+                        },
+                        '&::after': {
+                            background: 'conic-gradient(transparent, transparent, transparent, #ff00ea)',
+                            animationDelay: '-1s',
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "25px",
+                            borderRadius: "15px",
+                            padding: isSmallScreen ? "1px" : "3px",
+                            width: "100%",
+                            background: "black",
+                            zIndex: 5,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            maxHeight: "100vh",
+                            // border: '2px solid gold',
+                        }}
+                    >
+                        <Typography variant={isSmallScreen ? "h6" : 'h5'} sx={{
                             color: "white",
                             fontWeight: "bold",
                             textAlign: "center",
@@ -127,7 +177,8 @@ function SetPassword({decryptedEmail}) {
                         }}>
                             Set New Password
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit(SetPassword)} noValidate sx={{m: 4}}>
+                        <Box component="form" onSubmit={handleSubmit(SetPassword)} noValidate
+                             sx={{m: 4}}>
                             {/* Email*/}
                             <Controller
                                 name="email"
@@ -312,23 +363,27 @@ function SetPassword({decryptedEmail}) {
                                     height: 50,
                                     backgroundColor: "#3263b3",
                                     ":hover": {color: "gold"},
-                                    fontSize: "1.2rem",
+                                    fontSize: isMobile ? '0.9rem' : "1.2rem",
                                     color: "white",
                                 }}
                             >
                                 Reset Password
                             </Button>
                             <br/>
-                            <Stack direction="row" spacing={4} justifyContent="space-between" sx={{mt: 2}}>
+                            <Stack direction="row" spacing={isSmallScreen ? 0.5 : 4}
+                                   justifyContent={"space-between"}
+                                   sx={{mt: 2}}>
                                 {/*    Back to login*/}
                                 <Button
                                     type="submit"
                                     variant="text"
                                     sx={{
                                         mt: 3,
-                                        height: 50,
+                                        height: isSmallScreen ? 10 : 50,
                                         ":hover": {color: "gold"},
                                         color: "white",
+                                        fontSize: isSmallScreen ? '0.6rem' : undefined,
+
                                     }} onClick={() => window.location = ('/login')}>
                                     Login
                                 </Button>
@@ -338,9 +393,10 @@ function SetPassword({decryptedEmail}) {
                                     variant="text"
                                     sx={{
                                         mt: 3,
-                                        height: 50,
+                                        height: isSmallScreen ? 10 : 50,
                                         ":hover": {color: "green"},
                                         color: "white",
+                                        fontSize: isSmallScreen ? '0.6rem' : undefined,
                                     }} onClick={() => window.location = ('/resetpassword')}>
 
                                     <span> Didn&apos;t get the token?</span>

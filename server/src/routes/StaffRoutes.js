@@ -1,9 +1,16 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable jest/require-hook */
+import SecurityConfig from "../utils/config";
+
 const express = require('express');
+const cors = require('cors');
 const multer = require('multer')
 const staffController = require('../controllers/StaffController');
 const imageController = require('../controllers/ImageController');
+
+
+const securityConfig = new SecurityConfig();
+const {corsOptions} = securityConfig;
 
 const staffRouter = express.Router();
 const storage = multer.memoryStorage(); // Store file in memory
@@ -14,6 +21,8 @@ const upload = multer({
         fieldSize: 25 * 1024 * 1024, // Limit field size to 25MB
     },
 });
+
+staffRouter.use(cors(corsOptions));
 
 staffRouter.post('/login', staffController.login);
 staffRouter.post('/logout', staffController.logout);
