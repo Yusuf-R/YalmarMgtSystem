@@ -1,7 +1,7 @@
 'use client';
 import {MdOutlineMailLock} from "react-icons/md";
 import {MdOutlineGeneratingTokens} from "react-icons/md";
-import {useState, useEffect} from "react"
+import React, {useState, useEffect} from "react"
 import {useRouter} from "next/navigation";
 import {Controller, useForm} from "react-hook-form"
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -36,12 +36,15 @@ const rotateAnimation = keyframes`
 
 function SetPassword({decryptedEmail}) {
     const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
-    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
-    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const [isSubmit, setIsSubmit] = useState(false);
     const [email, setEmail] = useState(decryptedEmail || '');
     const [showPasswordP1, setShowPasswordP1] = useState(false);
@@ -91,7 +94,7 @@ function SetPassword({decryptedEmail}) {
         bgcolor: "#274e61",
         borderRadius: "10px",
         width: "100%",
-        fontSize: "18px",
+        fontSize: "16px",
         fontStyle: "bold",
         "&:hover": {
             bgcolor: "#051935",
@@ -122,8 +125,8 @@ function SetPassword({decryptedEmail}) {
                     flexDirection: "column",
                     color: "white",
                     textAlign: "center",
-                    padding: isSmallScreen ? "16px" : isMediumScreen ? "16px" : isMobile ? "16px" : isTab ? "12px" : isTablet ? "15px" : "12px",
-                    marginTop: isSmallScreen ? "80px" : isMediumScreen ? "80px" : isMobile ? "180px" : isTab ? "250px" : isTablet ? "200px" : isLargestScreen ? "250px" : "300px",
+                    padding: xSmall ? 1 : small ? 2 : medium ? 3 : large ? 4 : xxLarge ? 4 : 6,
+                    marginTop: xSmall ? 3 : small ? 8 : medium ? 15 : xWide ? 25 : ultraWide ? 35 : 15,
                 }}
             >
                 <Box
@@ -155,9 +158,9 @@ function SetPassword({decryptedEmail}) {
                             position: "relative",
                             display: "flex",
                             flexDirection: "column",
-                            rowGap: "25px",
+                            rowGap: "5px",
                             borderRadius: "15px",
-                            padding: isSmallScreen ? "1px" : "3px",
+                            padding: "5px",
                             width: "100%",
                             background: "black",
                             zIndex: 5,
@@ -167,17 +170,12 @@ function SetPassword({decryptedEmail}) {
                             // border: '2px solid gold',
                         }}
                     >
-                        <Typography variant={isSmallScreen ? "h6" : 'h5'} sx={{
-                            color: "white",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            fontFamily: "Poppins",
-                            mt: 2
-                        }}>
+                        <Typography variant={xSmall || small || medium ? 'subtitle2' : "h6"}
+                                    sx={{fontWeight: "bold", fontFamily: "Poppins", mt: 5, mb: 1}}>
                             Set New Password
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit(SetPassword)} noValidate
-                             sx={{m: 4}}>
+                             sx={{m: 0.5}}>
                             {/* Email*/}
                             <Controller
                                 name="email"
@@ -208,7 +206,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Email"
                                         variant="outlined"
                                         autoComplete="off"
@@ -249,7 +247,7 @@ function SetPassword({decryptedEmail}) {
                                             shrink: true,
                                         }}
                                         sx={{
-                                            marginBottom: 5,
+                                            marginBottom: 3,
                                         }}
                                         label="Token"
                                         variant="outlined"
@@ -293,7 +291,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Password"
                                         variant="outlined"
                                         autoComplete="off"
@@ -339,7 +337,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Password"
                                         variant="outlined"
                                         autoComplete="off"
@@ -357,31 +355,28 @@ function SetPassword({decryptedEmail}) {
                                 type="submit"
                                 variant="contained"
                                 sx={{
-                                    mt: 2,
-                                    mb: 4,
-                                    height: 50,
-                                    backgroundColor: "#3263b3",
-                                    ":hover": {color: "gold"},
-                                    fontSize: isMobile ? '0.9rem' : "1.2rem",
-                                    color: "white",
+                                    height: xSmall || small ? 40 : medium ? 45 : 50,
+                                    backgroundColor: '#3263b3',
+                                    '&:hover': {backgroundColor: '#891f9c'},
+                                    fontSize: xSmall ? '14px' : small ? '16px' : medium ? '18px' : '20px',
+                                    color: 'white',
                                 }}
+                                disabled={isSubmit}
                             >
-                                Reset Password
+                                {isSubmit ? "Submitting in..." : "Submit"}
                             </Button>
                             <br/>
-                            <Stack direction="row" spacing={isSmallScreen ? 0.5 : 4}
+                            <Stack direction="row" spacing={2.5}
                                    justifyContent={"space-between"}
-                                   sx={{mt: 2}}>
-                                {/*    Back to login*/}
+                                   sx={{mt: 2, mb: 3}}>
+                                {/*Back to login*/}
                                 <Button
                                     type="submit"
                                     variant="text"
                                     sx={{
-                                        mt: 3,
-                                        height: isSmallScreen ? 10 : 50,
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? '14px' : '16px',
                                         ":hover": {color: "gold"},
                                         color: "white",
-                                        fontSize: isSmallScreen ? '0.6rem' : undefined,
 
                                     }} onClick={() => window.location = ('/login')}>
                                     Login
@@ -391,14 +386,12 @@ function SetPassword({decryptedEmail}) {
                                     size='small'
                                     variant="text"
                                     sx={{
-                                        mt: 3,
-                                        height: isSmallScreen ? 10 : 50,
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? '14px' : '16px',
                                         ":hover": {color: "green"},
                                         color: "white",
-                                        fontSize: isSmallScreen ? '0.6rem' : undefined,
                                     }} onClick={() => window.location = ('/resetpassword')}>
 
-                                    <span> Didn&apos;t get the token?</span>
+                                    No token?
                                 </Button>
                             </Stack>
                         </Box>

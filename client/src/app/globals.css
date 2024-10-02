@@ -1,16 +1,19 @@
 /* global.css */
 
-/* Define global variables or custom properties */
+/* Reset default styles */
+
 :root {
-    --textColor: white;
+    --textColor: #fff;
+    --dangerColor: #ff0000;
+    --successColor: #00ff00;
+    --warningColor: #ffff00;
+    --infoColor: #00ffff;
 }
 
-/* Reset default styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    background: transparent;
     border: 0;
     outline: 0;
     list-style: none;
@@ -19,14 +22,42 @@
     font-family: 'Poppins', sans-serif !important;
 }
 
-/* Apply global styles to body */
-body {
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    color: var(--textColor);
-    background-color: #234457 !important;
+/* Ensure html and body take up full height and fix the background */
+html, body {
+    height: 100%;
+    min-height: 100vh;
     background-size: cover;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-image: url('/bg-10.svg'); /* Set the background image */
+    background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    color: var(--textColor);
 }
+
+/* Apply a subtle blur effect to the background image */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: inherit; /* Inherit the background image */
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: center;
+    filter: blur(10px); /* Blur effect */
+    z-index: -1; /* Ensure it's behind the content */
+    opacity: 0.8; /* Lower the opacity for a softer look */
+}
+
+/* To prevent flashes of white background on page transition */
+html {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Additional styling for smoother transitions */
+body {
+    transition: background-color 0.3s ease-in-out;
+}
+

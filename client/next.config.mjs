@@ -33,6 +33,15 @@ const nextConfig = {
         // your project has ESLint errors.
         ignoreDuringBuilds: true,
     },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/home',
+                permanent: true, // Set to true if you want it to be a permanent redirect (HTTP 308)
+            },
+        ];
+    },
 };
 
 export default nextConfig;

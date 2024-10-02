@@ -8,13 +8,13 @@ import {useTheme} from '@mui/material/styles';
 // Define background images for different routes
 const routeBackgrounds = {
     '/home': '/bg-9.jpg',
-    '/about': '/bg-11.svg',
+    '/about': '/bg-5.jpg',
     '/services': '/bg-8.jpg',
     '/contact': '/bg-12.svg',
     '/careers': '/bg-7.jpg',
     '/login': '/bg-6.jpg',
     '/setpassword': '/bg-10.svg',
-    '/resetpassword': '/bg-12.svg',
+    '/resetpassword': '/bg-9.jpg',
 };
 
 export default function EntryLayout({children}) {

@@ -40,12 +40,55 @@ const rotateAnimation = keyframes`
 
 function ResetPassword() {
     const theme = useTheme();
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
-    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
-    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
+
+    const getToastConfig = () => {
+        let fontSize = '14px';
+        let width = '300px';
+        let position = 'top-right';
+
+        if (xSmall || small) {
+            fontSize = '12px';
+            width = '90%';
+        } else if (medium) {
+            fontSize = '14px';
+            width = '80%';
+        } else if (large) {
+            fontSize = '16px';
+            width = '400px';
+        } else if (xLarge || xxLarge) {
+            fontSize = '18px';
+            width = '450px';
+        } else {
+            fontSize = '20px';
+            width = '500px';
+        }
+        return {
+            position,
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+                fontSize,
+                width,
+                maxWidth: '100%',
+            },
+        };
+    };
+
+
     const router = useRouter();
     const {
         control,
@@ -67,9 +110,10 @@ function ResetPassword() {
         // encrypt the email and store it in session storage
         const encryptedEmail = await AdminUtils.encryptData(email);
         setIsSubmit(true);
+        const toastConfig = getToastConfig();
         mutation.mutate(data, {
             onSuccess: () => {
-                toast.success('Reset Token sent to your email');
+                toast.success('Reset Token sent to your email', toastConfig);
                 sessionStorage.setItem("email", encryptedEmail);
                 setIsSubmit(false);
                 router.push('/setpassword')
@@ -77,7 +121,7 @@ function ResetPassword() {
             onError: (error) => {
                 setIsSubmit(false);
                 console.error(error);
-                toast.error("Unauthorized credentials");
+                toast.error("Unauthorized credentials", toastConfig);
             },
         });
     };
@@ -87,7 +131,7 @@ function ResetPassword() {
         bgcolor: "#274e61",
         borderRadius: "10px",
         width: "100%",
-        fontSize: "18px",
+        fontSize: "16px",
         fontStyle: "bold",
         "&:hover": {
             bgcolor: "#051935",
@@ -118,8 +162,8 @@ function ResetPassword() {
                     flexDirection: "column",
                     color: "white",
                     textAlign: "center",
-                    padding: isSmallScreen ? "16px" : isMediumScreen ? "16px" : isMobile ? "16px" : isTab ? "12px" : isTablet ? "15px" : "12px",
-                    marginTop: isSmallScreen ? "180px" : isMediumScreen ? "180px" : isMobile ? "180px" : isTab ? "350px" : isTablet ? "200px" : isLargestScreen ? "250px" : "300px",
+                    padding: xSmall ? 1 : small ? 2 : medium ? 3 : large ? 4 : xxLarge ? 4 : 6,
+                    marginTop: xSmall ? 10 : small ? 15 : medium ? 15 : large ? 20 : xLarge ? 25 : xxLarge ? 25 : wide ? 30 : 35,
                 }}
             >
                 <Box
@@ -163,11 +207,12 @@ function ResetPassword() {
                             // border: '2px solid gold',
                         }}
                     >
-                        <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
+                        <Typography variant={xSmall || small || medium ? 'subtitle2' : "h6"}
+                                    sx={{fontWeight: "bold", fontFamily: "Poppins", mt: 2}}>
                             Reset Password
                         </Typography>
                         <Box component="form" onSubmit={handleSubmit(ResetPassword)} noValidate
-                             sx={{mt: 10, mb: 10}}>
+                             sx={{mt: 2, mb: 5}}>
                             <Controller
                                 name="email"
                                 control={control}
@@ -209,12 +254,11 @@ function ResetPassword() {
                                 type="submit"
                                 variant="contained"
                                 sx={{
-                                    mt: 3,
-                                    height: 50,
-                                    backgroundColor: "#3263b3",
-                                    ":hover": {backgroundColor: "#891f9c", color: "green"},
-                                    fontSize: "1.2rem",
-                                    color: "white",
+                                    height: xSmall || small ? 40 : medium ? 45 : 50,
+                                    backgroundColor: '#3263b3',
+                                    '&:hover': {backgroundColor: '#891f9c'},
+                                    fontSize: xSmall ? '14px' : small ? '16px' : medium ? '18px' : '20px',
+                                    color: 'white',
                                 }}
                             >
                                 Submit
