@@ -6,17 +6,15 @@ import {useQuery} from '@tanstack/react-query';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from "@mui/material/CssBaseline";
 import {useRouter} from "next/navigation";
-import useMediaQuery from '@mui/material/useMediaQuery';
 import AdminTopNav from "@/components/AdminLandingPageComponents/AdminTopNav/AdminTopNav";
 import AdminSideNav from "@/components/AdminLandingPageComponents/AdminSideNav/AdminSideNav";
 import AdminUtils from "@/utils/AdminUtilities";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import {light, dark, dracula} from '@/components/Themes/adminThemes';
-
-// const {light, dark, dracula} = require('@/components/Themes/adminThemes');
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function AdminLayout({children}) {
-    const router = useRouter()
+    const router = useRouter();
     const {data, isLoading, isError} = useQuery({
         queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
@@ -39,12 +37,15 @@ function AdminLayout({children}) {
     }, [themeMode]);
 
     // Capture responsive breakpoints
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-    const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const isTab = useMediaQuery("(min-width:900px) and (max-width:999px)");
-    const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
-    const isLargestScreen = useMediaQuery(theme.breakpoints.up("lg"));
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
 
     if (isLoading) {
         return <LazyLoading/>;
@@ -63,14 +64,14 @@ function AdminLayout({children}) {
                     display: 'flex',
                     flexDirection: 'column',
                     backgroundImage: `url('/bg-10.svg')`,
-                    backgroundSize: isSmallScreen
+                    backgroundSize: small
                         ? 'cover'
-                        : isMediumScreen
+                        : medium
                             ? 'contain'
-                            : isTablet
+                            : large
                                 ? '100% 80%'
                                 : '100% 100%',
-                    backgroundPosition: isSmallScreen || isMediumScreen
+                    backgroundPosition: small || medium
                         ? 'top center'
                         : 'center center',
                     backgroundRepeat: 'no-repeat',
@@ -90,7 +91,7 @@ function AdminLayout({children}) {
                 <AdminSideNav
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setIsCollapsed}
-                    isSmallScreen={isSmallScreen}
+                    small={small}
                 />
 
                 {/* Main Content */}
@@ -98,14 +99,14 @@ function AdminLayout({children}) {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        padding: 3,
+                        padding: small ? 2 : 3,
                         marginLeft: () => {
-                            if (isSmallScreen) {
-                                return '0px'; // On small screens, the side nav may be hidden, so no margin
+                            if (small) {
+                                return '0px'; // On small screens, side nav hidden
                             } else if (isCollapsed) {
-                                return isTab ? '60px' : isTablet ? '80px' : '100px'; // Adjust for collapsed side nav based on screen size
+                                return large ? '80px' : '100px'; // Adjust for collapsed side nav based on screen size
                             } else {
-                                return isTab ? '180px' : isTablet ? '200px' : '240px'; // Full size side nav based on screen size
+                                return large ? '180px' : '240px'; // Full size side nav based on screen size
                             }
                         },
                         transition: 'margin 0.3s',
