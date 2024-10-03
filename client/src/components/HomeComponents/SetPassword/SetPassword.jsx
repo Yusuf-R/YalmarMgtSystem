@@ -371,7 +371,6 @@ function SetPassword({decryptedEmail}) {
                                    sx={{mt: 2, mb: 3}}>
                                 {/*Back to login*/}
                                 <Button
-                                    type="submit"
                                     variant="text"
                                     sx={{
                                         fontSize: xSmall ? '10px' : small ? '12px' : medium ? '14px' : '16px',
@@ -382,7 +381,6 @@ function SetPassword({decryptedEmail}) {
                                     Login
                                 </Button>
                                 <Button
-                                    type="submit"
                                     size='small'
                                     variant="text"
                                     sx={{

@@ -166,7 +166,7 @@ class SecurityConfig {
 
     get corsOptions() {
         return {
-            origin: 'http://localhost:3000',
+            origin: ['http://localhost:3000', 'https://98a6-102-91-93-119.ngrok-free.app', 'http://localhost:3001'],
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true,
             allowedHeaders: [

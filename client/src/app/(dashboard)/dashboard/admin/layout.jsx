@@ -16,7 +16,7 @@ import {light, dark, dracula} from '@/components/Themes/adminThemes';
 // const {light, dark, dracula} = require('@/components/Themes/adminThemes');
 
 function AdminLayout({children}) {
-    const router = useRouter();
+    const router = useRouter()
     const {data, isLoading, isError} = useQuery({
         queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
