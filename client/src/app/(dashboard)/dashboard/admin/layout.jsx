@@ -6,12 +6,12 @@ import {useQuery} from '@tanstack/react-query';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from "@mui/material/CssBaseline";
 import {useRouter} from "next/navigation";
+import useMediaQuery from '@mui/material/useMediaQuery';
 import AdminTopNav from "@/components/AdminLandingPageComponents/AdminTopNav/AdminTopNav";
 import AdminSideNav from "@/components/AdminLandingPageComponents/AdminSideNav/AdminSideNav";
 import AdminUtils from "@/utils/AdminUtilities";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import {light, dark, dracula} from '@/components/Themes/adminThemes';
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 function AdminLayout({children}) {
     const router = useRouter();
@@ -47,6 +47,9 @@ function AdminLayout({children}) {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
+    // Sidebar width calculation based on collapsed state
+    const sideNavWidth = isCollapsed ? '45px' : '170px';  // Adjust width for different breakpoints
+
     if (isLoading) {
         return <LazyLoading/>;
     }
@@ -58,26 +61,16 @@ function AdminLayout({children}) {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
-            <Box
-                sx={{
-                    minHeight: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    backgroundImage: `url('/bg-10.svg')`,
-                    backgroundSize: small
-                        ? 'cover'
-                        : medium
-                            ? 'contain'
-                            : large
-                                ? '100% 80%'
-                                : '100% 100%',
-                    backgroundPosition: small || medium
-                        ? 'top center'
-                        : 'center center',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundAttachment: 'fixed',
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Transparent overlay
-                }}>
+            <Box sx={{
+                display: 'flex',
+                minHeight: '100vh',
+                backgroundImage: `url('/bg-10.svg')`,
+                backgroundSize: xSmall || small ? 'cover' : 'contain',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundAttachment: 'fixed',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',  // Transparent overlay
+            }}>
                 {/* Top Navigation Bar */}
                 <AdminTopNav
                     staffData={staffData}
@@ -87,11 +80,10 @@ function AdminLayout({children}) {
                     setIsCollapsed={setIsCollapsed}
                 />
 
-                {/* Side Navigation (collapsible) */}
+                {/* Side Navigation */}
                 <AdminSideNav
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setIsCollapsed}
-                    small={small}
                 />
 
                 {/* Main Content */}
@@ -99,17 +91,29 @@ function AdminLayout({children}) {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        padding: small ? 2 : 3,
-                        marginLeft: () => {
-                            if (small) {
-                                return '0px'; // On small screens, side nav hidden
-                            } else if (isCollapsed) {
-                                return large ? '80px' : '100px'; // Adjust for collapsed side nav based on screen size
-                            } else {
-                                return large ? '180px' : '240px'; // Full size side nav based on screen size
-                            }
-                        },
-                        transition: 'margin 0.3s',
+                        padding: 3,
+                        marginLeft: isCollapsed ? `${sideNavWidth}` : `${sideNavWidth}`,  // Adjust main content margin based on collapsed state
+                        transition: 'margin-left 0.3s ease',  // Smooth transition for expanding/collapsing
+                        paddingLeft: '5px',
+                        paddingRight: '5px',
+                        overflow: 'hidden',  // Ensure no overflow happens
+                        position: 'relative',  // Use relative positioning to respect layout boundaries
+                        top: 75,
+                        zIndex: 1,
+                        // background: 'linear-gradient(to bottom, #16222a, #3a6073)',
+                        // background: 'linear-gradient(to bottom, #536976, #292e49)',
+                        // background: 'linear-gradient(to right, #000428, #004e92)',
+                        // background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
+                        // background: 'linear-gradient(to top, #780206, #061161)',
+                        background: 'linear-gradient(to bottom, #360033, #0b8793)',
+                        borderRadius: '10px',
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',  // Add box shadow
+                        minHeight: 'calc(100vh - 75px)',  // Ensure content takes full height minus TopNav height
+                        maxHeight: 'calc(100vh - 75px)',  // Ensure the main content is within the viewable area
+                        overflowY: 'auto',  // Only allow vertical scrolling when necessary
+                        overflowX: 'hidden',  // Disable horizontal scrolling
+                        width: 'calc(100% - 5px)',  // Ensure width does not overflow container
+                        backdropFilter: 'blur(10px)'
                     }}
                 >
                     {children}
