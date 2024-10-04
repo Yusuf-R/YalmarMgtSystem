@@ -1,8 +1,7 @@
 'use client';
-import styleSetPassword from "./SetPassword.module.css";
 import {MdOutlineMailLock} from "react-icons/md";
 import {MdOutlineGeneratingTokens} from "react-icons/md";
-import {useState, useEffect} from "react"
+import React, {useState, useEffect} from "react"
 import {useRouter} from "next/navigation";
 import {Controller, useForm} from "react-hook-form"
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -21,8 +20,31 @@ import Visibility from "@mui/icons-material/Visibility";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 import {useMutation} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {keyframes} from "@mui/system";
+
+// Define the rotation animation
+const rotateAnimation = keyframes`
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+`;
 
 function SetPassword({decryptedEmail}) {
+    const theme = useTheme();
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const [isSubmit, setIsSubmit] = useState(false);
     const [email, setEmail] = useState(decryptedEmail || '');
     const [showPasswordP1, setShowPasswordP1] = useState(false);
@@ -67,17 +89,12 @@ function SetPassword({decryptedEmail}) {
     const handleClickPassword2 = () => setShowPasswordP2((show) => !show);
 
 
-    useEffect(() => {
-        if (!email) {
-            router.push("/login");
-        }
-    }, [router]);
     const txProps = {
         color: "red",
         bgcolor: "#274e61",
         borderRadius: "10px",
         width: "100%",
-        fontSize: "18px",
+        fontSize: "16px",
         fontStyle: "bold",
         "&:hover": {
             bgcolor: "#051935",
@@ -102,32 +119,63 @@ function SetPassword({decryptedEmail}) {
         <>
             <Box
                 sx={{
-                    fontFamily: "Poppins",
-                    bgcolor: "#274e61",
-                    color: "white",
-                    height: "100vh",
                     display: "flex",
-                    flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundImage: "url(/bg-3.jpg)",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    overflow: 'hidden',
+                    flexDirection: "column",
+                    color: "white",
+                    textAlign: "center",
+                    padding: xSmall ? 1 : small ? 2 : medium ? 3 : large ? 4 : xxLarge ? 4 : 6,
+                    marginTop: xSmall ? 3 : small ? 8 : medium ? 15 : xWide ? 25 : ultraWide ? 35 : 15,
                 }}
             >
-                <Box className={styleSetPassword.wrapper}>
-                    <Box className={styleSetPassword.formParent}>
-                        <Typography variant="h5" sx={{
-                            color: "white",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            fontFamily: "Poppins",
-                            mt: 2
-                        }}>
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '500px',
+                        maxWidth: '90%',
+                        borderRadius: '15px',
+                        overflow: 'hidden',
+                        padding: '2px', // Increased padding to make room for thicker animation
+                        '&::before, &::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '-50%',
+                            left: '-50%',
+                            height: '200%',
+                            width: '200%',
+                            background: 'conic-gradient(transparent, transparent, transparent, #00ccff)',
+                            animation: `${rotateAnimation} 2s linear infinite`,
+                        },
+                        '&::after': {
+                            background: 'conic-gradient(transparent, transparent, transparent, #ff00ea)',
+                            animationDelay: '-1s',
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "5px",
+                            borderRadius: "15px",
+                            padding: "5px",
+                            width: "100%",
+                            background: "black",
+                            zIndex: 5,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            maxHeight: "100vh",
+                            // border: '2px solid gold',
+                        }}
+                    >
+                        <Typography variant={xSmall || small || medium ? 'subtitle2' : "h6"}
+                                    sx={{fontWeight: "bold", fontFamily: "Poppins", mt: 5, mb: 1}}>
                             Set New Password
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit(SetPassword)} noValidate sx={{m: 4}}>
+                        <Box component="form" onSubmit={handleSubmit(SetPassword)} noValidate
+                             sx={{m: 0.5}}>
                             {/* Email*/}
                             <Controller
                                 name="email"
@@ -158,7 +206,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Email"
                                         variant="outlined"
                                         autoComplete="off"
@@ -199,7 +247,7 @@ function SetPassword({decryptedEmail}) {
                                             shrink: true,
                                         }}
                                         sx={{
-                                            marginBottom: 5,
+                                            marginBottom: 3,
                                         }}
                                         label="Token"
                                         variant="outlined"
@@ -243,7 +291,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Password"
                                         variant="outlined"
                                         autoComplete="off"
@@ -289,7 +337,7 @@ function SetPassword({decryptedEmail}) {
                                             },
                                             shrink: true,
                                         }}
-                                        sx={{marginBottom: 5}}
+                                        sx={{marginBottom: 3}}
                                         label="Password"
                                         variant="outlined"
                                         autoComplete="off"
@@ -307,43 +355,41 @@ function SetPassword({decryptedEmail}) {
                                 type="submit"
                                 variant="contained"
                                 sx={{
-                                    mt: 2,
-                                    mb: 4,
-                                    height: 50,
-                                    backgroundColor: "#3263b3",
-                                    ":hover": {color: "gold"},
-                                    fontSize: "1.2rem",
-                                    color: "white",
+                                    height: xSmall || small ? 40 : medium ? 45 : 50,
+                                    backgroundColor: '#3263b3',
+                                    '&:hover': {backgroundColor: '#891f9c'},
+                                    fontSize: xSmall ? '14px' : small ? '16px' : medium ? '18px' : '20px',
+                                    color: 'white',
                                 }}
+                                disabled={isSubmit}
                             >
-                                Reset Password
+                                {isSubmit ? "Submitting in..." : "Submit"}
                             </Button>
                             <br/>
-                            <Stack direction="row" spacing={4} justifyContent="space-between" sx={{mt: 2}}>
-                                {/*    Back to login*/}
+                            <Stack direction="row" spacing={2.5}
+                                   justifyContent={"space-between"}
+                                   sx={{mt: 2, mb: 3}}>
+                                {/*Back to login*/}
                                 <Button
-                                    type="submit"
                                     variant="text"
                                     sx={{
-                                        mt: 3,
-                                        height: 50,
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? '14px' : '16px',
                                         ":hover": {color: "gold"},
                                         color: "white",
+
                                     }} onClick={() => window.location = ('/login')}>
                                     Login
                                 </Button>
                                 <Button
-                                    type="submit"
                                     size='small'
                                     variant="text"
                                     sx={{
-                                        mt: 3,
-                                        height: 50,
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? '14px' : '16px',
                                         ":hover": {color: "green"},
                                         color: "white",
                                     }} onClick={() => window.location = ('/resetpassword')}>
 
-                                    <span> Didn&apos;t get the token?</span>
+                                    No token?
                                 </Button>
                             </Stack>
                         </Box>

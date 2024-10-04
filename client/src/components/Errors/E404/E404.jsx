@@ -3,7 +3,7 @@ import style404 from './E404.module.css'
 
 function E404() {
     const GoHome = () => {
-        window.location.href = "/"
+        window.location.href = "/home"
     }
     return (
         <>
@@ -19,7 +19,7 @@ function E404() {
                         </button>
                     </div>
                 </div>
-                
+
                 <div className={style404.container}>
                     <div className={style404.neon}>404</div>
                     <div className={style404.doorFrame}>

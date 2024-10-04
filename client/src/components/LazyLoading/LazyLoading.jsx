@@ -2,34 +2,34 @@ import {mainSection} from "@/utils/data";
 import Box from "@mui/material/Box";
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import HashLoader from "react-spinners/HashLoader";
 
 function LazyLoading() {
     return (
         <Box sx={mainSection}>
             <Box
                 sx={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.6)',  // Semi-transparent background
+                    zIndex: 9999,  // Ensure it overlays everything else
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: 2,
-                    minHeight: '100vh',  // Ensure the container is large enough to center the content
                 }}
             >
                 <Stack direction="row" spacing={2} alignItems="center">
-                    <Typography variant="h4">Loading</Typography>
-                    <Box
-                        sx={{
-                            border: '16px solid #f3f3f3',
-                            borderRadius: '50%',
-                            borderTop: '16px solid blue',
-                            borderBottom: '16px solid blue',
-                            animation: 'spin 2s linear infinite',
-                            '@keyframes spin': {
-                                '0%': {transform: 'rotate(0deg)'},
-                                '100%': {transform: 'rotate(360deg)'},
-                            },
-                        }}
-                    />
+                    <Typography variant='h5'
+                                sx={{
+                                    fontWeight: 'bold',
+                                    color: '#FFF',
+                                }}>
+                        Loading
+                    </Typography>
+                    <HashLoader color="#07ebf1" size={55}/>
                 </Stack>
             </Box>
         </Box>

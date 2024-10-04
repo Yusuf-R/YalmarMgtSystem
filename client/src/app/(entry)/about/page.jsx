@@ -1,41 +1,22 @@
 'use client';
-import { toast } from 'react-toastify';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useTheme} from '@mui/material/styles';
+import {Suspense, lazy} from 'react';
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
 
+const AboutYalmar = lazy(() => import('@/components/HomeComponents/About/About'));
 
-function About () {
-    const testToast = () => {
-        toast.success('🦄 Wow so easy!', {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-        });
-    }
-    
+function About() {
     return (
         <>
-            <div style={{
-                backgroundColor: "black",
-                height: "100vh",
-                color: "white",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-            }}>
-                About
-                {/*<AboutSection/>*/}
-            </div>
-            <div>
-                <button onClick={testToast}>
-                    click Me
-                </button>
-            </div>
+            <Suspense fallback={<LazyLoading/>}>
+                <AboutYalmar/>
+            </Suspense>
         </>
-    )
+    );
 }
 
 export default About;

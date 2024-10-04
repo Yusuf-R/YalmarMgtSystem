@@ -13,394 +13,56 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow'
 import {Paper} from "@mui/material";
-
-
+import {mainSection} from "@/utils/data";
+import Box from "@mui/material/Box";
 
 function AdminHeroSection({staffData, accessToken}) {
     const delay = 1;
     const duration = 5;
     return (
         <>
-            <Stack
-                direction='column'
-                spacing={2}
-                sx={{
-                    width: '100vw',
-                    overflow: 'hidden',
-                    padding: '10px',
-                }}
-            >
-                <Stack direction='column' spacing={4}>
-                    <Typography variant="h4">
-                        Analytics
-                    </Typography>
-                    {/*Analytics*/}
-                    <Stack direction='row' spacing={12}
-                           sx={{
-                               alignItems: 'top',
-                               justifyContent: 'flex-start',
-                               // boxShadow: '0px 2px 8px rgba(0,0,0,0.12)',
-                               // backgroundColor: '#304f61',
-                           }}
-                    >
-                        {/* Staff Count */}
-                        <Card sx={{
-                            padding: '10px',
-                            borderRadius: '10px',
-                            width: '20%',
-                            backgroundColor: '#304f61',
-                            color: 'white',
-                            height: '350px',
-                            // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                        }}>
-                            <CardMedia
-                                sx={{
-                                    height: '80%',
-                                }}
-                                image="/StaffGroup.svg"
-                                title="StaffGroup"
-                            />
-                            <CardContent>
-                                <Typography variant="h3">
-                                    Staff: {<CountUp end={35} duration={duration} delay={delay}/>}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                        
-                        {/* Site Counts */}
-                        <Card sx={{
-                            padding: '10px',
-                            borderRadius: '10px',
-                            width: '20%',
-                            backgroundColor: '#304f61',
-                            color: 'white',
-                            height: '350px',
-                            // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                        }}>
-                            <CardMedia
-                                sx={{
-                                    height: '80%',
-                                }}
-                                image="/SitesGroup.svg"
-                                title="SitesGroup"
-                            />
-                            <CardContent>
-                                <Typography variant="h3">
-                                    Sites: {<CountUp end={110} duration={duration} delay={delay}/>}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                        
-                        {/* Generator Count /> */}
-                        <Card sx={{
-                            padding: '10px',
-                            borderRadius: '10px',
-                            width: '20%',
-                            backgroundColor: '#304f61',
-                            color: 'white',
-                            height: '350px',
-                            // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                        }}>
-                            <CardMedia
-                                sx={{
-                                    height: '80%',
-                                }}
-                                image="/GeneratorGroup.jpg"
-                                title="GeneratorGroup"
-                            />
-                            <CardContent>
-                                <Typography variant="h3">
-                                    Gen: {<CountUp end={145} duration={duration} delay={delay}/>}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Stack>
-                </Stack>
-                <br/><br/><br/>
-                
-                
-                {/* Staff List*/}
-                <Stack>
-                    <Card sx={{
-                        padding: '10px',
-                        borderRadius: '10px',
-                        backgroundColor: '#304f61',
-                        width: '80%',
-                        color: 'white',
-                        height: '350px',
-                        // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                    }}>
-                        <Typography variant="h5">
-                            Staff List
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table stickyHeader aria-label="sticky table" sx={{
-                                "& .MuiTableCell-head": {
-                                    color: "white",
-                                    backgroundColor: "#304f61",
-                                },
-                            }}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                FirstName
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                LastName
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Email
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Role
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                PhoneNo
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                
-                                </TableHead>
-                                <TableBody sx={{
-                                    "& .MuiTableCell-body": {
-                                        color: "white",
-                                        backgroundColor: "#304f61",
-                                    },
-                                }}>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.firstName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.lastName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.email}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.role}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+            <Box sx={mainSection}>
+                <Stack spacing={2} direction='column'
+                       sx={{padding: 0, borderRadius: '10px'}}>
+                    <Card sx={{backgroundColor: '#274e61', color: '#46F0F9', borderRadius: '10px'}}>
+                        <CardMedia
+                            component="img"
+                            height="140"
+                            image="/ProfilePic.svg"
+                            alt="ProfilePic"
+                        />
+                        <CardContent>
+                            <Typography variant='h6'>Welcome, {staffData.name}</Typography>
+                            <Typography variant='body1'>Staff ID: {staffData.staffId}</Typography>
+                        </CardContent>
+                    </Card>
+                    <Card sx={{backgroundColor: '#274e61', color: '#46F0F9', borderRadius: '10px'}}>
+                        <CardContent>
+                            <Typography variant='h6'>Dashboard Overview</Typography>
+                            <TableContainer component={Paper}>
+                                <Table sx={{minWidth: 650}} aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Staff ID</TableCell>
+                                            <TableCell align="right">Name</TableCell>
+                                            <TableCell align="right">Role</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow key={staffData.staffId}>
+                                            <TableCell component="th" scope="row">
+                                                {staffData.staffId}
+                                            </TableCell>
+                                            <TableCell align="right">{staffData.name}</TableCell>
+                                            <TableCell align="right">{staffData.role}</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </CardContent>
                     </Card>
                 </Stack>
-                
-                <br/><br/><br/>
-                {/*Site List*/}
-                <Stack>
-                    <Card sx={{
-                        padding: '10px',
-                        borderRadius: '10px',
-                        width: '80%',
-                        backgroundColor: '#304f61',
-                        color: 'white',
-                        height: '350px',
-                        // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                    }}>
-                        <Typography variant="h5">
-                            Site List
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table stickyHeader aria-label="sticky table" sx={{
-                                "& .MuiTableCell-head": {
-                                    color: "white",
-                                    backgroundColor: "#304f61",
-                                },
-                            }}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                SiteID
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Location
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Longitude
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Latitude
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                EmcTechnician
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                
-                                </TableHead>
-                                <TableBody sx={{
-                                    "& .MuiTableCell-body": {
-                                        color: "white",
-                                        backgroundColor: "#304f61",
-                                    },
-                                }}>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.firstName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.lastName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.email}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.role}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Card>
-                </Stack>
-                
-                <br/><br/><br/>
-                {/*Gen List*/}
-                <Stack>
-                    <Card sx={{
-                        padding: '10px',
-                        borderRadius: '10px',
-                        width: '80%',
-                        backgroundColor: '#304f61',
-                        color: 'white',
-                        height: '350px',
-                        // boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
-                    }}>
-                        <Typography variant="h5">
-                            Gen List
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table stickyHeader aria-label="sticky table" sx={{
-                                "& .MuiTableCell-head": {
-                                    color: "white",
-                                    backgroundColor: "#304f61",
-                                },
-                            }}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                GenID
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                SiteID
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Location
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Longitude
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                Latitude
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                EmcTechnician
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                
-                                <TableBody sx={{
-                                    "& .MuiTableCell-body": {
-                                        color: "white",
-                                        backgroundColor: "#304f61",
-                                    },
-                                }}>
-                                    <TableRow>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.firstName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.lastName}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.email}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.role}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Typography variant="h6">
-                                                {staffData.phoneNo ? staffData.phoneNo : 'Not Available'}
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Card>
-                </Stack>
-            </Stack>
+            </Box>
         </>
     )
 }

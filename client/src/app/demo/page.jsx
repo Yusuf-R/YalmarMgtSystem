@@ -8,6 +8,7 @@ import ConfirmationDialog from "@/components/Utilities/ConfirmationDialog";
 import {mainSection} from "@/utils/data";
 import AdvImageResizerV2 from "@/components/AdvImageResizerV2/AdvImageResizerV2";
 import Yalmar from "@/components/Demo/Yalmar";
+import LazyLoading from "@/components/LazyLoading/LazyLoading"
 
 
 function TestComponent() {
@@ -39,7 +40,8 @@ function TestComponent() {
     return (
         <>
             {/*<AdvImageResizerV2/>*/}
-            <Yalmar/>
+            {/*<Yalmar/>*/}
+            <LazyLoading/>
         </>
     )
 }

@@ -70,8 +70,8 @@ class SecurityConfig {
         }
     }
 
-    // Function to decrypt data (AES-GCM decryption)
-    static async decryptedLoginData(encryptedData) {
+    // Function to decrypt data (AES-GCM decryption) for Password and login operations
+    static async decryptedPasswordLoginData(encryptedData) {
         const rawKey = process.env.PRIVATE_KEY;
         const privateKeyPem = SecurityConfig.formatPrivateKey(rawKey);
 
@@ -92,6 +92,39 @@ class SecurityConfig {
         } catch (error) {
             console.error("Decryption error:", error);
             throw error;
+        }
+    }
+
+    static async decryptLoginData(data) {
+        const dataSecret = process.env.DATA_SECRET;
+
+        // Hash the secret to get a 256-bit key (using SHA-256)
+        const keyMaterial = crypto.createHash('sha256').update(dataSecret).digest();
+
+        // Base64 decode
+        const encryptedDataWithIv = Buffer.from(encryptedData, 'base64');
+
+        // Extract IV (first 12 bytes), AuthTag (next 16 bytes), and Encrypted Bytes (remaining)
+        const iv = encryptedDataWithIv.slice(0, 12);
+        const authTag = encryptedDataWithIv.slice(encryptedDataWithIv.length - 16); // Last 16 bytes are the auth tag
+        const encryptedBytes = encryptedDataWithIv.slice(12, encryptedDataWithIv.length - 16); // Everything between IV and auth tag
+
+
+        try {
+            // Create decipher using the AES-GCM algorithm
+            const decipher = crypto.createDecipheriv('aes-256-gcm', keyMaterial, iv);
+
+            // Set the authentication tag before finalizing decryption
+            decipher.setAuthTag(authTag);
+            // Decrypt the encrypted data
+            let decrypted = decipher.update(encryptedBytes, null, 'utf8');
+
+            decrypted += decipher.final('utf8'); // Finalize decryption
+
+            return JSON.parse(decrypted); // Return the decrypted data as JSON
+        } catch (error) {
+            console.error('Decryption error:', error.message);
+            throw new Error(error.message);
         }
     }
 
@@ -133,7 +166,7 @@ class SecurityConfig {
 
     get corsOptions() {
         return {
-            origin: 'http://localhost:3000',
+            origin: ['http://localhost:3000', 'https://98a6-102-91-93-119.ngrok-free.app', 'http://localhost:3001'],
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true,
             allowedHeaders: [

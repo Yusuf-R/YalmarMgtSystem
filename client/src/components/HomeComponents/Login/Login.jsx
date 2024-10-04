@@ -18,17 +18,31 @@ import "react-toastify/dist/ReactToastify.css";
 import {useMutation} from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
-import {FcRedo} from "react-icons/fc";
 import AdminUtils from "@/utils/AdminUtilities";
-import styleLogin from "./Login.module.css";
 import {schemaLogin} from "@/SchemaValidator/login";
-import LazyComponent from "@/components/LazyComponent/LazyComponent";
+import {useTheme} from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {keyframes} from "@mui/system";
+import {FcRedo} from "react-icons/fc";
+import Stack from "@mui/material/Stack";
+
 
 function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const theme = useTheme();
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const router = useRouter();
+
     const {
         control,
         handleSubmit,
@@ -43,39 +57,86 @@ function Login() {
     const handleCheckBox = (e) => {
         setRememberMe(e.target.checked);
     };
+
+    // Define the rotation animation
+    const rotateAnimation = keyframes`
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    `;
+
+    const getToastConfig = () => {
+        let fontSize = '14px';
+        let width = '300px';
+        let position = 'top-right';
+
+        if (xSmall || small) {
+            fontSize = '12px';
+            width = '90%';
+        } else if (medium) {
+            fontSize = '14px';
+            width = '80%';
+        } else if (large) {
+            fontSize = '16px';
+            width = '400px';
+        } else if (xLarge || xxLarge) {
+            fontSize = '18px';
+            width = '450px';
+        } else {
+            fontSize = '20px';
+            width = '500px';
+        }
+        return {
+            position,
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+                fontSize,
+                width,
+                maxWidth: '100%',
+            },
+        };
+    };
+
+
     const mutation = useMutation({
         mutationKey: ["Login"],
         mutationFn: AdminUtils.StaffLogin,
     });
-    const OnLogin = (loginData) => {
+    const OnLogin = async (loginData) => {
+        console.log(loginData);
         setIsSubmit(true);
-        mutation.mutate(loginData, {
-            onSuccess: (response) => {
-                if (response) {
-                    toast.success("Login successful 🚀");
-                    toast.success("Redirecting to dashboard", {
-                        icon: <FcRedo/>,
-                    });
-                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
-                        secure: true,
-                        sameSite: "strict",
-                    });
-                    setTimeout(() => {
-                        router.push("/dashboard");
-                    }, 2000);
-                    setIsSubmit(false);
-                } else {
-                    toast.error("Unauthorized credentials");
-                    setTimeout(() => {
-                        router.push("/login");
-                    }, 3000);
-                    setIsSubmit(false);
-                }
+        // encrypt the login data
+        const encryptedData = await AdminUtils.encryptLoginData(loginData);
+        console.log(encryptedData);
+        const toastConfig = getToastConfig();
+        mutation.mutate({encryptedData}, {
+            onSuccess: () => {
+                toast.success("Login successful 🚀", toastConfig);
+                toast.success("Redirecting to dashboard", {
+                    ...toastConfig,
+                    icon: <FcRedo/>,
+                });
+                Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                    secure: true,
+                    sameSite: "strict",
+                });
+                setTimeout(() => {
+                    router.push("/dashboard");
+                }, 2000);
+                setIsSubmit(false);
             },
             onError: (error) => {
                 setIsSubmit(false);
                 console.error(error);
-                toast.error("Unauthorized credentials");
+                toast.error("Unauthorized credentials", toastConfig);
             },
         });
     };
@@ -85,7 +146,7 @@ function Login() {
         bgcolor: "#274e61",
         borderRadius: "10px",
         width: "100%",
-        fontSize: "18px",
+        fontSize: "16px",
         fontStyle: "bold",
         "&:hover": {
             bgcolor: "#051935",
@@ -110,28 +171,65 @@ function Login() {
         <>
             <Box
                 sx={{
-                    fontFamily: "Poppins",
-                    bgcolor: "#274e61",
-                    color: "white",
-                    height: "100vh",
                     display: "flex",
-                    flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundImage: "url(/bg-6.jpg)",
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    overflow: 'hidden',
-
+                    flexDirection: "column",
+                    color: "white",
+                    textAlign: "center",
+                    padding: xSmall ? 1 : small ? 2 : medium ? 3 : large ? 4 : xxLarge ? 4 : 6,
+                    marginTop: xSmall ? 10 : small ? 15 : medium ? 15 : large ? 20 : xLarge ? 25 : xxLarge ? 25 : wide ? 30 : 35,
                 }}
             >
-                <Box className={styleLogin.wrapper}>
-                    <Box className={styleLogin.formParent}>
-                        <Typography variant="h5" sx={{fontWeight: 'bold', fontFamily: 'Poppins', mt: 2}}>
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '500px',
+                        maxWidth: '95%',
+                        border: '1px solid red',
+                        borderRadius: '15px',
+                        overflow: 'hidden',
+                        padding: '2px', // Increased padding to make room for thicker animation
+                        '&::before, &::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '-50%',
+                            left: '-50%',
+                            height: '200%',
+                            width: '200%',
+                            background: 'conic-gradient(transparent, transparent, transparent, #00ccff)',
+                            animation: `${rotateAnimation} 2s linear infinite`,
+                        },
+                        '&::after': {
+                            background: 'conic-gradient(transparent, transparent, transparent, #ff00ea)',
+                            animationDelay: '-1s',
+                        },
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: "25px",
+                            borderRadius: "15px",
+                            padding: "5px",
+                            width: "100%",
+                            background: "black",
+                            zIndex: 5,
+                            justifyContent: "center",
+                            maxHeight: "100vh",
+                            // border: '2px solid gold',
+                        }}
+                    >
+                        <Typography variant={xSmall || small || medium ? 'subtitle2' : "h6"}
+                                    sx={{fontWeight: "bold", fontFamily: "Poppins", mt: 2}}>
                             Yalmar Management System
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit(OnLogin)} noValidate sx={{m: 4}}>
-                            {/* Email Field with Icon */}
+                        {/* Your form logic goes here */}
+                        <Box component="form" onSubmit={handleSubmit(OnLogin)} noValidate
+                             sx={{m: 0.5}}>
+                            {/* Email Field */}
                             <Controller
                                 name="email"
                                 control={control}
@@ -146,9 +244,8 @@ function Login() {
                                                 <InputAdornment position="end">
                                                     <IconButton
                                                         edge="end"
-                                                        sx={{color: 'gold'}}
-                                                    >
-                                                        <MdOutlineMailLock size={24}/>
+                                                        sx={{color: 'gold'}}>
+                                                        <MdOutlineMailLock size={xSmall || small || medium ? 12 : 24}/>
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
@@ -156,6 +253,7 @@ function Login() {
                                         InputLabelProps={{
                                             sx: {
                                                 color: "#46F0F9",
+                                                fontSize: xSmall ? '10px' : small ? '10px' : medium ? "10px" : large ? "14px" : "16px",
                                                 "&.Mui-focused": {
                                                     color: "white",
                                                 },
@@ -173,7 +271,7 @@ function Login() {
                                 )}
                             />
 
-                            {/* Password Field with Visibility Toggle */}
+                            {/* Password Field */}
                             <Controller
                                 name="password"
                                 control={control}
@@ -192,7 +290,21 @@ function Login() {
                                                         edge="end"
                                                         color="error"
                                                     >
-                                                        {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                                        {showPassword ? (
+                                                            <VisibilityOff
+                                                                sx={{
+                                                                    width: xSmall || small || medium ? 15 : 24,  // Directly set width and height
+                                                                    height: xSmall || small || medium ? 15 : 24,
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <Visibility
+                                                                sx={{
+                                                                    width: xSmall || small || medium ? 15 : 24,  // Directly set width and height
+                                                                    height: xSmall || small || medium ? 15 : 24,
+                                                                }}
+                                                            />
+                                                        )}
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
@@ -200,6 +312,7 @@ function Login() {
                                         InputLabelProps={{
                                             sx: {
                                                 color: "#46F0F9",
+                                                fontSize: xSmall ? '10px' : small ? '10px' : medium ? "10px" : large ? "14px" : "16px",
                                                 "&.Mui-focused": {
                                                     color: "white",
                                                 },
@@ -214,50 +327,56 @@ function Login() {
                                         helperText={errors.password ? errors.password.message : ""}
                                         required
                                         type={showPassword ? "text" : "password"}
-
                                     />
                                 )}
                             />
-                            <br/>
                             {/* Remember Me Checkbox */}
-                            <Grid container alignItems="center">
-                                <Grid item xs={1}>
+                            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{mb: 2}}>
+                                <Box sx={{display: 'flex', alignItems: 'center'}}>
                                     <Checkbox
                                         checked={rememberMe}
                                         onChange={handleCheckBox}
-                                        inputProps={{'aria-label': 'controlled'}}
-                                        sx={{color: "gold"}}
+                                        sx={{
+                                            color: "gold",
+                                            padding: 0,
+                                            marginRight: '4px',
+                                            '& .MuiSvgIcon-root': {
+                                                fontSize: xSmall || small || medium ? '16px' : '24px',
+                                            },
+                                        }}
                                     />
-                                </Grid>
-                                <Grid item xs={7}>
-                                    <Typography variant="subtitle1" sx={{color: "white"}}>
+                                    <Typography variant="body2" sx={{
+                                        color: "white",
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? "14px" : "16px",
+                                    }}>
                                         Remember me
                                     </Typography>
-                                </Grid>
-
-                                <Grid item xs={4}>
-                                    <Typography variant="subtitle1" sx={{
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
                                         color: "white",
                                         cursor: "pointer",
+                                        fontSize: xSmall ? '10px' : small ? '12px' : medium ? "14px" : "16px",
                                         textDecoration: "underline",
                                         "&:hover": {color: "green"},
-                                    }} onClick={() => router.push('/resetpassword')}>
-                                        Forgot Password?
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            <br/> <br/>
-
+                                    }}
+                                    onClick={() => router.push('/resetpassword')}
+                                >
+                                    Forgot Password?
+                                </Typography>
+                            </Stack>
+                            {/* Submit Button */}
                             <Button
                                 fullWidth
-                                type="submit"
                                 variant="contained"
+                                type="submit"
                                 sx={{
-                                    height: 50,
-                                    backgroundColor: "#3263b3",
-                                    ":hover": {backgroundColor: "#891f9c", color: "green"},
-                                    fontSize: "1.2rem",
-                                    color: "white",
+                                    height: xSmall || small ? 40 : medium ? 45 : 50,
+                                    backgroundColor: '#3263b3',
+                                    '&:hover': {backgroundColor: '#891f9c'},
+                                    fontSize: xSmall ? '14px' : small ? '16px' : medium ? '18px' : '20px',
+                                    color: 'white',
                                 }}
                                 disabled={isSubmit}
                             >
@@ -267,7 +386,6 @@ function Login() {
                     </Box>
                 </Box>
             </Box>
-            {isSubmit && <LazyComponent Command='Logging in ...'/>}
         </>
     );
 }

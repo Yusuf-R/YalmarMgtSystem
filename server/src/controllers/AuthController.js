@@ -168,7 +168,15 @@ class AuthController {
         }
     }
 
-    static async signInPrecheck(req) {
+    static async setNewPasswordDecrypt(data) {
+        try {
+            return await SecurityConfig.decryptedPasswordLoginData(data);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    static async signInPreCheck(req) {
         try {
             // check authorization header
             if (!req.headers.authorization) {
@@ -189,20 +197,9 @@ class AuthController {
         }
     }
 
-    static async signInDecrypt(data64) {
-        // decode the token to get the email and password
-        const dataDecode = (Buffer.from(data64, 'base64').toString().split(':'));
-        if (dataDecode.length !== 2) {
-            return ({error: 'Inconsistent Encryption Algorithm, ensure Base64 encryption'});
-        }
-        const email = dataDecode[0];
-        const password = dataDecode[1];
-        return {email, password};
-    }
-
     static async loginDecrypt(data) {
         try {
-            return await SecurityConfig.decryptedLoginData(data);
+            return await SecurityConfig.decryptedPasswordLoginData(data);
         } catch (error) {
             throw new Error(error.message);
         }
