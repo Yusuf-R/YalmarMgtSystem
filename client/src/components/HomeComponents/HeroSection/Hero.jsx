@@ -8,10 +8,17 @@ import {keyframes} from '@mui/system';
 
 function Hero() {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const isTab = useMediaQuery('(min-width:900px) and (max-width:999px)');
-    const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
-    const isLargestScreen = useMediaQuery(theme.breakpoints.up('lg'));
+
+    // Use the provided media queries
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
 
     // Define keyframe animation for circling border effect (button)
     const borderAnimation = keyframes`
@@ -51,17 +58,16 @@ function Hero() {
                 flexDirection: 'column',
                 color: 'white',
                 textAlign: 'center',
-                padding: isMobile ? '16px' : isTab ? '12px' : isTablet ? '15px' : '12px',
-                marginTop: isMobile ? '180px' : isTab ? '350px' : isTablet ? '200px' : isLargestScreen ? '250px' : '300px',
+                padding: xSmall || small ? '16px' : medium || large ? '12px' : xxLarge ? '15px' : '20px',
+                marginTop: xSmall ? '80px' : small ? '170px' : medium ? '190px' : large ? '200px' : xxLarge ? '150px' : '300px',
             }}
         >
             <Typography
-                variant={isMobile ? 'h5' : isTab ? 'h4' : isTablet ? 'h4' : 'h4'}
+                variant={xSmall || small || medium ? 'h5' : large || xLarge ? 'h4' : 'h3'}
                 sx={{
                     fontWeight: 'bold',
                     fontFamily: 'Poppins',
                     mb: 2,
-                    textAlign: 'center',
                     backgroundImage: 'linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000)',
                     backgroundSize: '300% 100%',
                     backgroundClip: 'text',
@@ -74,7 +80,7 @@ function Hero() {
                 YALMAR Management System
             </Typography>
             <Typography
-                variant={isMobile ? 'h6' : isTablet ? 'h5' : 'h4'}
+                variant={xSmall || small || medium ? 'h6' : 'h5'}
                 sx={{fontFamily: 'Poppins', mb: 4}}
             >
                 The smart system for managing staff and client operations.
@@ -88,7 +94,7 @@ function Hero() {
                     borderRadius: '10px',
                     fontWeight: 'bold',
                     color: 'white',
-                    fontSize: isMobile ? '16px' : isTablet ? '18px' : '18px',
+                    fontSize: xSmall || small ? '14px' : medium ? '16px' : large ? '18px' : '20px',
                     backgroundColor: 'black',
                     border: '4px solid',
                     borderImageSlice: 1,

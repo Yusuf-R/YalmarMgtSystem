@@ -48,7 +48,7 @@ class LeaveRequestController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async getStaffLeaveRequest(req, res) {
         try {
             // perform full current check
@@ -69,7 +69,7 @@ class LeaveRequestController {
                 return res.status(404).json({error: 'Leave Request Data not found'});
             }
             return res.status(200).json({message: 'Leave Request data retrieved successfully', leaveObjData});
-            
+
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -78,7 +78,7 @@ class LeaveRequestController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async newLeaveRequest(req, res) {
         try {
             // perform full current check
@@ -130,7 +130,7 @@ class LeaveRequestController {
             // ensure the staffId is valid
             const staffObj = await Staff.findById(new ObjectId(value.staffId));
             if (!staffObj) {
-                return res.status(404).json({error: 'Staff not found'});
+                return res.status(404).json({error: 'AllStaff not found'});
             }
             if (staffObj.email !== value.email) {
                 return res.status(400).json({error: 'Data Integrity Violation: Email'});
@@ -150,13 +150,13 @@ class LeaveRequestController {
             if (ogCurrBalance !== value.newBalance) {
                 return res.status(400).json({error: 'Data Integrity Violation: New Balance'});
             }
-            // ensure the id is a valid one from the Staff database
+            // ensure the id is a valid one from the AllStaff database
             const leaveReqObj = await LeaveRequest.create(value);
             if (!leaveReqObj) {
                 return res.status(404).json({error: 'Operation Error: Leave Request not created'});
             }
             return res.status(201).json({message: 'Leave Request created successfully', leaveReqObj});
-            
+
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -165,7 +165,7 @@ class LeaveRequestController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async actionLeaveRequest(req, res) {
         try {
             // perform full current check
@@ -239,7 +239,6 @@ class LeaveRequestController {
         }
     }
 }
-
 
 
 module.exports = LeaveRequestController;

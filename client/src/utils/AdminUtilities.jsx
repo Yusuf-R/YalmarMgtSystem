@@ -121,6 +121,36 @@ class AdminUtils {
         return btoa(String.fromCharCode(...encryptedDataWithIv)); // Convert to base64 string
     }
 
+    static async decryptData(encryptedData) {
+        const encryptedDataWithIv = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
+        // Extract the iv and encrypted data
+        const iv = encryptedDataWithIv.slice(0, 12);
+        const encryptedBytes = encryptedDataWithIv.slice(12);
+        // Hash the secret to get a 256-bit key
+        const keyMaterial = await window.crypto.subtle.digest(
+            'SHA-256',
+            new TextEncoder().encode(dataSecret)
+        );
+        const key = await window.crypto.subtle.importKey(
+            'raw',
+            keyMaterial,
+            {
+                name: 'AES-GCM',
+            },
+            true,
+            ['decrypt']
+        );
+        const decrypted = await window.crypto.subtle.decrypt(
+            {
+                name: 'AES-GCM',
+                iv: iv
+            },
+            key,
+            encryptedBytes
+        );
+        return JSON.parse(new TextDecoder().decode(decrypted));
+    }
+
     // to be used for Login and SetPassword Specific operations
     static async encryptLoginData(data) {
         const publicKeyPem = process.env.NEXT_PUBLIC_PUBLIC_KEY;
@@ -169,40 +199,8 @@ class AdminUtils {
         }
     }
 
-
-    static async decryptData(encryptedData) {
-        const encryptedDataWithIv = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
-        // Extract the iv and encrypted data
-        const iv = encryptedDataWithIv.slice(0, 12);
-        const encryptedBytes = encryptedDataWithIv.slice(12);
-        // Hash the secret to get a 256-bit key
-        const keyMaterial = await window.crypto.subtle.digest(
-            'SHA-256',
-            new TextEncoder().encode(dataSecret)
-        );
-        const key = await window.crypto.subtle.importKey(
-            'raw',
-            keyMaterial,
-            {
-                name: 'AES-GCM',
-            },
-            true,
-            ['decrypt']
-        );
-        const decrypted = await window.crypto.subtle.decrypt(
-            {
-                name: 'AES-GCM',
-                iv: iv
-            },
-            key,
-            encryptedBytes
-        );
-        return JSON.parse(new TextDecoder().decode(decrypted));
-    }
-
     // middleware verification
     static async verifyCredentials(request) {
-        console.log('FirstTime');
         try {
             // we will use fetch in this scenario since it supports edge runtime
             const response = await fetch(
@@ -278,7 +276,7 @@ class AdminUtils {
         });
     }
 
-    // Login API ---- Staff-------
+    // Login API ---- AllStaff-------
     static async StaffLogin(obj) {
         try {
             const response = await axiosPublic({
@@ -305,7 +303,6 @@ class AdminUtils {
             throw new Error('Logout Failed');
         }
     }
-
 
     static async StaffResetPassword(obj) {
         try {
@@ -336,7 +333,7 @@ class AdminUtils {
         }
     }
 
-    static async staffDashboard() {
+    static async DashboardData() {
         try {
             const response = await axiosPrivate({
                 method: "GET",

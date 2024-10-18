@@ -57,7 +57,7 @@ function Step11DataPreview({formData}) {
                 </Paper>
                 <br/><br/>
                 <Grid container spacing={2}>
-                    {/* Staff Info */}
+                    {/* AllStaff Info */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
                             <CardContent>
@@ -69,7 +69,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Admin Info */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -83,7 +83,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Site Info */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -102,7 +102,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Service Info */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -119,7 +119,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Generator PM */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -163,7 +163,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Aircon PM */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -182,7 +182,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Shelter PM */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -196,7 +196,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Lightning PM */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -216,7 +216,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* DC System */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -236,7 +236,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Other PM */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -262,7 +262,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/*Security PM*/}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -304,7 +304,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/* Image List */}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
@@ -321,7 +321,7 @@ function Step11DataPreview({formData}) {
                             </CardContent>
                         </Card>
                     </Grid>
-                    
+
                     {/*Submission Warning*/}
                     <Grid item xs={12}>
                         <Card sx={cardSx}>

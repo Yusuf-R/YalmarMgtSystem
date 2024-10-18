@@ -66,7 +66,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
         event.preventDefault();
         setAdminAction(event.target.value);
     }
-    
+
     // render color base on adminSelection
     const getAdminActionBackgroundColor = () => {
         switch (adminAction) {
@@ -82,7 +82,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                 return '#274e61';
         }
     };
-    
+
     const getReqBackgroundColor = () => {
         switch (reqData.status) {
             case 'Pending':
@@ -97,7 +97,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                 return '#274e61';
         }
     };
-    
+
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ["LeaveReqConfirmation"],
@@ -155,7 +155,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                         <Grid item xs={5}>
                             {/*RHS section Confirmation Section*/}
                             <Box>
-                                {/*Basic Staff Info Section*/}
+                                {/*Basic AllStaff Info Section*/}
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
                                         <Paper elevation={5} sx={{
@@ -202,7 +202,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{
@@ -272,7 +272,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                             "&.Mui-focused": {
                                                                                 color: "white"
                                                                             },
-                                                                            
+
                                                                         }
                                                                     }}
                                                                     SelectProps={{
@@ -325,12 +325,12 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                     Submit
                                 </Button>
                             </Stack>
-                        
+
                         </Grid>
                         <Grid item xs={7}>
                             {/*RHS section Request Information Section*/}
                             <Box>
-                                {/*Basic Staff Info Section*/}
+                                {/*Basic AllStaff Info Section*/}
                                 <Paper elevation={5} sx={{...paperProps, width: '100%', color: '#FFF'}}>
                                     <Grid container spacing={2}>
                                         <Grid item xs={12}>
@@ -359,7 +359,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                     <TextField
                                                                         {...field}
                                                                         id="input-with-icon-textfield"
-                                                                        
+
                                                                         label="fullName"
                                                                         defaultValue={reqData.fullName}
                                                                         InputLabelProps={{
@@ -453,7 +453,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{
@@ -532,7 +532,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                     <TextField
                                                                         {...field}
                                                                         id="input-with-icon-textfield"
-                                                                        
+
                                                                         label="Start-Date"
                                                                         defaultValue={reqData.startDate}
                                                                         InputLabelProps={{
@@ -586,7 +586,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                         }}
                                                                         InputProps={{
                                                                             startAdornment: (
-                                                                                
+
                                                                                 <InputAdornment position="start">
                                                                                     <CalendarMonthIcon
                                                                                         sx={{color: '#FFF'}}/>
@@ -627,7 +627,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{
@@ -714,7 +714,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{
@@ -765,7 +765,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{
@@ -816,7 +816,7 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                                                                 "&.Mui-focused": {
                                                                                     color: "white"
                                                                                 },
-                                                                                
+
                                                                             }
                                                                         }}
                                                                         InputProps={{

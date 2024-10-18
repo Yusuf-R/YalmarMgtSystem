@@ -13,7 +13,7 @@ const baseIncidentSchema = Joi.object({
     images: Joi.array().items(Joi.string()).default([]),
 });
 
-// Staff Incident Validation Schema
+// AllStaff Incident Validation Schema
 const staffIncidentSchema = Joi.object({
     staffInfo: Joi.object({
         staff_id: Joi.string().required(),
@@ -104,7 +104,7 @@ const serviceIncidentSchema = Joi.object({
 function validateIncident(data) {
     const {reportCategory} = data;
     let schema = baseIncidentSchema;
-    
+
     if (reportCategory.includes('Staff')) {
         schema = schema.concat(staffIncidentSchema);
     }

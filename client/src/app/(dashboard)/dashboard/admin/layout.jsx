@@ -2,7 +2,7 @@
 import React, {useState, useMemo} from 'react';
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import {useQuery} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from "@mui/material/CssBaseline";
 import {useRouter} from "next/navigation";
@@ -15,10 +15,16 @@ import {light, dark, dracula} from '@/components/Themes/adminThemes';
 
 function AdminLayout({children}) {
     const router = useRouter();
+    // check the cache key 'Biodata', if it exists then extract staff data
+    // if it doesn't exist, then redirect to 404 page
+    const queryClient = useQueryClient(); // Accessing the shared QueryClient instance
+    const {staffData} = queryClient.getQueryData(['BioData']) || {};
+
     const {data, isLoading, isError} = useQuery({
         queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
         staleTime: Infinity,
+        enabled: !staffData,
     });
 
     const [isCollapsed, setIsCollapsed] = useState(false);  // State for collapsing SideNav
@@ -56,7 +62,7 @@ function AdminLayout({children}) {
     if (isError || !data) {
         return router.push('/error/404');
     }
-    const {staffData} = data;
+    const effectiveStaffData = staffData || data.staffData;
 
     return (
         <ThemeProvider theme={theme}>
@@ -73,7 +79,7 @@ function AdminLayout({children}) {
             }}>
                 {/* Top Navigation Bar */}
                 <AdminTopNav
-                    staffData={staffData}
+                    staffData={effectiveStaffData}
                     themeMode={themeMode}
                     setThemeMode={setThemeMode}  // Pass the theme setter to TopNav
                     isCollapsed={isCollapsed}
@@ -91,21 +97,16 @@ function AdminLayout({children}) {
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        padding: 3,
                         marginLeft: isCollapsed ? `${sideNavWidth}` : `${sideNavWidth}`,  // Adjust main content margin based on collapsed state
                         transition: 'margin-left 0.3s ease',  // Smooth transition for expanding/collapsing
                         paddingLeft: '5px',
                         paddingRight: '5px',
                         overflow: 'hidden',  // Ensure no overflow happens
                         position: 'relative',  // Use relative positioning to respect layout boundaries
-                        top: 75,
+                        top: 70,
                         zIndex: 1,
-                        // background: 'linear-gradient(to bottom, #16222a, #3a6073)',
-                        // background: 'linear-gradient(to bottom, #536976, #292e49)',
-                        // background: 'linear-gradient(to right, #000428, #004e92)',
-                        // background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
-                        // background: 'linear-gradient(to top, #780206, #061161)',
                         background: 'linear-gradient(to bottom, #360033, #0b8793)',
+                        // background: 'linear-gradient(90deg, rgba(25,44,41,1) 12%, rgba(42,69,151,1) 30%, rgba(69,60,105,1) 77%, rgba(36,33,73,1) 92%, rgba(30,59,126,1) 100%)',
                         borderRadius: '10px',
                         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',  // Add box shadow
                         minHeight: 'calc(100vh - 75px)',  // Ensure content takes full height minus TopNav height
@@ -113,7 +114,7 @@ function AdminLayout({children}) {
                         overflowY: 'auto',  // Only allow vertical scrolling when necessary
                         overflowX: 'hidden',  // Disable horizontal scrolling
                         width: 'calc(100% - 5px)',  // Ensure width does not overflow container
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(10px)',
                     }}
                 >
                     {children}

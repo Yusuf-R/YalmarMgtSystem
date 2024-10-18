@@ -1,54 +1,62 @@
-'use client'
+'use client';
 import ViewStaff from "@/components/StaffComponents/ViewStaff/ViewStaff";
 import AdminUtils from "@/utils/AdminUtilities";
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import VoidStaff from "@/components/Errors/LostInSpace/LostInSpace";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import useStaffStore from "@/store/useStaffStore"; // Import Zustand store
 
 function ViewProfile() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);
     const [decryptedStaffData, setDecryptedStaffData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [shouldRedirect, setShouldRedirect] = useState(false); // New state to trigger redirection
+    const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
-    
+
+    // Zustand store values
+    const encryptedStaffData = useStaffStore((state) => state.encryptedStaffData);
+    const encryptedStaffID = useStaffStore((state) => state.encryptedStaffID);
+    const clearStaffData = useStaffStore((state) => state.clearStaffData);
+
     useEffect(() => {
         const decryptData = async () => {
             try {
-                const staffID = sessionStorage.getItem('staffID');
-                const decryptedID = await AdminUtils.decryptUserID(staffID);
-                const staffData = sessionStorage.getItem('staffData');
-                const decryptedData = await AdminUtils.decryptData(staffData);
-                setDecryptedUserID(decryptedID);
-                setDecryptedStaffData(decryptedData);
-            } catch (error) {
-                if (error instanceof DOMException && error.message === 'The provided data is too small') {
-                    console.log(error.message);
-                    setShouldRedirect(true); // Indicate that redirection should happen
+                if (encryptedStaffData && encryptedStaffID) {
+                    const decryptedID = await AdminUtils.decryptUserID(encryptedStaffID);
+                    const decryptedData = await AdminUtils.decryptData(encryptedStaffData);
+
+                    setDecryptedUserID(decryptedID);  // Set decrypted ID
+                    setDecryptedStaffData(decryptedData);  // Set decrypted staff data
                 } else {
-                    setShouldRedirect(true); // Indicate that redirection should happen for other errors
+                    setShouldRedirect(true);  // Redirect if no encrypted data is found
                 }
+            } catch (error) {
+                console.error('Error during decryption:', error);
+                setShouldRedirect(true);
             } finally {
                 setIsLoading(false);
             }
         };
-        decryptData();
-    }, []);
-    
+
+        decryptData();  // Decrypt data on page load
+    }, [encryptedStaffData, encryptedStaffID]);
+
+    // Redirect logic if no data found or decryption failed
     useEffect(() => {
         if (shouldRedirect) {
-            router.push(shouldRedirect ? '/dashboard/admin/staff/void' : '/error/404'); // Perform redirection based on the state
-            setShouldRedirect(false); // Reset the state to prevent continuous redirection
+            router.push('/dashboard/admin/staff/void');
         }
-    }, [shouldRedirect, router]); // Depend on shouldRedirect to trigger the effect
-    
+    }, [shouldRedirect, router]);
+
     if (isLoading) {
         return <LazyLoading/>;
     }
+
     if (!decryptedUserID || !decryptedStaffData) {
-        return <VoidStaff/>; // Render LostInSpace if decryption failed
+        return <VoidStaff/>;
     }
+
     return (
         <>
             <ViewStaff id={decryptedUserID} staffData={decryptedStaffData}/>

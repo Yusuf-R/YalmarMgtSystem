@@ -42,7 +42,7 @@ class BioUpdateController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     // Specific to the staff to see all his own updates
     static async getStaffBioUpdateRequest(req, res) {
         try {
@@ -71,7 +71,7 @@ class BioUpdateController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async newBioUpdateRequest(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -89,7 +89,7 @@ class BioUpdateController {
             // this accessToken id must be tied to a staff with lowPrivileges
             const staffObj = await Staff.findById(new ObjectId(id));
             if (!staffObj) {
-                return res.status(404).json({error: 'Staff not found'});
+                return res.status(404).json({error: 'AllStaff not found'});
             }
             if (!lowPrivileges.includes(staffObj.role)) {
                 return res.status(403).json({error: 'Unauthorized Access'});
@@ -101,7 +101,7 @@ class BioUpdateController {
             if (!email) {
                 return res.status(400).json({error: 'Email not found: include <email> in your request'});
             }
-            // ensure the id is a valid one from the Staff database
+            // ensure the id is a valid one from the AllStaff database
             const bioUpdateObj = await BioDataUpdateRequest.create(req.body);
             if (!bioUpdateObj) {
                 return res.status(404).json({error: 'BioUpdate not found'});
@@ -115,7 +115,7 @@ class BioUpdateController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async updateBioRequest(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -132,7 +132,7 @@ class BioUpdateController {
             }
             // Admin Only Operation
             // Change the status to [Accepted, Rejected]
-            
+
             // Check if this operation is an Admin only operation
             try {
                 const {_id, staffID, email} = req.body;
@@ -169,12 +169,12 @@ class BioUpdateController {
                         runValidators: true,
                         context: 'query',
                     });
-                    return res.status(201).json({message: 'Staff profile updated successfully', updatedBioRequest});
+                    return res.status(201).json({message: 'AllStaff profile updated successfully', updatedBioRequest});
                 }
-                // Staff only operation
+                // AllStaff only operation
                 // Update the bioUpdate Request form
                 // Forbids the status to be changed to Accepted or Rejected
-                
+
                 // ensure the role is one of the lowPrivileges
                 if (!lowPrivileges.includes(role)) {
                     return new Error('Unauthorized Access');
@@ -187,7 +187,7 @@ class BioUpdateController {
                 if (!value) {
                     return res.status(400).json({error: 'Missing status field: <status>'});
                 }
-                
+
                 const bioUpdate = await BioDataUpdateRequest.findByIdAndUpdate(_id, value, {
                     new: true,
                     runValidators: true,
@@ -208,7 +208,7 @@ class BioUpdateController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async deleteBioUpdateRequest(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -219,10 +219,10 @@ class BioUpdateController {
             if (!id) {
                 return res.status(400).json({error: 'Invalid token'});
             }
-            // ensure the id is a valid one from the Staff database
+            // ensure the id is a valid one from the AllStaff database
             const staffObj = await Staff.findById(new ObjectId(id));
             if (!staffObj) {
-                return res.status(404).json({error: 'Staff not found'});
+                return res.status(404).json({error: 'AllStaff not found'});
             }
             // check DB connection
             if (!(await dbClient.isAlive())) {
@@ -241,7 +241,7 @@ class BioUpdateController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async updateAvatarRequest(req, res) {
         try {
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -258,7 +258,7 @@ class BioUpdateController {
             }
             // Admin Only Operation
             // Change the status to [Accepted, Rejected]
-            
+
             // Check if this operation is an Admin only operation
             const {_id, staffID, email} = req.body;
             if (!_id) {
@@ -311,7 +311,7 @@ class BioUpdateController {
                     // trigger a message update to the user about the status of his request
                     // to be implemented later
                     return res.status(201).json({
-                        message: 'Staff profile updated successfully',
+                        message: 'AllStaff profile updated successfully',
                         updatedBioRequest,
                         staffUpdate
                     });
@@ -333,11 +333,11 @@ class BioUpdateController {
                         runValidators: true,
                         context: 'query',
                     });
-                    
+
                     // trigger a message update to the user about the status of his request
                     // to be implemented later
                     return res.status(201).json({
-                        message: 'Staff profile updated successfully',
+                        message: 'AllStaff profile updated successfully',
                         updatedBioRequest,
                         staffUpdate
                     });
@@ -353,11 +353,11 @@ class BioUpdateController {
                         runValidators: true,
                         context: 'query',
                     });
-                    
+
                     // trigger a message update to the user about the status of his request
                     // to be implemented later
                     return res.status(201).json({
-                        message: 'Staff profile updated successfully',
+                        message: 'AllStaff profile updated successfully',
                         updatedBioRequest,
                         staffUpdate
                     });

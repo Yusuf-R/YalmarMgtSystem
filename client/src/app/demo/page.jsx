@@ -9,6 +9,8 @@ import {mainSection} from "@/utils/data";
 import AdvImageResizerV2 from "@/components/AdvImageResizerV2/AdvImageResizerV2";
 import Yalmar from "@/components/Demo/Yalmar";
 import LazyLoading from "@/components/LazyLoading/LazyLoading"
+import DatFetchError from "@/components/Errors/DataFetchError/DataFetchError";
+import E404 from "@/components/Errors/E404/E404";
 
 
 function TestComponent() {
@@ -41,7 +43,9 @@ function TestComponent() {
         <>
             {/*<AdvImageResizerV2/>*/}
             {/*<Yalmar/>*/}
-            <LazyLoading/>
+            {/*<LazyLoading/>*/}
+            <DatFetchError/>
+            {/*<E404/>*/}
         </>
     )
 }

@@ -10,26 +10,37 @@ import LazyLoading from "@/components/LazyLoading/LazyLoading";
 function Admin() {
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['staffDashboard'],
-        queryFn: AdminUtils.staffDashboard,
+        queryKey: ['DashboardData'],
+        queryFn: AdminUtils.DashboardData,
     });
-    
+
     if (isLoading) {
         return <LazyLoading/>;
     }
-    
+
     if (isError || !data) {
         // Handle error state, possibly navigating to an error page or showing an error message
         console.error('Failed to fetch or no data available');
         router.push('/error/404');
     }
-    
-    const {staffData, accessToken} = data;
-    
+
+    const {
+        allStaffData,
+        allSiteData,
+        allServicesData,
+        allIncidentData,
+        staffCount,
+        siteCount,
+    } = data.dashboardData;
+
     return (
         <AdminDashboard
-            staffData={staffData}
-            accessToken={accessToken}
+            allStaffData={allStaffData}
+            allSiteData={allSiteData}
+            allServicesData={allServicesData}
+            allIncidentData={allIncidentData}
+            staffCount={staffCount}
+            siteCount={siteCount}
         />
     );
 }

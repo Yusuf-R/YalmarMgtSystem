@@ -49,9 +49,20 @@ import Link from "next/link";
 import {useRouter, usePathname} from "next/navigation";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 function NewStaff() {
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const pathname = usePathname();
     const theme = createTheme({
         components: {
@@ -91,7 +102,7 @@ function NewStaff() {
         }
     });
     // create a theme for this form strictly for setting the form error text color to #EFC3CA
-    
+
     const {
         control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset
     } = useForm({
@@ -128,7 +139,7 @@ function NewStaff() {
     const [graduation, setGraduation] = useState('')
     const [employment, setEmployment] = useState('')
     const [faculty, setFaculty] = useState('')
-    
+
     const getStateOfOriginOptions = () => {
         return Object.keys(statesAndLGAs).map((stateName) => (
             <MenuItem key={stateName} value={stateName}
@@ -395,7 +406,7 @@ function NewStaff() {
         event.preventDefault();
         setFaculty(event.target.value);
     }
-    
+
     // Current Account Status state
     const getCurrentStatus = () => {
         return status.map((type) => (
@@ -408,14 +419,13 @@ function NewStaff() {
         event.preventDefault();
         setCurrentStatus(event.target.value);
     }
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '400px',
     }
-    
+
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
     const MenuProps = {
@@ -427,7 +437,7 @@ function NewStaff() {
             },
         },
     };
-    
+
     useEffect(() => {
         if (jobRole !== 'Field Supervisor' && jobRole !== 'Generator Technician') {
             setCluster('');
@@ -437,7 +447,7 @@ function NewStaff() {
             clearErrors(['cluster', 'siteID']); // Clear any validation errors
         }
     }, [jobRole, setValue, clearErrors]);
-    
+
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('new')) {
@@ -461,12 +471,13 @@ function NewStaff() {
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
-                        toast.success('New Staff Account Created Successfully');
+                        toast.success('New AllStaff Account Created Successfully');
                         //     refresh the query that fetched all the staff
                         queryClient.invalidateQueries({queryKey: ["AllStaff"]});
+                        queryClient.invalidateQueries({queryKey: ["DashboardData"]});
                         //     clear the form fields
                         Clear();
-                        router.push('/dashboard/admin/staff');
+                        router.push('/dashboard/admin/staff/all');
                     } else {
                         toast.error('Failed to create new staff account');
                     }
@@ -486,29 +497,22 @@ function NewStaff() {
             });
         }
     }
-    
+
     return (
         <>
-            <Box sx={mainSection}
-                 component='form'
-                 noValidate
-                 onSubmit={handleSubmit(SubmitData)}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>New Staff Account Form</Typography>
-                </Paper>
-                {/*registration form here*/}
-                {/*<Grid container spacing={2}>*/}
-                <br/>
-                <br/>
+            <Box
+                component='form'
+                noValidate
+                onSubmit={handleSubmit(SubmitData)}
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%', // This ensures nothing overflows
+                    overflow: 'hidden', // Handles overflowing content
+                }}
+            >
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -523,20 +527,7 @@ function NewStaff() {
                             },
                         }}
                     >
-                        
-                        <Tab
-                            label="Home"
-                            component={Link}
-                            href="/dashboard/admin"
-                            value="/dashboard/admin"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
+
                         <Tab
                             label="Staff"
                             component={Link}
@@ -545,12 +536,27 @@ function NewStaff() {
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
                                 "&.Mui-selected": {
                                     color: "#46F0F9",
                                 },
                             }}
                         />
-                        
+                        <Tab
+                            label="All"
+                            component={Link}
+                            href="/dashboard/admin/staff/all"
+                            value="/dashboard/admin/staff/all"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+
                         <Tab
                             label="New"
                             component={Link}
@@ -559,6 +565,7 @@ function NewStaff() {
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
                                 "&.Mui-selected": {
                                     color: "#46F0F9",
                                 },
@@ -567,117 +574,125 @@ function NewStaff() {
                     </Tabs>
                 </Stack>
                 <br/><br/>
-                <Grid container spacing={4}>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        {/* First Row (1 fields) prefix */}
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                <Typography variant="h5" component="h5">Personal Information</Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                {/* Prefix */}
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="title"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Title"
-                                                error={!!errors.title}
-                                                helperText={errors.title ? errors.title.message : ''}
-                                                InputProps={{
-                                                    sx: {
-                                                        color: "white",
-                                                        bgcolor: "#274e61",
-                                                        borderRadius: "10px",
-                                                        width: '100px',
-                                                    },
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
-                                                    },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}
-                                            >
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Prefix
-                                                </MenuItem>
-                                                {getPrefix()}
-                                            </TextField>
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            {/* First Row (3 fields) Name, middle-name, lastname */}
-                            <Grid item xs={4}>
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="firstName"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
+                {/*Main Form Container*/}
+                <Box sx={{
+                    padding: xSmall ? '2px' : small ? '4px' : '6px',
+                    backgroundColor: 'inherit',
+                    color: '#46F0F9',
+                    borderRadius: '10px',
+                    width: '100%', // Ensures Paper doesn't exceed its parent
+                    maxWidth: '100%',
+                }}>
+                    {/* Personal Imfo Section*/}
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
+                                Personal Information
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            {/* Prefix */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="title"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Title"
+                                            error={!!errors.title}
+                                            helperText={errors.title ? errors.title.message : ''}
+                                            InputProps={{
+                                                sx: {
+                                                    color: "white",
+                                                    bgcolor: "#274e61",
+                                                    borderRadius: "10px",
+                                                    width: '100px',
+                                                },
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
                                                     color: "#46F0F9",
-                                                }}
-                                                label="First Name"
-                                                variant="outlined"
-                                                error={!!errors.firstName}
-                                                helperText={errors.firstName ? errors.firstName.message : ''}
-                                                required
-                                            />
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={4}>
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}
+                                        >
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Prefix
+                                            </MenuItem>
+                                            {getPrefix()}
+                                        </TextField>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*FirstName*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="firstName"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            label="First Name"
+                                            variant="outlined"
+                                            error={!!errors.firstName}
+                                            helperText={errors.firstName ? errors.firstName.message : ''}
+                                            required
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/* Middle Name*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="middleName"
                                     control={control}
@@ -706,8 +721,11 @@ function NewStaff() {
                                         />
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        {/* Last Name*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="lastName"
                                     control={control}
@@ -737,9 +755,12 @@ function NewStaff() {
                                         />
                                     )}
                                 />
-                            </Grid>
-                            {/* Second Row (3 fields) email, phone, DOB*/}
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        {/* Second Row (3 fields) email, phone, DOB*/}
+                        {/*Email*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="email"
                                     control={control}
@@ -771,8 +792,11 @@ function NewStaff() {
                                         />
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        {/* Phone NO*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="phone"
                                     control={control}
@@ -803,9 +827,12 @@ function NewStaff() {
                                         />
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4} sx={{paddingTop: 0}}>
-                                {/* Date of Birth */}
+                            </FormControl>
+                        </Grid>
+                        {/*DOB*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Date of Birth */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="dob"
                                     control={control}
@@ -844,7 +871,6 @@ function NewStaff() {
                                                                     color: 'white',
                                                                     bgcolor: '#274e61',
                                                                     borderRadius: '10px',
-                                                                    width: '350px',
                                                                     "& .MuiInputLabel-root": {
                                                                         color: '#46F0F9',
                                                                     },
@@ -889,7 +915,7 @@ function NewStaff() {
                                                                         color: '#F51313',
                                                                         backgroundColor: '#0B0337',
                                                                         borderRadius: '50px',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -910,10 +936,12 @@ function NewStaff() {
                                         </LocalizationProvider>
                                     )}
                                 />
-                            </Grid>
-                            {/* Third Row (3 fields) Gender, Marital Status , Religion*/}
-                            <Grid item xs={4}>
-                                {/* Gender */}
+                            </FormControl>
+                        </Grid>
+                        {/*Gender*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Gender */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="gender"
                                     control={control}
@@ -971,9 +999,12 @@ function NewStaff() {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Marital Status */}
+                            </FormControl>
+                        </Grid>
+                        {/*Marital Status*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Marital Status */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="maritalStatus"
                                     control={control}
@@ -1031,9 +1062,12 @@ function NewStaff() {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Religion */}
+                            </FormControl>
+                        </Grid>
+                        {/*Religion*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Religion */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="religion"
                                     control={control}
@@ -1091,1090 +1125,1138 @@ function NewStaff() {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/* Fourth Row (3 fields) country, state, lga */}
-                            <Grid item xs={4}>
-                                {/* Country */}
+                            </FormControl>
+                        </Grid>
+                        {/*Country*/}
+                        {/* Fourth Row (3 fields) country, state, lga */}
+                        {/* Country */}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="country"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Country"
-                                                value={field.value}
-                                                required
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleCountryChange(e);
-                                                }}
-                                                error={!!errors.country}
-                                                helperText={errors.country ? errors.country.message : ''}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Country"
+                                            value={field.value}
+                                            required
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleCountryChange(e);
+                                            }}
+                                            error={!!errors.country}
+                                            helperText={errors.country ? errors.country.message : ''}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Country
-                                                </MenuItem>
-                                                {getCountryType()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Country
+                                            </MenuItem>
+                                            {getCountryType()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* State of Origin */}
+                            </FormControl>
+                        </Grid>
+                        {/* State of Origin */}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="stateOfOrigin"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="State of Origin"
-                                                value={field.value}
-                                                required
-                                                error={!!errors.stateOfOrigin}
-                                                helperText={errors.stateOfOrigin ? errors.stateOfOrigin.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleStateOfOriginChange(e);
-                                                }}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="State of Origin"
+                                            value={field.value}
+                                            required
+                                            error={!!errors.stateOfOrigin}
+                                            helperText={errors.stateOfOrigin ? errors.stateOfOrigin.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleStateOfOriginChange(e);
+                                            }}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select State of Origin
-                                                </MenuItem>
-                                                {getStateOfOriginOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select State of Origin
+                                            </MenuItem>
+                                            {getStateOfOriginOptions()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* LGA */}
+                            </FormControl>
+                        </Grid>
+                        {/* LGA */}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="lga"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="LGA"
-                                                value={field.value}
-                                                required
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleLGAChange(e);
-                                                }}
-                                                error={!!errors.lga}
-                                                helperText={errors.lga ? errors.lga.message : ''}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 400,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="LGA"
+                                            value={field.value}
+                                            required
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleLGAChange(e);
+                                            }}
+                                            error={!!errors.lga}
+                                            helperText={errors.lga ? errors.lga.message : ''}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 400,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>Select LGA</MenuItem>
-                                                {getLGAOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>Select LGA</MenuItem>
+                                            {getLGAOptions()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
-                            {/* fifth row 1 field nextOfKin Information text*/}
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color="white">Next of Kin
-                                    Information</Typography>
-                            </Grid>
-                            {/* sixth row 3 field nextOfKin, relationship, nextOfKinPhoneNo*/}
-                            <Grid item xs={4}>
-                                {/* NextOfKin */}
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <br/>
+                    {/*Next of Kin Information*/}
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
+                                Next of Kin Information
+                            </Typography>
+                        </Grid>
+                        {/*    Nex of Kin*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* NextOfKin */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="nextOfKin"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                id="outlined-basic"
-                                                label="Name"
-                                                variant="outlined"
-                                                error={!!errors.nextOfKin}
-                                                helperText={errors.nextOfKin ? errors.nextOfKin.message : ''}
-                                                required
-                                            
-                                            />
-                                        </FormControl>
+
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            id="outlined-basic"
+                                            label="Name"
+                                            variant="outlined"
+                                            error={!!errors.nextOfKin}
+                                            helperText={errors.nextOfKin ? errors.nextOfKin.message : ''}
+                                            required
+
+                                        />
+
                                     )}
                                 />
-                            </Grid>
-                            {/* Sixth row 1 field, Relationship*/}
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        {/* Sixth row 1 field, Relationship*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="nextOfKinRelationship"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Relationship"
-                                                value={field.value}
-                                                error={!!errors.nextOfKinRelationship}
-                                                helperText={errors.nextOfKinRelationship ? errors.nextOfKinRelationship.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleNextOfKinChange(e);
-                                                }}
-                                                required
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Relationship"
+                                            value={field.value}
+                                            error={!!errors.nextOfKinRelationship}
+                                            helperText={errors.nextOfKinRelationship ? errors.nextOfKinRelationship.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleNextOfKinChange(e);
+                                            }}
+                                            required
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Relationship
-                                                </MenuItem>
-                                                {getNextOfKinOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Relationship
+                                            </MenuItem>
+                                            {getNextOfKinOptions()}
+                                        </TextField>
+
                                     )}
                                 />
-                            </Grid>
-                            {/* nextOfKinPhoneNo*/}
-                            <Grid item xs={4}>
-                                {/* NextOfKin */}
+                            </FormControl>
+                        </Grid>
+                        {/* nextOfKinPhoneNo*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* NextOfKin */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="nextOfKinPhone"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                id="outlined-basic"
-                                                label="Contact No"
-                                                variant="outlined"
-                                                error={!!errors.nextOfKinPhone}
-                                                helperText={errors.nextOfKinPhone ? errors.nextOfKinPhone.message : ''}
-                                                required
-                                            />
-                                        </FormControl>
+
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            id="outlined-basic"
+                                            label="Contact No"
+                                            variant="outlined"
+                                            error={!!errors.nextOfKinPhone}
+                                            helperText={errors.nextOfKinPhone ? errors.nextOfKinPhone.message : ''}
+                                            required
+                                        />
+
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color="white">Residential
-                                    Address</Typography>
-                            </Grid>
-                            {/* Eight Row 1 field residential address  */}
-                            <Grid item xs={4}>
-                                {/* Residential Address */}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>Residential Address
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Residential Address */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="address"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: {...txProps, width: '550px'},
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                id="outlined-basic"
-                                                label="Residential Address *"
-                                                variant="outlined"
-                                                error={!!errors.address}
-                                                helperText={errors.address ? errors.address.message : ''}
-                                            />
-                                        </FormControl>
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            id="outlined-basic"
+                                            label="Residential Address *"
+                                            variant="outlined"
+                                            error={!!errors.address}
+                                            helperText={errors.address ? errors.address.message : ''}
+                                        />
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* State of Residence */}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* State of Residence */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="stateOfResidence"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="State of Residence"
-                                                value={field.value}
-                                                required
-                                                error={!!errors.stateOfResidence}
-                                                helperText={errors.stateOfResidence ? errors.stateOfResidence.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleResidentStateChange(e);
-                                                }}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="State of Residence"
+                                            value={field.value}
+                                            required
+                                            error={!!errors.stateOfResidence}
+                                            helperText={errors.stateOfResidence ? errors.stateOfResidence.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleResidentStateChange(e);
+                                            }}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                    marginLeft: '100px',
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select State of Residence
-                                                </MenuItem>
-                                                {getResidentStateOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select State of Residence
+                                            </MenuItem>
+                                            {getResidentStateOptions()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
+                            </FormControl>
                         </Grid>
-                    </Paper>
-                    {/* **************************** ********************** ******************* */}
-                    {/*Education Info*/}
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5">Education Information</Typography>
                     </Grid>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        <Grid container spacing={4}>
-                            {/*Highest Educational Qualification*/}
-                            <Grid item xs={3}>
-                                {/* Eduction Degree */}
+
+                </Box>
+                <br/>
+                {/* Educational Section*/}
+                <Box sx={{
+                    padding: xSmall ? '2px' : small ? '4px' : '6px',
+                    backgroundColor: 'inherit',
+                    color: '#46F0F9',
+                    borderRadius: '10px',
+                    width: '100%',
+                    maxWidth: '100%',
+                }}>
+                    {/* Education Section*/}
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
+                                Education Information
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Eduction Degree */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="highestDegree"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Highest Degree"
-                                                value={field.value}
-                                                error={!!errors.highestDegree}
-                                                helperText={errors.highestDegree ? errors.highestDegree.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleDegreeChange(e);
-                                                }}
-                                                required
-                                                InputProps={{
-                                                    sx: {...txProps, width: '250px'},
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Highest Degree"
+                                            value={field.value}
+                                            error={!!errors.highestDegree}
+                                            helperText={errors.highestDegree ? errors.highestDegree.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleDegreeChange(e);
+                                            }}
+                                            required
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Highest Degree
-                                                </MenuItem>
-                                                {getDegreeOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Highest Degree
+                                            </MenuItem>
+                                            {getDegreeOptions()}
+                                        </TextField>
+
                                     )}
                                 />
-                            </Grid>
-                            {/*Institution Attended*/}
-                            <Grid item xs={6}>
-                                {/* Higher Institution */}
+                            </FormControl>
+                        </Grid>
+                        {/*Institution Attended*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Higher Institution */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="institution"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Institution"
-                                                value={field.value}
-                                                required
-                                                error={!!errors.institution}
-                                                helperText={errors.institution ? errors.institution.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleInstitutionChange(e);
-                                                }}
-                                                InputProps={{
-                                                    sx: {...txProps, width: '600px'},
-                                                    
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Institution"
+                                            value={field.value}
+                                            required
+                                            error={!!errors.institution}
+                                            helperText={errors.institution ? errors.institution.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleInstitutionChange(e);
+                                            }}
+                                            InputProps={{
+                                                sx: txProps,
+
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{
-                                                    color: "#4BF807",
-                                                    cursor: "not-allowed",
-                                                }}>
-                                                    Select Institution
-                                                </MenuItem>
-                                                {getInstitutionOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{
+                                                color: "#4BF807",
+                                                cursor: "not-allowed",
+                                            }}>
+                                                Select Institution
+                                            </MenuItem>
+                                            {getInstitutionOptions()}
+                                        </TextField>
+
                                     )}
                                 />
-                            </Grid>
-                            {/*Clas of Degree*/}
-                            <Grid item xs={3}>
-                                {/* Class of Degree */}
+                            </FormControl>
+                        </Grid>
+                        {/*Clas of Degree*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Class of Degree */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="classofDegree"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Class of Degree"
-                                                value={field.value}
-                                                error={!!errors.classofDegree}
-                                                helperText={errors.classofDegree ? errors.classofDegree.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleDegreeClassChange(e);
-                                                }}
-                                                required
-                                                InputProps={{
-                                                    sx: {...txProps, width: '250px'},
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Class of Degree"
+                                            value={field.value}
+                                            error={!!errors.classofDegree}
+                                            helperText={errors.classofDegree ? errors.classofDegree.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleDegreeClassChange(e);
+                                            }}
+                                            required
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                    width: '260px',
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Highest Degree
-                                                </MenuItem>
-                                                {getDegreeClassOptions()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Highest Degree
+                                            </MenuItem>
+                                            {getDegreeClassOptions()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
-                            {/*Faculty*/}
-                            <Grid item xs={3}>
-                                {/* Field of Study */}
+                            </FormControl>
+                        </Grid>
+                        {/*Faculty*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Field of Study */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="faculty"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Faculty"
-                                                value={field.value}
-                                                error={!!errors.faculty}
-                                                helperText={errors.faculty ? errors.faculty.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleFacultyChange(e);
-                                                }}
-                                                required
-                                                InputProps={{
-                                                    sx: {...txProps, width: '250px'},
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
-                                                    },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Highest Degree
-                                                </MenuItem>
-                                                {getFacultyOption()}
-                                            </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/* Course of Study*/}
-                            <Grid item xs={3}>
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="courseOfStudy"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: {...txProps, width: '300px'},
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Faculty"
+                                            value={field.value}
+                                            error={!!errors.faculty}
+                                            helperText={errors.faculty ? errors.faculty.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleFacultyChange(e);
+                                            }}
+                                            required
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
                                                     color: "#46F0F9",
-                                                }}
-                                                label="Course Of Study"
-                                                variant="outlined"
-                                                error={!!errors.courseOfStudy}
-                                                helperText={errors.courseOfStudy ? errors.courseOfStudy.message : ''}
-                                                required
-                                            />
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            {/*Year of Graduation*/}
-                            <Grid item xs={6}>
-                                {/* Date of Graduation */}
-                                <Controller
-                                    name="graduationDate"
-                                    control={control}
-                                    defaultValue={null}
-                                    error={errors.graduationDate?.message}
-                                    clearErrors={clearErrors}
-                                    render={({field}) => (
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            {/*Date picker for DOB input*/}
-                                            <ThemeProvider theme={theme}>
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        {...field}
-                                                        sx={{
-                                                            border: '2px solid salmon',
-                                                            width: '260px',
-                                                        }}
-                                                        label="Graduation Date"
-                                                        value={field.value}
-                                                        onChange={(newValue) => {
-                                                            field.onChange(newValue);
-                                                            setGraduation(newValue);
-                                                        }}
-                                                        disableFuture
-                                                        views={['year', 'month', 'day']}
-                                                        error={!!errors.graduationDate}
-                                                        helperText={errors.graduationDate ? errors.graduationDate.message : ''}
-                                                        inputRef={field.ref}
-                                                        closeOnSelect={false}
-                                                        localeText={{toolbarTitle: 'Date of Graduation'}}
-                                                        format={'DD/MM/YYYY'}
-                                                        slotProps={{
-                                                            openPickerButton: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                }
-                                                            },
-                                                            textField: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    bgcolor: '#274e61',
-                                                                    // border: '3px solid salmon',
-                                                                    width: '300px !important', // add !important
-                                                                    borderRadius: '10px',
-                                                                    "& .MuiInputLabel-root": {
-                                                                        color: '#46F0F9',
-                                                                    },
-                                                                    "& .MuiInputBase-input": { // Target input text
-                                                                        color: 'white', // Set focused text color to white
-                                                                    },
-                                                                    "& .MuiFormHelperText-root": {
-                                                                        color: '#EFC3CA',
-                                                                        // color: 'red',
-                                                                    },
-                                                                    //     set the border color to red upon error
-                                                                    "& .MuiOutlinedInput-notchedOutline": {
-                                                                        // borderColor: '#F51313',
-                                                                        borderColor: errors.graduationDate ? 'red' : '',
-                                                                    },
-                                                                    // ensure the bgColor does not change when autofill is triggered
-                                                                    "& input:-webkit-autofill": {
-                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
-                                                                        WebkitTextFillColor: 'white',
-                                                                    },
-                                                                    "& .MuiStack-root": {
-                                                                        //     set the padding top to be 0px
-                                                                        paddingTop: '0px',
-                                                                    }
-                                                                },
-                                                                helperText: errors.graduationDate ? errors.graduationDate.message : null,
-                                                            },
-                                                            actionBar: {
-                                                                actions: ['cancel', 'clear', 'accept'],
-                                                            },
-                                                            toolbar: {
-                                                                hidden: false,
-                                                                sx: {
-                                                                    // set the title 'Select Date' to white text
-                                                                    '& .MuiTypography-root': {
-                                                                        color: '#FFF',
-                                                                    },
-                                                                },
-                                                            },
-                                                            tabs: {
-                                                                hidden: false
-                                                            },
-                                                            layout: {
-                                                                sx: {
-                                                                    '& .MuiDayCalendar-weekDayLabel': {
-                                                                        color: '#F51313',
-                                                                        backgroundColor: '#0B0337',
-                                                                        borderRadius: '50px',
-                                                                    },
-                                                                },
-                                                            },
-                                                            day: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 'bold',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#07053B',
-                                                                    },
-                                                                }
-                                                            },
-                                                        }}
-                                                    />
-                                                </DemoContainer>
-                                            </ThemeProvider>
-                                        </LocalizationProvider>
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Highest Degree
+                                            </MenuItem>
+                                            {getFacultyOption()}
+                                        </TextField>
                                     )}
                                 />
-                            </Grid>
+                            </FormControl>
                         </Grid>
-                    </Paper>
-                    {/* **************************** ********************** ******************* */}
-                    {/* Next section will contain Employment info*/}
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5">Employment Information</Typography>
+                        {/* Course of Study*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="courseOfStudy"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            label="Course Of Study"
+                                            variant="outlined"
+                                            error={!!errors.courseOfStudy}
+                                            helperText={errors.courseOfStudy ? errors.courseOfStudy.message : ''}
+                                            required
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*Year of Graduation*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Date of Graduation */}
+                            <Controller
+                                name="graduationDate"
+                                control={control}
+                                defaultValue={null}
+                                error={errors.graduationDate?.message}
+                                clearErrors={clearErrors}
+                                render={({field}) => (
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        {/*Date picker for DOB input*/}
+                                        <ThemeProvider theme={theme}>
+                                            <DemoContainer components={['DatePicker']}>
+                                                <DatePicker
+                                                    {...field}
+                                                    sx={{
+                                                        border: '2px solid salmon',
+                                                        width: '260px',
+                                                    }}
+                                                    label="Graduation Date"
+                                                    value={field.value}
+                                                    onChange={(newValue) => {
+                                                        field.onChange(newValue);
+                                                        setGraduation(newValue);
+                                                    }}
+                                                    disableFuture
+                                                    views={['year', 'month', 'day']}
+                                                    error={!!errors.graduationDate}
+                                                    helperText={errors.graduationDate ? errors.graduationDate.message : ''}
+                                                    inputRef={field.ref}
+                                                    closeOnSelect={false}
+                                                    localeText={{toolbarTitle: 'Date of Graduation'}}
+                                                    format={'DD/MM/YYYY'}
+                                                    slotProps={{
+                                                        openPickerButton: {
+                                                            sx: {
+                                                                color: 'white',
+                                                            }
+                                                        },
+                                                        textField: {
+                                                            sx: {
+                                                                color: 'white',
+                                                                bgcolor: '#274e61',
+                                                                // border: '3px solid salmon',
+                                                                // width: '300px !important', // add !important
+                                                                borderRadius: '10px',
+                                                                "& .MuiInputLabel-root": {
+                                                                    color: '#46F0F9',
+                                                                },
+                                                                "& .MuiInputBase-input": { // Target input text
+                                                                    color: 'white', // Set focused text color to white
+                                                                },
+                                                                "& .MuiFormHelperText-root": {
+                                                                    color: '#EFC3CA',
+                                                                    // color: 'red',
+                                                                },
+                                                                //     set the border color to red upon error
+                                                                "& .MuiOutlinedInput-notchedOutline": {
+                                                                    // borderColor: '#F51313',
+                                                                    borderColor: errors.graduationDate ? 'red' : '',
+                                                                },
+                                                                // ensure the bgColor does not change when autofill is triggered
+                                                                "& input:-webkit-autofill": {
+                                                                    WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+                                                                    WebkitTextFillColor: 'white',
+                                                                },
+                                                                "& .MuiStack-root": {
+                                                                    //     set the padding top to be 0px
+                                                                    paddingTop: '0px',
+                                                                }
+                                                            },
+                                                            helperText: errors.graduationDate ? errors.graduationDate.message : null,
+                                                        },
+                                                        actionBar: {
+                                                            actions: ['cancel', 'clear', 'accept'],
+                                                        },
+                                                        toolbar: {
+                                                            hidden: false,
+                                                            sx: {
+                                                                // set the title 'Select Date' to white text
+                                                                '& .MuiTypography-root': {
+                                                                    color: '#FFF',
+                                                                },
+                                                            },
+                                                        },
+                                                        tabs: {
+                                                            hidden: false
+                                                        },
+                                                        layout: {
+                                                            sx: {
+                                                                '& .MuiDayCalendar-weekDayLabel': {
+                                                                    color: '#F51313',
+                                                                    backgroundColor: '#0B0337',
+                                                                    borderRadius: '50px',
+                                                                },
+                                                            },
+                                                        },
+                                                        day: {
+                                                            sx: {
+                                                                color: 'white',
+                                                                fontSize: '0.8rem',
+                                                                fontWeight: 'bold',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#07053B',
+                                                                },
+                                                            }
+                                                        },
+                                                    }}
+                                                />
+                                            </DemoContainer>
+                                        </ThemeProvider>
+                                    </LocalizationProvider>
+                                )}
+                            />
+                        </Grid>
                     </Grid>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        <Grid container spacing={4}>
-                            <Grid item xs={4}>
-                                {/* Employment Type */}
+                </Box>
+                <br/>
+                {/* Employment Section*/}
+                <Box sx={{
+                    padding: xSmall ? '2px' : small ? '4px' : '6px',
+                    backgroundColor: 'inherit',
+                    color: '#46F0F9',
+                    borderRadius: '10px',
+                    width: '100%',
+                    maxWidth: '100%',
+                }}>
+                    {/* Education Section*/}
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
+                                Employment Information
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+
+                            {/* Employment Type */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="employmentType"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Employment Type"
-                                                value={field.value}
-                                                error={!!errors.employmentType}
-                                                helperText={errors.employmentType ? errors.employmentType.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleEmpTypeChange(e);
-                                                }}
-                                                required
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Employment Type"
+                                            value={field.value}
+                                            error={!!errors.employmentType}
+                                            helperText={errors.employmentType ? errors.employmentType.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleEmpTypeChange(e);
+                                            }}
+                                            required
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
-                                                        },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{color: "#4BF807"}}>
-                                                    Select Employment
-                                                </MenuItem>
-                                                {getEmploymentType()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{color: "#4BF807"}}>
+                                                Select Employment
+                                            </MenuItem>
+                                            {getEmploymentType()}
+                                        </TextField>
+
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Job Role */}
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Job Role */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="role"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Role"
-                                                value={field.value}
-                                                required
-                                                error={!!errors.role}
-                                                helperText={errors.role ? errors.role.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleJobRoleChange(e);
-                                                }}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Role"
+                                            value={field.value}
+                                            required
+                                            error={!!errors.role}
+                                            helperText={errors.role ? errors.role.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleJobRoleChange(e);
+                                            }}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{
+                                                color: "#4BF807",
+                                                cursor: "not-allowed",
+                                            }}>
+                                                Select Job Role
+                                            </MenuItem>
+                                            {getJobTitleOptions()}
+                                        </TextField>
+
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*Year of Employment*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Year of Employment */}
+                            <Controller
+                                name="employmentDate"
+                                control={control}
+                                defaultValue={null}
+                                error={errors.employmentDate?.message}
+                                clearErrors={clearErrors}
+                                render={({field}) => (
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        {/*Date picker for Employment date input*/}
+                                        <ThemeProvider theme={theme}>
+                                            <DemoContainer components={['DatePicker']}>
+                                                <DatePicker
+                                                    {...field}
+                                                    sx={{'.mui-bgwg5s-MuiStack-root': {paddingTop: 0}}}
+                                                    label="Employment Date *"
+                                                    value={field.value}
+                                                    onChange={(newValue) => {
+                                                        field.onChange(newValue);
+                                                        setEmployment(newValue);
+                                                    }}
+                                                    disableFuture
+                                                    views={['year', 'month', 'day']}
+                                                    error={!!errors.employmentDate}
+                                                    helperText={errors.employmentDate ? errors.employmentDate.message : ''}
+                                                    inputRef={field.ref}
+                                                    closeOnSelect={false}
+                                                    localeText={{toolbarTitle: 'Date of Employment'}}
+                                                    format={'DD/MM/YYYY'}
+                                                    slotProps={{
+                                                        openPickerButton: {
                                                             sx: {
-                                                                backgroundColor: '#134357',
                                                                 color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
+                                                            }
+                                                        },
+                                                        textField: {
+                                                            sx: {
+                                                                color: 'white',
+                                                                bgcolor: '#274e61',
+                                                                borderRadius: '10px',
+                                                                // width: '350px',
+                                                                "& .MuiInputLabel-root": {
+                                                                    color: '#46F0F9',
+                                                                },
+                                                                "& .MuiInputBase-input": { // Target input text
+                                                                    color: 'white', // Set focused text color to white
+                                                                },
+                                                                "& .MuiFormHelperText-root": {
+                                                                    // color: '#FDBFC9',
+                                                                    color: 'red',
+                                                                },
+                                                                //     set the border color to red upon error
+                                                                "& .MuiOutlinedInput-notchedOutline": {
+                                                                    // borderColor: '#F51313',
+                                                                    borderColor: errors.employmentDate ? 'red' : '',
+                                                                },
+                                                                // ensure the bgColor does not change when autofill is triggered
+                                                                "& input:-webkit-autofill": {
+                                                                    WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+                                                                    WebkitTextFillColor: 'white',
+                                                                },
+                                                            },
+                                                            helperText: errors.employmentDate ? errors.employmentDate.message : null,
+                                                        },
+                                                        actionBar: {
+                                                            actions: ['cancel', 'clear', 'accept'],
+                                                        },
+                                                        toolbar: {
+                                                            hidden: false,
+                                                            sx: {
+                                                                // set the title 'Select Date' to white text
+                                                                '& .MuiTypography-root': {
+                                                                    color: '#FFF',
+                                                                },
                                                             },
                                                         },
-                                                    },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{
-                                                    color: "#4BF807",
-                                                    cursor: "not-allowed",
-                                                }}>
-                                                    Select Job Role
-                                                </MenuItem>
-                                                {getJobTitleOptions()}
-                                            </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {/*Year of Employment*/}
-                            <Grid item xs={4}>
-                                {/* Year of Employment */}
-                                <Controller
-                                    name="employmentDate"
-                                    control={control}
-                                    defaultValue={null}
-                                    error={errors.employmentDate?.message}
-                                    clearErrors={clearErrors}
-                                    render={({field}) => (
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            {/*Date picker for Employment date input*/}
-                                            <ThemeProvider theme={theme}>
-                                                <DemoContainer components={['DatePicker']}>
-                                                    <DatePicker
-                                                        {...field}
-                                                        sx={{'.mui-bgwg5s-MuiStack-root': {paddingTop: 0}}}
-                                                        label="Employment Date *"
-                                                        value={field.value}
-                                                        onChange={(newValue) => {
-                                                            field.onChange(newValue);
-                                                            setEmployment(newValue);
-                                                        }}
-                                                        disableFuture
-                                                        views={['year', 'month', 'day']}
-                                                        error={!!errors.employmentDate}
-                                                        helperText={errors.employmentDate ? errors.employmentDate.message : ''}
-                                                        inputRef={field.ref}
-                                                        closeOnSelect={false}
-                                                        localeText={{toolbarTitle: 'Date of Employment'}}
-                                                        format={'DD/MM/YYYY'}
-                                                        slotProps={{
-                                                            openPickerButton: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                }
-                                                            },
-                                                            textField: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    bgcolor: '#274e61',
-                                                                    borderRadius: '10px',
-                                                                    width: '350px',
-                                                                    "& .MuiInputLabel-root": {
-                                                                        color: '#46F0F9',
-                                                                    },
-                                                                    "& .MuiInputBase-input": { // Target input text
-                                                                        color: 'white', // Set focused text color to white
-                                                                    },
-                                                                    "& .MuiFormHelperText-root": {
-                                                                        // color: '#FDBFC9',
-                                                                        color: 'red',
-                                                                    },
-                                                                    //     set the border color to red upon error
-                                                                    "& .MuiOutlinedInput-notchedOutline": {
-                                                                        // borderColor: '#F51313',
-                                                                        borderColor: errors.employmentDate ? 'red' : '',
-                                                                    },
-                                                                    // ensure the bgColor does not change when autofill is triggered
-                                                                    "& input:-webkit-autofill": {
-                                                                        WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
-                                                                        WebkitTextFillColor: 'white',
-                                                                    },
-                                                                },
-                                                                helperText: errors.employmentDate ? errors.employmentDate.message : null,
-                                                            },
-                                                            actionBar: {
-                                                                actions: ['cancel', 'clear', 'accept'],
-                                                            },
-                                                            toolbar: {
-                                                                hidden: false,
-                                                                sx: {
-                                                                    // set the title 'Select Date' to white text
-                                                                    '& .MuiTypography-root': {
-                                                                        color: '#FFF',
-                                                                    },
+                                                        tabs: {
+                                                            hidden: false
+                                                        },
+                                                        layout: {
+                                                            sx: {
+                                                                '& .MuiDayCalendar-weekDayLabel': {
+                                                                    color: '#F51313',
+                                                                    backgroundColor: '#0B0337',
+                                                                    borderRadius: '50px',
                                                                 },
                                                             },
-                                                            tabs: {
-                                                                hidden: false
-                                                            },
-                                                            layout: {
-                                                                sx: {
-                                                                    '& .MuiDayCalendar-weekDayLabel': {
-                                                                        color: '#F51313',
-                                                                        backgroundColor: '#0B0337',
-                                                                        borderRadius: '50px',
-                                                                    },
+                                                        },
+                                                        day: {
+                                                            sx: {
+                                                                color: 'white',
+                                                                fontSize: '0.8rem',
+                                                                fontWeight: 'bold',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#07053B',
                                                                 },
-                                                            },
-                                                            day: {
-                                                                sx: {
-                                                                    color: 'white',
-                                                                    fontSize: '0.8rem',
-                                                                    fontWeight: 'bold',
-                                                                    '&:hover': {
-                                                                        backgroundColor: '#07053B',
-                                                                    },
-                                                                }
-                                                            },
-                                                        }}
-                                                    />
-                                                </DemoContainer>
-                                            </ThemeProvider>
-                                        </LocalizationProvider>
-                                    )}
-                                />
-                            </Grid>
-                            {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
-                            <Grid item xs={12}>
-                                <Typography variant="h6" component="h6" color='white'>Site Information -:
-                                    (Applicable to
-                                    Technicians
-                                    and
-                                    Field Supervisors Role)</Typography>
-                            </Grid>
-                            <Grid item xs={4}>
+                                                            }
+                                                        },
+                                                    }}
+                                                />
+                                            </DemoContainer>
+                                        </ThemeProvider>
+                                    </LocalizationProvider>
+                                )}
+                            />
+                        </Grid>
+                        {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>Site Information-:<br/>
+                                Applicable to Technicians and Field Supervisors Role</Typography>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="siteState"
                                     control={control}
@@ -2182,67 +2264,68 @@ function NewStaff() {
                                     render={({field}) => {
                                         const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
                                         return (
-                                            <FormControl fullWidth>
-                                                <TextField
-                                                    {...field}
-                                                    select
-                                                    label="Site State"
-                                                    value={field.value}
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        handleSiteStateChange(e);
-                                                    }}
-                                                    disabled={isDisabled}
-                                                    required={!isDisabled}
-                                                    error={!isDisabled && !!errors.siteState}
-                                                    helperText={!isDisabled && errors.siteState ? errors.siteState.message : ''}
-                                                    InputProps={{
-                                                        sx: txProps,
-                                                    }}
-                                                    InputLabelProps={{
-                                                        sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            },
-                                                        }
-                                                    }}
-                                                    SelectProps={{
-                                                        MenuProps: {
-                                                            PaperProps: {
-                                                                sx: {
-                                                                    backgroundColor: '#134357',
-                                                                    color: 'white',
-                                                                    maxHeight: 450,
-                                                                    overflow: 'auto',
-                                                                },
+                                            <TextField
+                                                {...field}
+                                                select
+                                                label="Site State"
+                                                value={field.value}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleSiteStateChange(e);
+                                                }}
+                                                disabled={isDisabled}
+                                                required={!isDisabled}
+                                                error={!isDisabled && !!errors.siteState}
+                                                helperText={!isDisabled && errors.siteState ? errors.siteState.message : ''}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
                                                             },
                                                         },
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiSelect-icon': {
-                                                            color: '#fff',
-                                                        },
-                                                        '& .MuiSelect-icon:hover': {
-                                                            color: '#fff',
-                                                        },
-                                                    }}
-                                                >
-                                                    <MenuItem value="" sx={{
-                                                        color: "#4BF807",
-                                                        cursor: "not-allowed",
-                                                        // pointerEvents: "none"
-                                                    }}>
-                                                        Select Site State
-                                                    </MenuItem>
-                                                    {getSiteStateOptions()}
-                                                </TextField>
-                                            </FormControl>
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem value="" sx={{
+                                                    color: "#4BF807",
+                                                    cursor: "not-allowed",
+                                                    // pointerEvents: "none"
+                                                }}>
+                                                    Select Site State
+                                                </MenuItem>
+                                                {getSiteStateOptions()}
+                                            </TextField>
+
                                         );
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="cluster"
                                     control={control}
@@ -2250,96 +2333,90 @@ function NewStaff() {
                                     render={({field}) => {
                                         const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
                                         return (
-                                            <FormControl fullWidth>
-                                                <TextField
-                                                    {...field}
-                                                    select
-                                                    label="Cluster Area"
-                                                    value={field.value}
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        handleClusterChange(e);
-                                                    }}
-                                                    disabled={isDisabled}
-                                                    required={!isDisabled}
-                                                    error={!isDisabled && !!errors.cluster}
-                                                    helperText={!isDisabled && errors.cluster ? errors.cluster.message : ''}
-                                                    InputProps={{
-                                                        sx: txProps,
-                                                    }}
-                                                    InputLabelProps={{
-                                                        sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            },
-                                                        }
-                                                    }}
-                                                    SelectProps={{
-                                                        MenuProps: {
-                                                            PaperProps: {
-                                                                sx: {
-                                                                    backgroundColor: '#134357',
-                                                                    color: 'white',
-                                                                    maxHeight: 450,
-                                                                    overflow: 'auto',
-                                                                },
+                                            <TextField
+                                                {...field}
+                                                select
+                                                label="Cluster Area"
+                                                value={field.value}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleClusterChange(e);
+                                                }}
+                                                disabled={isDisabled}
+                                                required={!isDisabled}
+                                                error={!isDisabled && !!errors.cluster}
+                                                helperText={!isDisabled && errors.cluster ? errors.cluster.message : ''}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
                                                             },
                                                         },
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiSelect-icon': {
-                                                            color: '#fff',
-                                                        },
-                                                        '& .MuiSelect-icon:hover': {
-                                                            color: '#fff',
-                                                        },
-                                                    }}
-                                                >
-                                                    <MenuItem value="" sx={{
-                                                        color: "#4BF807",
-                                                        cursor: "not-allowed",
-                                                        // pointerEvents: "none"
-                                                    }}>
-                                                        Select Cluster Area
-                                                    </MenuItem>
-                                                    {getClusterOptions()}
-                                                </TextField>
-                                            </FormControl>
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem value="" sx={{
+                                                    color: "#4BF807",
+                                                    cursor: "not-allowed",
+                                                    // pointerEvents: "none"
+                                                }}>
+                                                    Select Cluster Area
+                                                </MenuItem>
+                                                {getClusterOptions()}
+                                            </TextField>
                                         );
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={4}>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="siteID"
                                     control={control}
                                     defaultValue={[]}
-                                    errors={errors}
                                     render={({field}) => {
                                         const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
                                         return (
-                                            <FormControl fullWidth>
+                                            <>
                                                 <InputLabel
                                                     id="siteID-label"
                                                     sx={{
                                                         color: "#46F0F9",
-                                                        '&.Mui-focused': {
-                                                            color: '#fff',
-                                                        },
+                                                        '&.Mui-focused': {color: '#fff'},
                                                     }}
-                                                    disabled={isDisabled}
                                                     error={!isDisabled && !!errors.siteID}
                                                 >
                                                     Site ID
                                                 </InputLabel>
                                                 <Select
                                                     {...field}
-                                                    id="siteID-select"
                                                     labelId="siteID-label"
                                                     multiple
                                                     value={field.value}
-                                                    
                                                     onChange={(e) => {
                                                         field.onChange(e);
                                                         handleSiteChange(e);
@@ -2360,166 +2437,183 @@ function NewStaff() {
                                                     sx={{
                                                         backgroundColor: '#134357',
                                                         color: 'white',
-                                                        maxHeight: 450,
-                                                        overflow: 'auto',
-                                                        width: '350px',
+                                                        // width: '350px',
                                                         '.MuiOutlinedInput-notchedOutline': {
                                                             borderColor: errors.siteID ? 'red' : '',
                                                         },
-                                                        '.MuiSvgIcon-root ': {
-                                                            // set the icon to white only when disable is false
+                                                        '.MuiSvgIcon-root': {
                                                             color: isDisabled ? '' : '#fff',
-                                                        }
+                                                        },
                                                     }}
                                                 >
-                                                    <MenuItem value="" disabled sx={{
-                                                        color: "#4BF807",
-                                                        cursor: "not-allowed"
-                                                    }}>
+                                                    <MenuItem value="" disabled
+                                                              sx={{color: "#4BF807", cursor: "not-allowed"}}>
                                                         Select Site ID
                                                     </MenuItem>
                                                     {getSiteOptions()}
                                                 </Select>
+
                                                 <FormHelperText
                                                     error={!!(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician') && !!errors.siteID}>
                                                     {errors.siteID?.message}
                                                 </FormHelperText>
-                                            </FormControl>
+                                            </>
                                         );
                                     }}
                                 />
-                            </Grid>
+                            </FormControl>
                         </Grid>
-                    </Paper>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" component="h5" color='white'>Security Info</Typography>
                     </Grid>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
+                </Box>
+                <br/>
+                {/* Security Section*/}
+                <Box sx={{
+                    padding: xSmall ? '2px' : small ? '4px' : '6px',
+                    backgroundColor: 'inherit',
+                    color: '#46F0F9',
+                    borderRadius: '10px',
+                    width: '100%',
+                    maxWidth: '100%',
+                }}>
+                    {/* Education Section*/}
+                    <Grid container spacing={4}>
                         <Grid item xs={12}>
-                            <Typography variant="h6" component="h6" color='white'>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
+                                Security Information
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
+                                        }}>
                                 Set default password as &quot;Staff@123&quot;
                             </Typography>
                         </Grid>
-                        <br/><br/>
-                        <Stack direction="row" spacing={2}>
-                            <Grid item xs={4}>
-                                <FormControl fullWidth>
-                                    <Controller
-                                        name="password"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="password"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
                                                     color: "#46F0F9",
-                                                }}
-                                                label="Password"
-                                                variant="outlined"
-                                                error={!!errors.password}
-                                                helperText={errors.password ? errors.password.message : ''}
-                                                required
-                                            />
-                                        )}
-                                    />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={4}>
-                                {/* Job Role */}
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            label="Password"
+                                            variant="outlined"
+                                            error={!!errors.password}
+                                            helperText={errors.password ? errors.password.message : ''}
+                                            required
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* Job Role */}
+                            <FormControl fullWidth>
                                 <Controller
                                     name="status"
                                     control={control}
                                     defaultValue=""
                                     render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                label="Role"
-                                                value={field.value}
-                                                required
-                                                error={!!errors.status}
-                                                helperText={errors.status ? errors.status.message : ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleCurrentStatusChange(e);
-                                                }}
-                                                InputProps={{
-                                                    sx: txProps,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                            },
+                                        <TextField
+                                            {...field}
+                                            select
+                                            label="Role"
+                                            value={field.value}
+                                            required
+                                            error={!!errors.status}
+                                            helperText={errors.status ? errors.status.message : ''}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleCurrentStatusChange(e);
+                                            }}
+                                            InputProps={{
+                                                sx: txProps,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            maxHeight: 450,
+                                                            overflow: 'auto',
                                                         },
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                }}>
-                                                <MenuItem value="" sx={{
-                                                    color: "#4BF807",
-                                                    cursor: "not-allowed",
-                                                }}>
-                                                    Select Job Role
-                                                </MenuItem>
-                                                {getCurrentStatus()}
-                                            </TextField>
-                                        </FormControl>
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                            }}>
+                                            <MenuItem value="" sx={{
+                                                color: "#4BF807",
+                                                cursor: "not-allowed",
+                                            }}>
+                                                Select Job Role
+                                            </MenuItem>
+                                            {getCurrentStatus()}
+                                        </TextField>
+
                                     )}
                                 />
-                            </Grid>
-                        </Stack>
-                    </Paper>
-                </Grid>
-                <br/>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                </Box>
+
                 <br/>
                 {/*Submitting button */}
-                <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
+                <Stack direction='row' gap={2} sx={{marginBottom: '50px'}}>
                     <Link href="/dashboard/admin/staff">
-                        <Button variant="contained" color='success' title='Back'> Back </Button>
+                        <Button variant="contained" color='success' title='Back' size="small">
+                            Back
+                        </Button>
                     </Link>
-                    <Button variant="contained" color='secondary' onClick={Clear} type='reset'
-                            title='Clear'> Clear </Button>
-                    <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
+                    <Button variant="contained" color='info' onClick={Clear} type='reset' title='Clear'
+                            size="small">
+                        Clear
+                    </Button>
+                    <Button variant="contained" color='error' type='submit' title='Submit' size="small">
+                        Submit
+                    </Button>
                 </Stack>
             </Box>
         </>
