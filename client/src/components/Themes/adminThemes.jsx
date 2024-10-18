@@ -23,6 +23,7 @@ export const dark = {
     },
     typography: {
         fontFamily: 'Poppins',
+        fontWeight: 400,
     }
 };
 
@@ -81,5 +82,6 @@ export const light = {
     },
     typography: {
         fontFamily: 'Poppins',
+
     }
 };

@@ -338,7 +338,7 @@ function SetPassword({decryptedEmail}) {
                                             shrink: true,
                                         }}
                                         sx={{marginBottom: 3}}
-                                        label="Password"
+                                        label="Confirm Password"
                                         variant="outlined"
                                         autoComplete="off"
                                         error={!!errors.confirmPassword}

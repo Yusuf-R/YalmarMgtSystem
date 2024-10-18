@@ -110,7 +110,7 @@ const filterReportData = (data) => {
         admin_id: data.admin_id,
     };
 
-    // Check if Staff category is selected, add only Staff-related info
+    // Check if AllStaff category is selected, add only AllStaff-related info
     if (reportCategory.includes('Staff')) {
         filteredData.staffInfo = staffInfo;
         filteredData.staffIncidentInfo = staffIncidentInfo;

@@ -13,9 +13,9 @@ const validMonths = [
 
 
 export const newServiceReportSchemaValidator = Joi.object({
-    // Staff info
+    // AllStaff info
     fullName: Joi.string().required().messages({
-        'string.empty': 'Staff full-name is required'
+        'string.empty': 'AllStaff full-name is required'
     }),
     email: Joi.string().email().required().messages({
         'string.email': 'Invalid email',
@@ -24,7 +24,7 @@ export const newServiceReportSchemaValidator = Joi.object({
     role: Joi.string().required().messages({
         'string.empty': 'Role is required'
     }),
-    
+
     // Site info
     siteId: Joi.string().required().messages({
         'string.empty': 'Site ID is required'
@@ -49,7 +49,7 @@ export const newServiceReportSchemaValidator = Joi.object({
         'any.only': 'Invalid PM instance',
         'string.empty': 'PM instance is required'
     }),
-    
+
     // Service info
     servicingDate: Joi.date().required().messages({
         'date.base': 'Service date is required',
@@ -58,13 +58,13 @@ export const newServiceReportSchemaValidator = Joi.object({
     nextServiceDate: Joi.string().required().messages({
         'string.empty': 'Next service date is required'
     }),
-    
+
     // siteGenModes
     siteGenModes: Joi.string().valid('GEN-1', 'GEN-1 and GEN-2').required().messages({
         'any.only': 'Invalid site gen modes',
         'string.empty': 'Site gen modes is required'
     }),
-    
+
     generatorPM: Joi.object({
         defaultOperation: Joi.string().valid('Gen1', 'Gen2').required().messages({
             'any.only': 'Invalid default operation',
@@ -137,7 +137,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Gen2 working status is required'
         }),
     }),
-    
+
     airconPM: Joi.object({
         acInstalled: Joi.string().valid('YES', 'NO', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid AC installed status',
@@ -157,7 +157,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'AC2 status is required'
         }),
     }),
-    
+
     shelterPM: Joi.object({
         siteCleaningStatus: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid cleaning status',
@@ -168,7 +168,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Shelter cleaning status is required'
         }),
     }),
-    
+
     lightningPM: Joi.object({
         securityLightAvailability: Joi.string().valid('YES', 'NO', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid security light status',
@@ -183,7 +183,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             }),
             otherwise: Joi.string().allow(null).allow('')
         }),
-        
+
         floodLightAvailability: Joi.string().valid('YES', 'NO', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid flood light availability',
             'string.empty': 'Flood light availability is required'
@@ -198,13 +198,13 @@ export const newServiceReportSchemaValidator = Joi.object({
             // otherwise allow null or empty string
             otherwise: Joi.string().allow(null).allow('')
         }),
-        
+
         awl: Joi.string().valid('WORKING', 'NOT-WORKING', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid AWL status',
             'string.empty': 'AWL status is required'
         }),
     }),
-    
+
     securityPM: Joi.object({
         securityStatus: Joi.string().valid('AVAILABLE', 'NOT-AVAILABLE', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid security status',
@@ -215,7 +215,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Site access status is required'
         }),
     }),
-    
+
     dcSystem: Joi.object({
         // maybe in the future they'll want to add voltage reading
         // voltageReading: Joi.number().positive().required().messages({
@@ -241,7 +241,7 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Rectifier status is required'
         }),
     }),
-    
+
     otherPM: Joi.object({
         feederCableStatus: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid feeder cable status',
@@ -264,15 +264,15 @@ export const newServiceReportSchemaValidator = Joi.object({
             'string.empty': 'Earthing cable status is required'
         }),
     }),
-    
+
     // summary info
     summary: Joi.string().required().messages({
         'string.empty': 'Summary description is required'
     }),
-    
+
     // Admin Info
     adminFullName: Joi.string().required().messages({
-        'string.empty': 'Staff full-name is required'
+        'string.empty': 'AllStaff full-name is required'
     }),
     adminEmail: Joi.string().email().required().messages({
         'string.email': 'Invalid email',
@@ -281,22 +281,22 @@ export const newServiceReportSchemaValidator = Joi.object({
     adminRole: Joi.string().required().messages({
         'string.empty': 'Role is required'
     }),
-    
+
     site_id: Joi.string().required().messages({
         'string.empty': 'Site ID is required'
     }),
-    
+
     staff_id: Joi.string().required().messages({
-        'string.empty': 'Staff ID is required'
+        'string.empty': 'AllStaff ID is required'
     }),
-    
+
     admin_id: Joi.string().required().messages({
-        'string.empty': 'Staff ID is required'
+        'string.empty': 'AllStaff ID is required'
     }),
     imageCredential: Joi.string().required().messages({
         'string.empty': 'Image credential is required'
     }),
-    
+
 });
 
 

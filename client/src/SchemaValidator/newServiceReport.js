@@ -11,16 +11,16 @@ const otherOpt = ['OK', 'NOT-OK', 'NOT-APPLICABLE']
 const batOpt = ['YES', 'NO', 'NOT-APPLICABLE']
 
 export const newServiceReportSchema = yup.object().shape({
-    // Staff info
-    fullName: yup.string().required('Staff full-name is required'),
+    // AllStaff info
+    fullName: yup.string().required('AllStaff full-name is required'),
     email: yup.string().email('Invalid email').required('Email is required'),
     role: yup.string().required('Role is required'),
-    
+
     // admin info
-    adminFullName: yup.string().required('Staff full-name is required'),
+    adminFullName: yup.string().required('AllStaff full-name is required'),
     adminEmail: yup.string().email('Invalid email').required('Email is required'),
     adminRole: yup.string().required('Role is required'),
-    
+
     // Site info
     siteId: yup.string().required('Site ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
@@ -29,14 +29,14 @@ export const newServiceReportSchema = yup.object().shape({
     siteType: yup.string().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type').required('Site type is required').default('HUB'),
     shelterType: yup.string().oneOf(['Containerized', 'Open'], 'Invalid shelter type').required('Shelter type is required'),
     pmInstance: yup.string().oneOf(['PM1', 'PM2'], 'Invalid PM instance').required('PM instance is required'),
-    
+
     // Service info
     servicingDate: yup.date().required('Service date is required'),
     nextServiceDate: yup.string().required('Next service date is required'),
-    
+
     // siteGenModes
     siteGenModes: yup.string().oneOf(['GEN-1', 'GEN-1 and GEN-2'], 'Invalid site gen modes').required('Site gen modes is required'),
-    
+
     // generator PM
     generatorPM: yup.object().shape({
         defaultOperation: yup.string().oneOf(['Gen1', 'Gen2'], 'Invalid default operation').required('Default operation is required'),
@@ -97,7 +97,7 @@ export const newServiceReportSchema = yup.object().shape({
         }),
         gen2WorkingStatus: yup.string().oneOf(['OK', 'NOT OK', 'WEAK GEN', 'NOT-APPLICABLE'], 'Invalid gen2 working status').required('Gen2 working status is required'),
     }),
-    
+
     airconPM: yup.object().shape({
         acInstalled: yup.string().oneOf(['YES', 'NO', 'NOT-APPLICABLE'], 'Invalid AC installed status').required('AC installed status is required'),
         noOfACInstalled: yup
@@ -128,12 +128,12 @@ export const newServiceReportSchema = yup.object().shape({
             otherwise: () => yup.string().nullable(),
         }),
     }),
-    
+
     shelterPM: yup.object().shape({
         siteCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid site cleaning status').required('Site cleaning status is required'),
         shelterCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid shelter cleaning status').required('Shelter cleaning status is required'),
     }),
-    
+
     lightningPM: yup.object().shape({
         securityLightAvailability: yup.string().oneOf(['YES', 'NO', 'NOT-APPLICABLE'], 'Invalid security light status').required('Security light availability is required'),
         securityLightStatus: yup.string().when('securityLightAvailability', {
@@ -149,12 +149,12 @@ export const newServiceReportSchema = yup.object().shape({
                 otherwise: () => yup.string().nullable(),
             },
         ),
-        
+
         awl: yup.string().oneOf(['WORKING', 'NOT-WORKING', 'NOT-APPLICABLE'], 'Invalid AWL status').required('AWL status is required'),
     }),
-    
+
     dcSystem: yup.object().shape({
-        
+
         rectifierStatus: yup.string().oneOf(otherOpt, 'Invalid rectifier status').required('Rectifier status is required'),
         backUpBatteries: yup.string().oneOf(batOpt, 'Invalid back up battery selection').required('Back up batteries is required'),
         batteryCount: yup.number().when('backUpBatteries', {
@@ -171,7 +171,7 @@ export const newServiceReportSchema = yup.object().shape({
             },
         ),
     }),
-    
+
     otherPM: yup.object().shape({
         feederCableStatus: yup.string().oneOf(otherOpt, 'Invalid feeder cable status').required('Feeder cable status is required'),
         changeOverSwitchStatus: yup.string().oneOf(otherOpt, 'Invalid change over switch status').required('Change over switch status is required'),
@@ -179,12 +179,12 @@ export const newServiceReportSchema = yup.object().shape({
         earthingStatus: yup.string().oneOf(otherOpt, 'Invalid earthing status').required('Earthing status is required'),
         fireExtinguisherStatus: yup.string().oneOf(otherOpt, 'Invalid fire extinguisher status').required('Fire extinguisher status is required'),
     }),
-    
+
     securityPM: yup.object().shape({
         securityStatus: yup.string().oneOf(['AVAILABLE', 'NOT-AVAILABLE', 'NOT-APPLICABLE'], 'Invalid security status').required('Security status is required'),
         siteAccess: yup.string().oneOf(['LOCKED', 'ACCESS-GRANTED', 'UN-AVAILABLE', 'NOT-APPLICABLE'], 'Invalid site access status').required('Site access status is required'),
     }),
-    
+
     summary: yup.string().required('Summary is required'),
     images: yup.array().of(yup.string()).required('Images are required'),
 });

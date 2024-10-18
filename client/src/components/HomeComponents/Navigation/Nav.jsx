@@ -75,7 +75,6 @@ function Nav() {
             <Grid container alignItems="center" justifyContent="space-between">
                 {/* Logo and Branding */}
                 <Grid item xs={
-                    // isMobile ? 5 : isTablet ? 3.3 : 3
                     xSmall ? 3 : small ? 3.3 : medium ? 3 : large ? 2.5 : xLarge ? 2 : 1.5
                 }
                       sx={{display: 'flex', alignItems: 'center',}}>

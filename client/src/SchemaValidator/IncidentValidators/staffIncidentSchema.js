@@ -1,21 +1,21 @@
 import * as yup from 'yup';
 
-// Reusable Schema for Staff Information
+// Reusable Schema for AllStaff Information
 const staffInfoSchema = yup.object().shape({
-    staff_id: yup.string().required('Staff ID is required.'),
+    staff_id: yup.string().required('AllStaff ID is required.'),
     fullName: yup.string().required('Full Name is required.'),
     email: yup.string().email('Invalid email format').required('Email is required.'),
     role: yup.string().required('Role is required.'),
 });
 
-// Validation Schema for Staff Incident
+// Validation Schema for AllStaff Incident
 export const staffIncidentSchema = yup.object().shape({
     staffInfo: staffInfoSchema,
     staffIncidentInfo: yup.object().shape({
         classAction: yup
             .string()
             .oneOf(['Employment', 'Roles', 'Violence', 'Others'], 'Invalid class action')
-            .required('Staff Incident class action is required.'),
+            .required('AllStaff Incident class action is required.'),
         // Dynamically validate subcategory based on the selected classAction
         category: yup.lazy((value, {parent}) => {
             const {classAction} = parent;

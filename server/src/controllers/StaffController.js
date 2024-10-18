@@ -55,7 +55,7 @@ class StaffController {
             if (!staff) {
                 return res
                     .status(404)
-                    .json({error: 'Staff with this email address not found'});
+                    .json({error: 'AllStaff with this email address not found'});
             }
             const isMatch = await bcrypt.compare(password, staff.password);
             if (!isMatch) {
@@ -175,7 +175,7 @@ class StaffController {
             }
             await Staff.create(value);
             return res.status(201).json({
-                msg: 'Staff object successfully created',
+                msg: 'AllStaff object successfully created',
                 email: value.email,
                 password: clearPassword,
             });
@@ -219,9 +219,9 @@ class StaffController {
             }
             const staffData = await Staff.findById(id).select('-password -createdAt -updatedAt -__v');
             if (!staffData) {
-                return res.status(404).json({error: 'Staff not found'});
+                return res.status(404).json({error: 'AllStaff not found'});
             }
-            return res.status(200).json({message: 'Staff data retrieved successfully', staffData});
+            return res.status(200).json({message: 'AllStaff data retrieved successfully', staffData});
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -301,7 +301,7 @@ class StaffController {
             // check if the staff exists
             const staff = await Staff.findById(value._id);
             if (!staff) {
-                return res.status(400).json({error: 'Staff not found'});
+                return res.status(400).json({error: 'AllStaff not found'});
             }
             // check for id Integrity
             if (staff._id.toString() !== value._id) {
@@ -331,7 +331,7 @@ class StaffController {
             if (!updatedStaff) {
                 return res.status(400).json({error: 'Failed to update staff profile'});
             }
-            return res.status(201).json({message: 'Staff profile updated successfully', updatedStaff});
+            return res.status(201).json({message: 'AllStaff profile updated successfully', updatedStaff});
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -398,7 +398,7 @@ class StaffController {
             await Promise.all(redisDeletePromises);
 
             return res.status(201).json({
-                message: 'Staff deleted successfully',
+                message: 'AllStaff deleted successfully',
                 deletedCount: deletedStaff.deletedCount
             });
         } catch (error) {
@@ -433,7 +433,7 @@ class StaffController {
     //             return res.status(500).json({error: 'Internal Server Error'});
     //         }
     //         // find the staff with the id and update the imgURL with the secure_url from the result object
-    //         await Staff.findOneAndUpdate(new ObjectId(id), {imgURL: result.secure_url}, {
+    //         await AllStaff.findOneAndUpdate(new ObjectId(id), {imgURL: result.secure_url}, {
     //             new: true, // return the updated object as the saved object
     //             runValidators: true, // run the validators on the update operation
     //             context: 'query', // allows the use of the 'where' clause
@@ -504,11 +504,11 @@ class StaffController {
     //                 return res.status(500).json({error: 'Internal Server Error'});
     //             }
     //             // if the object role is of type Admin or SuperAdmin
-    //             const staffObj = await Staff.findById(new ObjectId(id))
+    //             const staffObj = await AllStaff.findById(new ObjectId(id))
     //             // if (staffObj.role === 'Admin' || staffObj.role === 'SuperAdmin') {
     //             if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
     //                 // Update the staff profile with the new image URL
-    //                 await Staff.findOneAndUpdate(
+    //                 await AllStaff.findOneAndUpdate(
     //                     new ObjectId(id),
     //                     {imgURL: result.secure_url},
     //                     {
@@ -526,7 +526,7 @@ class StaffController {
     //             } else if (staffObj.role === 'Admin' || staffObj.role === 'SuperAdmin') {
     //                 // } else if (staffObj.role !== 'Admin' && staffObj.role !== 'SuperAdmin') {
     //                 // Update the staff profile with the new image URL
-    //                 await Staff.findOneAndUpdate(
+    //                 await AllStaff.findOneAndUpdate(
     //                     new ObjectId(id),
     //                     {imgURL: result.secure_url, imgConfirmation: 'Pending', ctrlFlag: true},
     //                     {
@@ -712,13 +712,13 @@ class StaffController {
             if (staffID) {
                 const staffObj = await Staff.findById(new ObjectId(staffID));
                 if (!staffObj) {
-                    return res.status(404).json({error: 'Staff not found'});
+                    return res.status(404).json({error: 'AllStaff not found'});
                 }
                 if (!staffObj.imgURL) {
                     return res.status(404).json({error: 'No image found'});
                 }
                 if (staffObj.ctrlFlag === false) {
-                    return res.status(404).json({error: 'Staff Authorization is required'});
+                    return res.status(404).json({error: 'AllStaff Authorization is required'});
                 }
                 // delete the image from cloudinary
                 const public_id = staffObj.imgURL.split('/')[staffObj.imgURL.split('/').length - 1].split('.')[0];
@@ -741,7 +741,7 @@ class StaffController {
             // find the staff with the id and update the imgURL with the secure_url from the result object
             const staff = await Staff.findById(new ObjectId(id));
             if (!staff) {
-                return res.status(404).json({error: 'Staff not found'});
+                return res.status(404).json({error: 'AllStaff not found'});
             }
             if (!staff.imgURL) {
                 return res.status(404).json({error: 'No image found'});
@@ -772,34 +772,26 @@ class StaffController {
     }
 
     static async dashboardData(req, res) {
-        console.log('dashboard data');
         try {
-            const result = await authClient.apiPrecheck(req);
+            const result = await authClient.apiPreCheck(req);
             if (result instanceof Error) {
-                // Handle the error
                 return res.status(401).json({error: result.message});
             }
-            const {verifiedAccessToken, decryptedAccessToken} = result;
+            const {verifiedAccessToken} = result;
             const {id} = verifiedAccessToken;
-
-            const staffData = await authClient.dashBoardCheck(id);
-            if (staffData instanceof Error) {
-                return res.status(400).json({error: staffData.message});
+            const dashboardData = await authClient.dashBoardCheck(id);
+            if (dashboardData instanceof Error) {
+                return res.status(400).json({error: dashboardData.message});
             }
-            // set the staffData to be stored as cookie
-            res.cookie('staffData', JSON.stringify(staffData), {
-                // httpOnly: true, // Prevent client-side access via JavaScript
-                secure: true, // Requires HTTPS connection for secure transmission
-                // maxAge: 2 * 60 * 60 * 1000, // Set cookie expiration time (2 hours)
-                sameSite: 'strict', // Mitigate cross-site request forgery (CSRF) attacks
-            });
             return res.status(200).json({
                 message: 'Dashboard data retrieved successfully',
-                staffData,
-                accessToken: decryptedAccessToken,
+                dashboardData,
             });
-        } catch (err) {
-            return res.status(401).json({error: err.message ? err.message : 'Unauthorized'});
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            return res.status(500).json({error: error.message});
         }
     }
 
@@ -816,7 +808,7 @@ class StaffController {
             const staff = await Staff.findOne({email});
             if (!staff) {
                 return res.status(404).json({
-                    error: 'Staff with this email does not exist',
+                    error: 'AllStaff with this email does not exist',
                 });
             }
 
@@ -896,7 +888,7 @@ class StaffController {
         }
         const staff = await Staff.findById(id);
         if (!staff) {
-            return res.status(404).json({error: 'Staff Object not found'});
+            return res.status(404).json({error: 'AllStaff Object not found'});
         }
         const {email, oldPassword, newPassword} = req.body;
         if (!email || !oldPassword || !newPassword) {

@@ -8,10 +8,11 @@ function Dashboard() {
     console.log('Dashboard page');
     const router = useRouter();
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['staffDashboard'],
-        queryFn: AdminUtils.staffDashboard,
+        queryKey: ['BioData'],
+        queryFn: AdminUtils.Profile,
+        staleTime: Infinity,
     });
-    
+
     if (isError) {
         // Navigate to error page
         return router.push('/error/404');
@@ -24,9 +25,9 @@ function Dashboard() {
         // Navigate to error page
         return router.push('/error/404');
     }
-    const {staffData, accessToken} = data;
+    const {staffData} = data;
     // Check if staffData or accessToken is missing
-    if (!staffData || !accessToken) {
+    if (!staffData) {
         // Navigate to error page
         return router.push('/error/404');
     }

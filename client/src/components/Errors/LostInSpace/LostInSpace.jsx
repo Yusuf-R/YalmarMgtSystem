@@ -160,7 +160,7 @@ const LostInSpace = () => {
                                 </Button>
                             </Link>
                         </Stack>
-                    
+
                     </CentralBody>
                     <Box sx={{position: 'relative', zIndex: 1}}>
                         <Rocket src="http://salehriaz.com/404Page/img/rocket.svg" alt="Rocket" width="40px"/>
@@ -179,9 +179,9 @@ const LostInSpace = () => {
                     </Box>
                 </Stars>
             </Background>
-        
+
         </Box>
-    
+
     );
 };
 
@@ -202,7 +202,7 @@ export default LostInSpace;
 //                 <Typography variant="h4" gutterBottom>Lost in Space...</Typography>
 //                 <Link href="/dashboard/admin/staff">
 //                     <Button variant="contained" color='error'
-//                             style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}>Go to Staff Page
+//                             style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}>Go to AllStaff Page
 //                     </Button>
 //                 </Link>
 //             </Box>

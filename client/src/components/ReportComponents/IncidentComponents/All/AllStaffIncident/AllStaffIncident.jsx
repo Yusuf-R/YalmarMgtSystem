@@ -421,7 +421,7 @@ function AllStaffIncident({staffIncidentData}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Staff');
+                        toast.error('Error Deleting selected AllStaff');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -587,7 +587,7 @@ function AllStaffIncident({staffIncidentData}) {
             ,
             label: 'Search',
             placeholder:
-                'Staff Details',
+                'AllStaff Details',
             variant:
                 'outlined',
 
@@ -643,7 +643,7 @@ function AllStaffIncident({staffIncidentData}) {
                     height: 'auto',
                 }}>
                     <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                        All Staff Incident Report Form
+                        All AllStaff Incident Report Form
                     </Typography>
                 </Paper>
                 <br/>
@@ -675,7 +675,7 @@ function AllStaffIncident({staffIncidentData}) {
                             }}
                         />
                         <Tab
-                            label="Staff"
+                            label="AllStaff"
                             component={Link}
                             href="/dashboard/admin/reports/incident/staff"
                             value="/dashboard/admin/reports/incident/staff"

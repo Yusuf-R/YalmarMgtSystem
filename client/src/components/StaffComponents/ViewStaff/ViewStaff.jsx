@@ -1,50 +1,29 @@
+'use client';
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "next/link";
-import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Badge from '@mui/material/Badge';
-import TextField from "@mui/material/TextField";
+import Card from '@mui/material/Card';
 import AdminUtilities from "@/utils/AdminUtilities";
 import {useState, useEffect} from "react";
 import {useRouter, usePathname} from "next/navigation";
-import InputAdornment from "@mui/material/InputAdornment";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import PhoneInTalkRoundedIcon from '@mui/icons-material/PhoneInTalkRounded';
-import PublicIcon from '@mui/icons-material/Public';
-import DomainIcon from '@mui/icons-material/Domain';
-import MapIcon from '@mui/icons-material/Map';
-import Avatar from "@mui/material/Avatar";
-import ManIcon from '@mui/icons-material/Man';
-import WomanIcon from '@mui/icons-material/Woman';
-import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
-import MosqueIcon from '@mui/icons-material/Mosque';
-import ChurchIcon from '@mui/icons-material/Church';
-import ChaletIcon from '@mui/icons-material/Chalet';
-import DeckIcon from '@mui/icons-material/Deck';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import WorkOutlinedIcon from '@mui/icons-material/WorkOutlined';
-import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
-import EngineeringIcon from '@mui/icons-material/Engineering';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import SchoolIcon from '@mui/icons-material/School';
-import ClassIcon from '@mui/icons-material/Class';
-import Select from "@mui/material/Select";
 import {
     yellow,
     blueGrey,
 } from "@mui/material/colors";
+import dayjs from "dayjs";
+
+import useStaffStore from "@/store/useStaffStore";
 
 const colorSuspended = yellow[200];
 const colorDeceased = blueGrey[500];
+
 
 const getBadgeStyles = (status) => {
     switch (status) {
@@ -82,133 +61,35 @@ const getBadgeStyles = (status) => {
 };
 
 import Image from "next/image";
-import dayjs from "dayjs";
-import {mainSection} from "@/utils/data";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Chip from "@mui/material/Chip";
 
 function ViewStaff({id, staffData}) {
-    const fullName = `${staffData.firstName} ${staffData.middleName ? staffData.middleName : " "} ${staffData.lastName}`;
+    // Break Points
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+    const isLargeScreen = useMediaQuery('(min-width:900px)');
+    const isAbove425px = useMediaQuery('(min-width:425px)');
+    // state variables
+    const {setEncryptedStaffData} = useStaffStore.getState();
+    const fullName = `${staffData.firstName}  ${staffData.lastName}`;
     const [activeTab, setActiveTab] = useState('/dashboard/admin/staff/view');
     const pathname = usePathname();
     const router = useRouter();
     const editStaff = async () => {
-        const encryptedUserID = await AdminUtilities.encryptUserID(id);
+        const encryptedStaffID = await AdminUtilities.encryptUserID(id);
         // encrypt the data and store it in the session storage
-        const encryptedData = await AdminUtilities.encryptData(staffData);
-        if (sessionStorage.getItem('staffData')) {
-            sessionStorage.removeItem('staffData');
-        }
-        if (sessionStorage.getItem('staffID')) {
-            sessionStorage.removeItem('staffID');
-        }
-        sessionStorage.setItem('staffData', encryptedData);
-        sessionStorage.setItem('staffID', encryptedUserID);
-        router.push("/dashboard/admin/staff/edit");
-    };
-    // conditionally rendering the staff cluster and profile
-    const SiteInfo = ({staffData}) => {
-        // Check if the role is either 'Field Supervisor' or 'Generator Technician'
-        if (staffData.role !== 'Field Supervisor' && staffData.role !== 'Generator Technician') {
-            return null; // Don't render anything if the role doesn't match
-        }
-        
-        return (
-            <>
-                <Stack direction='column' spacing={2}>
-                    <Stack direction='row' spacing={2}>
-                        <TextField
-                            id="input-with-icon-textfield"
-                            defaultValue={staffData.siteState}
-                            label="Site State"
-                            InputLabelProps={{
-                                sx: {
-                                    color: "#46F0F9",
-                                    "&.Mui-focused": {
-                                        color: "white"
-                                    },
-                                }
-                            }}
-                            
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <PublicIcon sx={{color: '#FFF'}}/>
-                                    </InputAdornment>
-                                ),
-                                readOnly: true,
-                                sx: {
-                                    color: "#46F0F9",
-                                    fontSize: '20px',
-                                },
-                            }}
-                            variant="filled"
-                        />
-                    </Stack>
-                    <br/>
-                    <Stack direction='row' spacing={2}>
-                        <TextField
-                            id="input-with-icon-textfield"
-                            defaultValue={staffData.cluster}
-                            label="Cluster"
-                            InputLabelProps={{
-                                sx: {
-                                    color: "#46F0F9",
-                                    fontSize: '14px',
-                                    "&.Mui-focused": {
-                                        color: "white"
-                                    },
-                                }
-                            }}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <DomainIcon sx={{color: '#FFF'}}/>
-                                    </InputAdornment>
-                                ),
-                                readOnly: true,
-                                sx: {
-                                    color: "#46F0F9",
-                                    fontSize: '20px',
-                                },
-                            }}
-                            variant="filled"
-                        />
-                    </Stack>
-                    <br/>
-                    <Stack direction='row' spacing={2}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<PodcastsIcon sx={{color: '#FFF'}}/>}
-                            sx={{
-                                color: "#46F0F9",
-                                height: '40%',
-                                mt: '50px',
-                                fontSize: '18px',
-                            }}
-                        >
-                            Site IDs
-                        </Button>
-                        <Select
-                            multiple
-                            native
-                            inputProps={{
-                                id: 'select-multiple-native',
-                            }}
-                            sx={{
-                                backgroundColor: '#134357',
-                                color: 'white',
-                                overflow: 'auto',
-                            }}
-                        >
-                            {staffData.siteID.map((site) => (
-                                <option key={site} value={site}>
-                                    {site}
-                                </option>
-                            ))}
-                        </Select>
-                    </Stack>
-                </Stack>
-            </>
-        );
+        const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+        // Set the encrypted data in Zustand store
+        setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
+        router.push(`/dashboard/admin/staff/edit`);
     };
     useEffect(() => {
         if (pathname.includes('view')) {
@@ -221,23 +102,16 @@ function ViewStaff({id, staffData}) {
     }, [pathname]);
     return (
         <>
-            <Box sx={mainSection}>
-                {/*Header of the page*/}
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-                }}>
-                    <Typography variant='h5'>Staff Profile</Typography>
-                </Paper>
-                <br/>
-                {/*Body of the page*/}
+            <Box
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%',
+                    flexWrap: 'nowrap',
+                }}
+            >
                 {/* Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -257,9 +131,39 @@ function ViewStaff({id, staffData}) {
                             component={Link}
                             href="/dashboard/admin/staff"
                             value="/dashboard/admin/staff"
+
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="All"
+                            component={Link}
+                            href="/dashboard/admin/staff/all"
+                            value="/dashboard/admin/staff/all"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="New +"
+                            component={Link}
+                            href="/dashboard/admin/staff/new"
+                            value="/dashboard/admin/staff/new"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
                                 "&.Mui-selected": {
                                     color: "#46F0F9",
                                 },
@@ -273,6 +177,7 @@ function ViewStaff({id, staffData}) {
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
                                 "&.Mui-selected": {
                                     color: "#46F0F9",
                                 },
@@ -285,6 +190,7 @@ function ViewStaff({id, staffData}) {
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
                                 "&.Mui-selected": {
                                     color: "#46F0F9",
                                 },
@@ -293,1118 +199,856 @@ function ViewStaff({id, staffData}) {
                     </Tabs>
                 </Stack>
                 <br/>
-                <Box>
-                    {/* Sub Body: Grid Container*/}
-                    <Grid container spacing={2}>
-                        {/*LHS Container for Avatar and Summary Infos*/}
-                        <Grid item xs={3}>
-                            {/*LHS Container for Avatar: Name : Role*/}
-                            <Paper elevation={9} sx={{
-                                alignCenter: 'center',
-                                textAlign: 'center',
-                                padding: '10px',
-                                backgroundColor: '#274e61',
-                                // border: '2px solid red',
-                                color: '#46F0F9',
-                                borderRadius: '10px',
+                {/*ParentBox*/}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: isLargeScreen ? 'row' : 'column',
+                        justifyContent: 'space-between',
+                        alignItems: isLargeScreen ? 'flex-start' : 'flex-start',  // Align to top for both screens
+                        flexWrap: 'nowrap',  // Ensure LHS and RHS remain side by side
+                        height: isLargeScreen ? '100vh' : 'auto',
+                        padding: isLargeScreen ? '0' : '10px',
+                    }}
+                >
+                    {/* LHS */}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                            p: '1px',
+                            width: isLargeScreen ? '30%' : '100%',
+                            maxWidth: isLargeScreen ? '30%' : '100%',
+                            height: isLargeScreen ? '100vh' : 'auto',  // LHS should fill the viewport height on large screens
+                            overflowY: 'auto',  // Add scroll if LHS content exceeds the height
+                        }}
+                    >
+                        {/* Content for the left side */}
+                        <Stack
+                            direction='column'
+                            spacing={2}
+                            sx={{
                                 width: '100%',
-                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                            }}>
-                                <Grid container spacing={2}>
-                                    {/*Profile Picture*/}
-                                    <Grid item xs={12}>
-                                        {staffData.imgURL !== "" ? (
-                                            <Image
-                                                src={staffData.imgURL}
-                                                alt={staffData.email}
-                                                width={350}
-                                                height={350}
-                                                style={{borderRadius: '50%'}}
-                                            
-                                            />
-                                        ) : (
-                                            <Image
-                                                src={staffData.gender === 'Male' ? '/Avatar-9.svg' : '/Avatar-10.svg'}
-                                                alt={staffData.email}
-                                                width={350}
-                                                height={350}
-                                                style={{borderRadius: '50%'}}
-                                            />
-                                        )}
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                height: 'auto',
+                            }}
+                        >
+                            {staffData.imgURL !== "" ? (
+                                <Image
+                                    src={staffData.imgURL}
+                                    alt={staffData.email}
+                                    width={xSmall || small || medium ? 150 : large ? 200 : xLarge ? 150 : 200}
+                                    height={xSmall || small || medium ? 150 : large ? 200 : xLarge ? 150 : 200}
+                                    style={{borderRadius: '50%'}}
+                                />
+                            ) : (
+                                <Image
+                                    src={staffData.gender === 'Male' ? '/Avatar-9.svg' : '/Avatar-10.svg'}
+                                    alt={staffData.email}
+                                    width={xSmall || small || medium ? 150 : large ? 200 : xLarge ? 250 : 300}
+                                    height={xSmall || small || medium ? 150 : large ? 200 : xLarge ? 250 : 300}
+                                    style={{borderRadius: '50%'}}
+                                />
+                            )}
+                            <Badge
+                                sx={{
+                                    '& .MuiBadge-badge': getBadgeStyles(staffData.status)
+                                }}
+                                overlap="circular"
+                                badgeContent={staffData.status}
+                            />
+                            <Box
+                                sx={{
+                                    padding: '2px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '2px',
+                                    maxWidth: '800px',
+                                    width: '100%',
+                                    borderRadius: '8px',
+                                }}
+                            >
+                                {/* Row 1: Full Name */}
+                                <Grid
+                                    container
+                                    justifyContent={isAbove425px ? 'center' : 'flex-start'}
+                                    alignItems="center"
+                                    spacing={2}
+                                    sx={{textAlign: isAbove425px ? 'center' : 'left'}}
+                                >
+                                    <Grid item>
+                                        <AccountCircleIcon sx={{color: '#FFF', fontSize: 15}}/>
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <Badge
+                                    <Grid item>
+                                        <Typography
+                                            variant="body1"
                                             sx={{
-                                                '& .MuiBadge-badge': getBadgeStyles(staffData.status)
+                                                color: '#46F0F9',
+                                                fontSize: xSmall || small || medium || large ? '1.0rem' : '1.0rem'
                                             }}
-                                            overlap="circular"
-                                            badgeContent={staffData.status}
-                                            // color='error'
-                                            // overlap="circular"
-                                            // badgeContent='Terminated'
                                         >
-                                        </Badge>
-                                    </Grid>
-                                    <br/><br/><br/>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            id="input-with-icon-textfield"
-                                            defaultValue={fullName}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '14px',
-                                                    "&.Mui-focused": {
-                                                        color: "white"
-                                                    },
-                                                }
-                                            }}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start"
-                                                    >
-                                                        <AccountCircleIcon sx={{color: '#FFF'}}/>
-                                                    </InputAdornment>
-                                                ),
-                                                readOnly: true,
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '20px',
-                                                },
-                                            }}
-                                            variant="standard"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            id="input-with-icon-textfield"
-                                            defaultValue={staffData.role}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '14px',
-                                                    "&.Mui-focused": {
-                                                        color: "white"
-                                                    },
-                                                }
-                                            }}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <AppRegistrationIcon sx={{color: '#FFF'}}/>
-                                                    </InputAdornment>
-                                                ),
-                                                readOnly: true,
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '20px',
-                                                },
-                                            }}
-                                            variant="standard"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            id="input-with-icon-textfield"
-                                            defaultValue={staffData.email}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '14px',
-                                                    "&.Mui-focused": {
-                                                        color: "white"
-                                                    },
-                                                }
-                                            }}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <MarkEmailReadIcon sx={{color: '#FFF'}}/>
-                                                    </InputAdornment>
-                                                ),
-                                                readOnly: true,
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '20px',
-                                                },
-                                            }}
-                                            variant="standard"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <TextField
-                                            id="input-with-icon-textfield"
-                                            defaultValue={staffData.phone}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '14px',
-                                                    "&.Mui-focused": {
-                                                        color: "white"
-                                                    },
-                                                }
-                                            }}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start"
-                                                    >
-                                                        <PhoneInTalkRoundedIcon sx={{color: '#FFF'}}/>
-                                                    </InputAdornment>
-                                                ),
-                                                readOnly: true,
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    fontSize: '20px',
-                                                },
-                                            }}
-                                            variant="standard"
-                                        />
+                                            {fullName}
+                                        </Typography>
                                     </Grid>
                                 </Grid>
-                            </Paper>
-                        </Grid>
-                        {/*RHS Container for Major Infos*/}
-                        <Grid item xs={9}>
-                            <Paper elevation={5} sx={{
-                                alignCenter: 'center',
-                                textAlign: 'center',
-                                padding: '10px',
-                                backgroundColor: '#274e61',
-                                color: '#46F0F9',
-                                borderRadius: '10px',
-                                width: '`100%',
-                            }}>
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #0A4D50',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Name Info</Typography>
-                                            <br/>
-                                            <Stack direction='row' spacing={10}>
-                                                {/* Column 1 : Name: MiddleName: LastName */}
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.firstName}
-                                                        label="FirstName"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <Avatar sx={{
-                                                                        width: 32,
-                                                                        height: 31,
-                                                                        bgcolor: '#074043',
-                                                                        fontSize: '0.9rem',
-                                                                    }}>FN</Avatar>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.middleName ? staffData.middleName : "N/A"}
-                                                        label="MiddleName"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <Avatar sx={{
-                                                                        width: 32,
-                                                                        height: 31,
-                                                                        bgcolor: '#074043',
-                                                                        fontSize: '0.9rem',
-                                                                        
-                                                                    }}>MN</Avatar>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.lastName}
-                                                        label="LastName"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <Avatar sx={{
-                                                                        width: 32,
-                                                                        height: 31,
-                                                                        bgcolor: '#074043',
-                                                                        fontSize: '0.9rem',
-                                                                    }}>LN</Avatar>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                            </Stack>
-                                            <br/>
-                                        </Paper>
+
+                                {/* Row 2: Role */}
+                                <Grid
+                                    container
+                                    justifyContent={isAbove425px ? 'center' : 'flex-start'}
+                                    alignItems="center"
+                                    spacing={2}
+                                    sx={{textAlign: isAbove425px ? 'center' : 'left'}}
+                                >
+                                    <Grid item>
+                                        <AppRegistrationIcon sx={{color: '#FFF', fontSize: 15}}/>
                                     </Grid>
-                                    <Grid item xs={12}>
-                                    </Grid>
-                                    {/*Second Section */}
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #4D4B4B',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Other Info</Typography>
-                                            <br/>
-                                            {/*Column 1 : Personal Info Row*/}
-                                            <Stack direction='row' spacing={10}>
-                                                {/* Column 1 : Email: DOB: Phone: Country */}
-                                                <Stack direction='column' spacing={2}>
-                                                    {/*Email*/}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.email}
-                                                            label="Email"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        <MarkEmailReadIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    {/*DOB*/}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.dob}
-                                                            label="DOB"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        <CalendarMonthIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    {/*Phone*/}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.phone}
-                                                            label="Phone"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        <PhoneInTalkRoundedIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                </Stack>
-                                                {/*Column 2 : Country: StateOfOrigin: LGA: Gender */}
-                                                <Stack direction='column' spacing={2}>
-                                                    {/*StateOfOrigin*/}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.stateOfOrigin}
-                                                            label="State of Origin"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        <DomainIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    {/*LGA*/}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.lga}
-                                                            label="LGA"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        <MapIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.gender}
-                                                            label="Gender"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        {
-                                                                            staffData.gender === 'Male' ?
-                                                                                <ManIcon sx={{color: '#FFF'}}/> :
-                                                                                <WomanIcon sx={{color: '#FFF'}}/>
-                                                                        }
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                </Stack>
-                                                {/*Column 3 : Phone: Religion: maritalStatus */}
-                                                <Stack direction='column' spacing={2}>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.religion}
-                                                            label="Religion"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        {
-                                                                            staffData.religion === 'Islam' ?
-                                                                                <MosqueIcon
-                                                                                    sx={{color: '#FFF'}}/> : staffData.religion === 'Christian' ?
-                                                                                    <ChurchIcon sx={{color: '#FFF'}}/> :
-                                                                                    <ChaletIcon sx={{color: '#FFF'}}/>
-                                                                        }
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.maritalStatus}
-                                                            label="Marital Status"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        <GroupRoundedIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <TextField
-                                                            id="input-with-icon-textfield"
-                                                            defaultValue={staffData.country}
-                                                            label="country"
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '14px',
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start"
-                                                                    >
-                                                                        <PublicIcon sx={{color: '#FFF'}}/>
-                                                                    </InputAdornment>
-                                                                ),
-                                                                readOnly: true,
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    fontSize: '20px',
-                                                                },
-                                                            }}
-                                                            variant="filled"
-                                                        />
-                                                    </Stack>
-                                                    <br/>
-                                                </Stack>
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                    </Grid>
-                                    {/*Third Section*/}
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #4D4B4B',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Next of Kin Info</Typography>
-                                            <br/>
-                                            {/*Column 1 : Personal Info Row*/}
-                                            <Stack direction='row' spacing={10}>
-                                                {/* Column 1 : Name: MiddleName: LastName */}
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.nextOfKin}
-                                                        label="Next of Kin"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <AccountCircleIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.nextOfKinPhone}
-                                                        label="Phone"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <PhoneInTalkRoundedIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        
-                                                        defaultValue={staffData.nextOfKinRelationship}
-                                                        label="Relationship"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <DeckIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            // border: '1px solid #4D4B4B',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Address Info</Typography>
-                                            <br/>
-                                            {/*Column 1 : Personal Info Row*/}
-                                            <Stack direction='row' spacing={10}>
-                                                {/* Column 1 : Name: MiddleName: LastName */}
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.address}
-                                                        label="Address"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <LocationOnIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                                width: '700px'
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <Stack direction='row' spacing={2}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.stateOfResidence}
-                                                        label="Sate of Residence"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <DomainIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                    </Grid>
-                                    {/**/}
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #4D4B4B',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Educational Info</Typography>
-                                            <br/>
-                                            {/*Column 1 : Personal Info Row*/}
-                                            <Stack direction='row' spacing={4} useFlexGap flexWrap="wrap">
-                                                {/* Column 1 : Name: MiddleName: LastName */}
-                                                
-                                                <Stack direction='row' spacing={4}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.highestDegree || 'Not Specified'}
-                                                        label="Highest Degree"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <WorkspacePremiumIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                                width: '350px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={4}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        label="Graduation Date"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        defaultValue={staffData.graduationDate ? dayjs(staffData.graduationDate).format(
-                                                            'DD/MMM/YYYY'
-                                                        ) : 'N/A'}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <CalendarMonthIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                                width: '350px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={4}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.courseOfStudy || 'Not Specified'}
-                                                        label="Course of Study"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start"
-                                                                >
-                                                                    <ClassIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                                width: '450px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={6}>
-                                                    <TextField
-                                                        id="input-with-icon-textfield"
-                                                        defaultValue={staffData.institution || 'Not Specified'}
-                                                        label="Institution"
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '14px',
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        InputProps={{
-                                                            startAdornment: (
-                                                                <InputAdornment position="start">
-                                                                    <SchoolIcon sx={{color: '#FFF'}}/>
-                                                                </InputAdornment>
-                                                            ),
-                                                            readOnly: true,
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                fontSize: '20px',
-                                                                width: '600px',
-                                                            },
-                                                        }}
-                                                        variant="filled"
-                                                    />
-                                                </Stack>
-                                            
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #4D4B4B',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Employment Info</Typography>
-                                            <br/>
-                                            {/*Column 1 : Personal Info Row*/}
-                                            <Stack direction='row' spacing={5}>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 1 : Name: MiddleName: LastName */}
-                                                    <Stack direction='column' spacing={2}>
-                                                        <Stack direction='row' spacing={2}>
-                                                            <TextField
-                                                                id="input-with-icon-textfield"
-                                                                defaultValue={staffData.employmentType}
-                                                                label="Employment Type"
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white"
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                
-                                                                InputProps={{
-                                                                    startAdornment: (
-                                                                        <InputAdornment position="start"
-                                                                        >
-                                                                            {
-                                                                                staffData.employmentType === "FullTime" ?
-                                                                                    <WorkOutlinedIcon
-                                                                                        sx={{color: '#FFF'}}/> :
-                                                                                    staffData.employmentType === 'Contract' ?
-                                                                                        <WorkHistoryIcon
-                                                                                            sx={{color: '#FFF'}}/> :
-                                                                                        <EngineeringIcon
-                                                                                            sx={{color: '#FFF'}}/>
-                                                                            }
-                                                                        </InputAdornment>
-                                                                    ),
-                                                                    readOnly: true,
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        fontSize: '20px',
-                                                                    },
-                                                                }}
-                                                                variant="filled"
-                                                            />
-                                                        </Stack>
-                                                        <br/>
-                                                        <Stack direction='row' spacing={2}>
-                                                            <TextField
-                                                                id="input-with-icon-textfield"
-                                                                defaultValue={staffData.role}
-                                                                label="Role"
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        fontSize: '14px',
-                                                                        "&.Mui-focused": {
-                                                                            color: "white"
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                InputProps={{
-                                                                    startAdornment: (
-                                                                        <InputAdornment position="start">
-                                                                            <AppRegistrationIcon sx={{color: '#FFF'}}/>
-                                                                        </InputAdornment>
-                                                                    ),
-                                                                    readOnly: true,
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        fontSize: '20px',
-                                                                    },
-                                                                }}
-                                                                variant="filled"
-                                                            />
-                                                        </Stack>
-                                                        <br/>
-                                                        <Stack direction='row' spacing={2}>
-                                                            <TextField
-                                                                id="input-with-icon-textfield"
-                                                                defaultValue={staffData.employmentDate ? dayjs(staffData.employmentDate).format(
-                                                                    'DD/MMM/YYYY'
-                                                                ) : 'N/A'}
-                                                                label="Employment Date"
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        fontSize: '14px',
-                                                                        "&.Mui-focused": {
-                                                                            color: "white"
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                InputProps={{
-                                                                    startAdornment: (
-                                                                        <InputAdornment position="start"
-                                                                        >
-                                                                            <CalendarMonthIcon sx={{color: '#FFF'}}/>
-                                                                        </InputAdornment>
-                                                                    ),
-                                                                    readOnly: true,
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        fontSize: '20px',
-                                                                    },
-                                                                }}
-                                                                variant="filled"
-                                                            />
-                                                        </Stack>
-                                                    </Stack>
-                                                    <SiteInfo staffData={staffData}/>
-                                                </Stack>
-                                            </Stack>
-                                        </Paper>
+                                    <Grid item>
+                                        <Typography
+                                            variant="body1"
+                                            sx={{
+                                                color: '#46F0F9',
+                                                fontSize: xSmall || small || medium || large ? '1.0rem' : '1.0rem'
+                                            }}
+                                        >
+                                            {staffData.role}
+                                        </Typography>
                                     </Grid>
                                 </Grid>
-                            </Paper>
+                            </Box>
+                        </Stack>
+                    </Box>
+                    {/*RHS*/}
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start',
+                            alignItems: 'center',
+                            padding: '10px',
+                            width: isLargeScreen ? '70%' : '100%',
+                            maxWidth: '100%',
+                            height: isLargeScreen ? '100vh' : 'auto',  // RHS should fill the viewport height on large screens
+                            overflowY: 'auto',  // Allow RHS to scroll when content overflows
+                            background: 'linear-gradient(to right, #000428, #004e92)'
+                        }}
+                    >
+                        {/* Content for RHS */}
+                        <Grid container spacing={4}>
+                            {/* Section 1: Personal Information */}
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                            //     align center
+                                                            textAlign: 'center'
+                                                        }}>
+                                                Personal Info
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {/* Full Name */}
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Full Name
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.fullName}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                    {/* Email */}
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{
+                                                            color: '#46F0F9',
+                                                            fontSize: '14px',
+                                                            mb: 1
+                                                        }}>
+                                                Email
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.email}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                    {/* Phone */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Role
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.role}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Phone Number
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                        }}>
+                                                {staffData.phone}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Date of Birth
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.dob}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Gender
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.gender}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Marital Status
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.maritalStatus}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Religion
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.religion}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* */}
                         </Grid>
-                    </Grid>
+                        <br/>
+                        {/* Next Kin Info */}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                            //     align center
+                                                            textAlign: 'center'
+                                                        }}>
+                                                Next of Kin Info
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {/* Full Name */}
+                                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Next of Kin
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.nextOfKin}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {/* Relationship */}
+                                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{
+                                                            color: '#46F0F9',
+                                                            fontSize: '14px',
+                                                            mb: 1
+                                                        }}>
+                                                Relationship
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.nextOfKinRelationship}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {/* Next of kin Phone */}
+                                    <Grid item xs={12} sm={12} md={6} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Phone
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.nextOfKinPhone}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* */}
+                        </Grid>
+                        <br/>
+                        {/* Address Info */}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                            //     align center
+                                                            textAlign: 'center'
+                                                        }}>
+                                                Address Info
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {/* Address */}
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Address
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.address}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                    {/* Origin */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                State of Origin
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.stateOfOrigin}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                LGA
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.lga}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                State of Residence
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.stateOfResidence}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* */}
+                        </Grid>
+                        <br/>
+                        {/*Education Info*/}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                            //     align center
+                                                            textAlign: 'center'
+                                                        }}>
+                                                Education Info
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                University
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.institution}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{
+                                                            color: '#46F0F9',
+                                                            fontSize: '14px',
+                                                            mb: 1
+                                                        }}>
+                                                Course
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.courseOfStudy}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                    {/* Phone */}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Degree
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.highestDegree}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Class of Degree
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.classofDegree}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Graduation Date
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {dayjs(staffData.graduationDate).format('DD-MMM-YYYY')}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                </Grid>
+                            </Grid>
+                            {/* */}
+                        </Grid>
+                        <br/>
+                        {/* Employment Info */}
+                        <Grid container spacing={4}>
+                            <Grid item xs={12}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} sm={12} md={12} lg={12}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold',
+                                                            textAlign: 'center'
+                                                        }}>
+                                                Employment Info
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Employment Type
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.employmentType}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={12} md={12} lg={6}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{
+                                                            color: '#46F0F9',
+                                                            fontSize: '14px',
+                                                            mb: 1
+                                                        }}>
+                                                Role
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.role}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    {(staffData.role === 'Field Supervisor' || staffData.role === 'Generator Technician') && (
+                                        <>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Handling Cluster
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {staffData.cluster}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Site Supervision
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {Array.isArray(staffData.siteID) && staffData.siteID.length > 0 ? (
+                                                            staffData.siteID.map((id) => (
+                                                                <Chip
+                                                                    key={id}
+                                                                    sx={{
+                                                                        margin: '4px',
+                                                                        height: 'auto',
+                                                                        '& .MuiChip-label': {
+                                                                            display: 'block',
+                                                                            whiteSpace: 'normal',
+                                                                        },
+                                                                        color: 'limegreen',
+                                                                        background: 'none'
+                                                                    }}
+                                                                    label={id}
+                                                                />
+                                                            ))
+                                                        ) : (
+                                                            <Typography variant="body2"
+                                                                        sx={{color: '#FFF', fontSize: '0.9rem'}}>
+                                                                No sites assigned
+                                                            </Typography>
+                                                        )}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                        </>
+                                    )}
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Employment Date
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {dayjs(staffData.employmentDate).format('DD-MMM-YYYY')}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={4}>
+                                        <Card sx={{
+                                            background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                            padding: '16px',
+                                            borderRadius: '10px'
+                                        }}>
+                                            <Typography variant="subtitle2"
+                                                        sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                Leave Credit
+                                            </Typography>
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                {staffData.leaveCredit}
+                                            </Typography>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            {/* */}
+                        </Grid>
+                    </Box>
                 </Box>
             </Box>
         </>

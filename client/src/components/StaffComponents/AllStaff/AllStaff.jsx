@@ -10,9 +10,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -21,7 +21,6 @@ import {
     MaterialReactTable,
     useMaterialReactTable,
     MRT_ToggleDensePaddingButton,
-    MRT_ToggleFullScreenButton,
     MRT_ToggleGlobalFilterButton,
     MRT_ToggleFiltersButton,
     MRT_ShowHideColumnsButton,
@@ -33,10 +32,42 @@ import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import {mainSection} from "@/utils/data";
 import Paper from "@mui/material/Paper";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import CloseIcon from "@mui/icons-material/Close";
+import Drawer from "@mui/material/Drawer";
+import useStaffStore from "@/store/useStaffStore";
 
-function Staff({allStaff}) {
+function AllStaff({allStaff}) {
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const pathname = usePathname();
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/staff');
+    const {setEncryptedStaffData} = useStaffStore.getState();
+
+    useEffect(() => {
+        if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/staff/new');
+        } else if (pathname.includes('all')) {
+            setActiveTab('/dashboard/admin/staff/all');
+        } else {
+            setActiveTab('/dashboard/admin/staff');
+        }
+    }, [pathname]);
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -47,6 +78,22 @@ function Staff({allStaff}) {
         () =>
             createTheme({
                 components: {
+                    MuiTableBody: {
+                        styleOverrides: {
+                            root: {
+                                '& .MuiTableRow-root': {
+                                    padding: 0,
+                                },
+                                '& .MuiTableCell-root': {
+                                    padding: 0,
+                                    fontSize: xSmall || small || medium ? '14px' : '16px',
+                                },
+                                '& .MuiTableBody-root': {
+                                    padding: 0,
+                                },
+                            }
+                        }
+                    },
                     MuiSwitch: {
                         styleOverrides: {
                             thumb: {
@@ -57,7 +104,7 @@ function Staff({allStaff}) {
                     MuiFormControlLabel: {
                         styleOverrides: {
                             label: {
-                                fontSize: '1.1rem',
+                                fontSize: '0.8rem',
                                 color: 'white',
                                 fontWeight: 'bold',
                                 '&:hover': {
@@ -81,6 +128,7 @@ function Staff({allStaff}) {
                                 fontWeight: 'bold',
                                 border: '1px solid aqua',
                                 backgroundColor: '#03332b',
+                                fontSize: '12px'
                             },
                         },
                     },
@@ -89,6 +137,7 @@ function Staff({allStaff}) {
                             icon: {
                                 fontSize: '1.2rem',
                                 backgroundColor: 'aqua',
+                                color: '#FFF'
                             },
                         },
                     },
@@ -114,35 +163,41 @@ function Staff({allStaff}) {
                                 fontFamily: 'Poppins',
                                 fontSize: '14px',
                             },
-
                         },
                     },
                 },
             }),
-        [],
+        [xSmall, small, medium],
     );
-    const headerKeys = ['firstName', 'lastName', 'email', 'phone', 'role', 'employment'];
-    // Function to capitalize the first letter of the key
-    const capitalizeFirstLetter = (key) => {
-        // if key not in our headerKeys array, it should skip that key
-        if (!headerKeys.includes(key) || !key) {
-            return '';
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
         }
-        return key.charAt(0).toUpperCase() + key.slice(1);
+        setIsDrawerOpen(open);
     };
-    const columnFields = allStaff.length > 0 ? Object.keys(allStaff[0]) : [];
-    const columns = useMemo(() => columnFields.map((field) => ({
-            accessorKey: field,
-            header: capitalizeFirstLetter(field),
-            sortable: true,
-            size: 200,
-        }))
-            .filter((column) => column.header !== ''),
-        []
+
+    // Columns with responsive adjustments
+    const columns = useMemo(() => [
+            {accessorKey: 'lastName', header: 'Surname', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
+            {accessorKey: 'firstName', header: 'Name', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
+            {accessorKey: 'email', header: 'Email', sortable: true, minSize: 150, size: large || wide ? 100 : 100},
+            {accessorKey: 'phone', header: 'Phone', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
+            {accessorKey: 'role', header: 'Role', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
+            {
+                accessorKey: 'employmentType',
+                header: 'Employment',
+                sortable: true,
+                minSize: 100,
+                size: large || wide ? 100 : 100,
+            }],
+        [large, wide]
     );
     const tableData = useMemo(
         () => allStaff.map((staff) => {
-            const row = {};
+            const row = {_id: staff._id};
             columns.forEach((column) => {
                 row[column.accessorKey] = staff[column.accessorKey];
             });
@@ -154,9 +209,27 @@ function Staff({allStaff}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        fontSize: '1.35em',
-        // width: '270px',
-    };
+        // width: '250px',
+        fontSize: '16px',
+        fontStyle: 'bold',
+        '&:hover': {
+            bgcolor: '#051935',
+        },
+        fontFamily: 'Poppins',
+        "& .MuiInputBase-input": {
+            color: 'white',
+        },
+        "& .MuiFormHelperText-root": {
+            color: 'red',
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'green',
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+            WebkitTextFillColor: 'white',
+        },
+    }
     const table = useMaterialReactTable({
         columns,
         data: tableData,
@@ -186,8 +259,6 @@ function Staff({allStaff}) {
                 mutationKey: ["DeleteStaff"],
                 mutationFn: AdminUtilities.DeleteStaff, // Adjust this to match your delete function
             });
-            // encrypt the staffID and store it in the session storage using window.crypto.subtle
-            // also ensure that the session storage is empty before setting the id in to the session storage
             const handleOpen = () => setOpen(true);
             const handleClose = () => {
                 setOpen(false);
@@ -207,6 +278,7 @@ function Staff({allStaff}) {
             const handleDelete = async (event) => {
                 event.preventDefault();
                 const obj = {email, selectedIds: [staffID]};
+                console.log({obj});
                 mutation.mutate(obj, {
                     onSuccess: () => {
                         queryClient.invalidateQueries({queryKey: ["AllStaff"]});
@@ -222,52 +294,41 @@ function Staff({allStaff}) {
             };
             // function to view staff profile
             const viewStaff = async () => {
-                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
-                const userData = allStaff.find((staff) => staff._id === staffID);
+                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
+                const staffData = allStaff.find((staff) => staff._id === staffID);
                 // encrypt the data and store it in the session storage
-                const encryptedData = await AdminUtilities.encryptData(userData);
-                if (sessionStorage.getItem('staffData')) {
-                    sessionStorage.removeItem('staffData');
-                }
-                if (sessionStorage.getItem('staffID')) {
-                    sessionStorage.removeItem('staffID');
-                }
-                sessionStorage.setItem('staffData', encryptedData);
-                sessionStorage.setItem('staffID', encryptedUserID);
+                const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+                // Set the encrypted data in Zustand store
+                setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
                 router.push(`/dashboard/admin/staff/view`);
             };
             // function to edit staff profile
             const editStaff = async () => {
-                const encryptedUserID = await AdminUtilities.encryptUserID(staffID);
-                const userData = allStaff.find((staff) => staff._id === staffID);
+                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
+                const staffData = allStaff.find((staff) => staff._id === staffID);
                 // encrypt the data and store it in the session storage
-                const encryptedData = await AdminUtilities.encryptData(userData);
-                if (sessionStorage.getItem('staffData')) {
-                    sessionStorage.removeItem('staffData');
-                }
-                if (sessionStorage.getItem('staffID')) {
-                    sessionStorage.removeItem('staffID');
-                }
-                sessionStorage.setItem('staffData', encryptedData);
-                sessionStorage.setItem('staffID', encryptedUserID);
+                const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+                // Set the encrypted data in Zustand store
+                setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
                 router.push(`/dashboard/admin/staff/edit`);
             };
             return (
                 <>
-                    <Stack direction='row'>
+                    <Stack direction='row' gap={0} justifyContent={'space-evenly'} alignItems={'center'} spacing={0}>
                         <Button onClick={viewStaff}>
                             <Tooltip title="View" arrow>
-                                <AccountCircleIcon sx={{color: '#E997F9', cursor: 'pointer'}}/>
+                                <AccountCircleIcon size='small' fontSize="small"
+                                                   sx={{color: '#E997F9', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
                         <Button onClick={editStaff}>
                             <Tooltip title="Edit" arrow>
-                                <EditIcon sx={{color: '#4af7a7', cursor: 'pointer'}}/>
+                                <EditIcon fontSize="small" sx={{color: '#4af7a7', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
                         <Button onClick={handleOpen}>
                             <Tooltip title="Delete" arrow>
-                                <DeleteIcon sx={{color: '#f7564a', cursor: 'pointer'}}/>
+                                <DeleteIcon fontSize="small" sx={{color: '#f7564a', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
                     </Stack>
@@ -278,26 +339,38 @@ function Staff({allStaff}) {
                             component: 'form',
                             onSubmit: handleDelete,
                             sx: {
-                                backgroundColor: '#0E1E1E'
+                                backgroundColor: '#0E1E1E',
+                                width: xSmall || small ? '90%' : medium ? '80%' : '50%', // Adjust width based on screen size
+                                borderRadius: '10px', // Rounded edges for better UI
+                                padding: xSmall || small ? '10px' : '20px', // Adjust padding for small screens
                             },
                         }}
                     >
-                        <DialogTitle>
-                            <Typography variant="button" display="block" gutterBottom
-                                        sx={{color: 'red', fontWeight: 'bold', fontSize: '1.0em'}}>
+                        <DialogTitle sx={{textAlign: 'left'}}>
+                            <Typography
+                                variant="button"
+                                sx={{
+                                    color: 'red',
+                                    fontWeight: 'bold',
+                                    fontSize: xSmall || small ? '0.7em' : medium || large ? '0.8em' : '1.1em', // Responsive font size
+                                }}
+                            >
                                 Confirm Deletion
                             </Typography>
                         </DialogTitle>
                         <DialogContent>
                             <DialogContentText>
-                                <Typography variant="body1" gutterBottom
-                                            sx={{
-                                                color: 'red',
-                                                fontWeight: 'bold',
-                                                fontSize: '1.1em'
-                                            }}>
-                                    You are about to permanently delete the selected Staff Accounts. Please enter your
-                                    Email address to further confirm your actions.
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        color: 'red',
+                                        fontWeight: 'bold',
+                                        fontSize: xSmall || small ? '0.9em' : medium || large ? '1em' : '1.1em', // Responsive text size
+                                        marginBottom: xSmall || small ? '8px' : '16px', // Adjust margin for small screens
+                                    }}
+                                >
+                                    You are about to permanently delete the selected Staff Accounts. <br/> Please enter
+                                    your email address to confirm.
                                 </Typography>
                             </DialogContentText>
                             <TextField
@@ -318,18 +391,50 @@ function Staff({allStaff}) {
                                         "&.Mui-focused": {
                                             color: "white",
                                         },
-                                    }
+                                    },
                                 }}
                                 InputProps={{
-                                    sx: txProps
+                                    sx: {
+                                        color: 'white',
+                                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                                        fontSize: xSmall || small ? '0.8em' : '1em', // Adjust font size
+                                    },
                                 }}
+                                sx={txProps}
                             />
                         </DialogContent>
-                        <DialogActions sx={{justifyContent: 'space-between'}}>
-                            <Stack direction="row" gap={4} justifyContent='space-between'
-                                   sx={{width: '100%', ml: '15px', mr: '15px', mb: '15px'}}>
-                                <Button onClick={handleClose} variant="contained" color="success">Cancel</Button>
-                                <Button type="submit" variant="contained" color="error"> Delete </Button>
+                        <DialogActions sx={{justifyContent: 'space-between', padding: '0 24px 24px'}}>
+                            <Stack
+                                direction="row"
+                                gap={2}
+                                sx={{
+                                    width: '100%',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Button
+                                    onClick={handleClose}
+                                    variant="contained"
+                                    color="success"
+                                    sx={{
+                                        width: xSmall || small ? '100px' : medium || large ? '120px' : '150px', // Button size adjustments
+                                        fontSize: xSmall || small ? '0.7em' : medium || large ? '0.85em' : '1em',
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="error"
+                                    sx={{
+                                        width: xSmall || small ? '100px' : medium || large ? '120px' : '150px',
+                                        fontSize: xSmall || small ? '0.7em' : medium || large ? '0.85em' : '1em',
+                                    }}
+                                >
+                                    Delete
+                                </Button>
                             </Stack>
                         </DialogActions>
                     </Dialog>
@@ -384,21 +489,15 @@ function Staff({allStaff}) {
                 });
             };
             return (
-                <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
-                    <Button
-                        color="secondary"
-                        onClick={createNew}
-                        variant="contained"
-                    >
-                        Create New Staff Account +
-                    </Button>
+                <Box sx={{display: 'flex', gap: '0.5rem', p: '1px'}}>
                     <Button
                         color="error"
                         disabled={!table.getIsSomeRowsSelected()}
                         onClick={handleOpen}
                         variant="contained"
+                        size="small"
                     >
-                        Delete Selected Accounts
+                        Delete
                     </Button>
                     <Dialog
                         open={open}
@@ -427,7 +526,8 @@ function Staff({allStaff}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
                                             }}>
-                                    You are about to permanently delete the selected Staff Accounts, Please enter your
+                                    You are about to permanently delete the selected AllStaff Accounts, Please enter
+                                    your
                                     email address to further confirm your actions.
                                 </Typography>
                             </DialogContentText>
@@ -484,15 +584,63 @@ function Staff({allStaff}) {
         },
         renderToolbarInternalActions: ({table}) => {
             return (
-                <Stack direction='row' sx={{
-                    justifyContent: 'space-between',
+                <>
+                    {/* For larger screens, show the action buttons inline */}
+                    {large || xLarge || xxLarge || wide || xWide || ultraWide ? (
+                        <Stack direction="row" sx={{justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='small'/>
+                        </Stack>
+                    ) : (
+                        <>
+                            {/* For smaller screens, show a settings icon that opens a drawer */}
+                            <IconButton onClick={toggleDrawer(true)}>
+                                <Tooltip title="Actions" arrow>
+                                    <SettingsIcon sx={{color: 'white'}}/>
+                                </Tooltip>
+                            </IconButton>
+                            {/* Drawer for smaller screens */}
+                            <Drawer
+                                anchor="right"
+                                open={isDrawerOpen}
+                                onClose={toggleDrawer(false)}
+                            >
+                                <Stack sx={{
+                                    borderRadius: '10px',
+                                    background: "#000000",
+                                    height: '100vh',
+                                }}>
+                                    <IconButton onClick={toggleDrawer(false)} sx={{alignSelf: 'flex-end'}}>
+                                        <CloseIcon/>
+                                    </IconButton>
+                                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ShowHideColumnsButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleFiltersButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'black'}} size='medium'/>
+                                </Stack>
+                            </Drawer>
+                        </>
+                    )}
+                </>
+            )
+        },
+        renderEmptyRowsFallback: () => {
+            return (
+                <Stack direction='column' spacing={2} sx={{
+                    justifyContent: 'center',
                     alignItems: 'center',
+                    textAlign: 'center',
+                    color: 'white',
+                    padding: '10px',
                 }}>
-                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
+                    <Typography variant='h6' sx={{fontWeight: 'bold', fontSize: '1.2rem'}}>
+                        No AllStaff Accounts Found.
+                    </Typography>
+                    <Typography variant='body1' sx={{fontSize: '1.0rem'}}>
+                        There are no AllStaff accounts to display.
+                    </Typography>
                 </Stack>
             );
         },
@@ -503,18 +651,16 @@ function Staff({allStaff}) {
         muiTableHeadCellProps: {
             sx: {
                 color: '#21c6fc',
-                fontSize: '1.3em',
+                fontSize: xSmall || small || medium ? '14px' : '16px',
             },
             align: 'center',
         },
         muiTableBodyCellProps: {
             sx: {
-                color: 'white',
-                fontSize: '1.2em',
+                color: '#FFF',
                 '&:hover': {
                     color: '#fcc2fb',
                 },
-                padding: '2px 4px',
                 alignItems: 'center',
             },
             align: 'center',
@@ -523,14 +669,15 @@ function Staff({allStaff}) {
         muiTableBodyRowProps: {
             sx: {
                 height: '2px',
+                border: '2px solid red',
             },
         },
         muiSearchTextFieldProps: {
             InputLabelProps: {shrink: true},
             label: 'Search',
-            placeholder: 'Staff Details',
+            placeholder: 'Search...',
             variant: 'outlined',
-            color: 'warning',
+            color: 'success',
         },
         muiFilterTextFieldProps: {
             color: 'error',
@@ -542,8 +689,21 @@ function Staff({allStaff}) {
             variant: 'text',
             size: 'small',
             rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
-            // set the table to display the first 100 data by default
-            rowsPerPage: 100,
+        },
+        muiTableContainerProps: {
+            sx: {
+                // backgroundColor: '#253A57',
+                borderRadius: '10px',
+                padding: 0,
+                margin: 0,
+                overflow: 'auto',
+                overflowX: 'auto',
+                overflowY: 'auto',
+                width: '100%',
+                height: 'auto',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
+
+            },
         },
         paginationDisplayMode: 'pages',
         initialState: {
@@ -552,53 +712,91 @@ function Staff({allStaff}) {
                 pageSize: 100
             },
             density: 'compact',
+            hiddenColumns: ['email', 'phone'],
         },
     });
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
+            <Box sx={{
+                padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
+                marginTop: '10px',
+
+            }}>
+                {/* Navigation Tabs */}
+                <Stack direction='row' spacing={2} sx={{
+                    justifyContent: 'flex-start',
                 }}>
-                    <Typography variant='h5'>Staff Management Center</Typography>
-                </Paper>
-                <br/><br/>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        centered
+                        sx={{
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: '#46F0F9',
+                            },
+                        }}>
+                        <Tab
+                            label="Staff"
+                            value="/dashboard/admin/staff" // Set the value prop for this Tab
+                            component={Link}
+                            href="/dashboard/admin/staff"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="All"
+                            value="/dashboard/admin/staff/all" // Set the value prop for this Tab
+                            component={Link}
+                            href="/dashboard/admin/staff/all"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="New +"
+                            value="/dashboard/admin/staff/new" // Set the value prop for this Tab
+                            component={Link}
+                            href="/dashboard/admin/staff/new"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                    </Tabs>
+                </Stack>
+                <br/>
                 <Stack direction='column' spacing={2}>
                     <Card sx={{
-                        padding: '10px',
+                        padding: '2px',
                         borderRadius: '10px',
                         backgroundColor: '#304f61',
                         color: 'white',
-                        height: '100%',
-                        width: '100%',
-                        boxShadow: '0px 2px 8px rgba(0,0,0,0.32)'
+                        boxShadow: '0px 2px 8px rgba(0,0,0,0.32)',
                     }}>
-                        <Stack direction='row' sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '10px',
-                        }}>
-                            <Stack direction='row' gap={4} sx={{
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                            }}>
-                            </Stack>
-                        </Stack>
-                        <br/><br/>
+                        <br/>
                         <ThemeProvider theme={tableTheme}>
                             <MaterialReactTable table={table}/>
                         </ThemeProvider>
                     </Card>
-                    <Stack direction='row' spacing={5}>
-                        <Link href="/dashboard/admin">
-                            <Button variant="contained" color='success' title='Back'> Back </Button>
+                    <Stack direction='row'>
+                        <Link href="/dashboard/admin/staff">
+                            <Button size={xSmall || small || medium || large ? "small" : 'medium'} variant="contained"
+                                    color='success' title='Back'> Back </Button>
                         </Link>
                     </Stack>
                 </Stack>
@@ -607,4 +805,4 @@ function Staff({allStaff}) {
     );
 }
 
-export default Staff;
+export default AllStaff;

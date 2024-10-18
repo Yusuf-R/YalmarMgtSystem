@@ -88,7 +88,7 @@ function ViewStaffIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Staff"
+                            label="AllStaff"
                             component={Link}
                             href="/dashboard/admin/reports/incident/staff"
                             value="/dashboard/admin/reports/incident/staff"
@@ -169,7 +169,7 @@ function ViewStaffIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Staff"
+                            label="AllStaff"
                             component={Link}
                             href="/dashboard/admin/reports/incident/staff"
                             value="/dashboard/admin/reports/incident/staff"
@@ -360,7 +360,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Staff Info:
+                            AllStaff Info:
                         </Typography>
                         <CardContent sx={{color: 'white', margin: '5px',}}>
                             <Accordion sx={accordionSx}>
@@ -434,7 +434,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Staff Incident Details:
+                            AllStaff Incident Details:
                         </Typography>
                         <CardContent>
                             {/* Category */}

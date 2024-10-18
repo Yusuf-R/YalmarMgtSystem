@@ -55,7 +55,7 @@ function LeaveRequestManagement({leaveReqData}) {
                                 // color: '#ff8c00',
                                 color: '#40ff00',
                             },
-                            
+
                         },
                     },
                     MuiFormControlLabel: {
@@ -119,7 +119,7 @@ function LeaveRequestManagement({leaveReqData}) {
                                 color: '#fff',
                                 fontWeight: 'bold',
                             },
-                            
+
                         },
                     },
                     // Add style overrides for MuiTable, MuiTableRow, and MuiTableCell
@@ -265,17 +265,17 @@ function LeaveRequestManagement({leaveReqData}) {
             const [emailError, setEmailError] = useState('');
             const queryClient = useQueryClient();
             const router = useRouter();
-            
+
             // encrypt the staffID and store it in the session storage using window.crypto.subtle
             // also ensure that the session storage is empty before setting the id in to the session storage
-            
+
             const handleOpen = () => setOpen(true);
             const handleClose = () => {
                 setOpen(false);
                 setEmail('');
                 setEmailError('');
             };
-            
+
             // function to view staff profile
             const reqAction = async () => {
                 const encryptedReqID = await AdminUtilities.encryptUserID(reqID);
@@ -343,7 +343,7 @@ function LeaveRequestManagement({leaveReqData}) {
                 alignItems: 'center',
             },
             align: 'center',
-            
+
         },
         muiTableBodyRowProps: {
             sx: {
@@ -353,7 +353,7 @@ function LeaveRequestManagement({leaveReqData}) {
         muiSearchTextFieldProps: {
             InputLabelProps: {shrink: true},
             label: 'Search',
-            placeholder: 'Staff Details',
+            placeholder: 'AllStaff Details',
             variant: 'outlined',
             color: 'warning',
         },
@@ -377,7 +377,7 @@ function LeaveRequestManagement({leaveReqData}) {
                 pageSize: 100
             },
             density: 'compact',
-            
+
         }
     });
     const paperProps = {

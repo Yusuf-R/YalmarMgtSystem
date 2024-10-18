@@ -53,7 +53,7 @@ function LeaveRequest({staffData}) {
     const [activeTab, setActiveTab] = useState('/dashboard/admin/settings/leave-request');
     const [isDraft, setIsDraft] = useState(false);
     const fullName = `${staffData.firstName} ${staffData.middleName ? staffData.middleName : " "} ${staffData.lastName}`;
-    
+
     const {
         control, handleSubmit, formState: {errors}, setValue, clearErrors, setError, reset
     } = useForm({
@@ -195,15 +195,15 @@ function LeaveRequest({staffData}) {
     if (errors.length > 0) {
         console.log(errors);
     }
-    
+
     const handleSaveAsDraftClick = () => {
         setIsDraft(true);
     };
-    
+
     const handleSubmitClick = () => {
         setIsDraft(false);
     };
-    
+
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ["LeaveRequest"],
@@ -248,7 +248,7 @@ function LeaveRequest({staffData}) {
             });
         }
     }
-    
+
     return (
         <>
             <Box sx={mainSection}
@@ -376,7 +376,7 @@ function LeaveRequest({staffData}) {
                                         }}>{staffData.leaveCredit}</span> days
                                     </Typography>
                                     <br/>
-                                    {/*Basic Staff Info Section*/}
+                                    {/*Basic AllStaff Info Section*/}
                                     <Paper elevation={5} sx={{...paperProps, width: '100%', color: '#FFF'}}>
                                         <Grid container spacing={2}>
                                             <Grid item xs={12}>
@@ -396,7 +396,7 @@ function LeaveRequest({staffData}) {
                                                     <Stack direction='row' spacing={10}>
                                                         {/* Column 1 : Name: MiddleName: LastName */}
                                                         <Stack direction='row' spacing={2}>
-                                                            
+
                                                             <Controller
                                                                 name="fullName"
                                                                 control={control}
@@ -406,7 +406,7 @@ function LeaveRequest({staffData}) {
                                                                         <TextField
                                                                             {...field}
                                                                             id="input-with-icon-textfield"
-                                                                            
+
                                                                             label="fullName"
                                                                             defaultValue={fullName}
                                                                             InputLabelProps={{
@@ -500,7 +500,7 @@ function LeaveRequest({staffData}) {
                                                                                     "&.Mui-focused": {
                                                                                         color: "white"
                                                                                     },
-                                                                                    
+
                                                                                 }
                                                                             }}
                                                                             InputProps={{
@@ -585,7 +585,7 @@ function LeaveRequest({staffData}) {
                                                     borderRadius: '10px',
                                                     width: '`100%',
                                                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                                    
+
                                                 }}>
                                                     <Typography variant='h6' align="left">Leave Info</Typography>
                                                     <br/>
@@ -640,7 +640,7 @@ function LeaveRequest({staffData}) {
                                                                                         color: 'white',
                                                                                         maxHeight: 450,
                                                                                         overflow: 'auto',
-                                                                                        
+
                                                                                     },
                                                                                 },
                                                                             },
@@ -677,7 +677,7 @@ function LeaveRequest({staffData}) {
                                                             Reason
                                                         </Typography>
                                                         {/* Leave Type */}
-                                                        
+
                                                         <Controller
                                                             name="leaveReason"
                                                             control={control}
@@ -718,7 +718,7 @@ function LeaveRequest({staffData}) {
                                                                                         color: 'white',
                                                                                         maxHeight: 450,
                                                                                         overflow: 'auto',
-                                                                                        
+
                                                                                     },
                                                                                 },
                                                                             },
@@ -742,7 +742,7 @@ function LeaveRequest({staffData}) {
                                                                 </FormControl>
                                                             )}
                                                         />
-                                                    
+
                                                     </Stack>
                                                     <br/>
                                                     <Stack direction='row' spacing={2}>
@@ -843,7 +843,7 @@ function LeaveRequest({staffData}) {
                                                                                                 color: '#F51313',
                                                                                                 backgroundColor: '#0B0337',
                                                                                                 borderRadius: '50px',
-                                                                                                
+
                                                                                             },
                                                                                         },
                                                                                     },
@@ -963,7 +963,7 @@ function LeaveRequest({staffData}) {
                                                                                                 color: '#F51313',
                                                                                                 backgroundColor: '#0B0337',
                                                                                                 borderRadius: '50px',
-                                                                                                
+
                                                                                             },
                                                                                         },
                                                                                     },
@@ -999,7 +999,7 @@ function LeaveRequest({staffData}) {
                                                     borderRadius: '10px',
                                                     width: '`100%',
                                                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                                    
+
                                                 }}>
                                                     <Typography variant='h6' align="left">Analytics</Typography>
                                                     <br/>
@@ -1014,7 +1014,7 @@ function LeaveRequest({staffData}) {
                                                             Available Balance (days)
                                                         </Typography>
                                                         {/* Leave Type */}
-                                                        
+
                                                         <Controller
                                                             name="currentBalance"
                                                             control={control}

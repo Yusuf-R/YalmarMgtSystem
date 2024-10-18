@@ -53,74 +53,74 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
     const [staffFullName, setStaffFullName] = useState('');
     const [staffEmail, setStaffEmail] = useState('');
     const [staffRole, setStaffRole] = useState('');
-    
+
     // site info
     const [stateMain, setStateMain] = useState('');
     const [cluster, setClusterType] = useState('');
     const [siteID, setSiteID] = useState('');
     const [siteType, setSiteType] = useState('');
     const [location, setLocation] = useState('');
-    
+
     // servicing info
     const [shelterStructure, setShelterStructure] = useState('');
     const [pmType, setPmType] = useState('');
     const [servicingDate, setServicingDate] = useState(null);
-    
+
     // gen section
     const [genModes, setGenModes] = useState('');
     const [defaultOperation, setDefaultOperation] = useState('');
-    
+
     // gen 1
     const [gen1Type, setGen1Type] = useState('');
     const [gen1Hr, setGen1Hr] = useState('');
     const [gen1Display, setGen1Display] = useState('');
     const [gen1WorkingStatus, setGen1WorkingStatus] = useState('');
-    
+
     //gen 2
     const [gen2Type, setGen2Type] = useState('');
     const [gen2Hr, setGen2Hr] = useState('');
     const [gen2Display, setGen2Display] = useState('');
     const [gen2WorkingStatus, setGen2WorkingStatus] = useState('');
-    
+
     // AC PM
     const [acInstalled, setAcInstalled] = useState('');
     const [noOfAcInstalled, setNoOfAcInstalled] = useState('');
     const [ac1Status, setAc1Status] = useState('');
     const [ac2Status, setAc2Status] = useState('');
-    
+
     // shelter PM
     const [siteCleaningStatus, setSiteCleaningStatus] = useState('');
     const [shelterCleaningStatus, setShelterCleaningStatus] = useState('');
-    
+
     // Light
     const [awlWorkingStatus, setAwlWorkingStatus] = useState('');
     const [securityLightAvailability, setSecurityLightAvailability] = useState('');
     const [securityLightStatus, setSecurityLightStatus] = useState('');
     const [floodLightAvailability, setFloodLightAvailability] = useState('');
     const [floodLightStatus, setFloodLightStatus] = useState('');
-    
+
     // DC system PM
     const [backUpBatteries, setBackUpBatteries] = useState('');
     const [count, setCount] = useState('');
     const [status, setStatus] = useState('');
     const [rectifierStatus, setRectifierStatus] = useState('');
-    
+
     // other PM
     const [feederCableStatus, setFeederCableStatus] = useState('');
     const [changeOverSwitchStatus, setChangeOverSwitchStatus] = useState('');
     const [earthingStatus, setEarthingStatus] = useState('');
     const [earthingCableStatus, setEarthingCableStatus] = useState('');
     const [fireExtinguisherStatus, setFireExtinguisherStatus] = useState('');
-    
+
     // Security PM
     const [securityStatus, setSecurityStatus] = useState('');
     const [siteAccess, setSiteAccess] = useState('');
-    
+
     // admin only
     const [adminFullName, setAdminFullName] = useState('');
     const [adminEmail, setAdminEmail] = useState('');
     const [adminRole, setAdminRole] = useState('');
-    
+
     const {
         control, handleSubmit, formState: {errors}, setError, reset, setValue, clearErrors,
     } = useForm({
@@ -134,7 +134,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
     useEffect(() => {
         reset(formData);
     }, [formData, reset]);
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -160,14 +160,14 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             WebkitTextFillColor: 'white',
         },
     }
-    // Staff info Section
+    // AllStaff info Section
     const fullNames = Array.from(new Set(allStaff.map(staff => staff.fullName)));
     // load only the fullNames whose roles are 'Admin' or SuperAdmin
     const adminFullNames = allStaff.filter(staff => staff.role === 'Admin' || staff.role === 'SuperAdmin').map(staff => staff.fullName);
     // extract the staff._id from allStaff base on the selected fullName
     const staff_id = allStaff.filter(staff => staff.fullName === staffFullName).map(staff => staff._id)[0];
     const admin_id = allStaff.filter(staff => staff.fullName === adminFullName).map(staff => staff._id)[0];
-    
+
     // staff fullName
     const getFullName = () => {
         return fullNames.map((fullName) => (
@@ -181,22 +181,22 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         const selectedFullName = event.target.value;
         const selectedStaff = allStaff.find(staff => staff.fullName === selectedFullName);
-        
+
         if (selectedStaff) {
             const selectedEmail = selectedStaff.email;
             const selectedRole = selectedStaff.role;
-            
+
             handleInputChange('fullName', selectedFullName);
             handleInputChange('email', selectedEmail);
             handleInputChange('role', selectedRole);
-            
+
             setValue('email', selectedEmail);
             setValue('role', selectedRole);
             clearErrors('email');
             clearErrors('role');
         }
     };
-    
+
     // admin FullName
     const getAdminFullName = () => {
         return adminFullNames.map((fullName) => (
@@ -210,29 +210,29 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         const selectedAdminFullName = event.target.value;
         const selectedAdmin = allStaff.find(staff => staff.fullName === selectedAdminFullName);
-        
+
         if (selectedAdmin) {
             const selectedAdminEmail = selectedAdmin.email;
             const selectedAdminRole = selectedAdmin.role;
-            
+
             handleInputChange('adminFullName', selectedAdminFullName);
             handleInputChange('adminEmail', selectedAdminEmail);
             handleInputChange('adminRole', selectedAdminRole);
-            
+
             setValue('adminEmail', selectedAdminEmail);
             setValue('adminRole', selectedAdminRole);
             clearErrors('adminEmail');
             clearErrors('adminRole');
         }
     };
-    
+
     // Site Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
     // extract the site._id from allSite base on the selected siteIds
     const site_id = allSite.filter(site => site.siteId === siteID).map(site => site._id)[0];
-    
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -250,7 +250,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!stateMain) {
@@ -270,7 +270,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!stateMain || !cluster) {
@@ -304,7 +304,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             setLocation('N/A');
         }
     };
-    
+
     // servicing section
     const getShelterType = () => {
         return siteShelterType.map((type) => (
@@ -318,7 +318,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setShelterStructure(event.target.value);
     }
-    
+
     // pm section
     const getPmType = () => {
         return pmInstance.map((type) => (
@@ -332,7 +332,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setPmType(event.target.value);
     }
-    
+
     // genPm Section
     // site gen modes
     const getSiteGenModes = () => {
@@ -360,7 +360,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setDefaultOperation(event.target.value);
     }
-    
+
     // gen1 type
     const getGen1Type = () => {
         return genOpt.map((type) => (
@@ -389,7 +389,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
     }
     // gen1 working hours
     // const gen1Hr = useWatch({control, name: 'generatorPM.gen1Hr'});
-    
+
     const getGen1Hr = () => {
         return genWorkingHr.map((type) => (
             <MenuItem key={type} value={type}
@@ -402,13 +402,13 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         const selectedValue = event.target.value;
         setGen1Hr(selectedValue);
-        
+
         if (selectedValue !== 'Enter Value') {
             clearErrors('generatorPM.gen1Hr');
             setValue('generatorPM.customGen1Hr', null);
         }
     }
-    
+
     // gen1 working status
     const getGen1WorkingStatus = () => {
         return genWorkStatus.map((type) => (
@@ -422,7 +422,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setGen1WorkingStatus(event.target.value);
     }
-    
+
     // gen2 type
     const getGen2Type = () => {
         return genOpt.map((type) => (
@@ -449,7 +449,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setGen2Display(event.target.value);
     }
-    
+
     // gen2 working hour
     const getGen2Hr = () => {
         return genWorkingHr.map((type) => (
@@ -462,7 +462,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
     const handleGen2Hr = (event) => {
         event.preventDefault();
         const selectedValue = event.target.value;
-        
+
         setGen2Hr(selectedValue);
         if (selectedValue !== 'Enter Value') {
             setValue('generatorPM.customGen2Hr', null);
@@ -481,14 +481,14 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setGen2WorkingStatus(event.target.value);
     }
-    
+
     useEffect(() => {
         const calculatedNextDueDate = servicingDate ? dayjs(servicingDate).add(14, 'day').format('DD/MMM/YYYY') : '';
         setValue('nextServiceDate', calculatedNextDueDate);
         // clear any nextServiceDate error
         clearErrors('nextServiceDate');
     }, [servicingDate, setValue, clearErrors]);
-    
+
     // Ac PM
     // ac installed
     const getAcInstalled = () => {
@@ -516,7 +516,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setNoOfAcInstalled(event.target.value);
     }
-    
+
     // Ac1 status
     const getAc1Status = () => {
         return opt1.map((type) => (
@@ -530,7 +530,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setAc1Status(event.target.value);
     }
-    
+
     // Ac2 status
     const getAc2Status = () => {
         return opt1.map((type) => (
@@ -544,7 +544,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setAc2Status(event.target.value);
     }
-    
+
     // shelter PM
     // cleaning status
     // Site
@@ -573,7 +573,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setShelterCleaningStatus(event.target.value);
     }
-    
+
     // Light PM
     // security light availability
     const getSecurityLightAvailability = () => {
@@ -627,7 +627,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setFloodLightStatus(event.target.value);
     }
-    
+
     // light PM
     //awl working status
     const getAwlWorkingStatus = () => {
@@ -642,7 +642,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setAwlWorkingStatus(event.target.value);
     }
-    
+
     // DC system PM
     // back up batteries
     const getBackUpBatteries = () => {
@@ -683,7 +683,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setStatus(event.target.value);
     }
-    
+
     // rectifier
     const getRectifierStatus = () => {
         return opt1.map((type) => (
@@ -697,7 +697,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setRectifierStatus(event.target.value);
     }
-    
+
     // other PM
     // feeder cable stats
     const getFeederCableStatus = () => {
@@ -712,7 +712,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setFeederCableStatus(event.target.value);
     }
-    
+
     // change over switch status
     const getChangeOverSwitchStatus = () => {
         return opt1.map((type) => (
@@ -726,7 +726,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setChangeOverSwitchStatus(event.target.value);
     }
-    
+
     // earthingCableStatus
     const getEarthingCableStatus = () => {
         return opt1.map((type) => (
@@ -740,7 +740,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setEarthingCableStatus(event.target.value);
     }
-    
+
     // earthingStatus
     const getEarthingStatus = () => {
         return opt1.map((type) => (
@@ -754,7 +754,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setEarthingStatus(event.target.value);
     }
-    
+
     // fireExtinguisherStatus
     const getFireExtinguisherStatus = () => {
         return opt1.map((type) => (
@@ -768,7 +768,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setFireExtinguisherStatus(event.target.value);
     }
-    
+
     // security PM
     // security status
     const getSecurityStatus = () => {
@@ -796,8 +796,8 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         event.preventDefault();
         setSiteAccess(event.target.value);
     }
-    
-    
+
+
     // use an Effect section for manging conditional data
     //genModes
     useEffect(() => {
@@ -811,7 +811,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             setValue('generatorPM.gen2WorkingStatus', 'NOT-APPLICABLE');
         }
     }, [genModes, setValue]);
-    
+
     // acInstalled
     useEffect(() => {
         if (acInstalled === 'NO' || acInstalled === 'NOT-APPLICABLE') {
@@ -825,7 +825,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             setValue('airconPM.ac2Status', 'NOT-APPLICABLE');
         }
     }, [acInstalled, noOfAcInstalled, setValue]);
-    
+
     // lightning PM
     useEffect(() => {
         if (securityLightAvailability === 'NO' || securityLightAvailability === 'NOT-APPLICABLE') {
@@ -837,8 +837,8 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             setValue('lightningPM.floodLightStatus', 'NOT-APPLICABLE');
         }
     }, [floodLightAvailability, setValue]);
-    
-    
+
+
     // dc system
     useEffect(() => {
         if (backUpBatteries === 'NO' || backUpBatteries === 'NOT-APPLICABLE') {
@@ -846,26 +846,26 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
             setValue('dcSystem.status', 'NOT-APPLICABLE');
         }
     }, [backUpBatteries, setValue]);
-    
+
     // if errors contain any error then display the error
     if (Object.keys(errors).length > 0) {
         console.log({errors});
     }
-    
-    
+
+
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationKey: ['NewServicingReport'],
         mutationFn: AdminUtils.NewServicingReport,
     });
-    
+
     const onSubmit = (data) => {
         Object.entries(data).forEach(([key, value]) => {
             handleInputChange(key, value);
         });
         handleNextStep();
     };
-    
+
     return (
         <>
             <Box sx={mainSection}>
@@ -888,7 +888,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                     noValidate
                 >
                     {/* Main Body */}
-                    {/*Staff Info*/}
+                    {/*AllStaff Info*/}
                     <br/><br/>
                     <Grid container spacing={4}>
                         <Paper elevation={5} sx={{
@@ -1120,7 +1120,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1188,7 +1188,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1256,7 +1256,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1485,7 +1485,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1760,7 +1760,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1826,7 +1826,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -1892,7 +1892,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -2034,7 +2034,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     color: 'white',
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -2138,7 +2138,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -2204,7 +2204,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -2270,7 +2270,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -2413,7 +2413,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -2828,7 +2828,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -2896,7 +2896,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -2983,7 +2983,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3078,7 +3078,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                         </Grid>
                                     </>
                                 )}
-                                
+
                                 <Grid item xs={2.4}>
                                     <Controller
                                         name="lightningPM.floodLightAvailability"
@@ -3121,7 +3121,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3258,7 +3258,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3345,7 +3345,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3414,7 +3414,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -3485,7 +3485,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -3554,7 +3554,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3641,7 +3641,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3708,7 +3708,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3775,7 +3775,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3842,7 +3842,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3909,7 +3909,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -3996,7 +3996,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },
@@ -4063,7 +4063,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                                     maxHeight: 450,
                                                                     overflow: 'auto',
                                                                     fontSize: '40px',
-                                                                    
+
                                                                 },
                                                             },
                                                         },

@@ -65,7 +65,7 @@ const About = () => {
 
             {/* Service Highlights with subtle zoom-in animation */}
             <Grid container spacing={4} justifyContent="center" sx={{mt: 5}}>
-                {['Generator Management', 'Fuel Logistics', 'Site & Staff Management'].map((service, index) => (
+                {['Generator Management', 'Fuel Logistics', 'Site & AllStaff Management'].map((service, index) => (
                     <Grid item xs={12} sm={6} md={4} key={index}>
 
                         <Box
@@ -84,7 +84,7 @@ const About = () => {
                                 {/* Dynamic descriptions */}
                                 {service === 'Generator Management' && 'Complete generator solutions to ensure consistent power for your operations.'}
                                 {service === 'Fuel Logistics' && 'Seamless fuel management to keep your power supply running smoothly.'}
-                                {service === 'Site & Staff Management' && 'Comprehensive management of staff and site operations for efficient services.'}
+                                {service === 'Site & AllStaff Management' && 'Comprehensive management of staff and site operations for efficient services.'}
                             </Typography>
                         </Box>
                     </Grid>

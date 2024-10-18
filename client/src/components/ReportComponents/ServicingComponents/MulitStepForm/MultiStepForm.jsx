@@ -35,7 +35,7 @@ import dayjs from "dayjs";
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
 
 const steps = [
-    'Reporting Staff-Info',
+    'Reporting AllStaff-Info',
     'Site-Info',
     'Service-Info',
     'Gen-PM',
@@ -148,19 +148,19 @@ function MultiStepForm({allStaff, allSite}) {
         summary: '',
     });
     const memoizedImages = useMemo(() => formData.images, [formData.images]);
-    
+
     const methods = useForm({
         defaultValues: formData,
         resolver: yupResolver(newServiceReportSchema),
         mode: 'onTouched',
         reValidateMode: 'onChange',
     });
-    
+
     useEffect(() => {
         const stepData = methods.getValues();
         setFormData(prevData => merge({}, prevData, stepData));
     }, [activeStep, methods]);
-    
+
     const handleNext = async () => {
         const currentStepFields = getFieldsForStep(activeStep);
         const stepIsValid = await methods.trigger(currentStepFields);
@@ -173,12 +173,12 @@ function MultiStepForm({allStaff, allSite}) {
             // Deep merge stepData into formData
             setFormData(prevData => merge({}, prevData, stepData));
             setActiveStep(prevActiveStep => prevActiveStep + 1);
-            
+
         } else {
             console.log("Please fill all required fields correctly");
         }
     };
-    
+
     // Helper function to get fields for each step
     const getFieldsForStep = (step) => {
         switch (step) {
@@ -252,12 +252,12 @@ function MultiStepForm({allStaff, allSite}) {
                 return [];
         }
     };
-    
+
     const handleBack = () => {
         setFormData((prevData) => ({...prevData, ...methods.getValues()}));
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    
+
     const handleReset = async () => {
         setFormData({
             fullName: '',
@@ -328,7 +328,7 @@ function MultiStepForm({allStaff, allSite}) {
             },
             summary: '',
             images: [],
-            
+
         });
         setActiveStep(0);
         methods.reset();
@@ -338,14 +338,14 @@ function MultiStepForm({allStaff, allSite}) {
         mutationKey: ['NewServicingReport'],
         mutationFn: AdminUtils.NewServicingReport,
     });
-    
+
     const onSubmit = async () => {
         setIsLoading(true);  // Start loading
         // Final submission logic here
         const servicingDate = dayjs(formData.servicingDate).format('DD-MMM-YYYY');
         //we need a for data object to send the array of images as contained in the images array
         const formDataObj = new FormData();
-        
+
         // Append images
         formData.images.forEach((img, index) => {
             formDataObj.append('images', img.file, img.file.name);
@@ -353,7 +353,7 @@ function MultiStepForm({allStaff, allSite}) {
         // object image credential to uniquely identify the image
         const imageCredential = `${formData.siteId}-${servicingDate}-${formData.pmInstance}`;
         formDataObj.append('imageCredential', imageCredential);
-        
+
         if (formData.generatorPM.gen1Hr === 'Enter Value' && formData.generatorPM.customGen1Hr) {
             formData.generatorPM.gen1Hr = Number(formData.generatorPM.customGen1Hr);
             delete formData.generatorPM.customGen1Hr;
@@ -383,7 +383,7 @@ function MultiStepForm({allStaff, allSite}) {
                 }
             });
         };
-        
+
         // Append the rest of the form data to the FormData object, excluding indexed keys and images
         Object.keys(formData).forEach(key => {
             if (key !== 'images' && isNaN(Number(key))) {
@@ -403,7 +403,7 @@ function MultiStepForm({allStaff, allSite}) {
         // we also need to construct our cache key to see if this entry already exist
         const month = dayjs(formData.servicingDate).format('MMMM');
         const year = dayjs(formData.servicingDate).format('YYYY');
-        
+
         const data = {
             siteType: formData.siteType,
             location: formData.location,
@@ -431,15 +431,15 @@ function MultiStepForm({allStaff, allSite}) {
             setIsLoading(false);  // End loading
         }
     };
-    
+
     useEffect(() => {
         console.log({formData});
     }, [formData]);
-    
+
     useEffect(() => {
         console.log({activeStep});
     }, [activeStep]);
-    
+
     const handleImagesChange = useCallback((newImages) => {
         setFormData(prevData => {
             const updatedImages = newImages.map(newImage => {
@@ -450,7 +450,7 @@ function MultiStepForm({allStaff, allSite}) {
         });
         methods.setValue("images", newImages);
     }, [methods]);
-    
+
     return (
         <FormProvider {...methods} >
             <Box>
@@ -525,7 +525,6 @@ function MultiStepForm({allStaff, allSite}) {
         </FormProvider>
     );
 }
-
 
 
 export default MultiStepForm;

@@ -1,10 +1,14 @@
 import SecurityConfig from "../utils/config";
+import Site from "../models/Sites";
+import Servicing from "../models/Servicing";
+import Staff from "../models/Staff";
+import {ObjectId} from "mongodb";
+import {Incident} from "../models/Incident";
 
 const JWT = require('jsonwebtoken');
 const redisClient = require('../utils/redis');
 const dbClient = require('../utils/db');
 const RefreshToken = require('../models/RefreshToken');
-const Staff = require('../models/Staff');
 const securityConfig = new SecurityConfig();
 
 
@@ -417,7 +421,7 @@ class AuthController {
             // ensure every other role can perform this task except Admin or SuperAdmin
             const {role} = staff;
             if (role === 'Admin' || role === 'SuperAdmin') {
-                return new Error('Forbidden Operation: Strictly a Staff Operation');
+                return new Error('Forbidden Operation: Strictly a AllStaff Operation');
             }
             return staff;
 
@@ -428,26 +432,35 @@ class AuthController {
 
     static async dashBoardCheck(id) {
         try {
-            const staff = await Staff.findById(id);
-            if (!staff) {
-                return new Error(`User with ID ${id} not found.`);
+            const staffData = await Staff.findById(new ObjectId(id)).select('-__v -createdAt -updatedAt -password');
+            if (!staffData && staffData.role !== 'Admin' && staffData.role !== 'SuperAdmin') {
+                return new Error('Unauthorized Access');
             }
-            const staffData = {};
-            //extract all the keys from the return staff object query
-            const staffObj = staff.toObject();
-            const exclude = ['_id', 'password', '__v', 'createdAt', 'updatedAt'];
-            Object.keys(staffObj).forEach((key) => {
-                if (!exclude.includes(key)) {
-                    staffData[key] = staff[key];
-                }
-            });
-            return staffData;
+            //  mow we are sure that the request is coming from an Admin
+            // Run all queries in parallel using Promise.all to optimize performance
+            const [allStaffData, allSiteData, allServicesData, allIncidentData, staffCount, siteCount] = await Promise.all([
+                Staff.find().select('-__v -createdAt -updatedAt -password').limit(20),
+                Site.find().select('-__v -createdAt -updatedAt').limit(20),
+                Servicing.find().select('-__v -createdAt -updatedAt').limit(20),
+                Incident.find().select('-__v -createdAt -updatedAt').limit(20),
+                Staff.countDocuments(),
+                Site.countDocuments(),
+            ]);
+            // Return the data including the total counts
+            return {
+                allStaffData,
+                allSiteData,
+                allServicesData,
+                allIncidentData,
+                staffCount,
+                siteCount,
+            };
         } catch (err) {
             return new Error(err.message);
         }
     }
 
-    static async apiPrecheck(req) {
+    static async apiPreCheck(req) {
         try {
             const encryptedAccessToken = await AuthController.refreshCurrPreCheck(req);
             if (encryptedAccessToken instanceof Error) {

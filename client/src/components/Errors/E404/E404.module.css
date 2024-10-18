@@ -1,15 +1,21 @@
 .parentBody {
     padding: 0;
-    margin:0;
+    margin: 0;
     background-color: #1C2127;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .container {
     position: absolute;
-    right: 150px;
+    right: 30px;
 }
 
+/* Adjust message font sizes for responsiveness */
 .message {
     font-family: 'Poppins', sans-serif;
     font-size: 30px;
@@ -19,6 +25,7 @@
     top: 230px;
     left: 40px;
 }
+
 .message2 {
     font-family: 'Poppins', sans-serif;
     font-size: 18px;
@@ -30,30 +37,18 @@
     left: 40px;
 }
 
-.neon{
+.neon {
     text-align: center;
-    width: 30px;
-    margin-top: 30px;
-    margin-bottom: 10px;
     font-family: 'Varela Round', sans-serif;
     font-size: 90px;
     color: #5BE0B3;
     letter-spacing: 3px;
     text-shadow: 0 0 5px #6EECC1;
     animation: flux 2s linear infinite;
+    margin-top: 30px;
+    margin-bottom: 10px;
 }
-.trash{
-    width: 170px;
-    height: 220px;
-    background-color: #585F67;
-    top: 300px;
-}
-.can{
-    width: 190px;
-    height: 30px;
-    background-color: #6B737C;
-    border-radius: 15px 15px 0 0;
-}
+
 .doorFrame {
     height: 495px;
     width: 295px;
@@ -64,14 +59,14 @@
     align-items: center;
 }
 
-.door{
+.door {
     height: 450px;
     width: 250px;
     border-radius: 70px 70px 0 0;
     background-color: #A0AEC0;
 }
 
-.eye{
+.eye {
     top: 15px;
     left: 25px;
     height: 5px;
@@ -81,11 +76,12 @@
     animation: eye 7s ease-in-out infinite;
     position: absolute;
 }
-.eye2{
+
+.eye2 {
     left: 65px;
 }
 
-.window{
+.window {
     height: 40px;
     width: 130px;
     background-color: #1C2127;
@@ -94,7 +90,7 @@
     position: relative;
 }
 
-.leaf{
+.leaf {
     height: 40px;
     width: 130px;
     background-color: #8594A5;
@@ -124,6 +120,7 @@
     margin-left: 20px;
 }
 
+/* Button styling */
 .goHome {
     margin: 40px 0;
     font-family: 'Poppins', sans-serif;
@@ -141,7 +138,7 @@
     cursor: pointer;
     padding: 4px;
     background-color: teal;
-    transition: .5s;
+    transition: 0.5s;
 }
 
 .goHome button:hover {
@@ -149,6 +146,7 @@
     color: white;
 }
 
+/* Animation keyframes */
 @keyframes leaf {
     0% {
         transform: scaleX(1);
@@ -156,10 +154,10 @@
     5% {
         transform: scaleX(0.2);
     }
-    70%{
+    70% {
         transform: scaleX(0.2);
     }
-    75%{
+    75% {
         transform: scaleX(1);
     }
     100% {
@@ -170,29 +168,29 @@
 @keyframes eye {
     0% {
         opacity: 0;
-        transform: translateX(0)
+        transform: translateX(0);
     }
     5% {
         opacity: 0;
     }
-    15%{
+    15% {
         opacity: 1;
-        transform: translateX(0)
+        transform: translateX(0);
     }
     20% {
-        transform: translateX(15px)
+        transform: translateX(15px);
     }
-    35%{
-        transform: translateX(15px)
+    35% {
+        transform: translateX(15px);
     }
-    40%{
-        transform: translateX(-15px)
+    40% {
+        transform: translateX(-15px);
     }
-    60%{
-        transform: translateX(-15px)
+    60% {
+        transform: translateX(-15px);
     }
     65% {
-        transform: translateX(0)
+        transform: translateX(0);
     }
 }
 
@@ -208,3 +206,101 @@
     }
 }
 
+/* Media Queries for Responsiveness */
+@media (max-width: 800px) {
+    .container {
+        right: 50px;
+    }
+
+    .neon {
+        font-size: 60px;
+    }
+
+    .doorFrame {
+        height: 350px;
+        width: 210px;
+    }
+
+    .door {
+        height: 300px;
+        width: 160px;
+    }
+
+    .eye {
+        height: 3px;
+        width: 10px;
+        top: 10px;
+    }
+
+    .eye2 {
+        left: 40px;
+    }
+
+    .message {
+        font-size: 20px;
+        top: 80px;
+        left: 20px;
+    }
+
+    .message2 {
+        font-size: 14px;
+        top: 120px;
+        left: 20px;
+        width: 250px;
+    }
+
+    .goHome button {
+        width: 120px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        right: 10px;
+    }
+
+    .neon {
+        font-size: 50px;
+    }
+
+    .doorFrame {
+        height: 300px;
+        width: 180px;
+    }
+
+    .door {
+        height: 250px;
+        width: 140px;
+    }
+
+    .eye {
+        height: 2px;
+        width: 8px;
+        top: 8px;
+    }
+
+    .eye2 {
+        left: 30px;
+    }
+
+    .message {
+        font-size: 16px;
+        top: 50px;
+        left: 10px;
+    }
+
+    .message2 {
+        font-size: 12px;
+        top: 80px;
+        left: 10px;
+        width: 200px;
+    }
+
+    .goHome button {
+        width: 80px;
+        height: 30px;
+        font-size: 14px;
+    }
+}

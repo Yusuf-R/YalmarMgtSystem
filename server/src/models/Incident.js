@@ -40,7 +40,7 @@ const baseIncidentSchema = new mongoose.Schema(
 // Extendable Incident Schema
 const Incident = mongoose.model('Incident', baseIncidentSchema);
 
-// Staff Incident Specific Schema
+// AllStaff Incident Specific Schema
 const staffIncidentSchema = new mongoose.Schema({
     staffInfo: {
         staff_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true},
