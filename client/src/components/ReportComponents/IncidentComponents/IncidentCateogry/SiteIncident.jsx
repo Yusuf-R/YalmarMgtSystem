@@ -32,11 +32,11 @@ function SiteIncident({allSite}) {
         reValidateMode: 'onChange',
         resolver: yupResolver(siteIncidentSchema),
     });
-    // Site Info Section
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === siteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === siteInfo.cluster).map(site => site.siteId);
-    
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -46,7 +46,7 @@ function SiteIncident({allSite}) {
             </MenuItem>
         ));
     };
-    
+
     const handleState = (event) => {
         const newState = event.target.value;
         setSiteInfo(prevState => ({
@@ -59,7 +59,7 @@ function SiteIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!siteInfo.state) {
@@ -83,7 +83,7 @@ function SiteIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!siteInfo.state || !siteInfo.cluster) {
@@ -119,8 +119,8 @@ function SiteIncident({allSite}) {
             clearErrors('siteInfo');
         }
     };
-    
-    
+
+
     // category
     const catReport = ['Shelter', 'Security', 'Others']
     const getCatReport = () => {
@@ -139,7 +139,7 @@ function SiteIncident({allSite}) {
         setValue('siteIncidentInfo.category', event.target.value);
         clearErrors('siteIncidentInfo.category');
     };
-    
+
     const catSec = ['Theft', 'Vandalism', 'Intrusion', 'Others']
     const getCatSec = () => {
         return catSec.map((category) => (
@@ -154,7 +154,7 @@ function SiteIncident({allSite}) {
         setValue('siteIncidentInfo.subCategory.security', event.target.value);
         clearErrors('siteIncidentInfo.subCategory.security');
     }
-    
+
     const catShe = ['Fire', 'Flooding', 'Structural-Damage', 'Others']
     const getCatShe = () => {
         return catShe.map((category) => (
@@ -169,8 +169,8 @@ function SiteIncident({allSite}) {
         setValue('siteIncidentInfo.subCategory.shelter', event.target.value);
         clearErrors('siteIncidentInfo.subCategory.shelter');
     }
-    
-    
+
+
     const catSelector = watch('siteIncidentInfo.category');
     const accordionSx = {
         bgcolor: '#274e61',
@@ -182,7 +182,7 @@ function SiteIncident({allSite}) {
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -191,7 +191,7 @@ function SiteIncident({allSite}) {
         textAlign: 'left',
         ml: '30px',
     };
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -238,7 +238,7 @@ function SiteIncident({allSite}) {
                         textAlign: 'left',
                         color: '#46F0F9',
                     }}>
-                        Site-Related
+                        AllSite-Related
                     </Typography>
                     <Card sx={{bgcolor: '#274e61', color: '#FFF'}}>
                         <CardContent>
@@ -252,12 +252,12 @@ function SiteIncident({allSite}) {
                                         ml: '30px',
                                         fontSize: '16px',
                                     }}>
-                                        Site-Info
+                                        AllSite-Info
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        {/*Site State*/}
+                                        {/*AllSite State*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="siteInfo.state"
@@ -301,7 +301,7 @@ function SiteIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -326,7 +326,7 @@ function SiteIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site cluster*/}
+                                        {/*AllSite cluster*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="siteInfo.cluster"
@@ -369,7 +369,7 @@ function SiteIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -394,7 +394,7 @@ function SiteIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site ID*/}
+                                        {/*AllSite ID*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="siteInfo.siteId"
@@ -410,7 +410,7 @@ function SiteIncident({allSite}) {
                                                                 field.onChange(e);
                                                                 handleSiteId(e);
                                                             }}
-                                                            label="Site ID"
+                                                            label="AllSite ID"
                                                             required
                                                             error={!!errors.siteInfo?.siteId}
                                                             helperText={errors.siteInfo?.siteId ? (
@@ -437,7 +437,7 @@ function SiteIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -462,7 +462,7 @@ function SiteIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site Type if available*/}
+                                        {/*AllSite Type if available*/}
                                         {siteInfo.siteId && (
                                             <Grid item xs={2}>
                                                 <Controller
@@ -486,7 +486,7 @@ function SiteIncident({allSite}) {
                                                             sx={{
                                                                 color: "#46F0F9",
                                                             }}
-                                                            label="Site Type"
+                                                            label="AllSite Type"
                                                             variant="outlined"
                                                             error={!!errors.siteInfo?.type}
                                                             helperText={errors.siteInfo?.type ? errors.siteInfo.type.message : ''}
@@ -698,8 +698,8 @@ function SiteIncident({allSite}) {
                                                         )}
                                                     />
                                                 </Grid>
-                                            
-                                            
+
+
                                             </>
                                         )}
                                         {catSelector === 'Security' && (

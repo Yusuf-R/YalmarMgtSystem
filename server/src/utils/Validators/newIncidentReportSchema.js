@@ -32,7 +32,7 @@ const staffIncidentSchema = Joi.object({
     }).required(),
 });
 
-// Site Incident Validation Schema
+// AllSite Incident Validation Schema
 const siteIncidentSchema = Joi.object({
     siteInfo: Joi.object({
         site_id: Joi.string().required(),

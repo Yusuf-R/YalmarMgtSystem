@@ -16,25 +16,25 @@ function Step3ServiceInfo({txProps}) {
     const siteShelterType = ['Containerized', 'Open'];
     const pmInstanceType = ['PM1', 'PM2'];
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
-    
+
     // servicing info
     const shelterType = watch('shelterType');
     const pmInstance = watch('pmInstance');
     const servicingDate = watch('servicingDate')
-    
+
     // shelterType and PM instance
     useEffect(() => {
         setValue('shelterType', shelterType);
         setValue('pmInstance', pmInstance);
     }, [shelterType, pmInstance, setValue]);
-    
+
     // next service date
     useEffect(() => {
         const calculatedNextDueDate = servicingDate ? dayjs(servicingDate).add(14, 'day').format('DD/MMM/YYYY') : '';
         setValue('nextServiceDate', calculatedNextDueDate);
         clearErrors('nextServiceDate');
     }, [servicingDate, setValue, clearErrors]);
-    
+
     // servicing section
     const getShelterType = () => {
         return siteShelterType.map((type) => (
@@ -49,7 +49,7 @@ function Step3ServiceInfo({txProps}) {
         const shelterStruct = event.target.value;
         setValue('shelterType', shelterStruct);
     }
-    
+
     // pm section
     const getPmType = () => {
         return pmInstanceType.map((type) => (
@@ -64,20 +64,20 @@ function Step3ServiceInfo({txProps}) {
         const pmValue = event.target.value;
         setValue('pmInstance', pmValue);
     }
-    
+
     // servicing date
     const [showCalendar, setShowCalendar] = useState(false);
-    
+
     const handleToggleCalendar = () => {
         setShowCalendar(!showCalendar);
     };
-    
+
     const handleDateSelect = (date) => {
         setValue('servicingDate', date);
         setShowCalendar(false); // Hide the date picker after selecting a date
     };
-    
-    
+
+
     return (
         <>
             <br/><br/><br/>
@@ -99,7 +99,7 @@ function Step3ServiceInfo({txProps}) {
                             <Grid item xs={12}>
                                 <Typography variant="subtitle 4">Service Info</Typography>
                             </Grid>
-                            {/*Site State*/}
+                            {/*AllSite State*/}
                             <Grid item xs={3}>
                                 <Controller
                                     name="shelterType"
@@ -206,7 +206,7 @@ function Step3ServiceInfo({txProps}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },

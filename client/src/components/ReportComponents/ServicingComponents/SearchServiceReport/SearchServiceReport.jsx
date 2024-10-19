@@ -71,19 +71,19 @@ function SearchServiceReport({allSite}) {
     const [location, setLocation] = useState('N/A');
     const [pmInstance, setPmInstance] = useState('');
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/search');
-    
+
     const pmInstances = ['PM1', 'PM2'];
     const serviceRecordSchema = yup.object().shape({
         state: yup.string().required('State is required'),
         cluster: yup.string().required('Cluster is required'),
-        siteId: yup.string().required('Site ID is required'),
+        siteId: yup.string().required('AllSite ID is required'),
         month: yup.string().required('Month is required'),
         year: yup.string().required('Year is required'),
         pmInstance: yup.string().required('PM Instance is required'),
         location: yup.string().required('Location is required'),
-        siteType: yup.string().required('Site Type is required'),
+        siteType: yup.string().required('AllSite Type is required'),
     });
-    
+
     const {
         control, handleSubmit, formState: {errors}, watch, setError, reset, setValue, clearErrors,
     } = useForm({
@@ -91,16 +91,16 @@ function SearchServiceReport({allSite}) {
         mode: 'onTouched',
         reValidateMode: 'onChange',
     });
-    
-    
-    // Site Info Section
+
+
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
-    
+
     // extract the site._id from allSite base on the selected siteIds
     const site_id = allSite.filter(site => site.siteId === siteID).map(site => site._id)[0];
-    
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -118,7 +118,7 @@ function SearchServiceReport({allSite}) {
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!stateMain) {
@@ -138,7 +138,7 @@ function SearchServiceReport({allSite}) {
         setSiteType('N/A');
         setLocation('N/A');
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!stateMain || !cluster) {
@@ -156,7 +156,7 @@ function SearchServiceReport({allSite}) {
         setSiteID(event.target.value);
         const selectedSiteId = event.target.value;
         setSiteID(selectedSiteId);
-        
+
         const selectedSite = allSite.find(site => site.siteId === selectedSiteId);
         if (selectedSite) {
             const newLocation = selectedSite.location || 'N/A';
@@ -173,7 +173,7 @@ function SearchServiceReport({allSite}) {
             setLocation('N/A');
         }
     };
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -199,7 +199,7 @@ function SearchServiceReport({allSite}) {
             WebkitTextFillColor: 'white',
         },
     }
-    
+
     // Reset the form
     const Clear = async () => {
         // clear the form
@@ -219,11 +219,11 @@ function SearchServiceReport({allSite}) {
         mutationKey: ["GetServicingReport"],
         mutationFn: AdminUtils.GetServicingReport,
     });
-    
+
     const clearCache = async () => {
         await queryClient.clear();
     }
-    
+
     const pathname = usePathname();
     // useEffect or handling navigation between new and staff
     useEffect(() => {
@@ -237,7 +237,7 @@ function SearchServiceReport({allSite}) {
             setActiveTab('/dashboard/admin/reports');
         }
     }, [pathname]);
-    
+
     const SearchRecords = async (data) => {
         try {
             setSearchInitiated(true);
@@ -314,7 +314,7 @@ function SearchServiceReport({allSite}) {
             toast.error(error.message);
         }
     }
-    
+
     return (
         <>
             <Box sx={mainSection}>
@@ -345,7 +345,7 @@ function SearchServiceReport({allSite}) {
                             },
                         }}
                     >
-                        
+
                         <Tab
                             label="Reports"
                             component={Link}
@@ -372,7 +372,7 @@ function SearchServiceReport({allSite}) {
                                 },
                             }}
                         />
-                        
+
                         <Tab
                             label="New"
                             component={Link}
@@ -425,10 +425,10 @@ function SearchServiceReport({allSite}) {
                                                 fontWeight: 'bold',
                                                 color: '#FFF'
                                             }}
-                                > Select Site
+                                > Select AllSite
                                 </Typography>
                             </Grid>
-                            {/*Site State*/}
+                            {/*AllSite State*/}
                             <Grid item xs={2}>
                                 <Controller
                                     name="state"
@@ -472,7 +472,7 @@ function SearchServiceReport({allSite}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -497,7 +497,7 @@ function SearchServiceReport({allSite}) {
                                     )}
                                 />
                             </Grid>
-                            {/*Site cluster*/}
+                            {/*AllSite cluster*/}
                             <Grid item xs={2}>
                                 <Controller
                                     name="cluster"
@@ -540,7 +540,7 @@ function SearchServiceReport({allSite}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -565,7 +565,7 @@ function SearchServiceReport({allSite}) {
                                     )}
                                 />
                             </Grid>
-                            {/*Site ID*/}
+                            {/*AllSite ID*/}
                             <Grid item xs={2}>
                                 <Controller
                                     name="siteId"
@@ -581,7 +581,7 @@ function SearchServiceReport({allSite}) {
                                                     field.onChange(e);
                                                     handleSiteId(e);
                                                 }}
-                                                label="Site ID"
+                                                label="AllSite ID"
                                                 required
                                                 error={!!errors.siteId}
                                                 helperText={errors.siteId ? (
@@ -608,7 +608,7 @@ function SearchServiceReport({allSite}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -633,7 +633,7 @@ function SearchServiceReport({allSite}) {
                                     )}
                                 />
                             </Grid>
-                            {/*Site Type if available*/}
+                            {/*AllSite Type if available*/}
                             {siteID && (
                                 <Grid item xs={2}>
                                     <Controller
@@ -657,7 +657,7 @@ function SearchServiceReport({allSite}) {
                                                 sx={{
                                                     color: "#46F0F9",
                                                 }}
-                                                label="Site Type"
+                                                label="AllSite Type"
                                                 variant="outlined"
                                                 error={!!errors.siteType}
                                                 helperText={errors.siteType ? errors.siteType.message : ''}

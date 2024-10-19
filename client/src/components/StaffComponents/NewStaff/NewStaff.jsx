@@ -41,7 +41,7 @@ import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {newStaffSchema} from "@/SchemaValidator/newStaffSchema";
+import {newStaffSchema} from "@/SchemaValidator/StaffValidator/StaffSchema";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
@@ -379,7 +379,7 @@ function NewStaff() {
         setValue('siteID', []);
         clearErrors('siteID');
     }
-    // Handle Site selection
+    // Handle AllSite selection
     const handleSiteChange = (event) => {
         // prevent default action of submitting the form
         event.preventDefault();
@@ -2244,7 +2244,7 @@ function NewStaff() {
                                 )}
                             />
                         </Grid>
-                        {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
+                        {/*Next row containing 3 fields:= AllSite information row : state, cluster, siteID*/}
                         <Grid item xs={12}>
                             <Typography variant="h6"
                                         sx={{
@@ -2252,7 +2252,7 @@ function NewStaff() {
                                             fontWeight: 'bold',
                                             color: '#FFF',
                                             fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
-                                        }}>Site Information-:<br/>
+                                        }}>AllSite Information-:<br/>
                                 Applicable to Technicians and Field Supervisors Role</Typography>
                         </Grid>
                         <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
@@ -2267,7 +2267,7 @@ function NewStaff() {
                                             <TextField
                                                 {...field}
                                                 select
-                                                label="Site State"
+                                                label="AllSite State"
                                                 value={field.value}
                                                 onChange={(e) => {
                                                     field.onChange(e);
@@ -2314,7 +2314,7 @@ function NewStaff() {
                                                     cursor: "not-allowed",
                                                     // pointerEvents: "none"
                                                 }}>
-                                                    Select Site State
+                                                    Select AllSite State
                                                 </MenuItem>
                                                 {getSiteStateOptions()}
                                             </TextField>
@@ -2410,7 +2410,7 @@ function NewStaff() {
                                                     }}
                                                     error={!isDisabled && !!errors.siteID}
                                                 >
-                                                    Site ID
+                                                    AllSite ID
                                                 </InputLabel>
                                                 <Select
                                                     {...field}
@@ -2421,7 +2421,7 @@ function NewStaff() {
                                                         field.onChange(e);
                                                         handleSiteChange(e);
                                                     }}
-                                                    input={<OutlinedInput label="Site ID"/>}
+                                                    input={<OutlinedInput label="AllSite ID"/>}
                                                     renderValue={(selected) => (
                                                         <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                                                             {selected.map((value) => (
@@ -2448,7 +2448,7 @@ function NewStaff() {
                                                 >
                                                     <MenuItem value="" disabled
                                                               sx={{color: "#4BF807", cursor: "not-allowed"}}>
-                                                        Select Site ID
+                                                        Select AllSite ID
                                                     </MenuItem>
                                                     {getSiteOptions()}
                                                 </Select>

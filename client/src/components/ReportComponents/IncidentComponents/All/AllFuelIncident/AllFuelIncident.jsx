@@ -233,7 +233,7 @@ function AllFuelIncident({fuelIncidentData}) {
     const columns = useMemo(() => [
         {
             accessorKey: 'fuelSiteInfo.siteId',
-            header: 'Site ID',
+            header: 'AllSite ID',
             Cell: ({row}) => row.original.fuelSiteInfo?.siteId || 'N/A',
         },
         {
@@ -410,7 +410,7 @@ function AllFuelIncident({fuelIncidentData}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Site');
+                        toast.error('Error Deleting selected AllSite');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -576,7 +576,7 @@ function AllFuelIncident({fuelIncidentData}) {
             ,
             label: 'Search',
             placeholder:
-                'Site Details',
+                'AllSite Details',
             variant:
                 'outlined',
 

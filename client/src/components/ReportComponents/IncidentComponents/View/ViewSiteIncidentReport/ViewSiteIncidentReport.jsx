@@ -88,7 +88,7 @@ function ViewSiteIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Site"
+                            label="AllSite"
                             component={Link}
                             href="/dashboard/admin/reports/incident/site"
                             value="/dashboard/admin/reports/incident/site"
@@ -169,7 +169,7 @@ function ViewSiteIncidentReport() {
                             }}
                         />
                         <Tab
-                            label="Site"
+                            label="AllSite"
                             component={Link}
                             href="/dashboard/admin/reports/incident/site"
                             value="/dashboard/admin/reports/incident/site"
@@ -357,7 +357,7 @@ function RenderedData({data}) {
                 </Grid>
             </Grid>
             <br/>
-            {/*Site Info*/}
+            {/*AllSite Info*/}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Card sx={{...cardSx, border: 'none',}}>
@@ -369,7 +369,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Site Info:
+                            AllSite Info:
                         </Typography>
                         <CardContent sx={{color: 'white', margin: '5px',}}>
                             <Accordion sx={accordionSx}>
@@ -381,13 +381,13 @@ function RenderedData({data}) {
                                         fontFamily: 'Poppins',
                                         ml: '30px',
                                         fontSize: '16px',
-                                    }}>Site Details</Typography>
+                                    }}>AllSite Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <List>
                                         <ListItem>
                                             <Typography sx={typographyStyle}>
-                                                {`Site ID: ${siteInfo.siteId}`}
+                                                {`AllSite ID: ${siteInfo.siteId}`}
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
@@ -436,7 +436,7 @@ function RenderedData({data}) {
                 </Grid>
             </Grid>
             <br/>
-            {/*Site Incident Full Information*/}
+            {/*AllSite Incident Full Information*/}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -448,7 +448,7 @@ function RenderedData({data}) {
                             mt: '30px',
                             fontSize: '18px',
                         }}>
-                            Site Incident Details:
+                            AllSite Incident Details:
                         </Typography>
                         <CardContent>
                             <Accordion sx={accordionSx}>

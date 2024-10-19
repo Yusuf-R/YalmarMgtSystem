@@ -1,5 +1,5 @@
 'use client';
-import Site from "@/components/SiteComponents/Site/Site"
+import AllSite from "@/components/SiteComponents/AllSite/AllSite"
 import AdminUtils from '@/utils/AdminUtilities';
 import {useQuery} from '@tanstack/react-query'; // Ensure this import is correct
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
@@ -13,11 +13,11 @@ function AllSites() {
         staleTime: Infinity,
         refetchOnWindowFocus: false,
     });
-    
+
     if (isLoading) {
         return <LazyLoading/>
     }
-    
+
     if (isError || !data) {
         console.error('Error fetching user data');
         return <DataFetchError/>;
@@ -26,7 +26,7 @@ function AllSites() {
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <Site allSite={allSite}/>
+                <AllSite allSite={allSite}/>
             </Suspense>
         </>
     )

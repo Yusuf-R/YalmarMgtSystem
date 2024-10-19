@@ -42,14 +42,14 @@ function Step4GeneratorPM({txProps}) {
     ] = watch([
         'siteGenModes',
         'generatorPM.defaultOperation',
-        
+
         'generatorPM.gen1Type',
         'generatorPM.gen1Display',
-        
+
         'generatorPM.gen2Type',
         'generatorPM.gen2Display',
     ]);
-    
+
     useEffect(() => {
         setValue('siteGenModes', siteGenModes);
         setValue('generatorPM.defaultOperation', defaultOperation);
@@ -57,9 +57,9 @@ function Step4GeneratorPM({txProps}) {
         setValue('generatorPM.gen1Display', gen1Display);
         setValue('generatorPM.gen2Type', gen2Type);
         setValue('generatorPM.gen2Display', gen2Display);
-        
+
     }, [siteGenModes, defaultOperation, setValue, gen1Type, gen1Display, gen2Type, gen2Display]);
-    
+
     // set default values for gen2 attributes if gen modes is just only Gen1
     useEffect(() => {
         if (siteGenModes === 'GEN-1') {
@@ -71,7 +71,7 @@ function Step4GeneratorPM({txProps}) {
             setValue('generatorPM.gen2Hr', 'NOT-APPLICABLE');
         }
     }, [siteGenModes, setValue]);
-    
+
     // site gen opt
     const getGenOpt = () => {
         return genOpt.map((type) => (
@@ -81,7 +81,7 @@ function Step4GeneratorPM({txProps}) {
             </MenuItem>
         ));
     }
-    
+
     // site gen modes
     const getSiteGenModes = () => {
         return genModes.map((type) => (
@@ -111,7 +111,7 @@ function Step4GeneratorPM({txProps}) {
         setValue('generatorPM.defaultOperation', genDefaultOperationValue);
         clearErrors(event.target.value);
     }
-    
+
     // gen1 type
     const getGen1Type = () => {
         return genOpt.map((type) => (
@@ -140,10 +140,10 @@ function Step4GeneratorPM({txProps}) {
         const gen1DisplayValue = event.target.value;
         setValue('generatorPM.gen1Display', gen1DisplayValue);
     }
-    
+
     // gen1 working hours
     const gen1Hr = useWatch({control, name: 'generatorPM.gen1Hr'});
-    
+
     const getGen1Hr = () => {
         return genWorkingHr.map((type) => (
             <MenuItem key={type} value={type}
@@ -156,13 +156,13 @@ function Step4GeneratorPM({txProps}) {
         event.preventDefault();
         const selectedValue = event.target.value;
         setValue('generatorPM.gen1Hr', selectedValue);
-        
+
         if (selectedValue !== 'Enter Value') {
             clearErrors('generatorPM.gen1Hr');
             setValue('generatorPM.customGen1Hr', null);
         }
     }
-    
+
     // gen1 working status
     const getGen1WorkingStatus = () => {
         return genWorkStatus.map((type) => (
@@ -177,7 +177,7 @@ function Step4GeneratorPM({txProps}) {
         const gen1WorkingStatusValue = event.target.value;
         setValue('generatorPM.gen1WorkingStatus', gen1WorkingStatusValue);
     }
-    
+
     // gen2 type
     const getGen2Type = () => {
         return genOpt.map((type) => (
@@ -206,7 +206,7 @@ function Step4GeneratorPM({txProps}) {
         const gen2DisplayValue = event.target.value;
         setValue('generatorPM.gen2Display', gen2DisplayValue);
     }
-    
+
     // gen2 working hour
     const getGen2Hr = () => {
         return genWorkingHr.map((type) => (
@@ -219,7 +219,7 @@ function Step4GeneratorPM({txProps}) {
     const handleGen2Hr = (event) => {
         event.preventDefault();
         const selectedValue = event.target.value;
-        
+
         setValue('generatorPM.gen2Hr', selectedValue);
         if (selectedValue !== 'Enter Value') {
             setValue('generatorPM.customGen2Hr', null);
@@ -239,7 +239,7 @@ function Step4GeneratorPM({txProps}) {
         const gen2WorkingStatusValue = event.target.value;
         setValue('generatorPM.gen2WorkingStatus', gen2WorkingStatusValue);
     }
-    
+
     return (
         <>
             <br/><br/><br/>
@@ -259,7 +259,7 @@ function Step4GeneratorPM({txProps}) {
                             <Grid item xs={12}>
                                 <Typography variant="subtitle 4">Generator PM</Typography>
                             </Grid>
-                            {/*Site Gen Modes*/}
+                            {/*AllSite Gen Modes*/}
                             <Grid item xs={3}>
                                 <Controller
                                     name="siteGenModes"
@@ -275,7 +275,7 @@ function Step4GeneratorPM({txProps}) {
                                                     handleSiteGenModes(e);
                                                 }}
                                                 required
-                                                label="Site Generator Modes"
+                                                label="AllSite Generator Modes"
                                                 error={!!errors.siteGenModes}
                                                 helperText={errors.siteGenModes?.message ? (
                                                     <span style={{color: "#fc8947"}}>
@@ -318,7 +318,7 @@ function Step4GeneratorPM({txProps}) {
                                             >
                                                 {genModes !== '' && (
                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                        Select Site Gen Modes
+                                                        Select AllSite Gen Modes
                                                     </MenuItem>
                                                 )}
                                                 {getSiteGenModes()}
@@ -342,7 +342,7 @@ function Step4GeneratorPM({txProps}) {
                                                     handleDefaultOperation(e);
                                                 }}
                                                 required
-                                                label="Site Default Generator"
+                                                label="AllSite Default Generator"
                                                 error={!!(errors.generatorPM?.defaultOperation)}
                                                 helperText={errors.generatorPM?.defaultOperation ? (
                                                     <span style={{color: "#fc8947"}}>
@@ -439,7 +439,7 @@ function Step4GeneratorPM({txProps}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -506,7 +506,7 @@ function Step4GeneratorPM({txProps}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -573,7 +573,7 @@ function Step4GeneratorPM({txProps}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -716,7 +716,7 @@ function Step4GeneratorPM({txProps}) {
                                                                 color: 'white',
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -818,7 +818,7 @@ function Step4GeneratorPM({txProps}) {
                                                                         color: 'white',
                                                                         maxHeight: 450,
                                                                         overflow: 'auto',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -882,7 +882,7 @@ function Step4GeneratorPM({txProps}) {
                                                                         color: 'white',
                                                                         maxHeight: 450,
                                                                         overflow: 'auto',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -946,7 +946,7 @@ function Step4GeneratorPM({txProps}) {
                                                                         color: 'white',
                                                                         maxHeight: 450,
                                                                         overflow: 'auto',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -1087,7 +1087,7 @@ function Step4GeneratorPM({txProps}) {
                                                                         color: 'white',
                                                                         maxHeight: 450,
                                                                         overflow: 'auto',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -1146,7 +1146,7 @@ function Step4GeneratorPM({txProps}) {
                             )}
                         </Grid>
                     </Paper>
-                
+
                 </Grid>
             </Box>
         </>

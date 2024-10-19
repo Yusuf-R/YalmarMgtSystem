@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-// Reusable Schema for the Service Site Information
+// Reusable Schema for the Service AllSite Information
 const serviceSiteInfoSchema = yup.object().shape({
-    site_id: yup.string().required('Site ID is required'),
-    siteId: yup.string().required('Site ID is required'),
+    site_id: yup.string().required('AllSite ID is required'),
+    siteId: yup.string().required('AllSite ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
     cluster: yup
         .string()
@@ -24,13 +24,13 @@ export const serviceIncidentSchema = yup.object().shape({
             .string()
             .oneOf(['Maintenance', 'Repair', 'Overhauling', 'Replacement', 'Others'], 'Invalid service category')
             .required('Service category is required'),
-        
+
         subCategory: yup.mixed().test(
             'match-category',
             'Invalid subcategory details provided',
             function (value) {
                 const {category} = this.parent;
-                
+
                 switch (category) {
                     case 'Maintenance':
                         return yup.object({
@@ -41,7 +41,7 @@ export const serviceIncidentSchema = yup.object().shape({
                                     .required('Maintenance action is required'),
                             }),
                         }).isValidSync(value);
-                    
+
                     case 'Repair':
                         return yup.object({
                             repair: yup.object({
@@ -51,7 +51,7 @@ export const serviceIncidentSchema = yup.object().shape({
                                     .required('Repair action is required'),
                             }),
                         }).isValidSync(value);
-                    
+
                     case 'Overhauling':
                         return yup.object({
                             overhauling: yup.object({
@@ -61,7 +61,7 @@ export const serviceIncidentSchema = yup.object().shape({
                                     .required('Overhauling action is required'),
                             }),
                         }).isValidSync(value);
-                    
+
                     case 'Replacement':
                         return yup.object({
                             replacement: yup.object({
@@ -71,14 +71,14 @@ export const serviceIncidentSchema = yup.object().shape({
                                     .required('Replacement action is required'),
                             }),
                         }).isValidSync(value);
-                    
+
                     case 'Others':
                         return yup.object({
                             others: yup
                                 .string()
                                 .required('Other service category details are required'),
                         }).isValidSync(value);
-                    
+
                     default:
                         return true;
                 }

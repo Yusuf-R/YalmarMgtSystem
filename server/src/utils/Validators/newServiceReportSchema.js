@@ -25,9 +25,9 @@ export const newServiceReportSchemaValidator = Joi.object({
         'string.empty': 'Role is required'
     }),
 
-    // Site info
+    // AllSite info
     siteId: Joi.string().required().messages({
-        'string.empty': 'Site ID is required'
+        'string.empty': 'AllSite ID is required'
     }),
     state: Joi.string().default('KADUNA').required().messages({
         'string.empty': 'State is required'
@@ -39,7 +39,7 @@ export const newServiceReportSchemaValidator = Joi.object({
     location: Joi.string().allow(''),
     siteType: Joi.string().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC').default('HUB').required().messages({
         'any.only': 'Invalid site type',
-        'string.empty': 'Site type is required'
+        'string.empty': 'AllSite type is required'
     }),
     shelterType: Joi.string().valid('Containerized', 'Open').required().messages({
         'any.only': 'Invalid shelter type',
@@ -62,7 +62,7 @@ export const newServiceReportSchemaValidator = Joi.object({
     // siteGenModes
     siteGenModes: Joi.string().valid('GEN-1', 'GEN-1 and GEN-2').required().messages({
         'any.only': 'Invalid site gen modes',
-        'string.empty': 'Site gen modes is required'
+        'string.empty': 'AllSite gen modes is required'
     }),
 
     generatorPM: Joi.object({
@@ -161,7 +161,7 @@ export const newServiceReportSchemaValidator = Joi.object({
     shelterPM: Joi.object({
         siteCleaningStatus: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid cleaning status',
-            'string.empty': 'Site cleaning status is required'
+            'string.empty': 'AllSite cleaning status is required'
         }),
         shelterCleaningStatus: Joi.string().valid('OK', 'NOT-OK', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid cleaning status',
@@ -212,7 +212,7 @@ export const newServiceReportSchemaValidator = Joi.object({
         }),
         siteAccess: Joi.string().valid('LOCKED', 'ACCESS-GRANTED', 'UN-AVAILABLE', 'NOT-APPLICABLE').required().messages({
             'any.only': 'Invalid site access status',
-            'string.empty': 'Site access status is required'
+            'string.empty': 'AllSite access status is required'
         }),
     }),
 
@@ -283,7 +283,7 @@ export const newServiceReportSchemaValidator = Joi.object({
     }),
 
     site_id: Joi.string().required().messages({
-        'string.empty': 'Site ID is required'
+        'string.empty': 'AllSite ID is required'
     }),
 
     staff_id: Joi.string().required().messages({
@@ -310,8 +310,8 @@ export const getServiceRecordSchemaValidator = Joi.object({
         'any.required': 'Cluster is required'
     }),
     siteId: Joi.string().required().messages({
-        'string.empty': 'Site ID is required',
-        'any.required': 'Site ID is required'
+        'string.empty': 'AllSite ID is required',
+        'any.required': 'AllSite ID is required'
     }),
     month: Joi.string().valid(...validMonths.map(month => month.toLowerCase())).insensitive().required().messages({
         'any.only': 'Month must be a valid month (January to December)',
@@ -329,7 +329,7 @@ export const getServiceRecordSchemaValidator = Joi.object({
     }),
     siteType: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC').required().messages({
         'any.only': 'Invalid site type',
-        'string.empty': 'Site type is required'
+        'string.empty': 'AllSite type is required'
     }),
     location: Joi.string().optional().allow('').allow(null),
 });

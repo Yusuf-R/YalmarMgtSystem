@@ -875,7 +875,7 @@ function FuellingReport({allFuelReport}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em'
                                             }}>
-                                    You are about to permanently delete the selected Site. Please enter
+                                    You are about to permanently delete the selected AllSite. Please enter
                                     your
                                     Email address to further confirm your actions.
                                 </Typography>
@@ -913,11 +913,11 @@ function FuellingReport({allFuelReport}) {
                             </Stack>
                         </DialogActions>
                     </Dialog>
-                    {/*Modal for Site data view*/}
+                    {/*Modal for AllSite data view*/}
                     <Modal open={modalViewOpen} onClose={handleModalViewClose} noValidate overflow>
                         <Paper elevation={5} sx={modalStyle}>
                             <Stack direction="column" gap={2}>
-                                {/*Site-Information*/}
+                                {/*AllSite-Information*/}
                                 <Paper elevation={5} sx={paperInnerStyle}>
                                     <Grid container spacing={2} sx={gridStyle}>
                                         <Grid item xs={12} sx={gridItemStyle}>
@@ -925,13 +925,13 @@ function FuellingReport({allFuelReport}) {
                                                 fontFamily: 'Poppins',
                                                 fontWeight: 'bold',
                                                 color: '#FFF',
-                                            }}>Site-Details</Typography>
+                                            }}>AllSite-Details</Typography>
                                         </Grid>
                                         <Grid item xs={3} sx={gridItemStyle}>
                                             <TextField
                                                 id="input-with-icon-textfield"
                                                 defaultValue={siteData.siteId}
-                                                label="Site ID"
+                                                label="AllSite ID"
                                                 InputLabelProps={{
                                                     sx: {
                                                         color: "#46F0F9",
@@ -990,7 +990,7 @@ function FuellingReport({allFuelReport}) {
                                             <TextField
                                                 id="input-with-icon-textfield"
                                                 defaultValue={siteData.type}
-                                                label="Site Type"
+                                                label="AllSite Type"
                                                 InputLabelProps={{
                                                     sx: {
                                                         color: "#46F0F9",
@@ -1020,7 +1020,7 @@ function FuellingReport({allFuelReport}) {
                                             <TextField
                                                 id="input-with-icon-textfield"
                                                 defaultValue={siteData.location || 'N/A'}
-                                                label="Site Location"
+                                                label="AllSite Location"
                                                 InputLabelProps={{
                                                     sx: {
                                                         color: "#46F0F9",
@@ -1187,7 +1187,7 @@ function FuellingReport({allFuelReport}) {
                                             <TextField
                                                 id="input-with-icon-textfield"
                                                 defaultValue={siteData.cpd}
-                                                label="Site CPD"
+                                                label="AllSite CPD"
                                                 InputLabelProps={{
                                                     sx: {
                                                         color: "#46F0F9",
@@ -1296,7 +1296,7 @@ function FuellingReport({allFuelReport}) {
                             </Stack>
                         </Paper>
                     </Modal>
-                    {/*Dialog for Editing Site Data*/}
+                    {/*Dialog for Editing AllSite Data*/}
                     <Dialog open={dialogEditOpen} onClose={closeDialogEdit} fullWidth maxWidth='lg'>
                         <Paper sx={{
                             alignCenter: 'center',
@@ -1328,7 +1328,7 @@ function FuellingReport({allFuelReport}) {
                                 noValidate
                             >
                                 {/* Main Body */}
-                                {/*Site Info*/}
+                                {/*AllSite Info*/}
                                 <Typography variant='h6'
                                             sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
                                     SiteID: {siteData.siteId}
@@ -1489,10 +1489,10 @@ function FuellingReport({allFuelReport}) {
                                                 />
                                             </Grid>
                                             {/*CPD*/}
-                                            {/*Current Site CPD*/}
+                                            {/*Current AllSite CPD*/}
                                             <Grid item xs={3}>
                                                 <TextField
-                                                    label="Current Site CPD"
+                                                    label="Current AllSite CPD"
                                                     value={siteData.cpd}
                                                     InputProps={{
                                                         readOnly: true,
@@ -1807,7 +1807,7 @@ function FuellingReport({allFuelReport}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Site');
+                        toast.error('Error Deleting selected AllSite');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -1857,7 +1857,7 @@ function FuellingReport({allFuelReport}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
                                             }}>
-                                    You are about to permanently delete the selected Site, Please enter your
+                                    You are about to permanently delete the selected AllSite, Please enter your
                                     email address to further confirm your actions.
                                 </Typography>
                             </DialogContentText>
@@ -1961,7 +1961,7 @@ function FuellingReport({allFuelReport}) {
         muiSearchTextFieldProps: {
             InputLabelProps: {shrink: true},
             label: 'Search',
-            placeholder: 'Site Details',
+            placeholder: 'AllSite Details',
             variant: 'outlined',
 
         },

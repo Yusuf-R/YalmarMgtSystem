@@ -226,7 +226,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         }
     };
 
-    // Site Info Section
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
@@ -547,7 +547,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
 
     // shelter PM
     // cleaning status
-    // Site
+    // AllSite
     const getSiteCleaningStatus = () => {
         return opt1.map((type) => (
             <MenuItem key={type} value={type}
@@ -1059,7 +1059,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                         </Paper>
                     </Grid>
                     <br/><br/>
-                    {/*Site Info*/}
+                    {/*AllSite Info*/}
                     <Grid container spacing={4}>
                         <Paper elevation={5} sx={{
                             alignContent: 'start',
@@ -1074,9 +1074,9 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                             {/* First Row (1 fields) prefix */}
                             <Grid container spacing={4}>
                                 <Grid item xs={12}>
-                                    <Typography variant="subtitle 4">Site Info</Typography>
+                                    <Typography variant="subtitle 4">AllSite Info</Typography>
                                 </Grid>
-                                {/*Site State*/}
+                                {/*AllSite State*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="state"
@@ -1145,7 +1145,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                         )}
                                     />
                                 </Grid>
-                                {/*Site cluster*/}
+                                {/*AllSite cluster*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="cluster"
@@ -1213,7 +1213,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                         )}
                                     />
                                 </Grid>
-                                {/*Site ID*/}
+                                {/*AllSite ID*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="siteId"
@@ -1229,7 +1229,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                         field.onChange(e);
                                                         handleSiteId(e);
                                                     }}
-                                                    label="Site ID"
+                                                    label="AllSite ID"
                                                     required
                                                     error={!!errors.siteId}
                                                     helperText={errors.siteId ? (
@@ -1281,7 +1281,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                         )}
                                     />
                                 </Grid>
-                                {/*Site Type if available*/}
+                                {/*AllSite Type if available*/}
                                 {siteID && (
                                     <Grid item xs={3}>
                                         <Controller
@@ -1304,7 +1304,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                     sx={{
                                                         color: "#46F0F9",
                                                     }}
-                                                    label="Site Type"
+                                                    label="AllSite Type"
                                                     variant="outlined"
                                                     error={!!errors.siteType}
                                                     helperText={errors.siteType ? errors.siteType.message : ''}
@@ -1376,7 +1376,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle 4">Service Info</Typography>
                                 </Grid>
-                                {/*Site State*/}
+                                {/*AllSite State*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="shelterType"
@@ -1578,7 +1578,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle 4">Generator PM</Typography>
                                 </Grid>
-                                {/*Site Gen Modes*/}
+                                {/*AllSite Gen Modes*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="siteGenModes"
@@ -1594,7 +1594,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                         handleSiteGenModes(e);
                                                     }}
                                                     required
-                                                    label="Site Generator Modes"
+                                                    label="AllSite Generator Modes"
                                                     error={!!errors.siteGenModes}
                                                     helperText={errors.siteGenModes?.message ? (
                                                         <span style={{color: "#fc8947"}}>
@@ -1637,7 +1637,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                 >
                                                     {genModes !== '' && (
                                                         <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                            Select Site Gen Modes
+                                                            Select AllSite Gen Modes
                                                         </MenuItem>
                                                     )}
                                                     {getSiteGenModes()}
@@ -1662,7 +1662,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                         handleDefaultOperation(e);
                                                     }}
                                                     required
-                                                    label="Site Default Generator"
+                                                    label="AllSite Default Generator"
                                                     error={!!(errors.generatorPM?.defaultOperation)}
                                                     helperText={errors.generatorPM?.defaultOperation ? (
                                                         <span style={{color: "#fc8947"}}>
@@ -2492,7 +2492,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                 <Grid item xs={12}>
                                     <Typography variant="subtitle 4">AirCondition PM</Typography>
                                 </Grid>
-                                {/*Site State*/}
+                                {/*AllSite State*/}
                                 <Grid item xs={3}>
                                     <Controller
                                         name="airconPM.acInstalled"
@@ -2783,9 +2783,9 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                         }}>
                             <Grid container spacing={4}>
                                 <Grid item xs={12}>
-                                    <Typography variant="subtitle 4">Shelter and Site PM</Typography>
+                                    <Typography variant="subtitle 4">Shelter and AllSite PM</Typography>
                                 </Grid>
-                                {/*Site cleaning*/}
+                                {/*AllSite cleaning*/}
                                 <Grid item xs={4}>
                                     <Controller
                                         name="shelterPM.siteCleaningStatus"
@@ -2801,7 +2801,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                         handleSiteCleaningStatus(e);
                                                     }}
                                                     required
-                                                    label="Site Cleaning Status"
+                                                    label="AllSite Cleaning Status"
                                                     error={!!errors.shelterPM?.siteCleaningStatus}
                                                     helperText={errors.shelterPM?.siteCleaningStatus ? (
                                                         <span style={{color: "#fc8947"}}>
@@ -4036,7 +4036,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
                                                         handleSiteAccess(e);
                                                     }}
                                                     required
-                                                    label="Site Access"
+                                                    label="AllSite Access"
                                                     error={!!errors.securityPM?.siteAccess}
                                                     helperText={errors.securityPM?.siteAccess ? (
                                                         <span style={{color: "#fc8947"}}>

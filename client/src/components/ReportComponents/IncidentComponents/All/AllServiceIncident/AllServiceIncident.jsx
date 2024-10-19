@@ -236,7 +236,7 @@ function AllServiceIncident({serviceIncidentData}) {
     const columns = useMemo(() => [
         {
             accessorKey: 'serviceSiteInfo.siteId',
-            header: 'Site ID',
+            header: 'AllSite ID',
             Cell: ({row}) => row.original.serviceSiteInfo?.siteId || 'N/A',
         },
         {
@@ -413,7 +413,7 @@ function AllServiceIncident({serviceIncidentData}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Site');
+                        toast.error('Error Deleting selected AllSite');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -579,7 +579,7 @@ function AllServiceIncident({serviceIncidentData}) {
             ,
             label: 'Search',
             placeholder:
-                'Site Details',
+                'AllSite Details',
             variant:
                 'outlined',
 

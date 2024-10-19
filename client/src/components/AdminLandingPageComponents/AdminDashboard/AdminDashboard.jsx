@@ -137,7 +137,7 @@ function AdminDashboard({
                     </Card>
                 </Grid>
 
-                {/* Site Count */}
+                {/* AllSite Count */}
                 <Grid item xs={12} sm={6} md={3}>
                     <Card sx={{
                         backgroundColor: '#1f3a47',
@@ -356,7 +356,7 @@ function AdminDashboard({
                     </Card>
                 </Stack>
                 <br/>
-                {/* Site List*/}
+                {/* AllSite List*/}
                 <Stack direction="column" spacing={2}>
                     <Card sx={{
                         padding: '10px',

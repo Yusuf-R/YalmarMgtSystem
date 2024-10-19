@@ -11,17 +11,17 @@ import {useEffect} from "react";
 
 function Step2SiteInfo({allSite, txProps}) {
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
-    
+
     // Get the current values from the form context
     const stateMain = watch('state');
     const cluster = watch('cluster');
     const siteID = watch('siteId');
-    
-    // Site Info Section
+
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
-    
+
     useEffect(() => {
         if (siteID) {
             const selectedSite = allSite.find(site => site.siteId === siteID);
@@ -35,7 +35,7 @@ function Step2SiteInfo({allSite, txProps}) {
             }
         }
     }, [siteID, allSite, setValue, clearErrors]);
-    
+
     const handleStateChange = (event) => {
         const newState = event.target.value;
         setValue('state', newState);
@@ -44,7 +44,7 @@ function Step2SiteInfo({allSite, txProps}) {
         setValue('location', 'N/A');
         setValue('siteType', 'N/A');
     };
-    
+
     const handleClusterChange = (event) => {
         const newCluster = event.target.value;
         setValue('cluster', newCluster);
@@ -52,21 +52,21 @@ function Step2SiteInfo({allSite, txProps}) {
         setValue('location', 'N/A');
         setValue('siteType', 'N/A');
     };
-    
+
     const handleSiteIdChange = (event) => {
         const newSiteId = event.target.value;
         const site_id = allSite.filter(site => site.siteId === newSiteId).map(site => site._id)[0];
         console.log(site_id);
         setValue('site_id', site_id);
         setValue('siteId', newSiteId);
-        
+
     };
-    
+
     return (
         <>
             <br/><br/><br/>
             <Box>
-                {/*Site Info*/}
+                {/*AllSite Info*/}
                 <Grid container spacing={4}>
                     <Paper elevation={5} sx={{
                         alignContent: 'start',
@@ -81,9 +81,9 @@ function Step2SiteInfo({allSite, txProps}) {
                         {/* First Row (1 fields) prefix */}
                         <Grid container spacing={4}>
                             <Grid item xs={12}>
-                                <Typography variant="subtitle 4">Site Info</Typography>
+                                <Typography variant="subtitle 4">AllSite Info</Typography>
                             </Grid>
-                            {/* Site State */}
+                            {/* AllSite State */}
                             <Grid item xs={3}>
                                 <Controller
                                     name="state"
@@ -140,7 +140,7 @@ function Step2SiteInfo({allSite, txProps}) {
                                     )}
                                 />
                             </Grid>
-                            {/* Site Cluster */}
+                            {/* AllSite Cluster */}
                             <Grid item xs={3}>
                                 <Controller
                                     name="cluster"
@@ -196,7 +196,7 @@ function Step2SiteInfo({allSite, txProps}) {
                                     )}
                                 />
                             </Grid>
-                            {/* Site ID */}
+                            {/* AllSite ID */}
                             <Grid item xs={3}>
                                 <Controller
                                     name="siteId"
@@ -213,7 +213,7 @@ function Step2SiteInfo({allSite, txProps}) {
                                                     handleSiteIdChange(e);
                                                 }}
                                                 required
-                                                label="Site ID"
+                                                label="AllSite ID"
                                                 error={!!errors.siteId}
                                                 helperText={errors.siteId ? <span
                                                     style={{color: "#fc8947"}}>{errors.siteId.message}</span> : ''}
@@ -238,7 +238,7 @@ function Step2SiteInfo({allSite, txProps}) {
                                                 }}
                                                 sx={{'& .MuiSelect-icon': {color: '#fff'}, textAlign: 'left'}}
                                             >
-                                                <MenuItem value='' sx={{color: "#4BF807"}}>Select Site ID</MenuItem>
+                                                <MenuItem value='' sx={{color: "#4BF807"}}>Select AllSite ID</MenuItem>
                                                 {siteIds.map(siteIdData => (
                                                     <MenuItem key={siteIdData} value={siteIdData} sx={{
                                                         color: 'white',
@@ -252,10 +252,10 @@ function Step2SiteInfo({allSite, txProps}) {
                                     )}
                                 />
                             </Grid>
-                            {/*Site Type if available*/}
+                            {/*AllSite Type if available*/}
                             {watch('siteId') && (
                                 <>
-                                    {/* Site Type */}
+                                    {/* AllSite Type */}
                                     <Grid item xs={3}>
                                         <Controller
                                             name="siteType"
@@ -271,7 +271,7 @@ function Step2SiteInfo({allSite, txProps}) {
                                                         }
                                                     }}
                                                     sx={{color: "#46F0F9"}}
-                                                    label="Site Type"
+                                                    label="AllSite Type"
                                                     variant="outlined"
                                                     error={!!errors.siteType}
                                                     helperText={errors.siteType ? errors.siteType.message : ''}

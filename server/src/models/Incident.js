@@ -76,7 +76,7 @@ const staffIncidentSchema = new mongoose.Schema({
 });
 const StaffIncident = Incident.discriminator('StaffIncident', staffIncidentSchema);
 
-// Site Incident Specific Schema
+// AllSite Incident Specific Schema
 const siteInfoSchema = new mongoose.Schema({
     site_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Site', required: true},
     siteId: {type: String, required: true},
