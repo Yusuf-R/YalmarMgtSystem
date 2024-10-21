@@ -8,6 +8,7 @@ import FormControl from "@mui/material/FormControl";
 import {useFormContext, Controller, FormProvider, useForm, useWatch} from 'react-hook-form';
 import TextField from "@mui/material/TextField";
 import React, {useEffect, useState} from 'react';
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const opt1 = ['OK', 'NOT-OK', 'NOT-APPLICABLE'];
 const opt2 = ['YES', 'NO', 'NOT-APPLICABLE'];
@@ -15,7 +16,16 @@ const batCount = [0, 4, 8, 12, 16, 32, 48];
 
 function Step7DCSystemPM({txProps}) {
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
-    
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     const [
         rectifierStatus,
         backUpBatteries,
@@ -40,8 +50,6 @@ function Step7DCSystemPM({txProps}) {
     const handleBackUpBatteries = (event) => {
         event.preventDefault();
         const backUpBatteriesValue = event.target.value;
-        console.log({backUpBatteriesValue});
-        // handle default when back-up batteries is NO or NOT-APPLICABLE
         setValue('dcSystem.backUpBatteries', backUpBatteriesValue);
         clearErrors('dcSystem.backUpBatteries');
     }
@@ -75,7 +83,7 @@ function Step7DCSystemPM({txProps}) {
         setValue('dcSystem.batteryStatus', batteryStatusValue);
         clearErrors('dcSystem.batteryStatus');
     }
-    
+
     // rectifier
     const getRectifierStatus = () => {
         return opt1.map((type) => (
@@ -91,246 +99,101 @@ function Step7DCSystemPM({txProps}) {
         setValue('dcSystem.rectifierStatus', rectifierStatusValue);
         clearErrors('dcSystem.rectifierStatus');
     }
-    
+
     useEffect(() => {
         if (backUpBatteries === 'NO' || backUpBatteries === 'NOT-APPLICABLE') {
             setValue('dcSystem.batteryCount', Number(0));
             setValue('dcSystem.batteryStatus', 'NOT-APPLICABLE');
         }
     }, [backUpBatteries]);
-    
+
     return (
         <>
-            <br/><br/><br/>
             <Box>
-                {/*Dc System OM*/}
                 <Grid container spacing={4}>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '30px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                        margin: '25px'
-                    }}>
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                <Typography variant="subtitle 4">DC System PM</Typography>
-                            </Grid>
-                            <Grid item xs={2.4}>
-                                <Controller
-                                    name="dcSystem.backUpBatteries"
-                                    control={control}
-                                    render={({field}) => (
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                {...field}
-                                                select
-                                                value={field.value || ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleBackUpBatteries(e);
-                                                }}
-                                                required
-                                                label="Batteries Availability"
-                                                error={!!errors.dcSystem?.backUpBatteries}
-                                                helperText={errors.dcSystem?.backUpBatteries ? (
-                                                    <span style={{color: "#fc8947"}}>
+                    <Grid item xs={12}>
+                        <Typography variant="h6"
+                                    sx={{
+                                        fontFamily: 'Poppins',
+                                        fontWeight: 'bold',
+                                        color: '#FFF',
+                                        fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
+                                    }}>
+                            DC System PM
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                        <Controller
+                            name="dcSystem.backUpBatteries"
+                            control={control}
+                            render={({field}) => (
+                                <FormControl fullWidth>
+                                    <TextField
+                                        {...field}
+                                        select
+                                        value={field.value || ''}
+                                        onChange={(e) => {
+                                            field.onChange(e);
+                                            handleBackUpBatteries(e);
+                                        }}
+                                        required
+                                        label="Batteries Availability"
+                                        error={!!errors.dcSystem?.backUpBatteries}
+                                        helperText={errors.dcSystem?.backUpBatteries ? (
+                                            <span style={{color: "#fc8947"}}>
                                                                                 {errors.dcSystem?.backUpBatteries.message}
                                                                                 </span>
-                                                ) : ''}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
+                                        ) : ''}
+                                        InputProps={{
+                                            sx: txProps
+                                        }}
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: "#46F0F9",
+                                                "&.Mui-focused": {
+                                                    color: "white"
+                                                },
+                                            }
+                                        }}
+                                        SelectProps={{
+                                            MenuProps: {
+                                                PaperProps: {
                                                     sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white"
-                                                        },
-                                                    }
-                                                }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                                fontSize: '40px',
-                                                                
-                                                            },
-                                                        },
+                                                        backgroundColor: '#134357',
+                                                        color: 'white',
+                                                        maxHeight: 450,
+                                                        overflow: 'auto',
+                                                        fontSize: '40px',
+
                                                     },
-                                                }}
-                                                sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                    textAlign: 'left',
-                                                }}>
-                                                {backUpBatteries !== '' && (
-                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                        Batteries Availability
-                                                    </MenuItem>
-                                                )}
-                                                {getBackUpBatteries()}
-                                            </TextField>
-                                        </FormControl>
-                                    )}
-                                />
-                            </Grid>
-                            {backUpBatteries === 'YES' && (
-                                <>
-                                    <Grid item xs={2.4}>
-                                        <Controller
-                                            name="dcSystem.batteryCount"
-                                            control={control}
-                                            render={({field}) => (
-                                                <FormControl fullWidth>
-                                                    <TextField
-                                                        {...field}
-                                                        select
-                                                        value={field.value || ''}
-                                                        onChange={(e) => {
-                                                            field.onChange(e);
-                                                            handleBatteryCount(e);
-                                                        }}
-                                                        required
-                                                        label="Battery Count"
-                                                        error={!!errors.dcSystem?.batteryCount}
-                                                        helperText={errors.dcSystem?.batteryCount ? (
-                                                            <span style={{color: "#fc8947"}}>
-                                                                                {errors.dcSystem?.batteryCount.message}
-                                                                                </span>
-                                                        ) : ''}
-                                                        InputProps={{
-                                                            sx: txProps
-                                                        }}
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        SelectProps={{
-                                                            MenuProps: {
-                                                                PaperProps: {
-                                                                    sx: {
-                                                                        backgroundColor: '#134357',
-                                                                        color: 'white',
-                                                                        maxHeight: 450,
-                                                                        overflow: 'auto',
-                                                                        fontSize: '40px',
-                                                                        
-                                                                    },
-                                                                },
-                                                            },
-                                                        }}
-                                                        sx={{
-                                                            '& .MuiSelect-icon': {
-                                                                color: '#fff',
-                                                            },
-                                                            '& .MuiSelect-icon:hover': {
-                                                                color: '#fff',
-                                                            },
-                                                            textAlign: 'left',
-                                                        }}>
-                                                        {count !== '' && (
-                                                            <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                                Battery Count
-                                                            </MenuItem>
-                                                        )}
-                                                        {getBatteryCount()}
-                                                    </TextField>
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </Grid>
-                                </>
+                                                },
+                                            },
+                                        }}
+                                        sx={{
+                                            '& .MuiSelect-icon': {
+                                                color: '#fff',
+                                            },
+                                            '& .MuiSelect-icon:hover': {
+                                                color: '#fff',
+                                            },
+                                            textAlign: 'left',
+                                        }}>
+                                        {backUpBatteries !== '' && (
+                                            <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                Batteries Availability
+                                            </MenuItem>
+                                        )}
+                                        {getBackUpBatteries()}
+                                    </TextField>
+                                </FormControl>
                             )}
-                            {backUpBatteries === 'YES' && (
-                                <>
-                                    <Grid item xs={2.4}>
-                                        <Controller
-                                            name="dcSystem.batteryStatus"
-                                            control={control}
-                                            render={({field}) => (
-                                                <FormControl fullWidth>
-                                                    <TextField
-                                                        {...field}
-                                                        select
-                                                        value={field.value || ''}
-                                                        onChange={(e) => {
-                                                            field.onChange(e);
-                                                            handleBatteryStatus(e);
-                                                        }}
-                                                        required
-                                                        label="Battery Status"
-                                                        error={!!errors.dcSystem?.batteryStatus}
-                                                        helperText={errors.dcSystem?.batteryStatus ? (
-                                                            <span style={{color: "#fc8947"}}>
-                                                                                {errors.dcSystem?.batteryStatus.message}
-                                                                                </span>
-                                                        ) : ''}
-                                                        InputProps={{
-                                                            sx: txProps
-                                                        }}
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                "&.Mui-focused": {
-                                                                    color: "white"
-                                                                },
-                                                            }
-                                                        }}
-                                                        SelectProps={{
-                                                            MenuProps: {
-                                                                PaperProps: {
-                                                                    sx: {
-                                                                        backgroundColor: '#134357',
-                                                                        color: 'white',
-                                                                        maxHeight: 450,
-                                                                        overflow: 'auto',
-                                                                        fontSize: '40px',
-                                                                        
-                                                                    },
-                                                                },
-                                                            },
-                                                        }}
-                                                        sx={{
-                                                            '& .MuiSelect-icon': {
-                                                                color: '#fff',
-                                                            },
-                                                            '& .MuiSelect-icon:hover': {
-                                                                color: '#fff',
-                                                            },
-                                                            textAlign: 'left',
-                                                        }}>
-                                                        {status !== '' && (
-                                                            <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                                Battery Status
-                                                            </MenuItem>
-                                                        )}
-                                                        {getBatteryStatus()}
-                                                    </TextField>
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </Grid>
-                                </>
-                            )}
-                            <Grid item xs={2.4}>
+                        />
+                    </Grid>
+                    {backUpBatteries === 'YES' && (
+                        <>
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                                 <Controller
-                                    name="dcSystem.rectifierStatus"
+                                    name="dcSystem.batteryCount"
                                     control={control}
                                     render={({field}) => (
                                         <FormControl fullWidth>
@@ -340,14 +203,14 @@ function Step7DCSystemPM({txProps}) {
                                                 value={field.value || ''}
                                                 onChange={(e) => {
                                                     field.onChange(e);
-                                                    handleRectifierStatus(e);
+                                                    handleBatteryCount(e);
                                                 }}
                                                 required
-                                                label="Rectifier Status"
-                                                error={!!errors.dcSystem?.rectifierStatus}
-                                                helperText={errors.dcSystem?.rectifierStatus ? (
+                                                label="Battery Count"
+                                                error={!!errors.dcSystem?.batteryCount}
+                                                helperText={errors.dcSystem?.batteryCount ? (
                                                     <span style={{color: "#fc8947"}}>
-                                                                                {errors.dcSystem?.rectifierStatus.message}
+                                                                                {errors.dcSystem?.batteryCount.message}
                                                                                 </span>
                                                 ) : ''}
                                                 InputProps={{
@@ -370,7 +233,7 @@ function Step7DCSystemPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -384,19 +247,157 @@ function Step7DCSystemPM({txProps}) {
                                                     },
                                                     textAlign: 'left',
                                                 }}>
-                                                {rectifierStatus !== '' && (
+                                                {count !== '' && (
                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                        Rectifier Status
+                                                        Battery Count
                                                     </MenuItem>
                                                 )}
-                                                {getRectifierStatus()}
+                                                {getBatteryCount()}
                                             </TextField>
                                         </FormControl>
                                     )}
                                 />
                             </Grid>
-                        </Grid>
-                    </Paper>
+                        </>
+                    )}
+                    {backUpBatteries === 'YES' && (
+                        <>
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <Controller
+                                    name="dcSystem.batteryStatus"
+                                    control={control}
+                                    render={({field}) => (
+                                        <FormControl fullWidth>
+                                            <TextField
+                                                {...field}
+                                                select
+                                                value={field.value || ''}
+                                                onChange={(e) => {
+                                                    field.onChange(e);
+                                                    handleBatteryStatus(e);
+                                                }}
+                                                required
+                                                label="Battery Status"
+                                                error={!!errors.dcSystem?.batteryStatus}
+                                                helperText={errors.dcSystem?.batteryStatus ? (
+                                                    <span style={{color: "#fc8947"}}>
+                                                                                {errors.dcSystem?.batteryStatus.message}
+                                                                                </span>
+                                                ) : ''}
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
+                                                    }
+                                                }}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        PaperProps: {
+                                                            sx: {
+                                                                backgroundColor: '#134357',
+                                                                color: 'white',
+                                                                maxHeight: 450,
+                                                                overflow: 'auto',
+                                                                fontSize: '40px',
+
+                                                            },
+                                                        },
+                                                    },
+                                                }}
+                                                sx={{
+                                                    '& .MuiSelect-icon': {
+                                                        color: '#fff',
+                                                    },
+                                                    '& .MuiSelect-icon:hover': {
+                                                        color: '#fff',
+                                                    },
+                                                    textAlign: 'left',
+                                                }}>
+                                                {status !== '' && (
+                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                        Battery Status
+                                                    </MenuItem>
+                                                )}
+                                                {getBatteryStatus()}
+                                            </TextField>
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                        </>
+                    )}
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                        <Controller
+                            name="dcSystem.rectifierStatus"
+                            control={control}
+                            render={({field}) => (
+                                <FormControl fullWidth>
+                                    <TextField
+                                        {...field}
+                                        select
+                                        value={field.value || ''}
+                                        onChange={(e) => {
+                                            field.onChange(e);
+                                            handleRectifierStatus(e);
+                                        }}
+                                        required
+                                        label="Rectifier Status"
+                                        error={!!errors.dcSystem?.rectifierStatus}
+                                        helperText={errors.dcSystem?.rectifierStatus ? (
+                                            <span style={{color: "#fc8947"}}>
+                                                                                {errors.dcSystem?.rectifierStatus.message}
+                                                                                </span>
+                                        ) : ''}
+                                        InputProps={{
+                                            sx: txProps
+                                        }}
+                                        InputLabelProps={{
+                                            sx: {
+                                                color: "#46F0F9",
+                                                "&.Mui-focused": {
+                                                    color: "white"
+                                                },
+                                            }
+                                        }}
+                                        SelectProps={{
+                                            MenuProps: {
+                                                PaperProps: {
+                                                    sx: {
+                                                        backgroundColor: '#134357',
+                                                        color: 'white',
+                                                        maxHeight: 450,
+                                                        overflow: 'auto',
+                                                        fontSize: '40px',
+
+                                                    },
+                                                },
+                                            },
+                                        }}
+                                        sx={{
+                                            '& .MuiSelect-icon': {
+                                                color: '#fff',
+                                            },
+                                            '& .MuiSelect-icon:hover': {
+                                                color: '#fff',
+                                            },
+                                            textAlign: 'left',
+                                        }}>
+                                        {rectifierStatus !== '' && (
+                                            <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                Rectifier Status
+                                            </MenuItem>
+                                        )}
+                                        {getRectifierStatus()}
+                                    </TextField>
+                                </FormControl>
+                            )}
+                        />
+                    </Grid>
                 </Grid>
             </Box>
         </>

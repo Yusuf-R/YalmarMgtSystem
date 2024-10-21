@@ -11,12 +11,23 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Stack from "@mui/material/Stack";
 import Link from "next/link";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function NewServicingReport({allStaff, allSite}) {
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/search');
     const router = useRouter();
     const pathname = usePathname();
-    
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px)');
+
+    const isSmallScreen = xSmall || small || medium || large;
+
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('new')) {
@@ -31,22 +42,10 @@ function NewServicingReport({allStaff, allSite}) {
     }, [pathname]);
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                        New Servicing Report
-                    </Typography>
-                </Paper>
-                <br/>
+            <Box sx={{
+                padding: isSmallScreen ? '10px' : '20px',
+                marginTop: '10px',
+            }}>
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -61,7 +60,7 @@ function NewServicingReport({allStaff, allSite}) {
                             },
                         }}
                     >
-                        
+
                         <Tab
                             label="Reports"
                             component={Link}
@@ -88,7 +87,7 @@ function NewServicingReport({allStaff, allSite}) {
                                 },
                             }}
                         />
-                        
+
                         <Tab
                             label="New"
                             component={Link}

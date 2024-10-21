@@ -1,3 +1,4 @@
+'use client';
 import {mainSection} from "@/utils/data";
 import Box from "@mui/material/Box";
 import Typography from '@mui/material/Typography';

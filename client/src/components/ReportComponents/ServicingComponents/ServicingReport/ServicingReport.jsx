@@ -12,7 +12,7 @@ import {mainSection} from "@/utils/data";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ReportRendering from "@/components/ReportComponents/ServicingComponents/ServicingReport/ReportRendering";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 function ServicingReport({allServicingReport, allSite}) {
@@ -23,7 +23,17 @@ function ServicingReport({allServicingReport, allSite}) {
     const currMonth = new Date().toLocaleString('default', {month: 'long'});
     const currYear = new Date().getFullYear();
     const pathname = usePathname();
-    
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('new')) {
@@ -36,23 +46,13 @@ function ServicingReport({allServicingReport, allSite}) {
             setActiveTab('/dashboard/admin/reports');
         }
     }, [pathname]);
-    
+
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>All Territorial Servicing Reports</Typography>
-                </Paper>
-                <br/>
+            <Box sx={{
+                padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
+                marginTop: '10px',
+            }}>
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -67,7 +67,7 @@ function ServicingReport({allServicingReport, allSite}) {
                             },
                         }}
                     >
-                        
+
                         <Tab
                             label="Reports"
                             component={Link}
@@ -94,7 +94,7 @@ function ServicingReport({allServicingReport, allSite}) {
                                 },
                             }}
                         />
-                        
+
                         <Tab
                             label="New"
                             component={Link}
@@ -125,33 +125,21 @@ function ServicingReport({allServicingReport, allSite}) {
                 </Stack>
                 <br/>
                 <Box>
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '10px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                    }}>
-                        {/* First Row (1 fields) prefix */}
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                <Typography variant='h6'
-                                            sx={{
-                                                fontFamily: 'Poppins',
-                                                fontWeight: 'bold',
-                                                color: '#FFF'
-                                            }}
-                                > Servicing Record for the month: {currMonth} {currYear}
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <ReportRendering allServicingReport={allServicingReport}/>
-                            </Grid>
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="body1"
+                                        sx={{
+                                            color: '#FFF',
+                                            fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                            fontWeight: 'bold',
+                                        }}>
+                                Servicing Record for the month: {currMonth} {currYear}
+                            </Typography>
                         </Grid>
-                        <br/><br/>
-                    </Paper>
+                        <Grid item xs={12}>
+                            <ReportRendering allServicingReport={allServicingReport}/>
+                        </Grid>
+                    </Grid>
                 </Box>
                 <br/><br/>
                 {/*</Card>*/}

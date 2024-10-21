@@ -151,6 +151,7 @@ class ServicingController {
     }
 
     static async newServicingReport(req, res) {
+        console.log('Starter');
         try {
             // perform full current check
             const verifiedJwt = await AuthController.currPreCheck(req);
@@ -169,8 +170,10 @@ class ServicingController {
             if (admin instanceof Error) {
                 return res.status(400).json({error: admin.message});
             }
+            console.log(req.files);
             // Ensure images exist in the request body
             if (!req.files || req.files.length === 0) {
+                console.log('Point A');
                 return res.status(400).json({error: 'Missing image files in the request'});
             }
             const {error, value} = newServiceReportSchemaValidator.validate(req.body, {abortEarly: false});
@@ -212,8 +215,8 @@ class ServicingController {
             const monthName = servicingDate.toLocaleString('en-US', {month: 'long'}); // Get month name, e.g., "August"
             const folderPath = `YalmarMgtSystem/ServicingReports/${value.siteId}/${servicingDate.getFullYear()}/${monthName}/${value.pmInstance}/${value.servicingDate}/images`;
             // send image files to cloudinary, use the returned urls to save to the database
-            const uploadPromises = req.files.map(file =>
-                cloudinary.uploader.upload(file.path, {
+            const uploadPromises = req.files.map(file => {
+                return cloudinary.uploader.upload(file.path, {
                     folder: folderPath,
                     use_filename: true,
                     unique_filename: false,
@@ -224,12 +227,15 @@ class ServicingController {
                         {quality: 'auto', fetch_format: 'auto'},
                     ],
                     secure: true
-                })
-            );
+                });
+            });
             let uploadedImages = [];
             try {
                 const results = await Promise.all(uploadPromises);
-                uploadedImages = results.map(result => result.secure_url);
+                uploadedImages = results.map((result, index) => {
+                    console.log(`Uploaded file ${index + 1} URL: ${result.secure_url}`);
+                    return result.secure_url;
+                });
             } catch (uploadError) {
                 // Rollback: Delete any successfully uploaded images if any failure occurs
                 if (uploadedImages.length > 0) {

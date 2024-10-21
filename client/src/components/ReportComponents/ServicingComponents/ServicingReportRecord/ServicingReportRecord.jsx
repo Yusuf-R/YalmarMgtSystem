@@ -29,15 +29,30 @@ import CloseIcon from "@mui/icons-material/Close";
 import dayjs from 'dayjs';
 import Divider from "@mui/material/Divider";
 import ArrowBackSharpIcon from "@mui/icons-material/ArrowBackSharp";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function ServicingReportRecord({data}) {
     const theme = useTheme();
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
         fontFamily: 'Poppins',
-        fontSize: '16px',
+        fontSize: {xs: '0.9rem', sm: '1.0rem', md: '1.1rem'},
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word',
+        whiteSpace: 'normal',
     };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const cardSx = {
@@ -46,9 +61,12 @@ function ServicingReportRecord({data}) {
         borderRadius: 5,
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
+        m: 0,
     }
     const accordionSx = {
         bgcolor: '#274e61',
+        // p: 2,
+        overflowX: 'hidden',
     }
     const {
         siteId,
@@ -124,30 +142,53 @@ function ServicingReportRecord({data}) {
     return (
         <>
             <br/>
-            <Divider sx={{
-                width: '100%',
-                backgroundColor: 'rgb(255, 153, 153)',
-                color: '#FFF'
-            }}/>
-            <Typography variant='h6'
+            <Typography variant="h6"
                         sx={{
                             fontFamily: 'Poppins',
                             fontWeight: 'bold',
                             color: '#FFF',
-                            ml: 60,
-                            mt: 5,
-                            p: 2,
-                            border: '1px solid rgb(255, 153, 153)',
-                            borderRadius: 10,
-                            width: '36%'
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '10px',
+                            borderRadius: '10px',
+                            bgcolor: '#0059b3',
                         }}>
-                Report Data for {siteId}-{pmInstance} : {formattedServicingDate} <IconButton><ArrowBackSharpIcon
-                sx={{color: 'lime', fontSize: 30}} onClick={goPrev}/></IconButton>
+                {siteId}-{pmInstance} : {formattedServicingDate} <IconButton><ArrowBackSharpIcon
+                sx={{color: 'lime', fontSize: 20}} onClick={goPrev}/></IconButton>
             </Typography>
             <br/>
             <Grid container spacing={3}>
+                {/* Servicing Dates */}
+                <Grid item xs={12} sm={6} md={6}>
+                    <Card sx={{...cardSx, border: 'none',}}>
+                        <Typography sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            fontFamily: 'Poppins',
+                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '0.9rem' : '1.0rem',
+                            m: 2,
+                        }}>
+                            {`Servicing Date: ${formattedServicingDate}`}
+                        </Typography>
+                    </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6}>
+                    <Card sx={{...cardSx, border: 'none',}}>
+                        <Typography sx={{
+                            fontWeight: 'bold',
+                            color: 'white',
+                            fontFamily: 'Poppins',
+                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '0.9rem' : '1.0rem',
+                            m: 2,
+                        }}>
+                            {`Next Service Date: ${formattedNextServiceDate}`}
+                        </Typography>
+                    </Card>
+                </Grid>
                 {/*Submission Info*/}
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
@@ -155,11 +196,11 @@ function ServicingReportRecord({data}) {
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Submission and Approval:
                         </Typography>
-                        <CardContent sx={{color: 'white', margin: '5px',}}>
+                        <CardContent sx={{color: 'white', margin: 0,}}>
                             <Accordion sx={accordionSx}>
                                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
                                                   sx={cardSx}>
@@ -168,24 +209,25 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Submission Details</Typography>
                                 </AccordionSummary>
-                                <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
-                                    <List>
-                                        <ListItem>
+                                <AccordionDetails
+                                    sx={{bgcolor: '#274e61', color: 'white', p: 0, m: 0}}>
+                                    <List sx={{p: 0}}>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Submission By: ${fullName}`}
+                                                <strong>Submission By:</strong> {fullName}
                                             </Typography>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Email: ${email}`}
+                                                <strong>Email:</strong> {email}
                                             </Typography>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Role: ${role}`}
+                                                <strong>Role:</strong> {role}
                                             </Typography>
                                         </ListItem>
                                     </List>
@@ -200,24 +242,24 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Approval Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
-                                    <List>
-                                        <ListItem>
+                                    <List sx={{p: 0}}>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Approved: ${adminFullName}`}
+                                                <strong>Approved:</strong> {adminFullName}
                                             </Typography>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Email: ${adminEmail}`}
+                                                <strong>Email:</strong> {adminEmail}
                                             </Typography>
                                         </ListItem>
-                                        <ListItem>
+                                        <ListItem sx={{flexDirection: 'column', alignItems: 'flex-start', py: 1}}>
                                             <Typography sx={typographyStyle}>
-                                                {`Role: ${adminRole}`}
+                                                <strong>Role:</strong> {adminRole}
                                             </Typography>
                                         </ListItem>
                                     </List>
@@ -226,9 +268,8 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-
                 {/*AllSite Info*/}
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
@@ -236,7 +277,7 @@ function ServicingReportRecord({data}) {
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Site Summary:
                         </Typography>
@@ -249,7 +290,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Site Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -290,37 +331,8 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-
-                {/* Servicing Dates */}
-                <Grid item xs={6}>
-                    <Card sx={{...cardSx, borderRadius: 5, p: 0.2, border: 'none',}}>
-                        <Typography sx={{
-                            fontWeight: 'bold',
-                            color: 'white',
-                            fontFamily: 'Poppins',
-                            fontSize: '16px',
-                            m: 2,
-                        }}>
-                            {`Servicing Date: ${formattedServicingDate}`}
-                        </Typography>
-                    </Card>
-                </Grid>
-                <Grid item xs={6}>
-                    <Card sx={{...cardSx, borderRadius: 5, p: 0.2, border: 'none',}}>
-                        <Typography sx={{
-                            fontWeight: 'bold',
-                            color: 'white',
-                            fontFamily: 'Poppins',
-                            fontSize: '16px',
-                            m: 2,
-                        }}>
-                            {`Next Service Date: ${formattedNextServiceDate}`}
-                        </Typography>
-                    </Card>
-                </Grid>
-
                 {/* Summary Section */}
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6} md={4}>
                     <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
@@ -328,7 +340,7 @@ function ServicingReportRecord({data}) {
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             PM Summary:
                         </Typography>
@@ -341,7 +353,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Summary Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -371,15 +383,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Generator PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: '#FFF'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Generator PM:
                         </Typography>
@@ -392,7 +404,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Generator 1 Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -439,7 +451,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Generator 2 Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -482,15 +494,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Air Conditioning PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Air Conditioning PM:
                         </Typography>
@@ -503,7 +515,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>AC Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -537,15 +549,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Shelter PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Shelter PM:
                         </Typography>
@@ -558,7 +570,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Shelter Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -582,15 +594,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Lightning PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Lightning PM:
                         </Typography>
@@ -603,7 +615,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Lighting Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -642,15 +654,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* DC System Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             DC & Rectifier PM:
                         </Typography>
@@ -663,7 +675,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Battery Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -695,7 +707,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Rectifier Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -713,15 +725,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Security PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Security PM:
                         </Typography>
@@ -734,7 +746,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Security Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -757,15 +769,15 @@ function ServicingReportRecord({data}) {
                 </Grid>
 
                 {/* Other PM Section */}
-                <Grid item xs={12}>
-                    <Card sx={{bgcolor: '#274e61', color: 'white'}}>
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                         }}>
                             Others PM:
                         </Typography>
@@ -778,7 +790,7 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                                     }}>Other Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -819,7 +831,7 @@ function ServicingReportRecord({data}) {
                                 fontWeight: 'bold',
                                 color: '#FFF',
                                 fontFamily: 'Poppins',
-                                fontSize: '20px',
+                                fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
                             }} align="center">
                                 PM Images
                             </Typography>
@@ -839,15 +851,15 @@ function ServicingReportRecord({data}) {
                                     }}>
                                     <Box
                                         component="img"
-                                        sx={{
-                                            width: "100%",
-                                            maxWidth: "500px",
-                                            height: "auto",
-                                            borderRadius: 2,
-                                            boxShadow: 3,
-                                        }}
                                         src={images[currentIndex]}
                                         alt={`Image ${currentIndex + 1}`}
+                                        sx={{
+                                            width: {xs: '150px', sm: '350px', md: '450px'},
+                                            height: {xs: '150px', sm: '350px', md: '450px'},
+                                            objectFit: 'cover',
+                                            borderRadius: 2,
+                                            p: 1,
+                                        }}
                                     />
                                 </Card>
                                 {/*</Tooltip>*/}
@@ -855,7 +867,7 @@ function ServicingReportRecord({data}) {
                                     <ArrowForwardIosIcon sx={{color: 'lime'}}/>
                                 </IconButton>
                             </Box>
-                            <Typography align="center" sx={{mt: 1}}>
+                            <Typography align="center" sx={{mt: 1, color: '#FFF'}}>
                                 {currentIndex + 1} / {images.length}
                             </Typography>
                         </Grid>

@@ -2,7 +2,6 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
 import Popper from "@mui/material/Popper";
@@ -12,7 +11,6 @@ import SearchOffIcon from '@mui/icons-material/SearchOff';
 import {useRouter, usePathname} from "next/navigation";
 import Link from "next/link";
 import React, {useEffect, useMemo, useState} from "react";
-import {mainSection} from "@/utils/data";
 import Autocomplete from '@mui/material/Autocomplete';
 import {autoCompleteSx} from "@/utils/data";
 import {Controller, useForm} from "react-hook-form";
@@ -28,9 +26,9 @@ import AdminUtils from "@/utils/AdminUtilities";
 import ServicingReportRecord
     from "@/components/ReportComponents/ServicingComponents/ServicingReportRecord/ServicingReportRecord"
 import LazyComponent from "@/components/LazyComponent/LazyComponent";
-import Divider from '@mui/material/Divider';
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const CustomPopper = (props) => {
     return (
@@ -72,6 +70,17 @@ function SearchServiceReport({allSite}) {
     const [pmInstance, setPmInstance] = useState('');
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/search');
 
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
     const pmInstances = ['PM1', 'PM2'];
     const serviceRecordSchema = yup.object().shape({
         state: yup.string().required('State is required'),
@@ -98,8 +107,6 @@ function SearchServiceReport({allSite}) {
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
 
-    // extract the site._id from allSite base on the selected siteIds
-    const site_id = allSite.filter(site => site.siteId === siteID).map(site => site._id)[0];
 
     // site State
     const getState = () => {
@@ -178,8 +185,7 @@ function SearchServiceReport({allSite}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
-        fontSize: '16px',
+        fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
         fontStyle: 'bold',
         '&:hover': {
             bgcolor: '#051935',
@@ -317,20 +323,11 @@ function SearchServiceReport({allSite}) {
 
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>Servicing Reports</Typography>
-                </Paper>
-                <br/>
+            <Box sx={{
+                padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
+                marginTop: '10px',
+
+            }}>
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -407,29 +404,21 @@ function SearchServiceReport({allSite}) {
                     onSubmit={handleSubmit(SearchRecords)}
                     noValidate
                 >
-                    <Paper elevation={5} sx={{
-                        alignContent: 'start',
-                        padding: '10px',
-                        backgroundColor: 'inherit',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                    }}>
-                        {/* First Row (1 fields) prefix */}
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                <Typography variant='h6'
-                                            sx={{
-                                                fontFamily: 'Poppins',
-                                                fontWeight: 'bold',
-                                                color: '#FFF'
-                                            }}
-                                > Select AllSite
-                                </Typography>
-                            </Grid>
-                            {/*AllSite State*/}
-                            <Grid item xs={2}>
+                    {/* First Row (1 fields) prefix */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
+                                        }}> Select Site
+                            </Typography>
+                        </Grid>
+                        {/*AllSite State*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="state"
                                     control={control}
@@ -496,9 +485,11 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/*AllSite cluster*/}
-                            <Grid item xs={2}>
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite cluster*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="cluster"
                                     control={control}
@@ -564,9 +555,11 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/*AllSite ID*/}
-                            <Grid item xs={2}>
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite ID*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="siteId"
                                     control={control}
@@ -632,10 +625,12 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/*AllSite Type if available*/}
-                            {siteID && (
-                                <Grid item xs={2}>
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite Type if available*/}
+                        {siteID && (
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
                                     <Controller
                                         name="siteType"
                                         control={control}
@@ -667,11 +662,13 @@ function SearchServiceReport({allSite}) {
                                             />
                                         )}
                                     />
-                                </Grid>
-                            )}
-                            {/*Location if available*/}
-                            {siteID && (
-                                <Grid item xs={4}>
+                                </FormControl>
+                            </Grid>
+                        )}
+                        {/*Location if available*/}
+                        {siteID && (
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
                                     <Controller
                                         name="location"
                                         control={control}
@@ -680,10 +677,7 @@ function SearchServiceReport({allSite}) {
                                             <TextField
                                                 {...field}
                                                 InputProps={{
-                                                    sx: {
-                                                        ...txProps,
-                                                        width: '500px',
-                                                    }
+                                                    sx: txProps
                                                 }}
                                                 InputLabelProps={{
                                                     sx: {
@@ -706,24 +700,26 @@ function SearchServiceReport({allSite}) {
                                             />
                                         )}
                                     />
-                                </Grid>
-                            )}
-                        </Grid>
-                        <br/><br/>
-                        {/* First Row (1 fields) prefix */}
-                        <Grid container spacing={4}>
-                            <Grid item xs={12}>
-                                <Typography variant='h6'
-                                            sx={{
-                                                fontFamily: 'Poppins',
-                                                fontWeight: 'bold',
-                                                color: '#FFF'
-                                            }}
-                                > Select Year, Month and PM Instance
-                                </Typography>
+                                </FormControl>
                             </Grid>
-                            {/*Select Year*/}
-                            <Grid item xs={2}>
+                        )}
+                    </Grid>
+                    <br/>
+                    {/* First Row (1 fields) prefix */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
+                                        }}> Select Year, Month and PM Instance
+                            </Typography>
+                        </Grid>
+                        {/*Select Year*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large || xLarge ? 6 : xxLarge || wide ? 3 : 2}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="year"
                                     control={control}
@@ -744,9 +740,11 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/*Select Month*/}
-                            <Grid item xs={2}>
+                            </FormControl>
+                        </Grid>
+                        {/*Select Month*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large || xLarge ? 6 : xxLarge || wide ? 3 : 2}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="month"
                                     control={control}
@@ -767,9 +765,11 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            {/*Select PM instance*/}
-                            <Grid item xs={2}>
+                            </FormControl>
+                        </Grid>
+                        {/*Select PM instance*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large || xLarge ? 6 : xxLarge || wide ? 3 : 2}>
+                            <FormControl fullWidth>
                                 <Controller
                                     name="pmInstance"
                                     control={control}
@@ -797,86 +797,92 @@ function SearchServiceReport({allSite}) {
                                         </FormControl>
                                     )}
                                 />
-                            </Grid>
-                            <Grid item xs={3}>
-                                <Stack direction="row" spacing={3}>
-                                    <Button
-                                        endIcon={<SearchRoundedIcon/>}
-                                        sx={{
-                                            fontFamily: 'Poppins',
-                                            fontWeight: 'bold',
-                                            color: '#FFF',
-                                            bgcolor: '#1a3a4f',
-                                            '&:hover': {
-                                                bgcolor: '#051935',
-                                            },
-                                            borderRadius: '10px',
-                                            display: 'flex',
-                                            paddingTop: 3,
-                                            justifyContent: 'flex-end', // Align the content to the bottom
-                                            alignItems: 'flex-start', // Align text to the left within the button
-                                        }}
-                                        size='large'
-                                        type='submit'
-                                        title='Submit'
-                                    >
-                                        Search
-                                    </Button>
-                                    <Button
-                                        endIcon={<SearchOffIcon/>}
-                                        sx={{
-                                            fontFamily: 'Poppins',
-                                            fontWeight: 'bold',
-                                            color: '#FFF',
-                                            bgcolor: '#1a3a4f',
-                                            '&:hover': {
-                                                bgcolor: '#051935',
-                                            },
-                                            borderRadius: '10px',
-                                            display: 'flex',
-                                            paddingTop: 3,
-                                            justifyContent: 'flex-end', // Align the content to the bottom
-                                            alignItems: 'flex-start', // Align text to the left within the button
-                                        }}
-                                        title='Clear'
-                                        type='reset'
-                                        size='large'
-                                        onClick={Clear}
-                                    >
-                                        Clear
-                                    </Button>
-                                </Stack>
-                            </Grid>
-                            {loading && <LazyComponent Command={"Searching"}/>}
-                            {searchInitiated ? (
-                                reportData && !reportData.emptyBit ? (
-                                    <>
-                                        <Grid item xs={12}>
-                                            <Box>
-                                                <ServicingReportRecord data={reportData.servicingReport}/>
-                                            </Box>
-                                        </Grid>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Typography variant='h6'
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large || xLarge ? 6 : xxLarge || wide ? 3 : 6}>
+                            <Stack direction="row" spacing={3}>
+                                <Button
+                                    endIcon={<SearchRoundedIcon/>}
+                                    sx={{
+                                        fontFamily: 'Poppins',
+                                        fontWeight: 'bold',
+                                        color: '#FFF',
+                                        bgcolor: '#1a3a4f',
+                                        '&:hover': {
+                                            bgcolor: '#051935',
+                                        },
+                                        borderRadius: '10px',
+                                        display: 'flex',
+                                        paddingTop: 3,
+                                        justifyContent: 'flex-end', // Align the content to the bottom
+                                        alignItems: 'flex-start', // Align text to the left within the button
+                                    }}
+                                    size='large'
+                                    type='submit'
+                                    title='Submit'
+                                    color='info'
+                                >
+                                    Search
+                                </Button>
+                                <Button
+                                    endIcon={<SearchOffIcon/>}
+                                    sx={{
+                                        fontFamily: 'Poppins',
+                                        fontWeight: 'bold',
+                                        color: '#FFF',
+                                        bgcolor: '#1a3a4f',
+                                        '&:hover': {
+                                            bgcolor: '#051935',
+                                        },
+                                        borderRadius: '10px',
+                                        display: 'flex',
+                                        paddingTop: 3,
+                                        justifyContent: 'flex-end', // Align the content to the bottom
+                                        alignItems: 'flex-start', // Align text to the left within the button
+                                    }}
+                                    title='Clear'
+                                    type='reset'
+                                    size='large'
+                                    onClick={Clear}
+                                    color='secondary'
+                                >
+                                    Clear
+                                </Button>
+                            </Stack>
+                        </Grid>
+                        {loading && <LazyComponent Command={"Searching"}/>}
+                        {searchInitiated ? (
+                            reportData && !reportData.emptyBit ? (
+                                <>
+                                    <Grid item xs={xSmall || small || medium ? 12 : large ? 12 : 12}>
+                                        <Box>
+                                            <ServicingReportRecord data={reportData.servicingReport}/>
+                                        </Box>
+                                    </Grid>
+                                </>
+                            ) : (
+                                <>
+                                    <Grid item xs={xSmall || small || medium ? 12 : large ? 12 : 12}>
+                                        <Typography variant="h6"
                                                     sx={{
                                                         fontFamily: 'Poppins',
                                                         fontWeight: 'bold',
                                                         color: '#FFF',
-                                                        ml: 70,
-                                                        mt: 5,
-                                                        p: 2,
-                                                        border: '1px solid rgb(255, 153, 153)',
-                                                        borderRadius: 10,
+                                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        padding: '10px',
+                                                        borderRadius: '10px',
+                                                        bgcolor: '#0059b3',
                                                     }}>
-                                            Oops!!! No Record for the selected criteria
+                                            Oops!!! No Record found
                                         </Typography>
-                                    </>
-                                )
-                            ) : null}
-                        </Grid>
-                    </Paper>
+                                    </Grid>
+                                </>
+                            )
+                        ) : null}
+                    </Grid>
                 </Box>
                 <br/><br/>
                 {/*</Card>*/}
