@@ -186,28 +186,3 @@ const LostInSpace = () => {
 };
 
 export default LostInSpace;
-//
-// function LostInSpace() {
-//     return (
-//         <>
-//             <Box style={{
-//                 textAlign: 'center',
-//                 padding: '50px',
-//                 width: 'calc(100% - 250px)',
-//                 position: 'absolute',
-//                 top: '70px',
-//                 left: '250px',
-//             }}>
-//                 <Typography variant="h4" gutterBottom>Invalid Navigation</Typography>
-//                 <Typography variant="h4" gutterBottom>Lost in Space...</Typography>
-//                 <Link href="/dashboard/admin/staff">
-//                     <Button variant="contained" color='error'
-//                             style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}>Go to AllStaff Page
-//                     </Button>
-//                 </Link>
-//             </Box>
-//         </>
-//     )
-// }
-//
-// export default LostInSpace;

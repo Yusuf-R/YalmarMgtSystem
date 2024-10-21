@@ -1,8 +1,9 @@
 'use client';
 import Button from "@mui/material/Button";
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import EditIcon from '@mui/icons-material/Edit';
+import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,34 +13,47 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState, Suspense, useEffect} from "react";
 import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
 import {createTheme, ThemeProvider, useTheme} from '@mui/material';
 import {
     MaterialReactTable,
     useMaterialReactTable,
     MRT_ToggleDensePaddingButton,
+    MRT_ToggleFullScreenButton,
     MRT_ToggleGlobalFilterButton,
     MRT_ToggleFiltersButton,
     MRT_ShowHideColumnsButton,
 } from "material-react-table";
 import Tooltip from "@mui/material/Tooltip";
-import AdminUtilities from "@/utils/AdminUtilities";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
+import CloseIcon from '@mui/icons-material/Close';
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import Card from "@mui/material/Card";
 import IconButton from "@mui/material/IconButton";
 import SettingsIcon from "@mui/icons-material/Settings";
-import CloseIcon from "@mui/icons-material/Close";
 import Drawer from "@mui/material/Drawer";
-import useStaffStore from "@/store/useStaffStore";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AdminUtilities from "@/utils/AdminUtilities";
+import useSiteStore from "@/store/useSiteStore";
 
-function AllStaff({allStaff}) {
+
+function AllSite({allSite}) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const [open, setOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/site/all');
+    const [stateMain, setStateMain] = useState('');
+    const [cluster, setClusterType] = useState('');
+    const [status, setStatus] = useState('');
+    const [siteType, setSiteType] = useState('');
+
     // Media Queries for responsiveness
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
     const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
@@ -50,28 +64,28 @@ function AllStaff({allStaff}) {
     const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
-    const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const pathname = usePathname();
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/staff');
-    const {setEncryptedStaffData} = useStaffStore.getState();
+
+    const {setEncryptedSiteData} = useSiteStore.getState();
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
 
     useEffect(() => {
         if (pathname.includes('new')) {
-            setActiveTab('/dashboard/admin/staff/new');
+            setActiveTab('/dashboard/admin/site/new');
         } else if (pathname.includes('all')) {
-            setActiveTab('/dashboard/admin/staff/all');
+            setActiveTab('/dashboard/admin/site/all');
         } else {
-            setActiveTab('/dashboard/admin/staff');
+            setActiveTab('/dashboard/admin/site');
         }
     }, [pathname]);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
     const tableTheme = useMemo(
         () =>
             createTheme({
@@ -167,67 +181,75 @@ function AllStaff({allStaff}) {
             }),
         [xSmall, small, medium],
     );
-
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    // Function to handle the opening and closing of the drawer
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
+    const headerKeys = [
+        'siteId',
+        'cluster',
+        'type',
+        'status',
+        'location'
+    ];
+    // Function to capitalize the first letter of the key
+    const capitalizeFirstLetter = (key) => {
+        // if key not in our headerKeys array, it should skip that key
+        if (!headerKeys.includes(key) || !key) {
+            return '';
         }
-        setIsDrawerOpen(open);
+        return key.charAt(0).toUpperCase() + key.slice(1);
     };
-
-    // Columns with responsive adjustments
-    const columns = useMemo(() => [
-            {accessorKey: 'lastName', header: 'Surname', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
-            {accessorKey: 'firstName', header: 'Name', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
-            {accessorKey: 'email', header: 'Email', sortable: true, minSize: 150, size: large || wide ? 100 : 100},
-            {accessorKey: 'phone', header: 'Phone', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
-            {accessorKey: 'role', header: 'Role', sortable: true, minSize: 100, size: large || wide ? 100 : 100},
-            {
-                accessorKey: 'employmentType',
-                header: 'Employment',
-                sortable: true,
-                minSize: 100,
-                size: large || wide ? 100 : 100,
-            }],
-        [large, wide]
+    const columnFields = allSite.length > 0 ? Object.keys(allSite[0]) : [];
+    const columns = useMemo(() => columnFields.map((field) => ({
+            accessorKey: field,
+            header: capitalizeFirstLetter(field),
+            sortable: true,
+            size: 150,
+            // set the 'status' header to be color red
+            headerStyle: field === 'Status' ? {color: 'red'} : {},
+            Cell: ({cell}) => {
+                if (field === 'status') {
+                    let bgColor = '';
+                    let textColor = '#fff'; // Default text color is white
+                    switch (cell.getValue()) {
+                        case 'Active':
+                            bgColor = 'green';
+                            break;
+                        case 'Inactive':
+                            bgColor = '#ff9933';
+                            break;
+                        case 'Deactivated':
+                            bgColor = '#660029';
+                            break;
+                        default:
+                            bgColor = 'transparent';
+                    }
+                    return (
+                        <span style={{backgroundColor: bgColor, color: textColor, padding: '5px', borderRadius: '10px'}}>
+                            {cell.getValue()}
+                        </span>
+                    );
+                }
+                return cell.getValue();
+            },
+        }))
+            .filter((column) => column.header !== ''),
+        []
     );
     const tableData = useMemo(
-        () => allStaff.map((staff) => {
-            const row = {_id: staff._id};
+        () => allSite.map((site) => {
+            const row = {};
             columns.forEach((column) => {
-                row[column.accessorKey] = staff[column.accessorKey];
+                row[column.accessorKey] = site[column.accessorKey];
             });
+            row._id = site._id; // Include _id in the row data
             return row;
         }),
-        [columns, allStaff]
+        [columns, allSite]
     );
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        // width: '250px',
-        fontSize: '16px',
-        fontStyle: 'bold',
-        '&:hover': {
-            bgcolor: '#051935',
-        },
-        fontFamily: 'Poppins',
-        "& .MuiInputBase-input": {
-            color: 'white',
-        },
-        "& .MuiFormHelperText-root": {
-            color: 'red',
-        },
-        "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: 'green',
-        },
-        "& input:-webkit-autofill": {
-            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
-            WebkitTextFillColor: 'white',
-        },
-    }
+        fontSize: '1.0em',
+    };
     const table = useMaterialReactTable({
         columns,
         data: tableData,
@@ -237,6 +259,8 @@ function AllStaff({allStaff}) {
         enableColumnHiding: true,
         enableRowSelection: true,
         enableColumnActions: false,
+        enableRowNumbers: true,
+        rowNumberDisplayMode: "original",
         enableRowExpand: true,
         enableMultiRowSelection: true,
         enableGlobalFilter: true,
@@ -247,22 +271,25 @@ function AllStaff({allStaff}) {
         enableColumnReordering: true,
         positionActionsColumn: 'first',
         renderRowActions: ({row}) => {
-            const staffID = row.original._id;
+            const siteID = row.original._id;
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
             const queryClient = useQueryClient();
             const router = useRouter();
             const mutation = useMutation({
-                mutationKey: ["DeleteStaff"],
-                mutationFn: AdminUtilities.DeleteStaff, // Adjust this to match your delete function
+                mutationKey: ["DeleteSite"],
+                mutationFn: AdminUtilities.DeleteSite, // Adjust this to match your delete function
             });
+
             const handleOpen = () => setOpen(true);
             const handleClose = () => {
                 setOpen(false);
                 setEmail('');
                 setEmailError('');
             };
+
+            // handle email change
             const handleEmailChange = (event) => {
                 setEmail(event.target.value);
                 // Basic email validation regex
@@ -273,53 +300,57 @@ function AllStaff({allStaff}) {
                     setEmailError('');
                 }
             };
+
+
+            // handle delete
             const handleDelete = async (event) => {
                 event.preventDefault();
-                const obj = {email, selectedIds: [staffID]};
+                const obj = {email, selectedIds: [siteID]};
                 console.log({obj});
                 mutation.mutate(obj, {
                     onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllStaff"]});
-                        toast.success('Staff account deleted successfully');
+                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
+                        toast.success('Site deleted successfully');
                         setOpen(false);
                     },
                     onError: (error) => {
-                        toast.error('Error deleting staff account');
+                        toast.error('Error deleting site');
                         console.error("Delete failed", error);
                         setOpen(false);
                     }
                 });
             };
-            // function to view staff profile
-            const viewStaff = async () => {
-                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
-                const staffData = allStaff.find((staff) => staff._id === staffID);
+
+            // function to view site profile
+            const viewSite = async () => {
+                const encryptedSiteID = await AdminUtilities.encryptUserID(siteID);
+                const siteData = allSite.find((site) => site._id === siteID);
                 // encrypt the data and store it in the session storage
-                const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+                const encryptedStaffData = await AdminUtilities.encryptData(siteData);
                 // Set the encrypted data in Zustand store
-                setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
-                router.push(`/dashboard/admin/staff/view`);
+                setEncryptedSiteData(encryptedStaffData, encryptedSiteID);
+                router.push(`/dashboard/admin/site/view`);
             };
-            // function to edit staff profile
-            const editStaff = async () => {
-                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
-                const staffData = allStaff.find((staff) => staff._id === staffID);
+            // function to edit site profile
+            const editSite = async () => {
+                const encryptedSiteID = await AdminUtilities.encryptUserID(siteID);
+                const siteData = allSite.find((site) => site._id === siteID);
                 // encrypt the data and store it in the session storage
-                const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+                const encryptedStaffData = await AdminUtilities.encryptData(siteData);
                 // Set the encrypted data in Zustand store
-                setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
-                router.push(`/dashboard/admin/staff/edit`);
+                setEncryptedSiteData(encryptedStaffData, encryptedSiteID);
+                router.push(`/dashboard/admin/site/edit`);
             };
             return (
                 <>
                     <Stack direction='row' gap={0} justifyContent={'space-evenly'} alignItems={'center'} spacing={0}>
-                        <Button onClick={viewStaff}>
+                        <Button onClick={viewSite}>
                             <Tooltip title="View" arrow>
                                 <AccountCircleIcon size='small' fontSize="small"
                                                    sx={{color: '#E997F9', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
-                        <Button onClick={editStaff}>
+                        <Button onClick={editSite}>
                             <Tooltip title="Edit" arrow>
                                 <EditIcon fontSize="small" sx={{color: '#4af7a7', cursor: 'pointer'}}/>
                             </Tooltip>
@@ -330,6 +361,7 @@ function AllStaff({allStaff}) {
                             </Tooltip>
                         </Button>
                     </Stack>
+                    {/*Delete Dialogue*/}
                     <Dialog
                         open={open}
                         onClose={handleClose}
@@ -442,10 +474,10 @@ function AllStaff({allStaff}) {
         renderTopToolbarCustomActions: ({table}) => {
             const mutation = useMutation({
                 mutationKey: ["DeleteStaff"],
-                mutationFn: AdminUtils.DeleteStaff,
+                mutationFn: AdminUtils.DeleteSite,
             });
             const queryClient = useQueryClient();
-            const createNew = () => router.push('/dashboard/admin/staff/new');
+            const createNew = () => router.push('/dashboard/admin/site/new');
             const [open, setOpen] = useState(false);
             const [email, setEmail] = useState('');
             const [emailError, setEmailError] = useState('');
@@ -475,12 +507,12 @@ function AllStaff({allStaff}) {
                 const obj = {email, selectedIds};
                 mutation.mutate(obj, {
                     onSuccess: () => {
-                        queryClient.invalidateQueries({queryKey: ["AllStaff"]});
-                        toast.success('Selected Staff Accounts Deleted Successfully');
+                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
+                        toast.success('Selected Site Deleted Successfully');
                         handleClose();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting Staff Accounts');
+                        toast.error('Error Deleting Site Accounts');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -524,7 +556,7 @@ function AllStaff({allStaff}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
                                             }}>
-                                    You are about to permanently delete the selected AllStaff Accounts, Please enter
+                                    You are about to permanently delete the selected Site, Please enter
                                     your
                                     email address to further confirm your actions.
                                 </Typography>
@@ -634,10 +666,10 @@ function AllStaff({allStaff}) {
                     padding: '10px',
                 }}>
                     <Typography variant='h6' sx={{fontWeight: 'bold', fontSize: '1.2rem'}}>
-                        No AllStaff Accounts Found.
+                        No Sites Found.
                     </Typography>
                     <Typography variant='body1' sx={{fontSize: '1.0rem'}}>
-                        There are no AllStaff accounts to display.
+                        There are no Sites Records to display.
                     </Typography>
                 </Stack>
             );
@@ -709,9 +741,10 @@ function AllStaff({allStaff}) {
                 pageSize: 100
             },
             density: 'compact',
-            hiddenColumns: ['email', 'phone'],
-        },
+
+        }
     });
+
     return (
         <>
             <Box sx={{
@@ -733,10 +766,10 @@ function AllStaff({allStaff}) {
                             },
                         }}>
                         <Tab
-                            label="Staff"
-                            value="/dashboard/admin/staff" // Set the value prop for this Tab
+                            label="Sitef"
+                            value="/dashboard/admin/sitef" // Set the value prop for this Tab
                             component={Link}
-                            href="/dashboard/admin/staff"
+                            href="/dashboard/admin/site"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -748,9 +781,9 @@ function AllStaff({allStaff}) {
                         />
                         <Tab
                             label="All"
-                            value="/dashboard/admin/staff/all" // Set the value prop for this Tab
+                            value="/dashboard/admin/site/all" // Set the value prop for this Tab
                             component={Link}
-                            href="/dashboard/admin/staff/all"
+                            href="/dashboard/admin/site/all"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -762,9 +795,9 @@ function AllStaff({allStaff}) {
                         />
                         <Tab
                             label="New +"
-                            value="/dashboard/admin/staff/new" // Set the value prop for this Tab
+                            value="/dashboard/admin/site/new" // Set the value prop for this Tab
                             component={Link}
-                            href="/dashboard/admin/staff/new"
+                            href="/dashboard/admin/site/new"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -790,8 +823,9 @@ function AllStaff({allStaff}) {
                             <MaterialReactTable table={table}/>
                         </ThemeProvider>
                     </Card>
+                    {/*</Card>*/}
                     <Stack direction='row'>
-                        <Link href="/dashboard/admin/staff">
+                        <Link href="/dashboard/admin/site">
                             <Button size={xSmall || small || medium || large ? "small" : 'medium'} variant="contained"
                                     color='success' title='Back'> Back </Button>
                         </Link>
@@ -802,4 +836,5 @@ function AllStaff({allStaff}) {
     );
 }
 
-export default AllStaff;
+
+export default AllSite;

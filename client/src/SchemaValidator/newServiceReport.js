@@ -21,12 +21,12 @@ export const newServiceReportSchema = yup.object().shape({
     adminEmail: yup.string().email('Invalid email').required('Email is required'),
     adminRole: yup.string().required('Role is required'),
 
-    // Site info
-    siteId: yup.string().required('Site ID is required'),
+    // AllSite info
+    siteId: yup.string().required('AllSite ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
     cluster: yup.string().oneOf(['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA'], 'Invalid cluster').required('Cluster is required'),
     location: yup.string(),
-    siteType: yup.string().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type').required('Site type is required').default('HUB'),
+    siteType: yup.string().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type').required('AllSite type is required').default('HUB'),
     shelterType: yup.string().oneOf(['Containerized', 'Open'], 'Invalid shelter type').required('Shelter type is required'),
     pmInstance: yup.string().oneOf(['PM1', 'PM2'], 'Invalid PM instance').required('PM instance is required'),
 
@@ -35,7 +35,7 @@ export const newServiceReportSchema = yup.object().shape({
     nextServiceDate: yup.string().required('Next service date is required'),
 
     // siteGenModes
-    siteGenModes: yup.string().oneOf(['GEN-1', 'GEN-1 and GEN-2'], 'Invalid site gen modes').required('Site gen modes is required'),
+    siteGenModes: yup.string().oneOf(['GEN-1', 'GEN-1 and GEN-2'], 'Invalid site gen modes').required('AllSite gen modes is required'),
 
     // generator PM
     generatorPM: yup.object().shape({
@@ -130,7 +130,7 @@ export const newServiceReportSchema = yup.object().shape({
     }),
 
     shelterPM: yup.object().shape({
-        siteCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid site cleaning status').required('Site cleaning status is required'),
+        siteCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid site cleaning status').required('AllSite cleaning status is required'),
         shelterCleaningStatus: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid shelter cleaning status').required('Shelter cleaning status is required'),
     }),
 
@@ -182,7 +182,7 @@ export const newServiceReportSchema = yup.object().shape({
 
     securityPM: yup.object().shape({
         securityStatus: yup.string().oneOf(['AVAILABLE', 'NOT-AVAILABLE', 'NOT-APPLICABLE'], 'Invalid security status').required('Security status is required'),
-        siteAccess: yup.string().oneOf(['LOCKED', 'ACCESS-GRANTED', 'UN-AVAILABLE', 'NOT-APPLICABLE'], 'Invalid site access status').required('Site access status is required'),
+        siteAccess: yup.string().oneOf(['LOCKED', 'ACCESS-GRANTED', 'UN-AVAILABLE', 'NOT-APPLICABLE'], 'Invalid site access status').required('AllSite access status is required'),
     }),
 
     summary: yup.string().required('Summary is required'),

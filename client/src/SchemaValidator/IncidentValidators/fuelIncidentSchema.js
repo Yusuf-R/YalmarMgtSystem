@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-// Reusable Schema for the Fuel Site Information
+// Reusable Schema for the Fuel AllSite Information
 const fuelSiteInfoSchema = yup.object().shape({
-    site_id: yup.string().required('Site ID is required'),
-    siteId: yup.string().required('Site ID is required'),
+    site_id: yup.string().required('AllSite ID is required'),
+    siteId: yup.string().required('AllSite ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
     cluster: yup
         .string()
@@ -27,7 +27,7 @@ export const fuelIncidentSchema = yup.object().shape({
         // Dynamically validate subcategory based on the selected category
         subCategory: yup.lazy((value, {parent}) => {
             const {category} = parent;
-            
+
             switch (category) {
                 case 'Theft':
                     return yup.object().shape({

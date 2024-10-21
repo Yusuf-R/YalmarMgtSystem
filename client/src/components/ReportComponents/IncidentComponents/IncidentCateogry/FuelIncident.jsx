@@ -34,11 +34,11 @@ function FuelIncident({allSite}) {
             reValidateMode: "onChange",
         }
     );
-    // Site Info Section
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === fuelSiteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === fuelSiteInfo.cluster).map(site => site.siteId);
-    
+
     // site State
     const getState = () => {
         return states.map((stateData) => (
@@ -48,7 +48,7 @@ function FuelIncident({allSite}) {
             </MenuItem>
         ));
     };
-    
+
     const handleState = (event) => {
         const newState = event.target.value;
         setFuelSiteInfo(prevState => ({
@@ -61,7 +61,7 @@ function FuelIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site cluster
     const getCluster = () => {
         if (!fuelSiteInfo.state) {
@@ -85,7 +85,7 @@ function FuelIncident({allSite}) {
             site_id: '',
         }));
     };
-    
+
     // site ID
     const getSiteId = () => {
         if (!fuelSiteInfo.state || !fuelSiteInfo.cluster) {
@@ -121,7 +121,7 @@ function FuelIncident({allSite}) {
             clearErrors('serviceSiteInfo');
         }
     };
-    
+
     const accordionSx = {
         bgcolor: '#274e61',
     }
@@ -132,7 +132,7 @@ function FuelIncident({allSite}) {
         border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -141,7 +141,7 @@ function FuelIncident({allSite}) {
         textAlign: 'left',
         ml: '30px',
     };
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -175,7 +175,7 @@ function FuelIncident({allSite}) {
         width: '100%',
         height: 'auto',
     }
-    
+
     // All
     const catA = ['Theft', 'Quality', 'Consumption', 'Intervention', 'Others']
     const getCat = () => catA.map((catOpt) => (
@@ -188,7 +188,7 @@ function FuelIncident({allSite}) {
         event.preventDefault();
         setValue('fuelIncidentInfo.category', event.target.value);
     }
-    
+
     // Quality
     const catQ = ['Bad', 'Adulterated'];
     const getCatQ = () => catQ.map((catOpt) => (
@@ -201,7 +201,7 @@ function FuelIncident({allSite}) {
         event.preventDefault();
         setValue('fuelIncidentInfo.subCategory.quality.action', event.target.value);
     }
-    
+
     // Intervention
     const catI = ['Top-up', 'Emergency', 'Routine'];
     const getCatI = () => catI.map((catOpt) => (
@@ -214,30 +214,30 @@ function FuelIncident({allSite}) {
         event.preventDefault();
         setValue('fuelIncidentInfo.subCategory.intervention.action', event.target.value);
     }
-    
+
     //
     const oldQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.intervention.oldQty', defaultValue: 0});
     const addedQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.intervention.qtyAdded', defaultValue: 0});
     const newQ = (Number(oldQ) + Number(addedQ)) || 0;
-    
+
     //
     const oldQt = useWatch({control, name: 'fuelIncidentInfo.subCategory.theft.oldQty', defaultValue: 0});
     const stolenQ = useWatch({control, name: 'fuelIncidentInfo.subCategory.theft.qtyStolen', defaultValue: 0});
     const newQt = (Number(oldQt) - Number(stolenQ)) || 0;
-    
+
     useEffect(() => {
         // Set the calculated value to the newQty field
         setValue('fuelIncidentInfo.subCategory.intervention.newQty', newQ);
     }, [newQ, setValue]);
-    
+
     useEffect(() => {
         // Set the calculated value to the newQty field
         setValue('fuelIncidentInfo.subCategory.theft.newQty', newQt);
     }, [newQt, setValue]);
     // Consumption
-    
+
     const catSelector = watch('fuelIncidentInfo.category');
-    
+
     return (
         <>
             <Paper elevation={5} sx={paperSx}>
@@ -265,12 +265,12 @@ function FuelIncident({allSite}) {
                                         ml: '30px',
                                         fontSize: '16px',
                                     }}>
-                                        Site-Info
+                                        AllSite-Info
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        {/*Site State*/}
+                                        {/*AllSite State*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="fuelSiteInfo.state"
@@ -314,7 +314,7 @@ function FuelIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -339,7 +339,7 @@ function FuelIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site cluster*/}
+                                        {/*AllSite cluster*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="fuelSiteInfo.cluster"
@@ -382,7 +382,7 @@ function FuelIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -407,7 +407,7 @@ function FuelIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site ID*/}
+                                        {/*AllSite ID*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="fuelSiteInfo.siteId"
@@ -423,7 +423,7 @@ function FuelIncident({allSite}) {
                                                                 field.onChange(e);
                                                                 handleSiteId(e);
                                                             }}
-                                                            label="Site ID"
+                                                            label="AllSite ID"
                                                             required
                                                             error={!!errors.sitfuelSiteInfo?.siteIdeId}
                                                             helperText={errors.fuelSiteInfo?.siteId ? (
@@ -450,7 +450,7 @@ function FuelIncident({allSite}) {
                                                                             color: 'white',
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },
@@ -475,7 +475,7 @@ function FuelIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site Type if available*/}
+                                        {/*AllSite Type if available*/}
                                         {fuelSiteInfo.siteId && (
                                             <Grid item xs={2}>
                                                 <Controller
@@ -499,7 +499,7 @@ function FuelIncident({allSite}) {
                                                             sx={{
                                                                 color: "#46F0F9",
                                                             }}
-                                                            label="Site Type"
+                                                            label="AllSite Type"
                                                             variant="outlined"
                                                             type="text"
                                                             value={fuelSiteInfo.type}
@@ -566,7 +566,7 @@ function FuelIncident({allSite}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        {/*Site State*/}
+                                        {/*AllSite State*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="fuelIncidentInfo.category"
@@ -610,7 +610,7 @@ function FuelIncident({allSite}) {
                                                                             maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-                                                                            
+
                                                                         },
                                                                     },
                                                                 },

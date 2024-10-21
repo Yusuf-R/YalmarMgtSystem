@@ -25,19 +25,17 @@ import {
     employmentType,
     jobTitle,
     sitesData,
-    status, mainSection,
+    status,
 } from "@/utils/data";
-import {Label} from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
 import ListItemText from "@mui/material/ListItemText";
 import AdminUtils from "@/utils/AdminUtilities";
-import {editStaffSchema} from "@/SchemaValidator/editStaffSchema";
+import {editStaffSchema} from "@/SchemaValidator/StaffValidator/StaffSchema"
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
-import {DemoContainer} from "@mui/x-date-pickers/internals/demo";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -289,7 +287,7 @@ function EditStaff({id, staffData}) {
             setValue('siteID', []);
         }
     }
-    // Site State Selection
+    // AllSite State Selection
     const getSiteStateOptions = () => {
         return siteStates.map((stateName) => (
             <MenuItem key={stateName} value={stateName}
@@ -324,7 +322,7 @@ function EditStaff({id, staffData}) {
         setValue('siteID', []);
         clearErrors('siteID');
     }
-    // Site Selection
+    // AllSite Selection
     const getSiteOptions = () => {
         if (!cluster) {
             return [];
@@ -2129,7 +2127,7 @@ function EditStaff({id, staffData}) {
                                     fontWeight: 'bold',
                                     color: '#FFF',
                                     fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.1rem' : '1.2rem',
-                                }}>Site Information-:<br/>
+                                }}>AllSite Information-:<br/>
                         Applicable to Technicians and Field Supervisors Role</Typography>
                 </Grid>
                 <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
@@ -2142,7 +2140,7 @@ function EditStaff({id, staffData}) {
                                 const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
                                 return (
                                     <Stack direction="column" spacing={1}>
-                                        <Typography variant="subtitle1" gutterBottom>Site State *</Typography>
+                                        <Typography variant="subtitle1" gutterBottom>AllSite State *</Typography>
                                         <TextField
                                             {...field}
                                             select
@@ -2192,7 +2190,7 @@ function EditStaff({id, staffData}) {
                                                 cursor: "not-allowed",
                                                 // pointerEvents: "none"
                                             }}>
-                                                Select Site State
+                                                Select AllSite State
                                             </MenuItem>
                                             {getSiteStateOptions()}
                                         </TextField>
@@ -2283,7 +2281,7 @@ function EditStaff({id, staffData}) {
                                 const isDisabled = !(jobRole === 'Field Supervisor' || jobRole === 'Generator Technician');
                                 return (
                                     <Stack direction="column" spacing={1}>
-                                        <Typography variant="subtitle1" gutterBottom>Site IDs *</Typography>
+                                        <Typography variant="subtitle1" gutterBottom>AllSite IDs *</Typography>
                                         <InputLabel
                                             id="siteID-label"
                                             sx={{
@@ -2306,7 +2304,7 @@ function EditStaff({id, staffData}) {
                                                 field.onChange(e);
                                                 handleSiteChange(e);
                                             }}
-                                            input={<OutlinedInput label="Site ID"/>}
+                                            input={<OutlinedInput label="AllSite ID"/>}
                                             renderValue={(selected) => (
                                                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                                                     {selected.map((value) => (
@@ -2339,7 +2337,7 @@ function EditStaff({id, staffData}) {
                                                 color: "#4BF807",
                                                 cursor: "not-allowed"
                                             }}>
-                                                Select Site ID
+                                                Select AllSite ID
                                             </MenuItem>
                                             {getSiteOptions()}
                                         </Select>

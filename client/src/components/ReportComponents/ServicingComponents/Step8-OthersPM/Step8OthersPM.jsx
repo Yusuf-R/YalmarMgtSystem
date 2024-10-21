@@ -24,7 +24,7 @@ function Step8OthersPM({txProps}) {
         securityStatus,
         siteAccess,
         summary,
-    
+
     ] = watch([
         'otherPM.feederCableStatus',
         'otherPM.changeOverSwitchStatus',
@@ -35,7 +35,7 @@ function Step8OthersPM({txProps}) {
         'securityPM.siteAccess',
         'summary',
     ]);
-    
+
     // other PM
     // feeder cable stats
     const getFeederCableStatus = () => {
@@ -52,7 +52,7 @@ function Step8OthersPM({txProps}) {
         setValue('otherPM.feederCableStatus', handledFeederCableValue);
         clearErrors('otherPM.feederCableStatus');
     }
-    
+
     // change over switch status
     const getChangeOverSwitchStatus = () => {
         return opt1.map((type) => (
@@ -68,7 +68,7 @@ function Step8OthersPM({txProps}) {
         setValue('otherPM.changeOverSwitchStatus', handledChangeOverSwitchValue);
         clearErrors('otherPM.changeOverSwitchStatus');
     }
-    
+
     // earthingCableStatus
     const getEarthingCableStatus = () => {
         return opt1.map((type) => (
@@ -84,7 +84,7 @@ function Step8OthersPM({txProps}) {
         setValue('otherPM.earthingCableStatus', handledEarthingCableValue);
         clearErrors('otherPM.earthingCableStatus');
     }
-    
+
     // earthingStatus
     const getEarthingStatus = () => {
         return opt1.map((type) => (
@@ -100,7 +100,7 @@ function Step8OthersPM({txProps}) {
         setValue('otherPM.earthingStatus', handledEarthingValue);
         clearErrors('otherPM.earthingStatus');
     }
-    
+
     // fireExtinguisherStatus
     const getFireExtinguisherStatus = () => {
         return opt1.map((type) => (
@@ -209,7 +209,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -276,7 +276,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -343,7 +343,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -410,7 +410,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -477,7 +477,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -549,7 +549,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -589,7 +589,7 @@ function Step8OthersPM({txProps}) {
                                                     handleSiteAccess(e);
                                                 }}
                                                 required
-                                                label="Site Access"
+                                                label="AllSite Access"
                                                 error={!!errors.securityPM?.siteAccess}
                                                 helperText={errors.securityPM?.siteAccess ? (
                                                     <span style={{color: "#fc8947"}}>
@@ -616,7 +616,7 @@ function Step8OthersPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -682,11 +682,11 @@ function Step8OthersPM({txProps}) {
                     </Paper>
                 </Grid>
             </Box>
-        
+
         </>
     )
-    
-    
+
+
 }
 
 

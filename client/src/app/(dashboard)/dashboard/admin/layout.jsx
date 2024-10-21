@@ -105,8 +105,7 @@ function AdminLayout({children}) {
                         position: 'relative',  // Use relative positioning to respect layout boundaries
                         top: 70,
                         zIndex: 1,
-                        background: 'linear-gradient(to bottom, #360033, #0b8793)',
-                        // background: 'linear-gradient(90deg, rgba(25,44,41,1) 12%, rgba(42,69,151,1) 30%, rgba(69,60,105,1) 77%, rgba(36,33,73,1) 92%, rgba(30,59,126,1) 100%)',
+                        background: 'linear-gradient(to right, #141e30, #243b55)',
                         borderRadius: '10px',
                         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',  // Add box shadow
                         minHeight: 'calc(100vh - 75px)',  // Ensure content takes full height minus TopNav height

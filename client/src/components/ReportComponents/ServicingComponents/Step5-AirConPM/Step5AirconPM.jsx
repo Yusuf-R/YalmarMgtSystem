@@ -16,7 +16,7 @@ const noOfAc = [1, 2];
 
 function Step5AirConPM({txProps}) {
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
-    
+
     const [
         acInstalled,
         noOfACInstalled,
@@ -28,8 +28,8 @@ function Step5AirConPM({txProps}) {
         'airconPM.ac1Status',
         'airconPM.ac2Status',
     ]);
-    
-    
+
+
     // Ac PM
     // ac installed
     const getAcInstalled = () => {
@@ -61,7 +61,7 @@ function Step5AirConPM({txProps}) {
         setValue('airconPM.noOfACInstalled', noOfAcValue);
         clearErrors('airconPM.noOfACInstalled');
     }
-    
+
     // Ac1 status
     const getAc1Status = () => {
         return opt1.map((type) => (
@@ -77,7 +77,7 @@ function Step5AirConPM({txProps}) {
         setValue('airconPM.ac1Status', ac1StatusValue);
         clearErrors('airconPM.ac1Status');
     }
-    
+
     // Ac2 status
     const getAc2Status = () => {
         return opt1.map((type) => (
@@ -93,14 +93,14 @@ function Step5AirConPM({txProps}) {
         setValue('airconPM.ac2Status', ac2StatusValue);
         clearErrors('airconPM.ac2Status');
     }
-    
+
     // set default values for ac2Status when no of AC = 1
     useEffect(() => {
         if (noOfACInstalled === 1) {
             setValue('airconPM.ac2Status', 'NOT-APPLICABLE');
         }
     }, [noOfACInstalled, setValue]);
-    
+
     // set default if AC installed is NO
     useEffect(() => {
         if (acInstalled === 'NO' || acInstalled === 'NOT-APPLICABLE') {
@@ -112,8 +112,8 @@ function Step5AirConPM({txProps}) {
             clearErrors('airconPM.ac2Status');
         }
     }, [acInstalled, setValue]);
-    
-    
+
+
     return (
         <>
             <br/><br/><br/>
@@ -134,7 +134,7 @@ function Step5AirConPM({txProps}) {
                             <Grid item xs={12}>
                                 <Typography variant="subtitle 4">AirCondition PM</Typography>
                             </Grid>
-                            {/*Site State*/}
+                            {/*AllSite State*/}
                             <Grid item xs={3}>
                                 <Controller
                                     name="airconPM.acInstalled"

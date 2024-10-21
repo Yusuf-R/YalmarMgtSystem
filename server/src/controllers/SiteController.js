@@ -44,7 +44,7 @@ class SiteController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async getSite(req, res) {
         try {
             // perform full current check
@@ -78,7 +78,7 @@ class SiteController {
                 return res.status(404).json({error: 'No site found'});
             }
             return res.status(200).json({
-                message: 'Site retrieved successfully',
+                message: 'AllSite retrieved successfully',
                 site
             })
         } catch (error) {
@@ -88,7 +88,7 @@ class SiteController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async newSite(req, res) {
         try {
             // perform full current check
@@ -122,9 +122,9 @@ class SiteController {
             // create a new entry into the db
             const newSite = await Site.create(value);
             if (!newSite) {
-                res.status(400).json({error: 'Operation Error: Site not created'})
+                res.status(400).json({error: 'Operation Error: AllSite not created'})
             }
-            return res.status(201).json({message: 'New Site created successfully', newSite});
+            return res.status(201).json({message: 'New AllSite created successfully', newSite});
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -132,7 +132,7 @@ class SiteController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async superAdminCreation(req, res) {
         try {
             // creating multiple sites at once
@@ -151,7 +151,7 @@ class SiteController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async updateSite(req, res) {
         try {
             // perform full current check
@@ -196,9 +196,9 @@ class SiteController {
                 context: 'query'
             });
             if (!updatedSite) {
-                res.status(400).json({error: 'Operation Error: Site not updated'})
+                res.status(400).json({error: 'Operation Error: AllSite not updated'})
             }
-            return res.status(201).json({message: 'Site updated successfully', updatedSite});
+            return res.status(201).json({message: 'AllSite updated successfully', updatedSite});
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});
@@ -206,7 +206,7 @@ class SiteController {
             return res.status(500).json({error: error.message});
         }
     }
-    
+
     static async deleteSite(req, res) {
         try {
             // perform full current check
@@ -254,12 +254,12 @@ class SiteController {
             // use deleteMany to delete multiple site members
             const deletedSite = await Site.deleteMany({_id: {$in: selectedIds}});
             if (!deletedSite) {
-                res.status(400).json({error: 'Operation Error: Site not deleted'})
+                res.status(400).json({error: 'Operation Error: AllSite not deleted'})
             }
             if (deletedSite.deletedCount === 0) {
                 return res.status(400).json({error: 'Failed to delete staff'});
             }
-            return res.status(201).json({message: 'Site deleted successfully', deletedSite});
+            return res.status(201).json({message: 'AllSite deleted successfully', deletedSite});
         } catch (error) {
             if (error.message === 'jwt expired') {
                 return res.status(401).json({error: error.message});

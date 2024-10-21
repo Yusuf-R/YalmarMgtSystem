@@ -13,13 +13,13 @@ function FuelAnalyticsDashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const router = useRouter();
-    
+
     useEffect(() => {
         const decryptData = async () => {
             try {
                 const siteData = sessionStorage.getItem('siteData');
                 if (!siteData) {
-                    throw new Error('Site data not found in session storage.');
+                    throw new Error('AllSite data not found in session storage.');
                 }
                 const decryptedData = await AdminUtils.decryptData(siteData);
                 setDecryptedSiteData(decryptedData);
@@ -29,10 +29,10 @@ function FuelAnalyticsDashboard() {
                 setIsLoading(false);
             }
         };
-        
+
         decryptData();
     }, []);
-    
+
     // Handle redirection or rendering based on error types
     useEffect(() => {
         if (error) {
@@ -40,25 +40,25 @@ function FuelAnalyticsDashboard() {
             // Handle different types of errors or conditions for redirection
             if (error instanceof DOMException && error.message === 'The provided data is too small') {
                 setError(new Error('Data decryption error'));
-            } else if (error.message === 'Site data not found in session storage.') {
+            } else if (error.message === 'AllSite data not found in session storage.') {
                 // Redirect to 404 page if no data found
                 router.push('/error/404');
             }
         }
     }, [error, router]);
-    
+
     if (isLoading) {
         return <LazyLoading/>;
     }
-    
+
     if (error) {
         return <DataFetchError error={error}/>;
     }
-    
+
     if (!decryptedSiteData) {
         return <DataFetchError fetchError="Decrypted data is null or undefined."/>;
     }
-    
+
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>

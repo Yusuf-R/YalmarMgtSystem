@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-// Reusable Schema for the Site Information
+// Reusable Schema for the AllSite Information
 const siteInfoSchema = yup.object().shape({
-    site_id: yup.string().required('Site ID is required'),
-    siteId: yup.string().required('Site ID is required'),
+    site_id: yup.string().required('AllSite ID is required'),
+    siteId: yup.string().required('AllSite ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
     cluster: yup
         .string()
@@ -16,15 +16,15 @@ const siteInfoSchema = yup.object().shape({
         .oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type'),
 });
 
-// Validation Schema for Site Incident
+// Validation Schema for AllSite Incident
 export const siteIncidentSchema = yup.object().shape({
     siteInfo: siteInfoSchema,
     siteIncidentInfo: yup.object().shape({
         category: yup
             .string()
             .oneOf(['Shelter', 'Security', 'Others'], 'Invalid site category')
-            .required('Site category is required'),
-        
+            .required('AllSite category is required'),
+
         subCategory: yup.mixed().test(
             'match-category',
             'Invalid subcategory details provided',

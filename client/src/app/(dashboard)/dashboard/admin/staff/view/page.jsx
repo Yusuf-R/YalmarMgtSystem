@@ -3,7 +3,7 @@ import ViewStaff from "@/components/StaffComponents/ViewStaff/ViewStaff";
 import AdminUtils from "@/utils/AdminUtilities";
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import VoidStaff from "@/components/Errors/LostInSpace/LostInSpace";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import useStaffStore from "@/store/useStaffStore"; // Import Zustand store
 
@@ -54,7 +54,7 @@ function ViewProfile() {
     }
 
     if (!decryptedUserID || !decryptedStaffData) {
-        return <VoidStaff/>;
+        return <LostInSpace/>;
     }
 
     return (

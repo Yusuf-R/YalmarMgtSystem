@@ -6,7 +6,6 @@ import {useEffect, useState} from 'react';
 import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 import useStaffStore from "@/store/useStaffStore";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
-import VoidStaff from "@/components/Errors/LostInSpace/LostInSpace";
 
 function EditProfile() {
     const [decryptedUserID, setDecryptedUserID] = useState(null);
@@ -55,7 +54,7 @@ function EditProfile() {
     }
 
     if (!decryptedUserID || !decryptedStaffData) {
-        return <VoidStaff/>;
+        return <LostInSpace/>;
     }
     return (
         <>

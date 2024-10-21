@@ -348,7 +348,7 @@ function RenderedData({data}) {
                 </Grid>
             </Grid>
             <br/>
-            {/*Site Info*/}
+            {/*AllSite Info*/}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Card sx={{...cardSx, border: 'none',}}>
@@ -422,7 +422,7 @@ function RenderedData({data}) {
                 </Grid>
             </Grid>
             <br/>
-            {/*Site Incident Full Information*/}
+            {/*AllSite Incident Full Information*/}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Card sx={{...cardSx, border: 'none',}}>

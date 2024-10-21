@@ -242,7 +242,7 @@ function AllSiteIncident({siteIncidentData}) {
     const columns = useMemo(() => [
         {
             accessorKey: 'siteInfo.siteId',
-            header: 'Site ID',
+            header: 'AllSite ID',
             Cell: ({row}) => row.original.siteInfo?.siteId || 'N/A',
         },
         {
@@ -420,7 +420,7 @@ function AllSiteIncident({siteIncidentData}) {
                         window.location.reload();
                     },
                     onError: (error) => {
-                        toast.error('Error Deleting selected Site');
+                        toast.error('Error Deleting selected AllSite');
                         console.error("Delete failed", error);
                         handleClose();
                     }
@@ -586,7 +586,7 @@ function AllSiteIncident({siteIncidentData}) {
             ,
             label: 'Search',
             placeholder:
-                'Site Details',
+                'AllSite Details',
             variant:
                 'outlined',
 
@@ -637,7 +637,7 @@ function AllSiteIncident({siteIncidentData}) {
                     height: 'auto',
                 }}>
                     <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                        All Site Incident Report Form
+                        All AllSite Incident Report Form
                     </Typography>
                 </Paper>
                 <br/>
@@ -669,7 +669,7 @@ function AllSiteIncident({siteIncidentData}) {
                             }}
                         />
                         <Tab
-                            label="Site"
+                            label="AllSite"
                             component={Link}
                             href="/dashboard/admin/reports/incident/site"
                             value="/dashboard/admin/reports/incident/site"

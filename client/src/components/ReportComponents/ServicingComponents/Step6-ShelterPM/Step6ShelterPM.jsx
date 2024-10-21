@@ -15,7 +15,7 @@ const lightOpt = ['WORKING', "NOT-WORKING", 'NOT-APPLICABLE'];
 
 function Step6ShelterPM({txProps}) {
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
-    
+
     const [
         siteCleaningStatus,
         shelterCleaningStatus,
@@ -31,12 +31,11 @@ function Step6ShelterPM({txProps}) {
         'lightningPM.floodLightAvailability',
         'lightningPM.floodLightStatus'
     ]);
-    
-    
-    
+
+
     // shelter PM
     // cleaning status
-    // Site
+    // AllSite
     const getSiteCleaningStatus = () => {
         return opt1.map((type) => (
             <MenuItem key={type} value={type}
@@ -66,7 +65,7 @@ function Step6ShelterPM({txProps}) {
         setValue('shelterPM.shelterCleaningStatus', shelterCleaningStatusValue);
         clearErrors('shelterPM.shelterCleaningStatus');
     }
-    
+
     // Light PM
     // security light availability
     const getSecurityLightAvailability = () => {
@@ -128,7 +127,7 @@ function Step6ShelterPM({txProps}) {
         setValue('lightningPM.floodLightStatus', floodLightStatusValue);
         clearErrors('lightningPM.floodLightStatus');
     }
-    
+
     // light PM
     //awl working status
     const getAwlWorkingStatus = () => {
@@ -145,7 +144,7 @@ function Step6ShelterPM({txProps}) {
         setValue('lightningPM.awl', awlWorkingStatusValue);
         clearErrors('lightningPM.awlWorkingStatus');
     }
-    
+
     // if security light availability is NO, then set the status to NOT-APPLICABLE
     useEffect(() => {
         if (securityLightAvailability === 'NO' || securityLightAvailability === 'NOT-APPLICABLE') {
@@ -153,7 +152,7 @@ function Step6ShelterPM({txProps}) {
             clearErrors('lightningPM.securityLightStatus');
         }
     }, [securityLightAvailability]);
-    
+
     // if floodlight availability is NO, then set the status to NOT-APPLICABLE
     useEffect(() => {
         if (floodLightAvailability === 'NO' || floodLightAvailability === 'NOT-APPLICABLE') {
@@ -161,7 +160,7 @@ function Step6ShelterPM({txProps}) {
             clearErrors('lightningPM.floodLightStatus');
         }
     }, [floodLightAvailability]);
-    
+
     return (
         <>
             <br/><br/><br/>
@@ -182,7 +181,7 @@ function Step6ShelterPM({txProps}) {
                             <Grid item xs={12}>
                                 <Typography variant="subtitle 4">Shelter PM</Typography>
                             </Grid>
-                            {/*Site cleaning*/}
+                            {/*AllSite cleaning*/}
                             <Grid item xs={4}>
                                 <Controller
                                     name="shelterPM.siteCleaningStatus"
@@ -198,7 +197,7 @@ function Step6ShelterPM({txProps}) {
                                                     handleSiteCleaningStatus(e);
                                                 }}
                                                 required
-                                                label="Site Cleaning Status"
+                                                label="AllSite Cleaning Status"
                                                 error={!!errors.shelterPM?.siteCleaningStatus}
                                                 helperText={errors.shelterPM?.siteCleaningStatus ? (
                                                     <span style={{color: "#fc8947"}}>
@@ -225,7 +224,7 @@ function Step6ShelterPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -291,7 +290,7 @@ function Step6ShelterPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -362,7 +361,7 @@ function Step6ShelterPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -453,7 +452,7 @@ function Step6ShelterPM({txProps}) {
                                     </Grid>
                                 </>
                             )}
-                            
+
                             <Grid item xs={2.4}>
                                 <Controller
                                     name="lightningPM.floodLightAvailability"
@@ -496,7 +495,7 @@ function Step6ShelterPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },
@@ -631,7 +630,7 @@ function Step6ShelterPM({txProps}) {
                                                                 maxHeight: 450,
                                                                 overflow: 'auto',
                                                                 fontSize: '40px',
-                                                                
+
                                                             },
                                                         },
                                                     },

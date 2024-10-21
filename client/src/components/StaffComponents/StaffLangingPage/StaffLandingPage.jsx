@@ -2,7 +2,6 @@
 import React, {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {mainSection} from "@/utils/data";
 import Stack from "@mui/material/Stack";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -10,8 +9,6 @@ import Link from "next/link";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {usePathname, useRouter} from "next/navigation";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-
 
 function StaffLandingPage() {
     // Media Queries for responsiveness
@@ -25,11 +22,10 @@ function StaffLandingPage() {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
-    // state components
     const pathname = usePathname();
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('/dashboard/admin/staff');
-    // useEffect or handling navigation between view and edits
+
     useEffect(() => {
         if (pathname.includes('new')) {
             setActiveTab('/dashboard/admin/staff/new');
@@ -39,16 +35,20 @@ function StaffLandingPage() {
             setActiveTab('/dashboard/admin/staff');
         }
     }, [pathname]);
+
+    const isSmallScreen = xSmall || small || medium;
+    const headerItems = [
+        {title: 'All Staff', src: '/NewStaff.svg', route: '/dashboard/admin/staff/all'},
+        {title: 'New +', src: '/New+.svg', route: '/dashboard/admin/staff/new'},
+    ];
+
     return (
         <>
             <Box sx={{
                 padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
                 marginTop: '10px',
             }}>
-                {/* Navigation Tabs */}
-                <Stack direction='row' spacing={2} sx={{
-                    justifyContent: 'flex-start',
-                }}>
+                <Stack direction='row' spacing={2} sx={{justifyContent: 'flex-start'}}>
                     <Tabs
                         value={activeTab}
                         onChange={(e, newValue) => setActiveTab(newValue)}
@@ -60,125 +60,94 @@ function StaffLandingPage() {
                         }}>
                         <Tab
                             label="Staff"
-                            value="/dashboard/admin/staff" // Set the value prop for this Tab
+                            value="/dashboard/admin/staff"
                             component={Link}
                             href="/dashboard/admin/staff"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
                                 fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
+                                "&.Mui-selected": {color: "#46F0F9"},
                             }}
                         />
                         <Tab
                             label="All"
-                            value="/dashboard/admin/staff/all" // Set the value prop for this Tab
+                            value="/dashboard/admin/staff/all"
                             component={Link}
                             href="/dashboard/admin/staff/all"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
                                 fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
+                                "&.Mui-selected": {color: "#46F0F9"},
                             }}
                         />
                         <Tab
                             label="New +"
-                            value="/dashboard/admin/staff/new" // Set the value prop for this Tab
+                            value="/dashboard/admin/staff/new"
                             component={Link}
                             href="/dashboard/admin/staff/new"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
                                 fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
+                                "&.Mui-selected": {color: "#46F0F9"},
                             }}
                         />
                     </Tabs>
                 </Stack>
                 <br/>
+
                 {/* Main Section */}
-                <Stack direction='row' spacing={xSmall || small || medium || large ? 5 : 25} alignItems='center'
-                       justifyContent='flex-start'>
-                    <Stack direction='column' spacing={2} alignItems='center' justifyContent='flex-start'>
-                        <Avatar
-                            alt="New Staff"
-                            src="/NewStaff.svg"
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: isSmallScreen ? 'column' : 'row',
+                        justifyContent: isSmallScreen ? 'center' : 'flex-start',
+                        alignItems: 'center',
+                        padding: isSmallScreen ? '10px' : '20px',
+                        gap: isSmallScreen ? '20px' : '40px',
+                    }}
+                >
+                    {headerItems.map((item, index) => (
+                        <Box
+                            key={index}
                             sx={{
-                                width: xSmall || small || medium || large ? '70px' : '250px',
-                                height: xSmall || small || medium || large ? '70px' : '250px',
-                                marginBottom: '20px',
                                 cursor: 'pointer',
-                                // borderRadius: 0,
+                                width: isSmallScreen ? '100%' : 'auto',
                             }}
-                            onClick={() => router.push('/dashboard/admin/staff/all')}
-                        />
-                        <Button
-                            onClick={() => router.push('/dashboard/admin/staff/all')}
-                            variant="contained"
-                            color="primary"
-                            size="extraSmall"
-                            sx={{
-                                marginTop: '10px',
-                                cursor: 'pointer',
-                                color: '#FFF',
-                                fontWeight: 'bold',
-                                fontSize: xSmall || small || medium || large ? '0.6rem' : '1.1rem',
-                                "&:hover": {
-                                    background: 'linear-gradient(to right, #093028 0%, #237A57  51%, #093028  100%)',
-                                    color: '#FFF',
-                                },
-                                background: 'linear-gradient(to right, #780206 0%, #061161  51%, #780206  100%)',
-                            }}
+                            onClick={() => router.push(item.route)}
                         >
-                            All
-                        </Button>
-                    </Stack>
-                    <Stack direction='column' spacing={2} alignItems='center' justifyContent='flex-start'>
-                        <Avatar
-                            alt="New Staff"
-                            src="/New+.svg"
-                            sx={{
-                                width: xSmall || small || medium || large ? '70px' : '250px',
-                                height: xSmall || small || medium || large ? '70px' : '250px',
-                                marginBottom: '20px',
-                                cursor: 'pointer',
-                                // borderRadius: 0,
-                            }}
-                            onClick={() => router.push('/dashboard/admin/staff/new')}
-                        />
-                        <Button
-                            onClick={() => router.push('/dashboard/admin/staff/new')}
-                            variant="contained"
-                            color="primary"
-                            size="extraSmall"
-                            sx={{
-                                marginTop: '10px',
-                                cursor: 'pointer',
-                                color: '#FFF',
-                                fontWeight: 'bold',
-                                minWidth: 0,
-                                fontSize: xSmall || small || medium || large ? '0.6rem' : '1.2rem',
-                                "&:hover": {
-                                    background: 'linear-gradient(to right, #093028 0%, #237A57  51%, #093028  100%)',
-                                    color: '#FFF',
-                                },
-                                background: 'linear-gradient(to right, #780206 0%, #061161  51%, #780206  100%)',
-
-                            }}
-                        >
-                            New +
-                        </Button>
-                    </Stack>
-
-                </Stack>
-
+                            <Stack
+                                direction="column"
+                                spacing={{xs: 1, sm: 2, md: 3}}
+                                alignItems="center"
+                            >
+                                <Avatar
+                                    alt={item.title}
+                                    src={item.src}
+                                    sx={{
+                                        width: isSmallScreen ? '150px' : '200px',
+                                        height: isSmallScreen ? '150px' : '200px',
+                                        marginBottom: isSmallScreen ? '10px' : '20px',
+                                    }}
+                                />
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        color: '#FFF',
+                                        fontSize: isSmallScreen ? '1.0rem' : '1.2rem',
+                                        fontWeight: 'bold',
+                                        textAlign: 'center',
+                                        "&:hover": {background: 'green', color: '#FFF'},
+                                    }}
+                                >
+                                    {item.title}
+                                </Typography>
+                            </Stack>
+                        </Box>
+                    ))}
+                </Box>
             </Box>
         </>
     );

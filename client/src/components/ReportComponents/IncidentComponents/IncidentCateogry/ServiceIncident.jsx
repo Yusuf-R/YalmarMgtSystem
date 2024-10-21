@@ -30,7 +30,7 @@ function ServiceIncident({allSite}) {
         resolver: yupResolver(serviceIncidentSchema),
         reValidateMode: 'onChanged'
     });
-    // Site Info Section
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === serviceSiteInfo.state).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === serviceSiteInfo.cluster).map(site => site.siteId);
@@ -255,7 +255,7 @@ function ServiceIncident({allSite}) {
                     </Typography>
                     <Card sx={{bgcolor: '#274e61', color: '#FFF'}}>
                         <CardContent>
-                            {/*Site info*/}
+                            {/*AllSite info*/}
                             <Accordion sx={accordionSx}>
                                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
                                                   sx={cardSx}>
@@ -266,12 +266,12 @@ function ServiceIncident({allSite}) {
                                         ml: '30px',
                                         fontSize: '16px',
                                     }}>
-                                        Site-Info
+                                        AllSite-Info
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        {/*Site State*/}
+                                        {/*AllSite State*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="serviceSiteInfo.state"
@@ -340,7 +340,7 @@ function ServiceIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site cluster*/}
+                                        {/*AllSite cluster*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="serviceSiteInfo.cluster"
@@ -408,7 +408,7 @@ function ServiceIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site ID*/}
+                                        {/*AllSite ID*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="serviceSiteInfo.siteId"
@@ -424,7 +424,7 @@ function ServiceIncident({allSite}) {
                                                                 field.onChange(e);
                                                                 handleSiteId(e);
                                                             }}
-                                                            label="Site ID"
+                                                            label="AllSite ID"
                                                             required
                                                             error={!!errors.serviceSiteInfo?.siteId}
                                                             helperText={errors.serviceSiteInfo?.siteId ? (
@@ -476,7 +476,7 @@ function ServiceIncident({allSite}) {
                                                 )}
                                             />
                                         </Grid>
-                                        {/*Site Type if available*/}
+                                        {/*AllSite Type if available*/}
                                         {serviceSiteInfo.siteId && (
                                             <Grid item xs={2}>
                                                 <Controller
@@ -500,7 +500,7 @@ function ServiceIncident({allSite}) {
                                                             sx={{
                                                                 color: "#46F0F9",
                                                             }}
-                                                            label="Site Type"
+                                                            label="AllSite Type"
                                                             variant="outlined"
                                                             error={!!errors.serviceSiteInfo?.type}
                                                             helperText={errors.serviceSiteInfo?.type ? errors.serviceSiteInfo.type.message : ''}
@@ -571,7 +571,7 @@ function ServiceIncident({allSite}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        {/*Site State*/}
+                                        {/*AllSite State*/}
                                         <Grid item xs={2}>
                                             <Controller
                                                 name="serviceIncidentInfo.category"

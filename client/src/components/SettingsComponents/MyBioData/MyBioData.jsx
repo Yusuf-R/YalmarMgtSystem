@@ -74,7 +74,7 @@ function MyBioData({staffData}) {
                         <TextField
                             id="input-with-icon-textfield"
                             defaultValue={staffData.siteState}
-                            label="Site State"
+                            label="AllSite State"
                             InputLabelProps={{
                                 sx: {
                                     color: "#46F0F9",
@@ -83,7 +83,7 @@ function MyBioData({staffData}) {
                                     },
                                 }
                             }}
-                            
+
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -141,7 +141,7 @@ function MyBioData({staffData}) {
                                 fontSize: '18px',
                             }}
                         >
-                            Site IDs
+                            AllSite IDs
                         </Button>
                         <Select
                             multiple
@@ -284,7 +284,7 @@ function MyBioData({staffData}) {
                                                 height={350}
                                             />
                                         )}
-                                    
+
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
@@ -489,7 +489,7 @@ function MyBioData({staffData}) {
                                                                         height: 31,
                                                                         bgcolor: '#074043',
                                                                         fontSize: '0.9rem',
-                                                                        
+
                                                                     }}>MN</Avatar>
                                                                 </InputAdornment>
                                                             ),
@@ -946,7 +946,7 @@ function MyBioData({staffData}) {
                                                 <Stack direction='row' spacing={2}>
                                                     <TextField
                                                         id="input-with-icon-textfield"
-                                                        
+
                                                         defaultValue={staffData.nextOfKinRelationship}
                                                         label="Relationship"
                                                         InputLabelProps={{
@@ -1080,7 +1080,7 @@ function MyBioData({staffData}) {
                                             {/*Column 1 : Personal Info Row*/}
                                             <Stack direction='row' spacing={4} useFlexGap flexWrap="wrap">
                                                 {/* Column 1 : Name: MiddleName: LastName */}
-                                                
+
                                                 <Stack direction='row' spacing={4}>
                                                     <TextField
                                                         id="input-with-icon-textfield"
@@ -1161,7 +1161,7 @@ function MyBioData({staffData}) {
                                                                 },
                                                             }
                                                         }}
-                                                        
+
                                                         InputProps={{
                                                             startAdornment: (
                                                                 <InputAdornment position="start"
@@ -1210,7 +1210,7 @@ function MyBioData({staffData}) {
                                                         variant="filled"
                                                     />
                                                 </Stack>
-                                            
+
                                             </Stack>
                                         </Paper>
                                     </Grid>
@@ -1246,7 +1246,7 @@ function MyBioData({staffData}) {
                                                                         },
                                                                     }
                                                                 }}
-                                                                
+
                                                                 InputProps={{
                                                                     startAdornment: (
                                                                         <InputAdornment position="start"

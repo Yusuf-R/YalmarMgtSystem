@@ -1,4 +1,5 @@
 'use client';
+import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Tabs from "@mui/material/Tabs";
@@ -15,24 +16,26 @@ import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import {
-    mainSection,
     sitesData, siteStates, siteStatus, type,
 } from "@/utils/data";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
-import {newSiteSchema} from "@/SchemaValidator/SiteValidator/SiteSchema";
+import {editSiteSchema} from "@/SchemaValidator/SiteValidator/SiteSchema"
 import useMediaQuery from "@mui/material/useMediaQuery";
+import useSiteStore from "@/store/useSiteStore";
+import AdminUtilities from "@/utils/AdminUtilities"; // Zustand store for site
 
-function NewSite() {
+function EditSite({id, siteData}) {
     const router = useRouter();
     const pathname = usePathname();
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/site/new');
-    const [stateMain, setStateMain] = useState('');
-    const [cluster, setClusterType] = useState('');
-    const [status, setStatus] = useState('');
-    const [siteType, setSiteType] = useState('');
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/site/edit');
+    const [stateMain, setStateMain] = useState(siteData.state || '');
+    const [cluster, setClusterType] = useState(siteData.cluster || '');
+    const [status, setStatus] = useState(siteData.status || '');
+    const [siteType, setSiteType] = useState(siteData.type || '');
 
+    // Media Queries
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
     const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
     const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
@@ -43,51 +46,76 @@ function NewSite() {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
+    const {setEncryptedSiteData} = useSiteStore.getState();
+
     const {
-        control, handleSubmit, formState: {errors}, setError, reset
+        control,
+        handleSubmit,
+        formState: {errors},
+        setError,
+        reset,
     } = useForm({
         mode: "onTouched",
-        resolver: yupResolver(newSiteSchema),
+        resolver: yupResolver(editSiteSchema), // Use edit schema
+        defaultValues: {
+            siteId: siteData.siteId || '',
+            type: siteData.type || '',
+            state: siteData.state || '',
+            cluster: siteData.cluster || '',
+            status: siteData.status || '',
+            longitude: siteData.longitude || 0.00,
+            latitude: siteData.latitude || 0.00,
+            location: siteData.location || '',
+        },
         reValidateMode: "onChange",
     });
 
     const Clear = () => {
-        // clear all the content of the fields of the box components
         reset();
-    }
+    };
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-    }
+    };
+
+    // function to view site profile
+    const viewSite = async () => {
+        const encryptedSiteID = await AdminUtilities.encryptUserID(id);
+        // encrypt the data and store it in the session storage
+        const encryptedSiteData = await AdminUtilities.encryptData(siteData);
+        // Set the encrypted data in Zustand store
+        setEncryptedSiteData(encryptedSiteData, encryptedSiteID);
+        router.push(`/dashboard/admin/site/view`);
+    };
 
     useEffect(() => {
-        if (pathname.includes('new')) {
-            setActiveTab('/dashboard/admin/site/new');
+        if (pathname.includes('view')) {
+            setActiveTab('/dashboard/admin/site/view');
+        } else if (pathname.includes('edit')) {
+            setActiveTab('/dashboard/admin/site/edit');
         } else {
-            setActiveTab('/dashboard/admin/site/all');
+            setActiveTab('/dashboard/admin/site');
         }
     }, [pathname]);
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
 
-    // set state
+    // Set state
     const getState = () => {
         return siteStates.map((stateName) => (
             <MenuItem key={stateName} value={stateName}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{stateName}</MenuItem>
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {stateName}
+            </MenuItem>
         ));
-    }
+    };
     const handleState = (event) => {
-        // prevent default action of submitting the form
         event.preventDefault();
         setStateMain(event.target.value);
-        // Clear the cluster selection when a new state is selected
         setClusterType('');
-    }
+    };
 
-    // set cluster
+    // Set cluster
     const getCluster = () => {
         if (!stateMain) {
             return [];
@@ -98,97 +126,80 @@ function NewSite() {
                 {clusterName}
             </MenuItem>
         ));
-    }
+    };
     const handleCluster = (event) => {
         event.preventDefault();
         setClusterType(event.target.value);
-    }
+    };
 
-    // set Type
+    // Set type
     const getType = () => {
         return type.map((types) => (
             <MenuItem key={types} value={types}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{types}</MenuItem>
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {types}
+            </MenuItem>
         ));
-    }
+    };
     const handleType = (event) => {
         event.preventDefault();
         setSiteType(event.target.value);
-    }
+    };
 
-    // set status
+    // Set status
     const getStatus = () => {
         return siteStatus.map((status) => (
             <MenuItem key={status} value={status}
-                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>{status}</MenuItem>
+                      sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
+                {status}
+            </MenuItem>
         ));
-    }
+    };
     const handleStatus = (event) => {
         event.preventDefault();
         setStatus(event.target.value);
-    }
+    };
 
-
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
-
-
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
+    // Update Mutation instance
     const mutation = useMutation({
-        mutationKey: ["NewSite"],
-        mutationFn: AdminUtils.NewSite,
+        mutationKey: ["UpdateSite"],
+        mutationFn: AdminUtils.UpdateSite,
     });
 
-    const SubmitData = async (data) => {
-        try {
-            await newSiteSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
-            mutation.mutate(data, {
-                onSuccess: (response) => {
-                    if (response) {
-                        toast.success('New AllSite Entry Created Successfully');
-                        // refresh the query that fetched all the site
-                        queryClient.invalidateQueries({queryKey: ["AllSite"]});
-                        // clear the form fields
-                        Clear();
-                        router.push('/dashboard/admin/site/all');
-                    } else {
-                        toast.error('Failed to create new site account');
-                    }
-                },
-                onError: (error) => {
-                    toast.error(error.message);
-                    console.log(error);
-                }
-            });
-        } catch (e) {
-            console.log({e});
-            e.inner.forEach((error) => {
-                setError(error.path, {
-                    type: error.type,
-                    message: error.message,
-                });
-            });
-        }
-    }
+    const submitUpdate = async (data) => {
+        await editSiteSchema.validate(data, {abortEarly: false});
+        console.log("Validation passed!"); // Check if validation passes
+        data._id = siteData._id;
+        mutation.mutate(data, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({queryKey: ["AllSite"]});
+                toast.success('Site updated successfully');
+                router.push('/dashboard/admin/site/all');
+            },
+            onError: (error) => {
+                toast.error('Error updating site data');
+                console.error("Update failed", error);
+            }
+        });
+    };
 
     return (
         <>
             <Box
                 component='form'
                 noValidate
-                onSubmit={handleSubmit(SubmitData)}
+                onSubmit={handleSubmit(submitUpdate)}
                 sx={{
                     padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
                     marginTop: '10px',
                     display: 'flex',
                     flexDirection: 'column',
-                    maxWidth: '100%', // This ensures nothing overflows
-                    overflow: 'hidden', // Handles overflowing content
+                    maxWidth: '100%',
+                    overflow: 'hidden',
                 }}
             >
-                {/*Navigation Tabs */}
+                {/* Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
                 }}>
@@ -202,7 +213,6 @@ function NewSite() {
                             },
                         }}
                     >
-
                         <Tab
                             label="Site"
                             component={Link}
@@ -231,12 +241,24 @@ function NewSite() {
                                 },
                             }}
                         />
-
                         <Tab
-                            label="New +"
+                            label="View"
+                            onClick={viewSite}
+                            value="/dashboard/admin/site/view"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                        <Tab
+                            label="Edit"
                             component={Link}
-                            href="/dashboard/admin/site/new"
-                            value="/dashboard/admin/site/new"
+                            href="/dashboard/admin/site/edit"
+                            value="/dashboard/admin/site/edit"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',
@@ -274,7 +296,6 @@ function NewSite() {
                                 <Controller
                                     name="siteId"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <TextField
                                             {...field}
@@ -307,7 +328,6 @@ function NewSite() {
                                 <Controller
                                     name="type"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <FormControl fullWidth>
                                             <TextField
@@ -376,7 +396,6 @@ function NewSite() {
                                 <Controller
                                     name="state"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <FormControl fullWidth>
                                             <TextField
@@ -445,7 +464,6 @@ function NewSite() {
                                 <Controller
                                     name="cluster"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <FormControl fullWidth>
                                             <TextField
@@ -514,7 +532,6 @@ function NewSite() {
                                 <Controller
                                     name="status"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <FormControl fullWidth>
                                             <TextField
@@ -664,7 +681,6 @@ function NewSite() {
                                 <Controller
                                     name="location"
                                     control={control}
-                                    defaultValue=""
                                     render={({field}) => (
                                         <TextField
                                             {...field}
@@ -704,9 +720,10 @@ function NewSite() {
                             title='Clear'> Clear </Button>
                     <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
                 </Stack>
+
             </Box>
         </>
-    )
+    );
 }
 
-export default NewSite;
+export default EditSite;

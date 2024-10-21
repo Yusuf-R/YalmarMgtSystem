@@ -75,7 +75,7 @@ function NewFuellingReport({allSite}) {
         },
     }
 
-    // Site Info Section
+    // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === stateMain).map(site => site.cluster)));
     const siteIds = allSite.filter(site => site.cluster === cluster).map(site => site.siteId);
@@ -247,7 +247,7 @@ function NewFuellingReport({allSite}) {
                     noValidate
                 >
                     {/* Main Body */}
-                    {/*Site Info*/}
+                    {/*AllSite Info*/}
                     <Grid container spacing={4}>
                         <Paper elevation={5} sx={{
                             alignContent: 'start',
@@ -262,9 +262,9 @@ function NewFuellingReport({allSite}) {
                             {/* First Row (1 fields) prefix */}
                             <Grid container spacing={4}>
                                 <Grid item xs={12}>
-                                    <Typography variant="subtitle 4">Site Info</Typography>
+                                    <Typography variant="subtitle 4">AllSite Info</Typography>
                                 </Grid>
-                                {/*Site State*/}
+                                {/*AllSite State*/}
                                 <Grid item xs={4}>
                                     <Controller
                                         name="state"
@@ -333,7 +333,7 @@ function NewFuellingReport({allSite}) {
                                         )}
                                     />
                                 </Grid>
-                                {/*Site cluster*/}
+                                {/*AllSite cluster*/}
                                 <Grid item xs={4}>
                                     <Controller
                                         name="cluster"
@@ -401,7 +401,7 @@ function NewFuellingReport({allSite}) {
                                         )}
                                     />
                                 </Grid>
-                                {/*Site ID*/}
+                                {/*AllSite ID*/}
                                 <Grid item xs={4}>
                                     <Controller
                                         name="siteId"
@@ -417,7 +417,7 @@ function NewFuellingReport({allSite}) {
                                                         field.onChange(e);
                                                         handleSiteId(e);
                                                     }}
-                                                    label="Site ID"
+                                                    label="AllSite ID"
                                                     required
                                                     error={!!errors.siteId}
                                                     helperText={errors.siteId ? (
@@ -469,7 +469,7 @@ function NewFuellingReport({allSite}) {
                                         )}
                                     />
                                 </Grid>
-                                {/*Site Type if available*/}
+                                {/*AllSite Type if available*/}
                                 {siteID && (
                                     <Grid item xs={4}>
                                         <Controller
@@ -493,7 +493,7 @@ function NewFuellingReport({allSite}) {
                                                     sx={{
                                                         color: "#46F0F9",
                                                     }}
-                                                    label="Site Type"
+                                                    label="AllSite Type"
                                                     variant="outlined"
                                                     error={!!errors.type}
                                                     helperText={errors.type ? errors.type.message : ''}

@@ -36,7 +36,7 @@ import LazyComponent from "@/components/LazyComponent/LazyComponent";
 
 const steps = [
     'Reporting AllStaff-Info',
-    'Site-Info',
+    'AllSite-Info',
     'Service-Info',
     'Gen-PM',
     'AirCon-PM',

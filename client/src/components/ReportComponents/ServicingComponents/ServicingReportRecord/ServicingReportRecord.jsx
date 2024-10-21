@@ -76,40 +76,40 @@ function ServicingReportRecord({data}) {
         servicingDate,
         nextServiceDate,
     } = data[0] || data;
-    
+
     // format servicingDate to a more readable format
     const formattedServicingDate = dayjs(servicingDate).format('DD/MMM/YYYY');
-    
+
     // format nextServiceDate to a more readable format
     const formattedNextServiceDate = dayjs(nextServiceDate).format('DD/MMM/YYYY');
-    
+
     const handlePrevious = () => {
         setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : images.length - 1));
     };
-    
+
     const handleNext = () => {
         setCurrentIndex((prevIndex) => (prevIndex < images.length - 1 ? prevIndex + 1 : 0));
     };
-    
+
     const handlers = useSwipeable({
         onSwipedLeft: handleNext,
         onSwipedRight: handlePrevious,
         preventScrollOnSwipe: true,
         trackMouse: true,
     });
-    
+
     // Split the summary into an array of sentences
     const summaryLines = summary.split('\r\n');
-    
+
     // handle modal opening and closing
     const handleOpenModal = () => {
         setIsModalOpen(true);
     };
-    
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-    
+
     // Keyboard navigation within the modal
     const handleKeyDown = (event) => {
         if (event.key === 'ArrowLeft') {
@@ -226,8 +226,8 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
-                {/*Site Info*/}
+
+                {/*AllSite Info*/}
                 <Grid item xs={12}>
                     <Card sx={{...cardSx, border: 'none',}}>
                         <Typography variant='h6' sx={{
@@ -290,7 +290,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Servicing Dates */}
                 <Grid item xs={6}>
                     <Card sx={{...cardSx, borderRadius: 5, p: 0.2, border: 'none',}}>
@@ -318,7 +318,7 @@ function ServicingReportRecord({data}) {
                         </Typography>
                     </Card>
                 </Grid>
-                
+
                 {/* Summary Section */}
                 <Grid item xs={12}>
                     <Card sx={{...cardSx, border: 'none',}}>
@@ -369,7 +369,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Generator PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: '#FFF'}}>
@@ -480,7 +480,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Air Conditioning PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -535,7 +535,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Shelter PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -580,7 +580,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Lightning PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -640,7 +640,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* DC System Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -711,7 +711,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Security PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -755,7 +755,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Other PM Section */}
                 <Grid item xs={12}>
                     <Card sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -810,7 +810,7 @@ function ServicingReportRecord({data}) {
                         </CardContent>
                     </Card>
                 </Grid>
-                
+
                 {/* Image Carousel Section */}
                 {
                     images.length > 0 && (
@@ -931,7 +931,7 @@ function ServicingReportRecord({data}) {
                 </Box>
             </Dialog>
         </>
-    
+
     )
 }
 

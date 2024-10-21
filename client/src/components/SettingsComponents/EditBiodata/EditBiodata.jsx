@@ -107,7 +107,7 @@ function EditBiodata({id, staffData}) {
         resolver: yupResolver(editStaffSchema),
         reValidateMode: "onChange",
     });
-    
+
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
@@ -201,7 +201,7 @@ function EditBiodata({id, staffData}) {
     };
     const handleLGAChange = (event) => {
         // prevent default action of submitting the form
-        
+
         event.preventDefault();
         setLGA(event.target.value);
     };
@@ -262,7 +262,7 @@ function EditBiodata({id, staffData}) {
             setValue('siteID', []);
         }
     }
-    // Site State Selection
+    // AllSite State Selection
     const getSiteStateOptions = () => {
         return siteStates.map((stateName) => (
             <MenuItem key={stateName} value={stateName}
@@ -297,7 +297,7 @@ function EditBiodata({id, staffData}) {
         setValue('siteID', []);
         clearErrors('siteID');
     }
-    // Site Selection
+    // AllSite Selection
     const getSiteOptions = () => {
         if (!cluster) {
             return [];
@@ -324,7 +324,7 @@ function EditBiodata({id, staffData}) {
         const {target: {value}} = event;
         setSiteID(typeof value === 'string' ? value.split(',') : value);
     };
-    
+
     // check if stateOfOrigin is set, and if true auto select it's corresponding lga from the staff data
     // also check if role is Field Supervisor or Generator Technician, and if true auto select the siteState,  cluster and siteID from the staff data
     // all this should only happen when edit page is loaded and only once
@@ -340,7 +340,7 @@ function EditBiodata({id, staffData}) {
             }
         }, [staffData, setValue]
     );
-    
+
     // Menu Style props
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
@@ -353,7 +353,7 @@ function EditBiodata({id, staffData}) {
             },
         },
     };
-    
+
     // useEffect for handling error changes text across the edit form
     useEffect(() => {
         if (jobRole !== 'Field Supervisor' && jobRole !== 'Generator Technician') {
@@ -364,7 +364,7 @@ function EditBiodata({id, staffData}) {
             clearErrors(['cluster', 'siteID']); // Clear any validation errors
         }
     }, [jobRole, setValue, clearErrors]);
-    
+
     // useEffect or handling navigation between biodata and edits
     useEffect(() => {
         if (pathname.includes('editbiodata')) {
@@ -375,7 +375,7 @@ function EditBiodata({id, staffData}) {
             setActiveTab('/dashboard/admin/settings');
         }
     }, [pathname]);
-    
+
     // use Effect for closely monitoring if the edit form has had any changes in it's field
     useEffect(() => {
         // Set initial form values
@@ -405,27 +405,27 @@ function EditBiodata({id, staffData}) {
             // Add other fields as needed
         };
         setInitialValues(initialFormValues);
-        
+
         // Set form values in the useForm
         for (const [key, value] of Object.entries(initialFormValues)) {
             setValue(key, value);
         }
     }, [staffData, setValue]);
-    
+
     const watchAllFields = watch(); // Watch all form fields
-    
+
     const queryClient = useQueryClient()
-    
+
     if (Object.keys(errors).length > 0) {
         console.log(errors);
     }
-    
+
     // Mutation for updating staff profile
     const mutation = useMutation({
         mutationKey: ["UpdateStaff"],
         mutationFn: AdminUtils.UpdateStaff,
     });
-    
+
     const UpdateProfile = async (data) => {
         try {
             await editStaffSchema.validate(data, {abortEarly: false});
@@ -498,8 +498,8 @@ function EditBiodata({id, staffData}) {
                                 color: '#46F0F9',
                                 opacity: 1,
                             }
-                            
-                            
+
+
                         }}
                     >
                         <Tab
@@ -554,7 +554,7 @@ function EditBiodata({id, staffData}) {
                     height: 'auto',
                     margin: '25px'
                 }}>
-                    
+
                     {/*    First Row: Title field*/}
                     <Grid container spacing={4}>
                         {/*Heading BIO data*/}
@@ -941,7 +941,7 @@ function EditBiodata({id, staffData}) {
                                                                         color: '#F51313',
                                                                         backgroundColor: '#0B0337',
                                                                         borderRadius: '50px',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -1376,7 +1376,7 @@ function EditBiodata({id, staffData}) {
                                                 error={!!errors.nextOfKin}
                                                 helperText={errors.nextOfKin ? errors.nextOfKin.message : ''}
                                                 required
-                                            
+
                                             />
                                         </Stack>
                                     </FormControl>
@@ -1750,7 +1750,7 @@ function EditBiodata({id, staffData}) {
                                                                         color: '#F51313',
                                                                         backgroundColor: '#0B0337',
                                                                         borderRadius: '50px',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -1975,7 +1975,7 @@ function EditBiodata({id, staffData}) {
                                                                         color: '#F51313',
                                                                         backgroundColor: '#0B0337',
                                                                         borderRadius: '50px',
-                                                                        
+
                                                                     },
                                                                 },
                                                             },
@@ -2126,9 +2126,9 @@ function EditBiodata({id, staffData}) {
                             />
                         </Grid>
                         <Grid item xs={12}></Grid>
-                        {/*Next row containing 3 fields:= Site information row : state, cluster, siteID*/}
+                        {/*Next row containing 3 fields:= AllSite information row : state, cluster, siteID*/}
                         <Grid item xs={12}>
-                            <Typography variant="h6" component="h6" color='white'>Site Information -: (Applicable to
+                            <Typography variant="h6" component="h6" color='white'>AllSite Information -: (Applicable to
                                 Technicians
                                 and
                                 Field Supervisors Role)</Typography>
@@ -2143,7 +2143,8 @@ function EditBiodata({id, staffData}) {
                                     return (
                                         <FormControl fullWidth>
                                             <Stack direction="column" spacing={2}>
-                                                <Typography variant="subtitle1" gutterBottom>Site State *</Typography>
+                                                <Typography variant="subtitle1" gutterBottom>AllSite State
+                                                    *</Typography>
                                                 <TextField
                                                     {...field}
                                                     select
@@ -2193,7 +2194,7 @@ function EditBiodata({id, staffData}) {
                                                         cursor: "not-allowed",
                                                         // pointerEvents: "none"
                                                     }}>
-                                                        Select Site State
+                                                        Select AllSite State
                                                     </MenuItem>
                                                     {getSiteStateOptions()}
                                                 </TextField>
@@ -2284,7 +2285,7 @@ function EditBiodata({id, staffData}) {
                                     return (
                                         <FormControl fullWidth>
                                             <Stack direction="column" spacing={2}>
-                                                <Typography variant="subtitle1" gutterBottom>Site IDs *</Typography>
+                                                <Typography variant="subtitle1" gutterBottom>AllSite IDs *</Typography>
                                                 <InputLabel
                                                     id="siteID-label"
                                                     sx={{
@@ -2303,12 +2304,12 @@ function EditBiodata({id, staffData}) {
                                                     labelId="siteID-label"
                                                     multiple
                                                     value={field.value}
-                                                    
+
                                                     onChange={(e) => {
                                                         field.onChange(e);
                                                         handleSiteChange(e);
                                                     }}
-                                                    input={<OutlinedInput label="Site ID"/>}
+                                                    input={<OutlinedInput label="AllSite ID"/>}
                                                     renderValue={(selected) => (
                                                         <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                                                             {selected.map((value) => (
@@ -2333,7 +2334,7 @@ function EditBiodata({id, staffData}) {
                                                         '.MuiSvgIcon-root ': {
                                                             // set the icon to white only when disable is false
                                                             color: isDisabled ? '' : '#fff',
-                                                            
+
                                                         }
                                                     }}
                                                 >
@@ -2341,7 +2342,7 @@ function EditBiodata({id, staffData}) {
                                                         color: "#4BF807",
                                                         cursor: "not-allowed"
                                                     }}>
-                                                        Select Site ID
+                                                        Select AllSite ID
                                                     </MenuItem>
                                                     {getSiteOptions()}
                                                 </Select>

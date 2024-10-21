@@ -116,7 +116,7 @@ const filterReportData = (data) => {
         filteredData.staffIncidentInfo = staffIncidentInfo;
     }
 
-    // Check if Site category is selected, add only Site-related info
+    // Check if AllSite category is selected, add only AllSite-related info
     if (reportCategory.includes('Site')) {
         filteredData.siteInfo = siteInfo;
         filteredData.siteIncidentInfo = siteIncidentInfo;
