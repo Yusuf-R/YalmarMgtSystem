@@ -13,21 +13,37 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function ViewServiceReport() {
     const selectedReport = useServiceReportStore((state) => state.selectedReport);
     const clearReportData = useServiceReportStore((state) => state.clearSelectedReport);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/servicing/view');
-    
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+    // const isSmallScreen = xSmall || small || medium || large;
+
+    const isSmallScreen = useMediaQuery('(max-width:899px)');
+
     useEffect(() => {
         // Clear the store after retrieving the data
         return () => {
             clearReportData();
         };
     }, [clearReportData]);
-    
+
     const pathname = usePathname();
-    
+
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('new')) {
@@ -42,121 +58,93 @@ function ViewServiceReport() {
             setActiveTab('/dashboard/admin/reports');
         }
     }, [pathname]);
-    
+
     const goPrev = () => {
         window.history.back();
     }
     if (!selectedReport) {
         return (
             <>
-                <Box sx={mainSection}>
-                    {/*Navigation Tabs */}
+                <Box sx={{
+                    padding: isSmallScreen ? '10px' : '20px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                }}>
                     <Stack direction='row' spacing={2} sx={{
                         justifyContent: 'flex-start',
+                        width: '100%',
+                        overflowX: 'auto',
                     }}>
                         <Tabs
                             value={activeTab}
                             onChange={(e, newValue) => setActiveTab(newValue)}
-                            centered
+                            variant={isSmallScreen ? "scrollable" : "standard"}
+                            scrollButtons="auto"
                             sx={{
                                 '& .MuiTabs-indicator': {
                                     backgroundColor: '#46F0F9',
                                 },
                             }}
                         >
-                            
-                            <Tab
-                                label="Reports"
-                                component={Link}
-                                href="/dashboard/admin/reports"
-                                value="/dashboard/admin/reports"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
-                            <Tab
-                                label="All"
-                                component={Link}
-                                href="/dashboard/admin/reports/servicing/all"
-                                value="/dashboard/admin/reports/servicing/all"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
-                            
-                            <Tab
-                                label="New"
-                                component={Link}
-                                href="/dashboard/admin/reports/servicing/new"
-                                value="/dashboard/admin/reports/servicing/new"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
-                            <Tab
-                                label="Search"
-                                component={Link}
-                                href="/dashboard/admin/reports/servicing/search"
-                                value="/dashboard/admin/reports/servicing/search"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
-                            <Tab
-                                label="View"
-                                component={Link}
-                                href="/dashboard/admin/reports/servicing/view"
-                                value="/dashboard/admin/reports/servicing/view"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
+                            {['Reports', 'All', 'New', 'Search', 'View'].map((label) => (
+                                <Tab
+                                    key={label}
+                                    label={label}
+                                    component={Link}
+                                    href={`/dashboard/admin/reports${label === 'Reports' ? '' : '/servicing/' + label.toLowerCase()}`}
+                                    value={`/dashboard/admin/reports${label === 'Reports' ? '' : '/servicing/' + label.toLowerCase()}`}
+                                    sx={{
+                                        color: "#FFF",
+                                        fontWeight: 'bold',
+                                        fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                        "&.Mui-selected": {
+                                            color: "#46F0F9",
+                                        },
+                                    }}
+                                />
+                            ))}
                         </Tabs>
                     </Stack>
-                    <br/>
-                    <Typography variant='h6'
-                                sx={{
-                                    fontFamily: 'Poppins',
-                                    fontWeight: 'bold',
-                                    color: '#FFF',
-                                    ml: 60,
-                                    mt: 5,
-                                    p: 2,
-                                    border: '1px solid rgb(255, 153, 153)',
-                                    borderRadius: 10,
-                                    width: '30%',
-                                    textAlign: 'center',
-                                }}>
-                        Oops!!! No Service Report found. <IconButton><ArrowBackSharpIcon
-                        sx={{color: 'lime', fontSize: 30}} onClick={goPrev}/></IconButton>
-                    </Typography>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '20px',
+                        width: '100%',
+                    }}>
+                        <Typography variant="h6"
+                                    sx={{
+                                        fontFamily: 'Poppins',
+                                        fontWeight: 'bold',
+                                        borderRadius: 5,
+                                        padding: '10px 15px',
+                                        bgcolor: '#0059b3',
+                                        color: '#FFF',
+                                        width: 'auto',
+                                        maxWidth: '90%',
+                                        textAlign: 'center',
+                                        fontSize: isSmallScreen ? '0.9rem' : '1.1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}>
+                            No Record found
+                            <IconButton onClick={goPrev} sx={{ml: 1}}>
+                                <ArrowBackSharpIcon sx={{color: 'lime', fontSize: isSmallScreen ? 16 : 20}}/>
+                            </IconButton>
+                        </Typography>
+                    </Box>
                 </Box>
             </>
         )
     }
     return (
         <>
-            <Box sx={mainSection}>
+            <Box>
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -171,7 +159,7 @@ function ViewServiceReport() {
                             },
                         }}
                     >
-                        
+
                         <Tab
                             label="Reports"
                             component={Link}
@@ -198,7 +186,7 @@ function ViewServiceReport() {
                                 },
                             }}
                         />
-                        
+
                         <Tab
                             label="New"
                             component={Link}

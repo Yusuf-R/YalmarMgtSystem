@@ -12,16 +12,15 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function Step11DataPreview({formData}) {
     const servicingDate = new Date(formData.servicingDate).toLocaleDateString();
     const cardSx = {
         alignContent: 'start',
-        backgroundColor: 'inherit',
-        color: '#46F0F9',
+        color: '#FFF',
         borderRadius: '10px',
-        width: '100%',
-        height: 'auto',
+        background: 'linear-gradient(to right, #1d4350, #a43931)',
         border: '2px solid #4db8ff',
     }
     // Split the summary into an array of sentences
@@ -30,32 +29,21 @@ function Step11DataPreview({formData}) {
         'Please ensure you have filled out all the required fields correctly before submitting.',
         'Document can not be edited after submission'
     ];
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
     return (
         <>
-            <br/><br/>
-            <Paper elevation={5} sx={{
-                alignContent: 'start',
-                padding: '30px',
-                backgroundColor: 'inherit',
-                color: '#46F0F9',
-                borderRadius: '10px',
-                width: '100%',
-                height: 'auto',
-                margin: '25px'
-            }}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'start',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>Data Preview</Typography>
-                </Paper>
-                <br/><br/>
+            <Box
+
+            >
                 <Grid container spacing={2}>
                     {/* AllStaff Info */}
                     <Grid item xs={12}>
@@ -71,7 +59,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Admin Info */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Admin Information</Typography>
@@ -85,7 +73,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* AllSite Info */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Site Information</Typography>
@@ -104,7 +92,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Service Info */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Service Information</Typography>
@@ -121,7 +109,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Generator PM */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Generator PM</Typography>
@@ -165,7 +153,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Aircon PM */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Aircon PM</Typography>
@@ -184,7 +172,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Shelter PM */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Shelter PM</Typography>
@@ -198,7 +186,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Lightning PM */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Lightning PM</Typography>
@@ -218,7 +206,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* DC System */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>DC System</Typography>
@@ -238,7 +226,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/* Other PM */}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Other PM</Typography>
@@ -264,7 +252,7 @@ function Step11DataPreview({formData}) {
                     </Grid>
 
                     {/*Security PM*/}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Security PM</Typography>
@@ -277,7 +265,7 @@ function Step11DataPreview({formData}) {
                         </Card>
                     </Grid>
                     {/*Summary*/}
-                    <Grid item xs={12}>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                         <Card sx={cardSx}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom>Summary</Typography>
@@ -291,7 +279,6 @@ function Step11DataPreview({formData}) {
                                             </ListItemIcon>
                                             <Typography sx={{
                                                 fontWeight: 'bold',
-                                                // color: 'white',
                                                 fontFamily: 'Poppins',
                                                 fontSize: '16px',
                                                 m: -1,
@@ -314,7 +301,11 @@ function Step11DataPreview({formData}) {
                                 <ImageList cols={3}>
                                     {formData.images.map((image, index) => (
                                         <ImageListItem key={index}>
-                                            <img src={image.src} alt={`Uploaded image ${index + 1}`} loading="lazy"/>
+                                            <img
+                                                src={image.finalSrc}
+                                                alt={`Final image ${index + 1}`}
+                                                loading="lazy"
+                                            />
                                         </ImageListItem>
                                     ))}
                                 </ImageList>
@@ -326,13 +317,13 @@ function Step11DataPreview({formData}) {
                     <Grid item xs={12}>
                         <Card sx={cardSx}>
                             <CardContent>
-                                <Typography sx={{
-                                    fontWeight: 'bold',
-                                    color: 'rgb(255, 128, 128)',
-                                    fontFamily: 'Poppins',
-                                    fontSize: '36px',
-                                    m: -1,
-                                }}>Submission Warning</Typography>
+                                <Typography variant="h6"
+                                            sx={{
+                                                fontFamily: 'Poppins',
+                                                fontWeight: 'bold',
+                                                color: 'salmon',
+                                                fontSize: xSmall || small ? '1.1rem' : medium || large ? '1.2rem' : '1.5rem',
+                                            }}>Submission Warning</Typography>
                                 <Divider/>
                                 {warningMsg.map((msg, index) => (
                                     <List>
@@ -341,13 +332,13 @@ function Step11DataPreview({formData}) {
                                                 <PlaylistAddCheckIcon
                                                     sx={{color: "lime", fontSize: "32px"}}/>
                                             </ListItemIcon>
-                                            <Typography sx={{
-                                                fontWeight: 'bold',
-                                                color: 'white',
-                                                fontFamily: 'Poppins',
-                                                fontSize: '22px',
-                                                m: -1,
-                                            }}>
+                                            <Typography variant="h6"
+                                                        sx={{
+                                                            fontFamily: 'Poppins',
+                                                            fontWeight: 'bold',
+                                                            color: '#FFF',
+                                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
+                                                        }}>
                                                 {msg}
                                             </Typography>
                                         </ListItem>
@@ -357,7 +348,7 @@ function Step11DataPreview({formData}) {
                         </Card>
                     </Grid>
                 </Grid>
-            </Paper>
+            </Box>
         </>
     );
 }

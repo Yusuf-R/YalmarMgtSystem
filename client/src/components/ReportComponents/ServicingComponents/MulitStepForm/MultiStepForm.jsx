@@ -19,6 +19,8 @@ import Step5AirconPM from "@/components/ReportComponents/ServicingComponents/Ste
 import Step6ShelterPM from "@/components/ReportComponents/ServicingComponents/Step6-ShelterPM/Step6ShelterPM";
 import Step7DCSystemPM from "@/components/ReportComponents/ServicingComponents/Step7-DCSystemPM/Step7DCSystemPM";
 import Step8OthersPM from "@/components/ReportComponents/ServicingComponents/Step8-OthersPM/Step8OthersPM";
+import Step9PictureUpload
+    from "@/components/ReportComponents/ServicingComponents/Step9-PictureUpload/Step9PictureUpload";
 import Step10AdminApproval
     from "@/components/ReportComponents/ServicingComponents/Step10-AdminApproval/Step10AdminApproval";
 import Step11DataPreview from "@/components/ReportComponents/ServicingComponents/Step11-DataPreview/Step11DataPreview";
@@ -51,13 +53,12 @@ const txProps = {
     color: "white",
     bgcolor: "#274e61",
     borderRadius: "10px",
-    width: '250px',
     fontSize: '16px',
     fontStyle: 'bold',
+    fontFamily: 'Poppins',
     '&:hover': {
         bgcolor: '#051935',
     },
-    fontFamily: 'Poppins',
     "& .MuiInputBase-input": {
         color: 'white',
     },
@@ -72,6 +73,20 @@ const txProps = {
         WebkitTextFillColor: 'white',
     },
 };
+
+
+// Utility function to convert base64 to file
+function base64ToFile(base64, filename) {
+    const arr = base64.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, {type: mime});
+}
 
 function MultiStepForm({allStaff, allSite}) {
     const router = useRouter()
@@ -175,6 +190,7 @@ function MultiStepForm({allStaff, allSite}) {
             setActiveStep(prevActiveStep => prevActiveStep + 1);
 
         } else {
+            toast.error("Please fill all required fields correctly");
             console.log("Please fill all required fields correctly");
         }
     };
@@ -339,6 +355,7 @@ function MultiStepForm({allStaff, allSite}) {
         mutationFn: AdminUtils.NewServicingReport,
     });
 
+
     const onSubmit = async () => {
         setIsLoading(true);  // Start loading
         // Final submission logic here
@@ -346,9 +363,16 @@ function MultiStepForm({allStaff, allSite}) {
         //we need a for data object to send the array of images as contained in the images array
         const formDataObj = new FormData();
 
-        // Append images
+        // Process images
         formData.images.forEach((img, index) => {
-            formDataObj.append('images', img.file, img.file.name);
+            if (img.croppedSrc) {
+                // Convert cropped base64 to file
+                const file = base64ToFile(img.croppedSrc, img.file.name);
+                formDataObj.append('images', file);
+            } else {
+                // Use the original image file
+                formDataObj.append('images', img.file);
+            }
         });
         // object image credential to uniquely identify the image
         const imageCredential = `${formData.siteId}-${servicingDate}-${formData.pmInstance}`;
@@ -397,9 +421,7 @@ function MultiStepForm({allStaff, allSite}) {
         // we need to append servicingDate
         formDataObj.append('servicingDate', dayjs(formData.servicingDate).format('DD/MMM/YYYY'));
         // Log the FormData object (for debugging purposes)
-        for (let pair of formDataObj.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
+
         // we also need to construct our cache key to see if this entry already exist
         const month = dayjs(formData.servicingDate).format('MMMM');
         const year = dayjs(formData.servicingDate).format('YYYY');
@@ -420,9 +442,12 @@ function MultiStepForm({allStaff, allSite}) {
             queryClient.removeQueries(cacheKey);
         }
         try {
+            for (let pair of formDataObj.entries()) {
+                console.log(`${pair[0]}: ${pair[1]}`);
+            }
             await mutation.mutateAsync(formDataObj);
             toast.success("Report submitted successfully");
-            await queryClient.invalidateQueries('NewServicingReport');
+            await queryClient.invalidateQueries('AllServicingReports');
             router.push('/dashboard/admin/reports/servicing/all');
         } catch (error) {
             console.error("An error occurred while submitting the report", error);
@@ -431,14 +456,6 @@ function MultiStepForm({allStaff, allSite}) {
             setIsLoading(false);  // End loading
         }
     };
-
-    useEffect(() => {
-        console.log({formData});
-    }, [formData]);
-
-    useEffect(() => {
-        console.log({activeStep});
-    }, [activeStep]);
 
     const handleImagesChange = useCallback((newImages) => {
         setFormData(prevData => {
@@ -454,13 +471,30 @@ function MultiStepForm({allStaff, allSite}) {
     return (
         <FormProvider {...methods} >
             <Box>
-                <Stepper activeStep={activeStep} alternativeLabel>
-                    {steps.map((label) => (
-                        <Step key={label}>
+                <Stepper activeStep={activeStep} alternativeLabel sx={{color: '#FFF', padding: '20px'}}>
+                    {steps.map((label, index) => (
+                        <Step
+                            key={label}
+                            sx={{
+                                '& .MuiStepLabel-root .Mui-completed': {
+                                    color: '#4caf50', // change this to the color you want for completed steps
+                                },
+                                '& .MuiStepLabel-root .Mui-active': {
+                                    color: '#FF4081', // change active step color
+                                },
+                                '& .MuiStepLabel-root .Mui-disabled': {
+                                    color: '#CCC', // change disabled step color
+                                },
+                                '& .MuiStepIcon-root': {
+                                    color: index <= activeStep ? '#FF4081' : '#0099CC', // Customizing icons for each step
+                                },
+                            }}
+                        >
                             <StepLabel>{label}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>
+                <br/>
                 <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
                     {activeStep === steps.length ? (
                         <React.Fragment>
@@ -489,7 +523,7 @@ function MultiStepForm({allStaff, allSite}) {
                             )}
                             {activeStep === 9 && <Step10AdminApproval allStaff={allStaff} txProps={txProps}/>}
                             {activeStep === 10 && <Step11DataPreview formData={formData}/>}
-                            <br/><br/>
+                            <br/>
                             <Stack direction='row' gap={4} sx={{marginBottom: '75px'}}>
                                 <Button
                                     variant="contained"

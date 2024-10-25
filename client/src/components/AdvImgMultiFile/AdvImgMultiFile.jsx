@@ -1,201 +1,199 @@
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useRef} from 'react';
+import {Cropper} from 'react-advanced-cropper';
+import 'react-advanced-cropper/dist/style.css';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-
-import {
-    Cropper,
-} from 'react-advanced-cropper';
-import 'react-advanced-cropper/dist/style.css'
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
-import CropIcon from '@mui/icons-material/Crop';
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import {useTheme} from '@mui/material/styles';
+import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
 
 const AdvImgMultiFile = ({open, onClose, image, onSave}) => {
     const [croppedImage, setCroppedImage] = useState(null);
     const cropperRef = useRef(null);
-    const [aspect, setAspect] = useState(1);
+    const theme = useTheme();
 
+    // Improved breakpoint handling
+    const isXsScreen = useMediaQuery(theme.breakpoints.down('sm')); // Small screen (below 600px)
+    const isSmScreen = useMediaQuery(theme.breakpoints.between('sm', 'md')); // Medium screen (600px - 899px)
+    const isMdScreen = useMediaQuery(theme.breakpoints.between('md', 'lg')); // Large screen (900px - 1199px)
+    const isLgScreen = useMediaQuery(theme.breakpoints.up('lg')); // Extra large screen (1200px+)
 
-    // Handle cropping
     const handleCrop = () => {
         const cropper = cropperRef.current;
         if (cropper) {
             const canvas = cropper.getCanvas();
             if (canvas) {
                 const croppedDataUrl = canvas.toDataURL();
-                setCroppedImage(croppedDataUrl);  // Set the cropped image for preview
+                setCroppedImage(croppedDataUrl);
             }
         }
     };
 
-
-    // Handle saving the cropped image
     const handleSave = () => {
         const cropper = cropperRef.current;
         if (cropper) {
             const canvas = cropper.getCanvas();
             if (canvas) {
                 const croppedData = canvas.toDataURL();
-                onSave(croppedData);  // Save cropped image without updating the preview
-                onClose();  // Close the dialog
+                onSave(croppedData);
+                onClose();
             }
         }
     };
 
-    // Close the dialog without saving
-    const handleClose = () => {
-        onClose();
-    };
-
     const paperProps = {
-        alignCenter: 'center',
-        textAlign: 'center',
-        padding: '10px',
         backgroundColor: '#274e61',
         borderRadius: '10px',
+        p: 2,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     };
 
+    const imageContainerStyle = {
+        width: '100%',
+        height: isXsScreen ? '250px' : isSmScreen ? '300px' : '400px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
+        backgroundColor: '#1e3d4d',
+        borderRadius: '8px',
+    };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth='lg' fullWidth sx={{
-            overflow: 'hidden',
-            backgroundColor: '#274e61',
-        }}>
-            <DialogContent sx={{
-                backgroundColor: '#274e61',
-                overflow: 'hidden',
-                height: '950px',
-            }}>
-                <Box sx={{
-                    p: 0,
-                    alignItems: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                }}>
-                    <Grid container spacing={1}>
-                        <Grid item xs={6}>
-                            <Paper sx={paperProps}>
-                                <Typography variant='subtitle1'
-                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>Original
-                                    Image</Typography>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Paper sx={paperProps}>
-                                <Typography variant='subtitle1'
-                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>Cropped
-                                    Image</Typography>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={6} sx={{
-                            p: 0,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <Paper sx={{
-                                ...paperProps,
-                                m: 0,
-                                p: 1,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: 'fit-content',
-                            }}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="lg"
+            fullWidth
+            fullScreen={isXsScreen}
+            PaperProps={{
+                sx: {
+                    backgroundColor: '#274e61',
+                    margin: isXsScreen ? 0 : 2,
+                    maxHeight: '90vh',
+                }
+            }}
+        >
+            <DialogContent sx={{p: {xs: 1, sm: 2, md: 3}}}>
+                <Stack spacing={2}>
+                    {/* Headers */}
+                    <Stack
+                        direction={isLgScreen ? 'row' : 'column'}
+                        spacing={2}
+                        sx={{width: '100%'}}
+                    >
+                        <Typography
+                            variant={isXsScreen ? 'subtitle2' : 'subtitle1'}
+                            sx={{
+                                color: '#FFF',
+                                fontWeight: 'bold',
+                                flex: 1,
+                                textAlign: 'center'
+                            }}
+                        >
+                            Original Image
+                        </Typography>
+                        <Typography
+                            variant={isXsScreen ? 'subtitle2' : 'subtitle1'}
+                            sx={{
+                                color: '#FFF',
+                                fontWeight: 'bold',
+                                flex: 1,
+                                textAlign: 'center'
+                            }}
+                        >
+                            Cropped Preview
+                        </Typography>
+                    </Stack>
+
+                    {/* Image Containers */}
+                    <Stack
+                        direction={isLgScreen ? 'row' : 'column'}
+                        spacing={2}
+                        sx={{width: '100%'}}
+                    >
+                        {/* Original Image with Cropper */}
+                        <Paper sx={paperProps}>
+                            <Box sx={imageContainerStyle}>
                                 {image && image.src ? (
                                     <Cropper
                                         ref={cropperRef}
                                         src={image.src}
                                         style={{
+                                            width: '100%',
                                             height: '100%',
-                                            width: '500px',
-                                            backgroundColor: '#274e61',
-                                            p: 0,
-                                            m: 0,
-                                            alignSelf: 'center',
                                         }}
                                     />
                                 ) : (
-                                    <Typography variant='subtitle1'
-                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>
+                                    <Typography sx={{color: '#FFF'}}>
                                         Image not available
                                     </Typography>
                                 )}
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={6} sx={{
-                            p: 0,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <Paper sx={{
-                                ...paperProps,
-                                m: 0,
-                                p: 1,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: 'fit-content',
-                            }}>
+                            </Box>
+                        </Paper>
+
+                        {/* Cropped Preview */}
+                        <Paper sx={paperProps}>
+                            <Box sx={imageContainerStyle}>
                                 {croppedImage ? (
                                     <img
                                         src={croppedImage}
                                         alt="Cropped"
                                         style={{
-                                            height: '100%',
-                                            width: '500px',
-                                            backgroundColor: '#274e61',
-                                            p: 0,
-                                            m: 0,
-                                            alignSelf: 'center',
+                                            maxWidth: '100%',
+                                            maxHeight: '100%',
+                                            objectFit: 'contain',
                                         }}
                                     />
                                 ) : (
-                                    <Typography variant='subtitle1'
-                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold', color: "#FFF"}}>
+                                    <Typography sx={{color: '#FFF'}}>
                                         No Preview Available
                                     </Typography>
                                 )}
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={6} sx={{
-                            p: 0,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <Paper sx={{
-                                ...paperProps,
-                                mb: 0,
-                                p: 1,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: 'fit-content',
-                            }}>
-                                {/*<CropIcon sx={{color: "#FFF"}} onClick={handleCrop}/>*/}
-                                <Button color="success" onClick={handleCrop} variant="contained">
-                                    Crop
-                                </Button>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Box>
+                            </Box>
+                        </Paper>
+                    </Stack>
+
+                    {/* Crop Button */}
+                    <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                        <Button
+                            color="success"
+                            onClick={handleCrop}
+                            variant="contained"
+                            size={isXsScreen ? 'small' : 'medium'}
+                        >
+                            Generate Preview
+                        </Button>
+                    </Box>
+                </Stack>
             </DialogContent>
-            <DialogActions sx={{
-                backgroundColor: '#274e61',
-                p: 3,
-            }}>
-                <Button color="success" onClick={handleClose} variant="contained">
+
+            <Divider sx={{backgroundColor: '#1e3d4d'}}/>
+
+            <DialogActions sx={{p: 2, backgroundColor: '#274e61'}}>
+                <Button
+                    color="error"
+                    onClick={onClose}
+                    variant="contained"
+                    size={isXsScreen ? 'small' : 'medium'}
+                >
                     Cancel
                 </Button>
-                <Button onClick={handleSave} color="error" variant="contained">
+                <Button
+                    color="success"
+                    onClick={handleSave}
+                    variant="contained"
+                    size={isXsScreen ? 'small' : 'medium'}
+                >
                     Save
                 </Button>
             </DialogActions>

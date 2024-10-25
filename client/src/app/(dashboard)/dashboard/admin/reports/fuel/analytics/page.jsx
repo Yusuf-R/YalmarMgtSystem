@@ -5,64 +5,63 @@ import {useEffect, useState} from 'react';
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
 import AdminUtils from "@/utils/AdminUtilities";
 import {useRouter} from 'next/navigation';
+import useFuelReportStore from "@/store/useFuelReportStore";
+import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
 
 const FuelAnalytics = lazy(() => import("@/components/ReportComponents/FuellingComponents/FuelAnalytics/FuelAnalytics"));
 
 function FuelAnalyticsDashboard() {
-    const [decryptedSiteData, setDecryptedSiteData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [decryptedFuelID, setDecryptedFuelID] = useState(null);
+    const [decryptedFuelData, setDecryptedFuelData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
 
+    // Zustand store values (destructured in a single call)
+    const {encryptedFuelData, encryptedFuelID} = useFuelReportStore();
+
+    // Decrypt the site data stored in Zustand
     useEffect(() => {
         const decryptData = async () => {
             try {
-                const siteData = sessionStorage.getItem('siteData');
-                if (!siteData) {
-                    throw new Error('AllSite data not found in session storage.');
+                if (encryptedFuelData && encryptedFuelID) {
+                    const decryptedID = await AdminUtils.decryptObjID(encryptedFuelID); // Decrypt the site ID
+                    const decryptedData = await AdminUtils.decryptData(encryptedFuelData); // Decrypt the site data
+                    setDecryptedFuelID(decryptedID);
+                    setDecryptedFuelData(decryptedData);
+                } else {
+                    setShouldRedirect(true);  // Redirect if no encrypted data is found
                 }
-                const decryptedData = await AdminUtils.decryptData(siteData);
-                setDecryptedSiteData(decryptedData);
             } catch (error) {
-                setError(error);
+                console.error('Error during decryption:', error);
+                setShouldRedirect(true);
             } finally {
                 setIsLoading(false);
             }
         };
+        decryptData();  // Decrypt data on page load
+    }, [encryptedFuelData, encryptedFuelID]);
 
-        decryptData();
-    }, []);
-
-    // Handle redirection or rendering based on error types
     useEffect(() => {
-        if (error) {
-            console.error('Error decrypting data:', error);
-            // Handle different types of errors or conditions for redirection
-            if (error instanceof DOMException && error.message === 'The provided data is too small') {
-                setError(new Error('Data decryption error'));
-            } else if (error.message === 'AllSite data not found in session storage.') {
-                // Redirect to 404 page if no data found
-                router.push('/error/404');
-            }
+        if (shouldRedirect) {
+            router.push('/dashboard/admin/site/void'); // Redirect to void page for sites
         }
-    }, [error, router]);
+    }, [shouldRedirect, router]);
 
     if (isLoading) {
         return <LazyLoading/>;
     }
 
-    if (error) {
-        return <DataFetchError error={error}/>;
+    if (!decryptedFuelID || !decryptedFuelData) {
+        return <LostInSpace/>; // Render VoidSite if decryption failed
     }
 
-    if (!decryptedSiteData) {
-        return <DataFetchError fetchError="Decrypted data is null or undefined."/>;
-    }
 
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <FuelAnalytics siteData={decryptedSiteData}/>
+                <FuelAnalytics fuelData={decryptedFuelData} fuelID={decryptedFuelID}/>
             </Suspense>
         </>
     );

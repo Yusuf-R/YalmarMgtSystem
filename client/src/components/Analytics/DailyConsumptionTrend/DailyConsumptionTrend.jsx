@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 function DailyConsumptionTrend({dateSupplied, cpd}) {
     const startDate = dayjs(dateSupplied, "DD/MMM/YYYY");
     const today = dayjs();
-    
+
     const data = [];
     for (let date = startDate; date.isBefore(today) || date.isSame(today); date = date.add(1, 'day')) {
         data.push({
@@ -12,7 +12,7 @@ function DailyConsumptionTrend({dateSupplied, cpd}) {
             consumption: (date.diff(startDate, 'day') + 1) * cpd
         });
     }
-    
+
     return (
         <ResponsiveContainer width="100%" height={400}>
             <LineChart
@@ -31,9 +31,7 @@ function DailyConsumptionTrend({dateSupplied, cpd}) {
                     contentStyle={{backgroundColor: '#000', color: '#FFF'}}
                 />
                 <Legend/>
-                <Line type="monotone" dataKey="consumption" stroke="#00ff00" activeDot={{r: 8}}
-                
-                />
+                <Line type="monotone" dataKey="consumption" stroke="#00ff00" activeDot={{r: 8}}/>
             </LineChart>
         </ResponsiveContainer>
     );

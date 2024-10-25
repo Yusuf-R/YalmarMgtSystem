@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import {autoCompleteSx, baseFields, categoryFields, mainSection, txProps} from "@/utils/data";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
 import React, {useEffect, useState} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import BaseInfo from "@/components/ReportComponents/IncidentComponents/BaseInfo/BaseInfo";
@@ -42,6 +41,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const warningMsg = [
     'Please ensure you have filled out all the required fields correctly before submitting.',
@@ -180,6 +180,16 @@ function NewIncidentReport({allStaff, allSite}) {
     const [uploadedImages, setUploadedImages] = useState([]);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident');
 
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
     const pathname = usePathname();
     // useEffect or handling navigation between new and staff
     useEffect(() => {
@@ -295,8 +305,7 @@ function NewIncidentReport({allStaff, allSite}) {
         fontWeight: 'bold',
         color: '#FFF',
         fontFamily: 'Poppins',
-        fontSize: '16px',
-        textAlign: 'left',
+        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
     };
     const paperSx = {
         padding: '10px',
@@ -325,22 +334,16 @@ function NewIncidentReport({allStaff, allSite}) {
     return (
         <>
             <FormProvider {...methods}>
-                <Box sx={mainSection}>
-                    <Paper elevation={5} sx={{
-                        alignCenter: 'center',
-                        textAlign: 'center',
-                        padding: '10px',
-                        backgroundColor: '#274e61',
-                        color: '#46F0F9',
-                        borderRadius: '10px',
-                        width: '100%',
-                        height: 'auto',
-                    }}>
-                        <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                            New Incident Report Form
-                        </Typography>
-                    </Paper>
-                    <br/>
+                <Box
+                    sx={{
+                        padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                        marginTop: '10px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        maxWidth: '100%', // This ensures nothing overflows
+                        overflow: 'hidden', // Handles overflowing content
+                    }}
+                >
                     {/*Navigation Tabs */}
                     <Stack direction='row' spacing={2} sx={{
                         justifyContent: 'flex-start',
@@ -348,6 +351,7 @@ function NewIncidentReport({allStaff, allSite}) {
                         <Tabs
                             value={activeTab}
                             onChange={(e, newValue) => setActiveTab(newValue)}
+                            variant={xSmall || small || medium ? "scrollable" : "standard"}
                             centered
                             sx={{
                                 '& .MuiTabs-indicator': {
@@ -357,7 +361,7 @@ function NewIncidentReport({allStaff, allSite}) {
                         >
 
                             <Tab
-                                label="Home"
+                                label="Reports"
                                 component={Link}
                                 href="/dashboard/admin/reports/incident"
                                 value="/dashboard/admin/reports/incident"
@@ -369,21 +373,41 @@ function NewIncidentReport({allStaff, allSite}) {
                                     },
                                 }}
                             />
-                            <Tab
-                                label="New"
-                                component={Link}
-                                href="/dashboard/admin/reports/incident/new"
-                                value="/dashboard/admin/reports/incident/new"
-                                sx={{
-                                    color: "#FFF",
-                                    fontWeight: 'bold',
-                                    "&.Mui-selected": {
-                                        color: "#46F0F9",
-                                    },
-                                }}
-                            />
+                            {['Incident-Center', 'New'].map((label) => (
+                                <Tab
+                                    key={label}
+                                    label={label}
+                                    component={Link}
+                                    href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                    value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                    sx={{
+                                        color: "#FFF",
+                                        fontWeight: 'bold',
+                                        fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                        "&.Mui-selected": {color: "#46F0F9"},
+                                    }}
+                                />
+                            ))}
                         </Tabs>
                     </Stack>
+                    <br/>
+                    <Typography variant="h6"
+                                sx={{
+                                    fontFamily: 'Poppins',
+                                    fontWeight: 'bold',
+                                    borderRadius: 2,
+                                    padding: '10px 15px',
+                                    background: 'linear-gradient(to right, #004e92, #000428)',
+                                    color: '#FFF',
+                                    width: 'auto',
+                                    textAlign: 'center',
+                                    fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                        Incident Report Form
+                    </Typography>
                     <br/>
                     <Box
                         component='form'
@@ -448,8 +472,7 @@ function NewIncidentReport({allStaff, allSite}) {
                                         fontWeight: 'bold',
                                         color: 'rgb(255, 128, 128)',
                                         fontFamily: 'Poppins',
-                                        fontSize: '36px',
-                                        m: -1,
+                                        fontSize: xSmall || small ? '1.1rem' : medium || large ? '1.2rem' : '1.5rem',
                                     }}>Submission Warning</Typography>
                                     <Divider/>
                                     {warningMsg.map((msg, index) => (
@@ -463,8 +486,7 @@ function NewIncidentReport({allStaff, allSite}) {
                                                     fontWeight: 'bold',
                                                     color: 'white',
                                                     fontFamily: 'Poppins',
-                                                    fontSize: '22px',
-                                                    m: -1,
+                                                    fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
                                                 }}>
                                                     {msg}
                                                 </Typography>
@@ -478,12 +500,16 @@ function NewIncidentReport({allStaff, allSite}) {
                         {/*Loading submission screen*/}
                         {isSubmitting && <LazyComponent Command='Submitting'/>}
                         {/*    Submission*/}
-                        <Stack direction='row' gap={4} sx={{marginBottom: '75px', justifyContent: 'flex-end'}}>
+                        <Stack direction='row' gap={1} sx={{
+                            justifyContent: "flex-start",
+                            alignItems: "flex-start",
+                            mb: 2,
+                        }}>
                             <Button
                                 variant="contained"
                                 color='success'
                                 onClick={handleBack}
-                                sx={{mr: 1}}
+                                size="small"
                             >
                                 Back
                             </Button>
@@ -492,6 +518,7 @@ function NewIncidentReport({allStaff, allSite}) {
                                 color='error'
                                 type="reset"
                                 onClick={handleClear}
+                                size="small"
                             >
                                 Reset
                             </Button>
@@ -499,6 +526,7 @@ function NewIncidentReport({allStaff, allSite}) {
                                 variant="contained"
                                 color='error'
                                 type="submit"
+                                size="small"
                             >
                                 Submit
                             </Button>

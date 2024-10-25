@@ -1,10 +1,12 @@
 'use client';
-import NewFuellingReport from "@/components/ReportComponents/FuellingComponents/NewFuellingReport/NewFuellingReport";
+
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
-import {Suspense} from "react";
+import {Suspense, lazy} from "react";
+
+const NewFuellingReport = lazy(() => import ("@/components/ReportComponents/FuellingComponents/NewFuellingReport/NewFuellingReport"));
 
 function FuelSupplyReportForm() {
     const queryClient = useQueryClient();
@@ -16,16 +18,16 @@ function FuelSupplyReportForm() {
         refetchOnWindowFocus: false,
         enabled: !allSite,
     });
-    
+
     if (isLoading) {
         return <LazyLoading/>;
     }
-    
+
     if (isError || !data) {
         console.error('Error fetching user data');
         return <DataFetchError/>;
     }
-    
+
     const effectiveSiteData = allSite || data.allSite;
     return (
         <>
@@ -34,7 +36,7 @@ function FuelSupplyReportForm() {
             </Suspense>
         </>
     )
-    
+
 }
 
 export default FuelSupplyReportForm;

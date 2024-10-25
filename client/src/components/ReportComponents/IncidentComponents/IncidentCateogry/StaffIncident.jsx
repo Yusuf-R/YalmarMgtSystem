@@ -17,6 +17,7 @@ import Stack from "@mui/material/Stack";
 import CardHeader from "@mui/material/CardHeader";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {staffIncidentSchema} from "@/SchemaValidator/IncidentValidators/staffIncidentSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function StaffIncident({allStaff}) {
     const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
@@ -24,6 +25,18 @@ function StaffIncident({allStaff}) {
         resolver: yupResolver(staffIncidentSchema),
         reValidateMode: 'onChange',
     });
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
     // Full Name
     const fullNames = Array.from(new Set(allStaff.map(staff => staff.fullName)));
     const getFullName = () => fullNames.map((fullName) => (
@@ -44,13 +57,13 @@ function StaffIncident({allStaff}) {
             clearErrors('staffInfo.role');
         }
     };
-    
+
     // class Action
     const catA = ['Employment', 'Roles', 'Violence', 'Others']
     const catE = ['Employed', 'Promoted', 'Demoted', 'Sacked', 'Resigned', 'Retired', 'Absconded', 'Others'];
     const catR = ['Theft', 'Diversion', 'Conspiracy', 'Insubordination', 'Others'];
     const catV = ['Physical', 'Verbal', 'Sexual', 'Others'];
-    
+
     const getCat = () => catA.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}>
             {catOpt}
@@ -62,7 +75,7 @@ function StaffIncident({allStaff}) {
         clearErrors('staffIncidentInfo.classAction');
     };
     const selectedClassAction = watch('staffIncidentInfo.classAction');
-    
+
     // categoryEmployment
     const getCatE = () => catE.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}>
@@ -75,7 +88,7 @@ function StaffIncident({allStaff}) {
         setValue('staffIncidentInfo.category.employment', selectedCatE);
         clearErrors('staffIncidentInfo.category.employment');
     }
-    
+
     // categoryRole
     const getCatR = () => catR.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}>
@@ -87,7 +100,7 @@ function StaffIncident({allStaff}) {
         setValue('staffIncidentInfo.category.role', selectedCatR);
         clearErrors('staffIncidentInfo.category.role');
     }
-    
+
     // categoryViolence
     const getCatV = () => catV.map((catOpt) => (
         <MenuItem key={catOpt} value={catOpt}>
@@ -99,7 +112,7 @@ function StaffIncident({allStaff}) {
         setValue('staffIncidentInfo.category.violence', selectedCatV);
         clearErrors('staffIncidentInfo.category.violence');
     }
-    
+
     const accordionSx = {
         bgcolor: '#274e61',
     }
@@ -111,7 +124,7 @@ function StaffIncident({allStaff}) {
         width: '100%',
         height: 'auto',
     }
-    
+
     const cardSx = {
         bgcolor: '#274e61',
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
@@ -119,7 +132,7 @@ function StaffIncident({allStaff}) {
         // border: '1px solid rgb(163, 163, 117)',
         p: 0.1,
     }
-    
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -160,13 +173,13 @@ function StaffIncident({allStaff}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        <Grid item xs={4}>
-                                            <Controller
-                                                name="staffInfo.fullName"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="staffInfo.fullName"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -185,10 +198,8 @@ function StaffIncident({allStaff}) {
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    width: '100%',
-                                                                }
+                                                                sx:
+                                                                txProps,
                                                             }}
                                                             InputLabelProps={{
                                                                 sx: {
@@ -204,10 +215,7 @@ function StaffIncident({allStaff}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            fontSize: '40px',
-                                                                            width: '20%'
                                                                         },
                                                                     },
                                                                 },
@@ -219,88 +227,84 @@ function StaffIncident({allStaff}) {
                                                                 '& .MuiSelect-icon:hover': {
                                                                     color: '#fff',
                                                                 },
-                                                                textAlign: 'left',
                                                             }}>
                                                             <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                 Select Staff FullName
                                                             </MenuItem>
                                                             {getFullName()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {watch('staffInfo.fullName') !== '' && (
                                             <>
-                                                <Grid item xs={4}>
-                                                    <Controller
-                                                        name="staffInfo.email"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                InputProps={{
-                                                                    sx: {
-                                                                        ...txProps,
-                                                                        width: '150%',
-                                                                        ml: 10,
-                                                                    },
-                                                                    readOnly: true,
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white"
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffInfo.email"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    InputProps={{
+                                                                        sx:
+                                                                        txProps,
+                                                                        readOnly: true,
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white"
+                                                                            },
                                                                         },
-                                                                        ml: 10,
-                                                                    },
-                                                                    shrink: true, // Add this line
-                                                                }}
-                                                                sx={{
-                                                                    color: "#46F0F9",
-                                                                }}
-                                                                label="Email"
-                                                                variant="outlined"
-                                                                error={!!errors.staffInfo?.email}
-                                                                helperText={errors.staffInfo?.email ? errors.staffInfo.email.message : ''}
-                                                            />
-                                                        )}
-                                                    />
+                                                                        shrink: true, // Add this line
+                                                                    }}
+                                                                    sx={{
+                                                                        color: "#46F0F9",
+                                                                    }}
+                                                                    label="Email"
+                                                                    variant="outlined"
+                                                                    error={!!errors.staffInfo?.email}
+                                                                    helperText={errors.staffInfo?.email ? errors.staffInfo.email.message : ''}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
-                                                <Grid item xs={4}>
-                                                    <Controller
-                                                        name="staffInfo.role"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                label="Role"
-                                                                error={!!errors.staffInfo?.role}
-                                                                helperText={errors.staffInfo?.role?.message}
-                                                                InputProps={{
-                                                                    sx: {
-                                                                        ...txProps,
-                                                                        ml: 10,
-                                                                    },
-                                                                    readOnly: true,
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white"
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffInfo.role"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    label="Role"
+                                                                    error={!!errors.staffInfo?.role}
+                                                                    helperText={errors.staffInfo?.role?.message}
+                                                                    InputProps={{
+                                                                        sx:
+                                                                        txProps,
+                                                                        readOnly: true,
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white"
+                                                                            },
                                                                         },
-                                                                        ml: 10,
-                                                                    },
-                                                                    shrink: true, // Add this line
-                                                                }}
-                                                                sx={{
-                                                                    color: "#46F0F9",
-                                                                }}
-                                                            />
-                                                        )}
-                                                    />
+                                                                        shrink: true, // Add this line
+                                                                    }}
+                                                                    sx={{
+                                                                        color: "#46F0F9",
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
@@ -323,13 +327,13 @@ function StaffIncident({allStaff}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        <Grid item xs={4}>
-                                            <Controller
-                                                name="staffIncidentInfo.classAction"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="staffIncidentInfo.classAction"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -348,10 +352,8 @@ function StaffIncident({allStaff}) {
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    // width: '25%',
-                                                                }
+                                                                sx:
+                                                                txProps,
                                                             }}
                                                             InputLabelProps={{
                                                                 sx: {
@@ -367,10 +369,9 @@ function StaffIncident({allStaff}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
+
                                                                             overflow: 'auto',
-                                                                            fontSize: '40px',
-                                                                            // width: '20%'
+
                                                                         },
                                                                     },
                                                                 },
@@ -389,19 +390,19 @@ function StaffIncident({allStaff}) {
                                                             </MenuItem>
                                                             {getCat()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {selectedClassAction === 'Employment' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="staffIncidentInfo.category.employment"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffIncidentInfo.category.employment"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -420,10 +421,10 @@ function StaffIncident({allStaff}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
+
+
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -461,21 +462,21 @@ function StaffIncident({allStaff}) {
                                                                     </MenuItem>
                                                                     {getCatE()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {selectedClassAction === 'Roles' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="staffIncidentInfo.category.role"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffIncidentInfo.category.role"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -494,10 +495,9 @@ function StaffIncident({allStaff}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
+
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -513,10 +513,7 @@ function StaffIncident({allStaff}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -528,28 +525,28 @@ function StaffIncident({allStaff}) {
                                                                         '& .MuiSelect-icon:hover': {
                                                                             color: '#fff',
                                                                         },
-                                                                        textAlign: 'left',
                                                                     }}>
                                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                         Select Option
                                                                     </MenuItem>
                                                                     {getCatR()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {selectedClassAction === 'Violence' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="staffIncidentInfo.category.violence"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffIncidentInfo.category.violence"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -568,10 +565,8 @@ function StaffIncident({allStaff}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -587,10 +582,8 @@ function StaffIncident({allStaff}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
                                                                                     fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -609,41 +602,43 @@ function StaffIncident({allStaff}) {
                                                                     </MenuItem>
                                                                     {getCatV()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {selectedClassAction === 'Others' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="staffIncidentInfo.category.others"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                InputProps={{
-                                                                    sx: {...txProps, width: '50%'}
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white",
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                label="Others"
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                required
-                                                                error={!!errors.staffIncidentInfo?.category?.others}
-                                                                helperText={errors.staffIncidentInfo?.staffIncidentInfo?.category?.others ? errors.staffIncidentInfo.category.others.message : ''}
-                                                            />
-                                                        )}
-                                                    />
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="staffIncidentInfo.category.others"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    InputProps={{
+                                                                        sx: txProps
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white",
+                                                                            },
+                                                                        }
+                                                                    }}
+                                                                    label="Others"
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    required
+                                                                    error={!!errors.staffIncidentInfo?.category?.others}
+                                                                    helperText={errors.staffIncidentInfo?.staffIncidentInfo?.category?.others ? errors.staffIncidentInfo.category.others.message : ''}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}

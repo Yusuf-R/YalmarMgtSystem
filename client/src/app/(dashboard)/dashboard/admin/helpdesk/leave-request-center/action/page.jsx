@@ -12,16 +12,16 @@ function LeaveReqConfirmation() {
     const [isLoading, setIsLoading] = useState(true);
     const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
-    
+
     useEffect(() => {
         const decryptData = async () => {
             try {
                 const reqID = sessionStorage.getItem('reqID');
-                const decryptedID = await AdminUtilities.decryptUserID(reqID);
-                
+                const decryptedID = await AdminUtilities.decryptObjID(reqID);
+
                 const reqData = sessionStorage.getItem('reqData');
                 const decryptedData = await AdminUtilities.decryptData(reqData);
-                
+
                 setDecryptedReqID(decryptedID);
                 setDecryptedReqData(decryptedData);
             } catch (error) {
@@ -37,22 +37,22 @@ function LeaveReqConfirmation() {
         };
         decryptData();
     }, []);
-    
+
     useEffect(() => {
         if (shouldRedirect) {
             router.push(shouldRedirect ? '/dashboard/admin/staff/void' : '/error/404'); // Perform redirection based on the state
             setShouldRedirect(false); // Reset the state to prevent continuous redirection
         }
     }, [shouldRedirect, router]); // Depend on shouldRedirect to trigger the effect
-    
+
     if (isLoading) {
         return <p>Loading...</p>;
     }
-    
+
     if (!decryptedReqID || !decryptedReqData) {
         return <LostInSpace/>; // Render LostInSpace if decryption failed
     }
-    
+
     return (
         <>
             <LeaveRequestConfirmation reqID={decryptedReqID} reqData={decryptedReqData}/>

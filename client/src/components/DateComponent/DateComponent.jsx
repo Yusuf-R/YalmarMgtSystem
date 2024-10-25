@@ -31,7 +31,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     color: '#FFF',
-                    
+
                 },
             },
         },
@@ -39,7 +39,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     marginTop: '-8px !important',
-                    width: '200px',
+                    maxWidth: '320px',
                 },
             },
         },
@@ -83,9 +83,9 @@ const DateComponent = ({name, control, errors, label, setDate, labelText, defaul
                                             color: 'white',
                                             bgcolor: '#274e61',
                                             borderRadius: '10px',
-                                            width: '350px',
-                                            
-                                            
+                                            // width: '350px',
+
+
                                             "& .MuiInputLabel-root": {
                                                 color: '#46F0F9',
                                             },
@@ -145,7 +145,7 @@ const DateComponent = ({name, control, errors, label, setDate, labelText, defaul
                                         }
                                     },
                                 }}
-                            
+
                             />
                         </DemoContainer>
                     </ThemeProvider>

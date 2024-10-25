@@ -11,7 +11,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AdvImgMultiFile from "@/components/AdvImgMultiFile/AdvImgMultiFile";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {v4 as uuidv4} from 'uuid';
 
 
@@ -120,16 +120,49 @@ function ImageUpload({onImagesChange}) {
                         <Paper elevation={5} sx={{padding: '30px', backgroundColor: 'inherit', borderRadius: '10px'}}>
                             <Grid container spacing={4}>
                                 <Grid item xs={12}>
-                                    <Stack direction='row' gap={4}>
-                                        <Typography variant="subtitle1" sx={{color: '#FFF'}}>Allowed Types: PNG, JPG,
-                                            JPEG.</Typography>
-                                        <Divider orientation="vertical" sx={{border: '5px solid #FFF'}} flexItem/>
-                                        <Typography variant="subtitle1" sx={{color: '#FFF'}}>Max Size for each picture:
-                                            2MB.</Typography>
-                                        <Divider orientation="vertical" sx={{border: '5px solid #FFF'}} flexItem/>
-                                        <Typography variant="subtitle1" sx={{color: '#FFF'}}>You can select more than
-                                            one
-                                            file at once</Typography>
+                                    <Stack
+                                        direction={{xs: 'column', sm: 'row'}}
+                                        spacing={{xs: 2, sm: 3, md: 4}}
+                                        alignItems="center"
+                                        justifyContent="center"
+                                    
+                                        divider={<Divider orientation="vertical" flexItem
+                                                          sx={{
+                                                              display: {xs: 'none', sm: 'block'},
+                                                              border: '2px solid #FFF'
+                                                          }}/>}
+                                    >
+                                        <Typography variant="body2"
+                                                    sx={{
+                                                        fontSize: {
+                                                            xs: '0.8rem',
+                                                            sm: '0.9rem',
+                                                            md: '1rem'
+                                                        },
+                                                        color: '#FFF'
+                                                    }}>
+                                            Allowed Types: PNG, JPG, JPEG
+                                        </Typography>
+                                        <Typography variant="body2"
+                                                    sx={{
+                                                        fontSize: {
+                                                            xs: '0.8rem', sm: '0.9rem', md: '1rem',
+
+                                                        },
+                                                        color: '#FFF'
+                                                    }}>
+                                            Max Size: 2MB per picture
+                                        </Typography>
+                                        <Typography variant="body2"
+                                                    sx={{
+                                                        fontSize: {
+                                                            xs: '0.8rem', sm: '0.9rem', md: '1rem',
+                                                            color: '#FFF'
+                                                        },
+                                                        color: '#FFF'
+                                                    }}>
+                                            Multiple selection allowed
+                                        </Typography>
                                     </Stack>
                                 </Grid>
                             </Grid>
@@ -137,7 +170,7 @@ function ImageUpload({onImagesChange}) {
                         <br/>
                         <Grid container spacing={3}>
                             {images.map((image) => (
-                                <Grid item xs={12} sm={6} md={4} key={image.id}>
+                                <Grid item xs={12} sm={12} md={6} lg={4} key={image.id}>
                                     <Stack direction="column" spacing={2} justifyContent="center" alignItems="center">
                                         <Typography variant='subtitle1' color="#FFF">Original Image</Typography>
                                         <Image
@@ -162,12 +195,12 @@ function ImageUpload({onImagesChange}) {
                                         <Typography variant="subtitle2" color="#FFF">{image.file.name}</Typography>
                                         <Stack direction='row' spacing={2} justifyContent='center'>
                                             <Button variant="contained" onClick={() => handleOpenCrop(image)}
-                                                    color='primary' startIcon={<CropIcon/>}>
-                                                Crop Image
+                                                    color='primary' startIcon={<CropIcon/>} size="small">
+                                                Crop
                                             </Button>
                                             <Button variant="contained" onClick={() => handleRemoveImage(image.id)}
-                                                    color='secondary' startIcon={<DeleteIcon/>}>
-                                                Remove Image
+                                                    color='secondary' startIcon={<DeleteIcon/>} size="small">
+                                                Remove
                                             </Button>
                                         </Stack>
                                     </Stack>
@@ -182,6 +215,7 @@ function ImageUpload({onImagesChange}) {
                                     variant="contained"
                                     tabIndex={-1}
                                     startIcon={<CloudUploadIcon/>}
+                                    size="small"
                                 >
                                     Upload Pictures
                                     <input
@@ -191,6 +225,7 @@ function ImageUpload({onImagesChange}) {
                                         onChange={handleImageUpload}
                                         accept="image/*"
                                         style={{display: 'none'}} // Hide the input element
+
                                     />
                                 </Button>
                             </Box>

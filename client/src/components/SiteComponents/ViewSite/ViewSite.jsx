@@ -78,7 +78,7 @@ function ViewSite({id, siteData}) {
     const pathname = usePathname();
     const router = useRouter();
     const editSite = async () => {
-        const encryptedSiteID = await AdminUtilities.encryptUserID(id);
+        const encryptedSiteID = await AdminUtilities.encryptObjID(id);
         // encrypt the data and store it in the session storage
         const encryptedSiteData = await AdminUtilities.encryptData(siteData);
         // Set the encrypted data in Zustand store
@@ -433,7 +433,7 @@ function ViewSite({id, siteData}) {
                             {/* */}
                         </Grid>
                         <br/>
-                        {/* Next Kin Info */}
+                        {/* Geo location Info */}
                         <Grid container spacing={4}>
                             <Grid item xs={12}>
                                 <Grid container spacing={3}>

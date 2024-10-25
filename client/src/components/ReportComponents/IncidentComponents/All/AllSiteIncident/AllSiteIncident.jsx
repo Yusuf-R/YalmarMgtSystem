@@ -36,6 +36,11 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import useIncidentStore from "@/store/useIncidentStore";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import Drawer from "@mui/material/Drawer";
+import CloseIcon from "@mui/icons-material/Close";
 
 
 function AllSiteIncident({siteIncidentData}) {
@@ -47,6 +52,34 @@ function AllSiteIncident({siteIncidentData}) {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
     const [selectedRow, setSelectedRow] = useState(null); // To track the row being acted upon
+
+    // Media Queries for responsiveness
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+    const isSmall = useMediaQuery('(min-width:600px) and (max-width:899.99px)');
+    const isMedium = useMediaQuery('(min-width:900px) and (max-width:1199.99px)');
+    const isLarge = useMediaQuery('(min-width:1200px)');
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
+
     // Hook to reset store
     const resetStore = useIncidentStore((state) => state.resetStore);
     const {setViewSiteIncidentReport} = useIncidentStore();
@@ -78,10 +111,18 @@ function AllSiteIncident({siteIncidentData}) {
 
     // useEffect or handling navigation between new and staff
     useEffect(() => {
-        if (pathname.includes('site')) {
-            setActiveTab('/dashboard/admin/reports/incident/site');
-        } else if (pathname.includes('new')) {
+        if (pathname.includes('new')) {
             setActiveTab('/dashboard/admin/reports/incident/new');
+        } else if (pathname.includes('staff')) {
+            setActiveTab('/dashboard/admin/reports/incident/staff');
+        } else if (pathname.includes('site')) {
+            setActiveTab('/dashboard/admin/reports/incident/site');
+        } else if (pathname.includes('service')) {
+            setActiveTab('/dashboard/admin/reports/incident/service');
+        } else if (pathname.includes('fuel')) {
+            setActiveTab('/dashboard/admin/reports/incident/fuel');
+        } else if (pathname.includes('others')) {
+            setActiveTab('/dashboard/admin/reports/incident/others');
         } else {
             setActiveTab('/dashboard/admin/reports/incident');
         }
@@ -434,7 +475,7 @@ function AllSiteIncident({siteIncidentData}) {
                         onClick={handleOpen}
                         variant="contained"
                     >
-                        Delete Selected Report
+                        Delete +
                     </Button>
                     <Dialog
                         open={open}
@@ -525,21 +566,52 @@ function AllSiteIncident({siteIncidentData}) {
         },
         renderToolbarInternalActions: ({table}) => {
             return (
-                <Stack direction='row' sx={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
-                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
-                </Stack>
-            );
+                <>
+                    {/* For larger screens, show the action buttons inline */}
+                    {large || xLarge || xxLarge || wide || xWide || ultraWide ? (
+                        <Stack direction="row" sx={{justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='small'/>
+                        </Stack>
+                    ) : (
+                        <>
+                            {/* For smaller screens, show a settings icon that opens a drawer */}
+                            <IconButton onClick={toggleDrawer(true)}>
+                                <Tooltip title="Actions" arrow>
+                                    <SettingsIcon sx={{color: 'white'}}/>
+                                </Tooltip>
+                            </IconButton>
+                            {/* Drawer for smaller screens */}
+                            <Drawer
+                                anchor="right"
+                                open={isDrawerOpen}
+                                onClose={toggleDrawer(false)}
+                            >
+                                <Stack sx={{
+                                    borderRadius: '10px',
+                                    background: "#000000",
+                                    height: '100vh',
+                                }}>
+                                    <IconButton onClick={toggleDrawer(false)} sx={{alignSelf: 'flex-end'}}>
+                                        <CloseIcon/>
+                                    </IconButton>
+                                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ShowHideColumnsButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleFiltersButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'black'}} size='medium'/>
+                                </Stack>
+                            </Drawer>
+                        </>
+                    )}
+                </>
+            )
         },
         mrtTheme: {
-            baseBackgroundColor: '#304f61',
+            // baseBackgroundColor: '#304f61',
             // baseBackgroundColor: '#00264d',
+            baseBackgroundColor: '#000428',
             // selectedRowBackgroundColor: '#051e3b',
         },
         muiTableHeadCellProps: {
@@ -611,7 +683,7 @@ function AllSiteIncident({siteIncidentData}) {
                 100,
         },
         paginationDisplayMode: 'pages',
-        positionPagination: "both",
+        positionPagination: "bottom",
         initialState: {
             pagination: {
                 pageIndex: 0,
@@ -625,86 +697,74 @@ function AllSiteIncident({siteIncidentData}) {
 
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                        All AllSite Incident Report Form
-                    </Typography>
-                </Paper>
-                <br/>
-                {/*Navigation Tabs */}
-                <Stack direction='row' spacing={2} sx={{
-                    justifyContent: 'flex-start',
-                }}>
-                    <Tabs
-                        value={activeTab}
-                        onChange={(e, newValue) => setActiveTab(newValue)}
-                        centered
+            <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
+                <Tabs
+                    value={activeTab}
+                    onChange={(e, newValue) => setActiveTab(newValue)}
+                    variant={isXSmall ? "scrollable" : "standard"}
+                    scrollButtons="auto"
+                    sx={{
+                        '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
+                        marginBottom: 3
+                    }}
+                >
+                    {['Incident-Center', 'Staff', 'Site', 'Service', 'Fuel', 'Others'].map((label) => (
+                        <Tab
+                            key={label}
+                            label={label}
+                            component={Link}
+                            href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                            value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                "&.Mui-selected": {color: "#46F0F9"},
+                            }}
+                        />
+                    ))}
+                    <Tab
+                        label="New +"
+                        component={Link}
+                        href="/dashboard/admin/reports/incident/new"
+                        value="/dashboard/admin/reports/incident/new"
                         sx={{
-                            '& .MuiTabs-indicator': {
-                                backgroundColor: '#46F0F9',
-                            },
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                            ":hover": {backgroundColor: 'rgb(51, 153, 51)'},
+                            backgroundColor: '#ff4d4d',
+                            borderRadius: 10,
+                            p: 0,
                         }}
-                    >
-                        <Tab
-                            label="Home"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident"
-                            value="/dashboard/admin/reports/incident"
+                    />
+                </Tabs>
+                <Typography variant="h6"
                             sx={{
-                                color: "#FFF",
+                                fontFamily: 'Poppins',
                                 fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="AllSite"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident/site"
-                            value="/dashboard/admin/reports/incident/site"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="New"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident/new"
-                            value="/dashboard/admin/reports/incident/new"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                    </Tabs>
-                </Stack>
+                                borderRadius: 2,
+                                padding: '10px 15px',
+                                background: 'linear-gradient(to right, #004e92, #000428)',
+                                color: '#FFF',
+                                width: 'auto',
+                                textAlign: 'center',
+                                fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                    Site Incident Data
+                </Typography>
                 <br/>
                 {/*Table Section to present an abstracted form of the table*/}
                 <Paper elevation={5} sx={{
                     alignCenter: 'center',
                     textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
+                    padding: '2px',
+                    background: 'linear-gradient(to right, #004e92, #000428)',
                     color: '#46F0F9',
-                    borderRadius: '10px',
+                    borderRadius: '2px',
                     width: '100%',
                     height: 'auto',
                 }}>
@@ -712,6 +772,7 @@ function AllSiteIncident({siteIncidentData}) {
                         <MaterialReactTable table={table}/>
                     </ThemeProvider>
                 </Paper>
+
             </Box>
         </>
     )

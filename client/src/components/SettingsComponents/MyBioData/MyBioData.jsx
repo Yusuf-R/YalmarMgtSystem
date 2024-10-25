@@ -48,7 +48,7 @@ function MyBioData({staffData}) {
     const pathname = usePathname();
     const router = useRouter();
     const editStaff = async () => {
-        const encryptedUserID = await AdminUtilities.encryptUserID(staffData._id);
+        const encryptedUserID = await AdminUtilities.encryptObjID(staffData._id);
         // encrypt the data and store it in the session storage
         const encryptedData = await AdminUtilities.encryptData(staffData);
         if (sessionStorage.getItem('staffData')) {

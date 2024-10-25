@@ -292,7 +292,7 @@ function AllStaff({allStaff}) {
             };
             // function to view staff profile
             const viewStaff = async () => {
-                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
+                const encryptedStaffID = await AdminUtilities.encryptObjID(staffID);
                 const staffData = allStaff.find((staff) => staff._id === staffID);
                 // encrypt the data and store it in the session storage
                 const encryptedStaffData = await AdminUtilities.encryptData(staffData);
@@ -302,7 +302,7 @@ function AllStaff({allStaff}) {
             };
             // function to edit staff profile
             const editStaff = async () => {
-                const encryptedStaffID = await AdminUtilities.encryptUserID(staffID);
+                const encryptedStaffID = await AdminUtilities.encryptObjID(staffID);
                 const staffData = allStaff.find((staff) => staff._id === staffID);
                 // encrypt the data and store it in the session storage
                 const encryptedStaffData = await AdminUtilities.encryptData(staffData);

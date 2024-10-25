@@ -139,7 +139,6 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
         fontSize: '16px',
         fontStyle: 'bold',
         '&:hover': {
@@ -868,19 +867,7 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
 
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>New Servicing Report</Typography>
-                </Paper>
+            <Box>
                 <br/><br/>
                 <Box
                     component="form"

@@ -148,7 +148,7 @@ const LostInSpace = () => {
                                         sx={{color: 'white', fontSize: '20px'}}>Use
                                 the Page Buttons for
                                 navigating</Typography>
-                            <Link href="/dashboard/admin/staff">
+                            <Link href="/dashboard/admin/reports/fuel">
                                 <Button variant="contained" color='error'
                                         sx={{
                                             color: 'white',
@@ -156,7 +156,7 @@ const LostInSpace = () => {
                                             border: '1px solid #FFCB39',
                                             borderRadius: '20px'
                                         }}>GO
-                                    STAFF VIEW
+                                    FUEL REPORT HOME
                                 </Button>
                             </Link>
                         </Stack>
