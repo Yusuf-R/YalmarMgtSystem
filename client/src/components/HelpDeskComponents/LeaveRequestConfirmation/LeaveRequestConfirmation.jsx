@@ -14,7 +14,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import PhoneInTalkRoundedIcon from "@mui/icons-material/PhoneInTalkRounded";
 import MenuItem from "@mui/material/MenuItem";
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {yupResolver} from "@hookform/resolvers/yup";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import {mainSection, statusAction} from "@/utils/data";
@@ -25,9 +25,42 @@ import {toast} from "react-toastify";
 import SendIcon from "@mui/icons-material/Send";
 import {leaveRequestConfirmActionSchema} from "@/SchemaValidator/leaveReqConfirmActionSchema";
 import {useRouter, usePathname} from "next/navigation";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Image from "next/image";
+import Card from "@mui/material/Card";
+import Avatar from "@mui/material/Avatar";
 
 function LeaveRequestConfirmation({reqID, reqData}) {
     const router = useRouter();
+    const pathname = usePathname();
+    const [activeTab, setActiveTab] = useState("/dashboard/admin/helpdesk");
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+    const isLargeScreen = useMediaQuery('(min-width:900px)');
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
+
+    // Media query for responsive design
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+    const isSmallScreen = xSmall || small || medium || large;
     const paperProps = {
         alignCenter: 'center',
         textAlign: 'center',
@@ -49,11 +82,40 @@ function LeaveRequestConfirmation({reqID, reqData}) {
     });
     const txProps = {
         color: "white",
-        // bgcolor: "#274e61",
-        // bgcolor: {adminAction ? getBackgroundColor() : 'none'},
+        bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '220px',
+        fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
+        fontStyle: 'bold',
+        '&:hover': {
+            bgcolor: '#051935',
+        },
+        fontFamily: 'Poppins',
+        "& .MuiInputBase-input": {
+            color: 'white',
+        },
+        "& .MuiFormHelperText-root": {
+            color: 'red',
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'green',
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+            WebkitTextFillColor: 'white',
+        },
     }
+
+    useEffect(() => {
+        const exactTabValues = [
+            "/dashboard/admin/helpdesk",
+            "/dashboard/admin/helpdesk/biodata-center",
+            "/dashboard/admin/helpdesk/leave-request-center",
+            "/dashboard/admin/helpdesk/leave-request-center/action"
+        ];
+
+        const matchedTab = exactTabValues.find(tabPath => pathname === tabPath);
+        setActiveTab(matchedTab || "/dashboard/admin/helpdesk");
+    }, [pathname]);
     // Admin Action
     const getAdminActionType = () => {
         return statusAction.map((type) => (
@@ -145,175 +207,597 @@ function LeaveRequestConfirmation({reqID, reqData}) {
     }
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={paperProps}>
-                    <Typography variant='h5'>Leave Request Confirmation</Typography>
-                </Paper>
-                <br/><br/>
-                <Box component='form' noValidate onSubmit={handleSubmit(SubmitData)}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={5}>
-                            {/*RHS section Confirmation Section*/}
-                            <Box>
-                                {/*Basic AllStaff Info Section*/}
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        <Paper elevation={5} sx={{
-                                            alignCenter: 'center',
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            border: '1px solid #0A4D50',
-                                            backgroundColor: '#274e61',
-                                            color: '#46F0F9',
-                                            borderRadius: '10px',
-                                            width: '`100%',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                        }}>
-                                            <Typography variant='h6' align="left">Leave Action</Typography>
-                                            <br/>
-                                            <Paper elevation={5} sx={{...paperProps, width: '100%', color: '#FFF'}}>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 2 CurrentLeave, Duration, NewBalance */}
-                                                    <Stack direction='row' spacing={12}>
-                                                        <Typography variant='body4' align="left" sx={{
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            flexDirection: 'column',
-                                                            color: '#FFF',
-                                                            width: '50%',
-                                                            fontSize: '25px',
-                                                            fontWeight: 'bold',
-                                                        }}>
-                                                            Status:
-                                                        </Typography>
-                                                        <Controller
-                                                            name="status"
-                                                            control={control}
-                                                            defaultValue={reqData.status}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.status}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
+            <Box
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%',
+                    flexWrap: 'nowrap',
+                }}>
+                <Stack direction="row" spacing={2} sx={{justifyContent: "flex-start"}}>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isXSmall ? "scrollable" : "standard"}
+                        centered={!isXSmall}
+                        sx={{
+                            "& .MuiTabs-indicator": {backgroundColor: "#46F0F9"},
+                        }}
+                    >
+                        {[
+                            {label: "Helpdesk", value: "/dashboard/admin/helpdesk"},
+                            {label: "BioData", value: "/dashboard/admin/helpdesk/biodata-center"},
+                            {label: "Leave-Request", value: "/dashboard/admin/helpdesk/leave-request-center"},
+                            {label: "Action", value: "/dashboard/admin/helpdesk/leave-request-center/action"}
+                        ].map((tab, index) => (
+                            <Tab
+                                key={index}
+                                label={tab.label}
+                                value={tab.value}
+                                component={Link}
+                                href={tab.value}
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: "bold",
+                                    fontSize: xSmall || small || medium || large ? "0.6rem" : "0.9rem",
+                                    "&.Mui-selected": {color: "#46F0F9"},
+                                }}
+                            />
+                        ))}
+                    </Tabs>
+                </Stack>
+                <br/>
+                {/*Parent Cover*/}
 
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#FFF",
-                                                                                fontSize: '20px',
-                                                                                backgroundColor: getReqBackgroundColor(),
-                                                                                p: '10px',
-                                                                            },
-                                                                        }}
-                                                                        variant="standard"
-                                                                        sx={{
-                                                                            width: '50%',
-                                                                        }}
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br></br>
-                                                <Stack direction='row' spacing={2}>
-                                                    <Typography variant='body4' align="left" sx={{
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        flexDirection: 'column',
+                <Box
+                    component='form'
+                    noValidate
+                    onSubmit={handleSubmit(SubmitData)}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: isLargeScreen ? '0' : '10px',
+                        height: isLargeScreen ? '100vh' : 'auto',
+                        overflowY: 'auto',
+                        background: 'linear-gradient(to right, #000428, #004e92)',
+                        p: 1,
+                        // background: '#000428',
+                    }}
+                >
+                    <Typography variant="h6"
+                                sx={{
+                                    fontFamily: 'Poppins',
+                                    fontWeight: 'bold',
+                                    borderRadius: 2,
+                                    padding: '10px 15px',
+                                    background: 'linear-gradient(to right, #004e92, #000428)',
+                                    color: '#FFF',
+                                    width: 'auto',
+                                    textAlign: 'center',
+                                    fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                        Leave Request Confirmation
+                    </Typography>
+                    <br/>
+                    <Grid container spacing={3}>
+                        {/* Left-Hand Side (LHS) for Actions */}
+                        <Grid item xs={12} md={5}>
+                            <Box
+                                sx={{
+                                    // background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                    background: '#000428',
+                                    padding: '16px',
+                                    borderRadius: '10px',
+                                    height: '100%',
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Stack
+                                    direction="column"
+                                    spacing={3}
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    sx={{width: '100%'}}
+                                >
+                                    {/* Leave Request Header */}
+                                    <Card sx={{
+                                        background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                        padding: '16px',
+                                        borderRadius: '10px'
+                                    }}>
+                                        <Typography variant="body1"
+                                                    sx={{
                                                         color: '#FFF',
-                                                        width: '50%',
-                                                        fontSize: '25px',
+                                                        fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
                                                         fontWeight: 'bold',
+                                                        //     align center
+                                                        textAlign: 'center'
                                                     }}>
-                                                        Admin Action:
-                                                    </Typography>
-                                                    <Controller
-                                                        name="adminAction"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
-                                                                <TextField
-                                                                    {...field}
-                                                                    select
-                                                                    value={field.value}
-                                                                    onChange={(e) => {
-                                                                        field.onChange(e);
-                                                                        handleAdminActionChange(e);
-                                                                    }}
-                                                                    required
-                                                                    error={!!errors.adminAction}
-                                                                    helperText={errors.adminAction ? (
-                                                                        <span style={{color: "#fc8947"}}>
-                                                                                {errors.adminAction.message}
-                                                                                </span>
-                                                                    ) : ''}
-                                                                    InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            bgcolor: getAdminActionBackgroundColor() || 'salmon',
-                                                                            fontSize: '20px',
-                                                                            fontWeight: 'bold',
-                                                                        }
-                                                                    }}
-                                                                    InputLabelProps={{
-                                                                        sx: {
-                                                                            color: "#46F0F9",
-                                                                            "&.Mui-focused": {
-                                                                                color: "white"
-                                                                            },
+                                            Leave Request
+                                        </Typography>
+                                    </Card>
 
-                                                                        }
-                                                                    }}
-                                                                    SelectProps={{
-                                                                        MenuProps: {
-                                                                            PaperProps: {
-                                                                                sx: {
-                                                                                    backgroundColor: '#134357',
-                                                                                    color: 'white',
-                                                                                    maxHeight: 450,
-                                                                                    overflow: 'auto',
-                                                                                },
+                                    {/* Centered Avatar */}
+                                    <Avatar
+                                        src="/leave-req.svg"
+                                        alt="leave-request"
+                                        sx={{
+                                            width: isSmallScreen ? '150px' : '250px',
+                                            height: isSmallScreen ? '150px' : '250px',
+                                            // borderRadius: '50%',
+                                            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                                        }}
+                                    />
+
+                                    {/* Leave Status and Action */}
+                                    <Stack direction="column" spacing={2} sx={{width: '100%'}}>
+                                        {/* Leave Status */}
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <Typography variant="body1"
+                                                        sx={{
+                                                            color: '#FFF',
+                                                            fontWeight: 'bold',
+                                                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
+                                                        }}>
+                                                Request Status
+                                            </Typography>
+                                            <Box
+                                                sx={{
+                                                    padding: '6px 12px',
+                                                    borderRadius: '10px',
+                                                    color: '#FFF',
+                                                    fontWeight: 'bold',
+                                                    minWidth: '60px',
+                                                    textAlign: 'center',
+                                                }}
+                                            >
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="status"
+                                                        control={control}
+                                                        defaultValue={reqData.status}
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                id="input-with-icon-textfield"
+                                                                defaultValue={reqData.status}
+                                                                InputProps={{
+                                                                    sx: {
+                                                                        ...txProps,
+                                                                        backgroundColor: getReqBackgroundColor(),
+                                                                        p: '2px',
+                                                                        '&:hover': {
+                                                                            bgcolor: undefined,
+                                                                        },
+                                                                    },
+                                                                    readOnly: true,
+
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        },
+                                                                    }
+                                                                }}
+                                                                SelectProps={{
+                                                                    MenuProps: {
+                                                                        PaperProps: {
+                                                                            sx: {
+                                                                                backgroundColor: '#134357',
+                                                                                color: 'white',
+                                                                                overflow: 'auto',
+
                                                                             },
                                                                         },
-                                                                    }}
-                                                                    sx={{
-                                                                        '& .MuiSelect-icon': {
-                                                                            color: '#fff',
-                                                                        },
-                                                                        '& .MuiSelect-icon:hover': {
-                                                                            color: '#fff',
-                                                                        },
-                                                                        textAlign: 'left',
-                                                                    }}>
-                                                                    {adminAction !== '' && (
-                                                                        <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                                            Select Action
-                                                                        </MenuItem>
-                                                                    )}
-                                                                    {getAdminActionType()}
-                                                                </TextField>
-                                                            </FormControl>
+                                                                    },
+                                                                }}
+                                                                sx={{
+                                                                    '& .MuiSelect-icon': {
+                                                                        color: '#fff',
+                                                                    },
+                                                                    '& .MuiSelect-icon:hover': {
+                                                                        color: '#fff',
+                                                                    },
+                                                                    textAlign: 'left',
+                                                                }}
+                                                            />
+
                                                         )}
                                                     />
-                                                </Stack>
-                                                {/*Button Action for submission*/}
-                                            </Paper>
-                                        </Paper>
+                                                </FormControl>
+                                            </Box>
+                                        </Stack>
+                                        {/* Admin Action Dropdown */}
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center"
+                                               gap={1}>
+                                            <Typography variant="body1" sx={{color: '#FFF', fontWeight: 'bold'}}>
+                                                Action
+                                            </Typography>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="adminAction"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
+                                                        <TextField
+                                                            {...field}
+                                                            select
+                                                            value={field.value}
+                                                            onChange={(e) => {
+                                                                field.onChange(e);
+                                                                handleAdminActionChange(e);
+                                                            }}
+                                                            required
+                                                            error={!!errors.adminAction}
+                                                            helperText={errors.adminAction ? (
+                                                                <span style={{color: "#fc8947"}}>
+                                                                                {errors.adminAction.message}
+                                                                                </span>
+                                                            ) : ''}
+                                                            InputProps={{
+                                                                sx: {
+                                                                    ...txProps,
+                                                                    bgcolor: getAdminActionBackgroundColor() || 'salmon',
+                                                                    fontSize: '20px',
+                                                                    fontWeight: 'bold',
+                                                                }
+                                                            }}
+                                                            InputLabelProps={{
+                                                                sx: {
+                                                                    color: "#46F0F9",
+                                                                    "&.Mui-focused": {
+                                                                        color: "white"
+                                                                    },
+                                                                }
+                                                            }}
+                                                            SelectProps={{
+                                                                MenuProps: {
+                                                                    PaperProps: {
+                                                                        sx: {
+                                                                            backgroundColor: '#134357',
+                                                                            color: 'white',
+                                                                            overflow: 'auto',
+                                                                        },
+                                                                    },
+                                                                },
+                                                            }}
+                                                            sx={{
+                                                                '& .MuiSelect-icon': {
+                                                                    color: '#fff',
+                                                                },
+                                                                '& .MuiSelect-icon:hover': {
+                                                                    color: '#fff',
+                                                                },
+                                                                textAlign: 'left',
+                                                            }}>
+                                                            {adminAction !== '' && (
+                                                                <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                                    Select Action
+                                                                </MenuItem>
+                                                            )}
+                                                            {getAdminActionType()}
+                                                        </TextField>
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        </Stack>
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        </Grid>
+                        {/* Right-Hand Side (RHS) for Details */}
+                        <Grid item xs={12} md={7}>
+                            <Box
+                                sx={{
+                                    // background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                    background: '#000428',
+                                    padding: '16px',
+                                    borderRadius: '10px',
+                                    height: '100%',
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                {/* Placeholder content for leave details */}
+                                <Grid container spacing={4}>
+                                    {/* Section 1: Site Information */}
+                                    <Grid item xs={12}>
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} sm={12} md={12} lg={12}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold',
+                                                                    //     align center
+                                                                    textAlign: 'center'
+                                                                }}>
+                                                        Bio Summary
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            {/* Bio Date */}
+                                            <Grid item xs={12} sm={12} md={12} lg={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Full Name
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.fullName}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+
+                                            {/* Role */}
+                                            <Grid item xs={12} sm={12} md={12} lg={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{
+                                                                    color: '#46F0F9',
+                                                                    fontSize: '14px',
+                                                                    mb: 1
+                                                                }}>
+                                                        Role
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.role}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+
+                                            {/* Email */}
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Email
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.email}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Phone
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold',
+                                                                }}>
+                                                        {reqData.phone}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={12} md={12} lg={12}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold',
+                                                                    textAlign: 'center'
+                                                                }}>
+                                                        Leave Request Information
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Start Date
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.startDate}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        End Date
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.endDate}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        leaveType
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.leaveType}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={6}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Reason
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.leaveReason}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={12} md={12} lg={12}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold',
+                                                                    textAlign: 'center'
+                                                                }}>
+                                                        Leave Analytics
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Current Leave Balance (days)
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.currentBalance}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        Leave Duration
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.duration}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <Card sx={{
+                                                    background: 'linear-gradient(to right, #1d4350, #a43931)',
+                                                    padding: '16px',
+                                                    borderRadius: '10px'
+                                                }}>
+                                                    <Typography variant="subtitle2"
+                                                                sx={{color: '#46F0F9', fontSize: '14px', mb: 1}}>
+                                                        New Balance
+                                                    </Typography>
+                                                    <Typography variant="body1"
+                                                                sx={{
+                                                                    color: '#FFF',
+                                                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                                                    fontWeight: 'bold'
+                                                                }}>
+                                                        {reqData.newBalance}
+                                                    </Typography>
+                                                </Card>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                             </Box>
-                            <br/><br/>
+                        </Grid>
+                        <br/>
+                        {/* Submit */}
+                        <Grid item xs={12} md={12}>
+                            {/* Submit Section */}
                             <Stack direction="row" spacing={4}>
                                 <Link href="/dashboard/admin/helpdesk/leave-request-center">
                                     <Button variant="contained" color="secondary" title='Back'>
@@ -325,537 +809,10 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                                     Submit
                                 </Button>
                             </Stack>
-
-                        </Grid>
-                        <Grid item xs={7}>
-                            {/*RHS section Request Information Section*/}
-                            <Box>
-                                {/*Basic AllStaff Info Section*/}
-                                <Paper elevation={5} sx={{...paperProps, width: '100%', color: '#FFF'}}>
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12}>
-                                            <Paper elevation={5} sx={{
-                                                alignCenter: 'center',
-                                                textAlign: 'center',
-                                                padding: '10px',
-                                                border: '1px solid #0A4D50',
-                                                backgroundColor: '#274e61',
-                                                color: '#46F0F9',
-                                                borderRadius: '10px',
-                                                width: '100%',
-                                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                                            }}>
-                                                <Typography variant='h6' align="left">Basic Info</Typography>
-                                                <br/>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 1 : Name: MiddleName: LastName */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="fullName"
-                                                            control={control}
-                                                            defaultValue={reqData.fullName}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        {...field}
-                                                                        id="input-with-icon-textfield"
-
-                                                                        label="fullName"
-                                                                        defaultValue={reqData.fullName}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start"
-                                                                                >
-                                                                                    <AccountCircleIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="role"
-                                                            control={control}
-                                                            defaultValue={reqData.role}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        label="Role"
-                                                                        defaultValue={reqData.role}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <AppRegistrationIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                width: '120%'
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 2 :ID, Email */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="phone"
-                                                            control={control}
-                                                            defaultValue={reqData.phone}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.phone}
-                                                                        label="PhoneNo"
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start"
-                                                                                >
-                                                                                    <PhoneInTalkRoundedIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="email"
-                                                            control={control}
-                                                            defaultValue={reqData.email}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        label="Email"
-                                                                        defaultValue={reqData.email}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <MarkEmailReadIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                width: '120%'
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/>
-                                                <Typography variant='h6' align="left">Leave Info</Typography>
-                                                <br/>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 1 : Name: MiddleName: LastName */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="startDate"
-                                                            control={control}
-                                                            defaultValue={reqData.startDate}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        {...field}
-                                                                        id="input-with-icon-textfield"
-
-                                                                        label="Start-Date"
-                                                                        defaultValue={reqData.startDate}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start"
-                                                                                >
-                                                                                    <CalendarMonthIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="endDate"
-                                                            control={control}
-                                                            defaultValue={reqData.endDate}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        label="End-Date"
-                                                                        defaultValue={reqData.endDate}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-
-                                                                                <InputAdornment position="start">
-                                                                                    <CalendarMonthIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                width: '120%'
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={10}>
-                                                    {/* Column 2 :ID, Email */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="leaveType"
-                                                            control={control}
-                                                            defaultValue={reqData.leaveType}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.leaveType}
-                                                                        label="Leave-Type"
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start"
-                                                                                >
-                                                                                    <PhoneInTalkRoundedIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="leaveReason"
-                                                            control={control}
-                                                            defaultValue={reqData.leaveReason}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        label="Leave-Reason"
-                                                                        defaultValue={reqData.leaveReason}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <MarkEmailReadIcon
-                                                                                        sx={{color: '#FFF'}}/>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                width: '120%'
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/><br/>
-                                                <Typography variant='h6' align="left">Leave Analytics</Typography>
-                                                <br/>
-                                                <Stack direction='row' spacing={2}>
-                                                    {/* Column 2 :ID, Email */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="currentBalance"
-                                                            control={control}
-                                                            defaultValue={reqData.currentBalance}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.currentBalance}
-                                                                        type="number"
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <Typography variant='h6'
-                                                                                                align="left"
-                                                                                                sx={{
-                                                                                                    color: "#46F0F9",
-                                                                                                    // fontSize: '20px',
-                                                                                                }}>
-                                                                                        Current Leave Balance (days):
-                                                                                    </Typography>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                // color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                color: ' #00ff00',
-                                                                                width: '70%',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={2}>
-                                                    {/* Column 2 CurrentLeave, Duration, NewBalance */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="duration"
-                                                            control={control}
-                                                            defaultValue={reqData.duration}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.duration}
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <Typography variant='h6'
-                                                                                                align="left"
-                                                                                                sx={{
-                                                                                                    color: "#46F0F9",
-                                                                                                    // fontSize: '20px',
-                                                                                                }}>
-                                                                                        Leave Duration (days):
-                                                                                    </Typography>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                color: "#00ffff",
-                                                                                fontSize: '20px',
-                                                                                width: '70%',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                                <br/>
-                                                <Stack direction='row' spacing={2}>
-                                                    {/* Column 2 :ID, Email */}
-                                                    <Stack direction='row' spacing={2}>
-                                                        <Controller
-                                                            name="newBalance"
-                                                            control={control}
-                                                            defaultValue={reqData.newBalance}
-                                                            render={({field}) => (
-                                                                <FormControl fullWidth>
-                                                                    <TextField
-                                                                        id="input-with-icon-textfield"
-                                                                        defaultValue={reqData.newBalance}
-                                                                        type="number"
-                                                                        InputLabelProps={{
-                                                                            sx: {
-                                                                                color: "#46F0F9",
-                                                                                fontSize: '14px',
-                                                                                "&.Mui-focused": {
-                                                                                    color: "white"
-                                                                                },
-
-                                                                            }
-                                                                        }}
-                                                                        InputProps={{
-                                                                            startAdornment: (
-                                                                                <InputAdornment position="start">
-                                                                                    <Typography variant='h6'
-                                                                                                align="left"
-                                                                                                sx={{
-                                                                                                    color: "#46F0F9",
-                                                                                                    // fontSize: '20px',
-                                                                                                }}>
-                                                                                        New Balance (days):
-                                                                                    </Typography>
-                                                                                </InputAdornment>
-                                                                            ),
-                                                                            readOnly: true,
-                                                                            sx: {
-                                                                                // color: "#46F0F9",
-                                                                                fontSize: '20px',
-                                                                                width: '70%',
-                                                                                color: '#ff9900',
-                                                                            },
-                                                                        }}
-                                                                        variant="filled"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                    </Stack>
-                                                </Stack>
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </Paper>
-                                <br/>
-                            </Box>
+                            <br/>
                         </Grid>
                     </Grid>
-                    <br/>
+
                 </Box>
             </Box>
         </>

@@ -25,6 +25,8 @@ function SiteLandingPage() {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
     // state components
     const pathname = usePathname();
     const router = useRouter();
@@ -60,7 +62,8 @@ function SiteLandingPage() {
                     <Tabs
                         value={activeTab}
                         onChange={(e, newValue) => setActiveTab(newValue)}
-                        centered
+                        variant={isXSmall ? "scrollable" : "standard"}
+                        centered={!isXSmall}
                         sx={{
                             '& .MuiTabs-indicator': {
                                 backgroundColor: '#46F0F9',

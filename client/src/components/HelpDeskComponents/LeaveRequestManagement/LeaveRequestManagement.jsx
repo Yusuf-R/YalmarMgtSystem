@@ -11,9 +11,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -35,10 +35,55 @@ import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import {useQuery} from "@tanstack/react-query";
 import {mainSection} from "@/utils/data";
+import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import Drawer from "@mui/material/Drawer";
+import CloseIcon from "@mui/icons-material/Close";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 function LeaveRequestManagement({leaveReqData}) {
     const router = useRouter();
+    const pathname = usePathname();
+    const [activeTab, setActiveTab] = useState("/dashboard/admin/helpdesk/leave-request-center");
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
+
+    // Media query for responsive design
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+    const isSmallScreen = xSmall || small || medium || large;
     const [open, setOpen] = useState(false);
+    // useEffect or handling navigation between view and edits
+    useEffect(() => {
+        if (pathname.startsWith("/dashboard/admin/helpdesk/biodata-center")) {
+            setActiveTab("/dashboard/admin/helpdesk/biodata-center");
+        } else if (pathname.startsWith("/dashboard/admin/helpdesk/leave-request-center")) {
+            setActiveTab("/dashboard/admin/helpdesk/leave-request-center");
+        } else {
+            setActiveTab("/dashboard/admin/helpdesk");
+        }
+    }, [pathname]);
+
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -185,7 +230,6 @@ function LeaveRequestManagement({leaveReqData}) {
             header: capitalizeFirstLetter(field),
             sortable: true,
             size: 150,
-            // set the 'status' header to be color red
             headerStyle: field === 'Status' ? {color: 'red'} : {},
             Cell: ({cell}) => {
                 if (field === 'status') {
@@ -306,71 +350,121 @@ function LeaveRequestManagement({leaveReqData}) {
         },
         renderToolbarInternalActions: ({table}) => {
             return (
-                <Stack direction='row' sx={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
-                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
-                </Stack>
-            );
+                <>
+                    {/* For larger screens, show the action buttons inline */}
+                    {large || xLarge || xxLarge || wide || xWide || ultraWide ? (
+                        <Stack direction="row" sx={{justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='small'/>
+                        </Stack>
+                    ) : (
+                        <>
+                            {/* For smaller screens, show a settings icon that opens a drawer */}
+                            <IconButton onClick={toggleDrawer(true)}>
+                                <Tooltip title="Actions" arrow>
+                                    <SettingsIcon sx={{color: 'white'}}/>
+                                </Tooltip>
+                            </IconButton>
+                            {/* Drawer for smaller screens */}
+                            <Drawer
+                                anchor="right"
+                                open={isDrawerOpen}
+                                onClose={toggleDrawer(false)}
+                            >
+                                <Stack sx={{
+                                    borderRadius: '10px',
+                                    background: "#000000",
+                                    height: '100vh',
+                                }}>
+                                    <IconButton onClick={toggleDrawer(false)} sx={{alignSelf: 'flex-end'}}>
+                                        <CloseIcon/>
+                                    </IconButton>
+                                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ShowHideColumnsButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleFiltersButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'black'}} size='medium'/>
+                                </Stack>
+                            </Drawer>
+                        </>
+                    )}
+                </>
+            )
         },
         mrtTheme: {
-            baseBackgroundColor: '#304f61',
-            // baseBackgroundColor: '#00264d',
-            // selectedRowBackgroundColor: '#051e3b',
+            baseBackgroundColor: '#000428',
         },
         muiTableHeadCellProps: {
             sx: {
                 color: '#21c6fc',
-                fontSize: '1.32em',
-                fontWeight: 'bold',
-                fontFamily: 'sans-serif',
-            },
+                fontSize:
+                    '1.32em',
+                fontWeight:
+                    'bold',
+                fontFamily:
+                    'sans-serif',
+            }
+            ,
             align: 'center',
         },
         muiTableBodyCellProps: {
             sx: {
                 color: 'white',
-                fontSize: '1.2em',
-                '&:hover': {
-                    color: '#fcc2fb',
-                },
+                fontSize:
+                    '1.2em',
+                '&:hover':
+                    {
+                        color: '#fcc2fb',
+                    }
+                ,
                 padding: '2px 4px',
-                alignItems: 'center',
-            },
+                alignItems:
+                    'center',
+            }
+            ,
             align: 'center',
 
         },
         muiTableBodyRowProps: {
             sx: {
                 height: '2px',
-            },
+            }
+            ,
         },
         muiSearchTextFieldProps: {
-            InputLabelProps: {shrink: true},
+            InputLabelProps: {
+                shrink: true
+            }
+            ,
             label: 'Search',
-            placeholder: 'AllStaff Details',
-            variant: 'outlined',
-            color: 'warning',
+            placeholder:
+                'AllSite Details',
+            variant:
+                'outlined',
+
         },
         muiFilterTextFieldProps: {
             color: 'error',
-            borderColor: 'error',
+            borderColor:
+                'error',
         },
         muiPaginationProps: {
             shape: 'rounded',
-            color: 'warning',
-            variant: 'text',
-            size: 'small',
-            rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
+            color:
+                'warning',
+            variant:
+                'text',
+            size:
+                'small',
+            rowsPerPageOptions:
+                [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
             // set the table to display the first 100 data by default
-            rowsPerPage: 100,
+            rowsPerPage:
+                100,
         },
         paginationDisplayMode: 'pages',
+        positionPagination: "bottom",
         initialState: {
             pagination: {
                 pageIndex: 0,
@@ -393,41 +487,74 @@ function LeaveRequestManagement({leaveReqData}) {
     }
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>Leave Request Management</Typography>
-                </Paper>
-                <br/><br/>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <ThemeProvider theme={tableTheme}>
-                        <MaterialReactTable table={table}/>
-                    </ThemeProvider>
-                </Paper>
+            <Box sx={{
+                padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
+                marginTop: '10px',
+            }}>
+                <Stack direction="row" spacing={2} sx={{justifyContent: "flex-start"}}>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isXSmall ? "scrollable" : "standard"}
+                        centered={!isXSmall}
+                        sx={{
+                            "& .MuiTabs-indicator": {
+                                backgroundColor: "#46F0F9",
+                            },
+                        }}
+                    >
+                        {[
+                            {label: "Helpdesk", value: "/dashboard/admin/helpdesk"},
+                            {label: "BioData", value: "/dashboard/admin/helpdesk/biodata-center"},
+                            {label: "Leave-Request", value: "/dashboard/admin/helpdesk/leave-request-center"}
+                        ].map((tab, index) => (
+                            <Tab
+                                key={index}
+                                label={tab.label}
+                                value={tab.value}
+                                component={Link}
+                                href={tab.value}
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: "bold",
+                                    fontSize: xSmall || small || medium || large ? "0.6rem" : "0.9rem",
+                                    "&.Mui-selected": {color: "#46F0F9"},
+                                }}
+                            />
+                        ))}
+                    </Tabs>
+                </Stack>
+                <br/>
+                <Typography variant="h6"
+                            sx={{
+                                fontFamily: 'Poppins',
+                                fontWeight: 'bold',
+                                borderRadius: 2,
+                                padding: '10px 15px',
+                                background: 'linear-gradient(to right, #004e92, #000428)',
+                                color: '#FFF',
+                                width: 'auto',
+                                textAlign: 'center',
+                                fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                    Leave Management Center
+                </Typography>
+                <br/>
+                <ThemeProvider theme={tableTheme}>
+                    <MaterialReactTable table={table}/>
+                </ThemeProvider>
                 <br/><br/>
                 {/*</Card>*/}
                 <Stack direction='row' spacing={5}>
                     <Link href="/dashboard/admin/helpdesk">
                         <Button variant="contained" color='success' title='Back'> Back </Button>
                     </Link>
+
                 </Stack>
+
             </Box>
         </>
     );
