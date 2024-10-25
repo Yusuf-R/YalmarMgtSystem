@@ -47,21 +47,29 @@ function ServicingLandingPage() {
                         },
                     }}
                 >
-                    {['Home', 'Servicing', 'Fuelling', 'Incidents'].map((label, index) => (
-                        <Tab
-                            key={index}
-                            label={label}
-                            value={`/dashboard/admin/reports${index === 0 ? '' : '/' + label.toLowerCase()}`}
-                            component={Link}
-                            href={`/dashboard/admin/reports${index === 0 ? '' : '/' + label.toLowerCase()}`}
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {color: "#46F0F9"},
-                            }}
-                        />
-                    ))}
+                    {['Report-Central', 'Servicing', 'Fuelling', 'Incident'].map((label, index) => {
+                        let route = label.toLowerCase();
+                        if (label === 'Fuelling') {
+                          route = 'fuel';
+                        } // Modify the route for Fuelling
+
+                        return (
+                            <Tab
+                                key={index}
+                                label={label}
+                                value={`/dashboard/admin/reports${index === 0 ? '' : '/' + route}`}
+                                component={Link}
+                                href={`/dashboard/admin/reports${index === 0 ? '' : '/' + route}`}
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: 'bold',
+                                    fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
+                                    "&.Mui-selected": {color: "#46F0F9"},
+                                }}
+                            />
+                        );
+                    })}
+
                 </Tabs>
             </Stack>
             <Box sx={{

@@ -16,6 +16,7 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {siteIncidentSchema} from "@/SchemaValidator/IncidentValidators/siteIncidentSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 function SiteIncident({allSite}) {
@@ -32,6 +33,18 @@ function SiteIncident({allSite}) {
         reValidateMode: 'onChange',
         resolver: yupResolver(siteIncidentSchema),
     });
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
     // AllSite Info Section
     const states = Array.from(new Set(allSite.map(site => site.state)));
     const clusters = Array.from(new Set(allSite.filter(site => site.state === siteInfo.state).map(site => site.cluster)));
@@ -196,7 +209,6 @@ function SiteIncident({allSite}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
         fontSize: '16px',
         fontStyle: 'bold',
         '&:hover': {
@@ -233,12 +245,12 @@ function SiteIncident({allSite}) {
                         fontWeight: 'bold',
                         fontFamily: 'Poppins',
                         ml: '30px',
-                        fontSize: '16px',
+                        fontSize: {xs: '0.9rem', sm: '1.0rem', md: '1.1rem'},
                         borderRadius: '30px',
                         textAlign: 'left',
                         color: '#46F0F9',
                     }}>
-                        AllSite-Related
+                        Site-Related
                     </Typography>
                     <Card sx={{bgcolor: '#274e61', color: '#FFF'}}>
                         <CardContent>
@@ -250,21 +262,21 @@ function SiteIncident({allSite}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: {xs: '0.9rem', sm: '1.0rem', md: '1.1rem'},
                                     }}>
-                                        AllSite-Info
+                                        Site-Info
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         {/*AllSite State*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="siteInfo.state"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="siteInfo.state"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -298,10 +310,7 @@ function SiteIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            fontSize: '40px',
-
                                                                         },
                                                                     },
                                                                 },
@@ -313,7 +322,6 @@ function SiteIncident({allSite}) {
                                                                 '& .MuiSelect-icon:hover': {
                                                                     color: '#fff',
                                                                 },
-                                                                textAlign: 'left',
                                                             }}>
                                                             {siteInfo.state !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -322,18 +330,18 @@ function SiteIncident({allSite}) {
                                                             )}
                                                             {getState()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite cluster*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="siteInfo.cluster"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="siteInfo.cluster"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -367,9 +375,7 @@ function SiteIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-
                                                                         },
                                                                     },
                                                                 },
@@ -381,7 +387,6 @@ function SiteIncident({allSite}) {
                                                                 '& .MuiSelect-icon:hover': {
                                                                     color: '#fff',
                                                                 },
-                                                                textAlign: 'left',
                                                             }}>
                                                             {siteInfo.cluster !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -390,18 +395,18 @@ function SiteIncident({allSite}) {
                                                             )}
                                                             {getCluster()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite ID*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="siteInfo.siteId"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="siteInfo.siteId"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -410,7 +415,7 @@ function SiteIncident({allSite}) {
                                                                 field.onChange(e);
                                                                 handleSiteId(e);
                                                             }}
-                                                            label="AllSite ID"
+                                                            label="Site ID"
                                                             required
                                                             error={!!errors.siteInfo?.siteId}
                                                             helperText={errors.siteInfo?.siteId ? (
@@ -435,9 +440,7 @@ function SiteIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-
                                                                         },
                                                                     },
                                                                 },
@@ -449,7 +452,6 @@ function SiteIncident({allSite}) {
                                                                 '& .MuiSelect-icon:hover': {
                                                                     color: '#fff',
                                                                 },
-                                                                textAlign: 'left',
                                                             }}>
                                                             {siteInfo.siteId !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -458,83 +460,86 @@ function SiteIncident({allSite}) {
                                                             )}
                                                             {getSiteId()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite Type if available*/}
                                         {siteInfo.siteId && (
-                                            <Grid item xs={2}>
-                                                <Controller
-                                                    name="siteInfo.type"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="siteInfo.type"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx: txProps
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="AllSite Type"
-                                                            variant="outlined"
-                                                            error={!!errors.siteInfo?.type}
-                                                            helperText={errors.siteInfo?.type ? errors.siteInfo.type.message : ''}
-                                                            type="text"
-                                                            value={siteInfo.type}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                }}
+                                                                label="AllSite Type"
+                                                                variant="outlined"
+                                                                error={!!errors.siteInfo?.type}
+                                                                helperText={errors.siteInfo?.type ? errors.siteInfo.type.message : ''}
+                                                                type="text"
+                                                                value={siteInfo.type}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                         {/*Location if available*/}
                                         {siteInfo.siteId && (
-                                            <Grid item xs={4}>
-                                                <Controller
-                                                    name="siteInfo.location"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    width: '500px',
-                                                                }
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="siteInfo.location"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx:
+                                                                    txProps,
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="Location"
-                                                            variant="outlined"
-                                                            error={!!errors.siteInfo?.location}
-                                                            helperText={errors.siteInfo?.location ? errors.location.message : ''}
-                                                            type="text"
-                                                            value={siteInfo.location}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                }}
+                                                                label="Location"
+                                                                variant="outlined"
+                                                                error={!!errors.siteInfo?.location}
+                                                                helperText={errors.siteInfo?.location ? errors.location.message : ''}
+                                                                type="text"
+                                                                value={siteInfo.location}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                     </Grid>
@@ -556,13 +561,13 @@ function SiteIncident({allSite}) {
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
-                                        <Grid item xs={4}>
-                                            <Controller
-                                                name="siteIncidentInfo.category"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="siteIncidentInfo.category"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -581,10 +586,8 @@ function SiteIncident({allSite}) {
                                                                                 </span>
                                                             ) : ''}
                                                             InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    // width: '25%',
-                                                                }
+                                                                sx:
+                                                                txProps,
                                                             }}
                                                             InputLabelProps={{
                                                                 sx: {
@@ -600,10 +603,7 @@ function SiteIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            fontSize: '40px',
-                                                                            // width: '20%'
                                                                         },
                                                                     },
                                                                 },
@@ -622,19 +622,20 @@ function SiteIncident({allSite}) {
                                                             </MenuItem>
                                                             {getCatReport()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {catSelector === 'Shelter' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="siteIncidentInfo.subCategory.shelter"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="siteIncidentInfo.subCategory.shelter"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -653,10 +654,8 @@ function SiteIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -672,10 +671,7 @@ function SiteIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -694,23 +690,21 @@ function SiteIncident({allSite}) {
                                                                     </MenuItem>
                                                                     {getCatShe()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
-
-
                                             </>
                                         )}
                                         {catSelector === 'Security' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="siteIncidentInfo.subCategory.security"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="siteIncidentInfo.subCategory.security"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -729,10 +723,8 @@ function SiteIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -748,10 +740,7 @@ function SiteIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -770,41 +759,43 @@ function SiteIncident({allSite}) {
                                                                     </MenuItem>
                                                                     {getCatSec()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {catSelector === 'Others' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="siteIncidentInfo.subCategory.others"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                InputProps={{
-                                                                    sx: {...txProps, width: '50%'}
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white",
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                label="Others"
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                required
-                                                                error={!!errors.siteIncidentInfo?.subCategory?.others}
-                                                                helperText={errors.siteIncidentInfo?.subCategory?.others ? errors.siteIncidentInfo.subCategory.others.message : ''}
-                                                            />
-                                                        )}
-                                                    />
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="siteIncidentInfo.subCategory.others"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    InputProps={{
+                                                                        sx: txProps
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white",
+                                                                            },
+                                                                        }
+                                                                    }}
+                                                                    label="Others"
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    required
+                                                                    error={!!errors.siteIncidentInfo?.subCategory?.others}
+                                                                    helperText={errors.siteIncidentInfo?.subCategory?.others ? errors.siteIncidentInfo.subCategory.others.message : ''}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}

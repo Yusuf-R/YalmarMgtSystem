@@ -7,7 +7,7 @@ const dataSecret = process.env.NEXT_PUBLIC_DATA_SECRET;
 
 class AdminUtils {
     // encryption utils
-    static async encryptUserID(userID) {
+    static async encryptObjID(userID) {
         // Hash the idSecret to get a 256-bit key
         // new TextEncoder().encode(idSecret) converts the secrets to an array of bytes
         const keyMaterial = await window.crypto.subtle.digest(
@@ -49,7 +49,7 @@ class AdminUtils {
         return btoa(String.fromCharCode(...encryptedDataWithIv));
     }
 
-    static async decryptUserID(encryptedUserID) {
+    static async decryptObjID(encryptedUserID) {
         // Decode the Base64 String
         // The encrypted base64 string is decoded back into a byte array using atob
         // and then mapped to their character codes to form a Uint8Array.

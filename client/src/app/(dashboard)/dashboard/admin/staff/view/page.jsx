@@ -23,7 +23,7 @@ function ViewProfile() {
         const decryptData = async () => {
             try {
                 if (encryptedStaffData && encryptedStaffID) {
-                    const decryptedID = await AdminUtils.decryptUserID(encryptedStaffID);
+                    const decryptedID = await AdminUtils.decryptObjID(encryptedStaffID);
                     const decryptedData = await AdminUtils.decryptData(encryptedStaffData);
 
                     setDecryptedUserID(decryptedID);  // Set decrypted ID

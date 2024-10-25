@@ -15,6 +15,7 @@ import {FormControl} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {serviceIncidentSchema} from "@/SchemaValidator/IncidentValidators/serviceIncidentSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function ServiceIncident({allSite}) {
     const [serviceSiteInfo, setServiceSiteInfo] = useState({
@@ -25,6 +26,18 @@ function ServiceIncident({allSite}) {
         location: '',
         type: '',
     });
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
     const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
         mode: 'onTouched',
         resolver: yupResolver(serviceIncidentSchema),
@@ -194,20 +207,10 @@ function ServiceIncident({allSite}) {
         p: 0.1,
     }
 
-    const typographyStyle = {
-        fontWeight: 'bold',
-        color: '#FFF',
-        fontFamily: 'Poppins',
-        fontSize: '16px',
-        textAlign: 'left',
-        ml: '30px',
-    };
-
     const txProps = {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
         fontSize: '16px',
         fontStyle: 'bold',
         '&:hover': {
@@ -236,7 +239,6 @@ function ServiceIncident({allSite}) {
         width: '100%',
         height: 'auto',
     }
-
 
     return (
         <>
@@ -272,13 +274,13 @@ function ServiceIncident({allSite}) {
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         {/*AllSite State*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="serviceSiteInfo.state"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="serviceSiteInfo.state"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -312,10 +314,8 @@ function ServiceIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
-
                                                                         },
                                                                     },
                                                                 },
@@ -336,18 +336,19 @@ function ServiceIncident({allSite}) {
                                                             )}
                                                             {getState()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite cluster*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="serviceSiteInfo.cluster"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="serviceSiteInfo.cluster"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
+
                                                         <TextField
                                                             {...field}
                                                             select
@@ -404,18 +405,19 @@ function ServiceIncident({allSite}) {
                                                             )}
                                                             {getCluster()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite ID*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="serviceSiteInfo.siteId"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="serviceSiteInfo.siteId"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -424,7 +426,7 @@ function ServiceIncident({allSite}) {
                                                                 field.onChange(e);
                                                                 handleSiteId(e);
                                                             }}
-                                                            label="AllSite ID"
+                                                            label="Site ID"
                                                             required
                                                             error={!!errors.serviceSiteInfo?.siteId}
                                                             helperText={errors.serviceSiteInfo?.siteId ? (
@@ -449,9 +451,7 @@ function ServiceIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-
                                                                         },
                                                                     },
                                                                 },
@@ -463,7 +463,6 @@ function ServiceIncident({allSite}) {
                                                                 '& .MuiSelect-icon:hover': {
                                                                     color: '#fff',
                                                                 },
-                                                                textAlign: 'left',
                                                             }}>
                                                             {serviceSiteInfo.cluster !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -472,83 +471,86 @@ function ServiceIncident({allSite}) {
                                                             )}
                                                             {getSiteId()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite Type if available*/}
                                         {serviceSiteInfo.siteId && (
-                                            <Grid item xs={2}>
-                                                <Controller
-                                                    name="serviceSiteInfo.type"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="serviceSiteInfo.type"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx: txProps
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="AllSite Type"
-                                                            variant="outlined"
-                                                            error={!!errors.serviceSiteInfo?.type}
-                                                            helperText={errors.serviceSiteInfo?.type ? errors.serviceSiteInfo.type.message : ''}
-                                                            type="text"
-                                                            value={serviceSiteInfo.type}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                }}
+                                                                label="AllSite Type"
+                                                                variant="outlined"
+                                                                error={!!errors.serviceSiteInfo?.type}
+                                                                helperText={errors.serviceSiteInfo?.type ? errors.serviceSiteInfo.type.message : ''}
+                                                                type="text"
+                                                                value={serviceSiteInfo.type}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                         {/*Location if available*/}
                                         {serviceSiteInfo.siteId && (
-                                            <Grid item xs={4}>
-                                                <Controller
-                                                    name="serviceSiteInfo.location"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    width: '500px',
-                                                                }
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="serviceSiteInfo.location"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx:
+                                                                    txProps,
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="Location"
-                                                            variant="outlined"
-                                                            error={!!errors.serviceSiteInfo?.location}
-                                                            helperText={errors.serviceSiteInfo?.location ? errors.serviceSiteInfo.location.message : ''}
-                                                            type="text"
-                                                            value={serviceSiteInfo.location}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                }}
+                                                                label="Location"
+                                                                variant="outlined"
+                                                                error={!!errors.serviceSiteInfo?.location}
+                                                                helperText={errors.serviceSiteInfo?.location ? errors.serviceSiteInfo.location.message : ''}
+                                                                type="text"
+                                                                value={serviceSiteInfo.location}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                     </Grid>
@@ -569,16 +571,16 @@ function ServiceIncident({allSite}) {
                                         Incident-Info
                                     </Typography>
                                 </AccordionSummary>
-                                <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
+                                <AccordionDetails sx={{bgcolor: '#274e61', color: 'salmon',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         {/*AllSite State*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="serviceIncidentInfo.category"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="serviceIncidentInfo.category"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -612,10 +614,7 @@ function ServiceIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
-                                                                            fontSize: '40px',
-
                                                                         },
                                                                     },
                                                                 },
@@ -631,19 +630,19 @@ function ServiceIncident({allSite}) {
                                                             }}>
                                                             {getCat()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {catSelector === 'Maintenance' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="serviceIncidentInfo.subCategory.maintenance.action"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="serviceIncidentInfo.subCategory.maintenance.action"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -662,10 +661,8 @@ function ServiceIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -681,10 +678,7 @@ function ServiceIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -703,21 +697,21 @@ function ServiceIncident({allSite}) {
                                                                     </MenuItem>
                                                                     {getCatM()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {catSelector === 'Repair' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="serviceIncidentInfo.subCategory.repair.action"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="serviceIncidentInfo.subCategory.repair.action"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -736,10 +730,8 @@ function ServiceIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -755,10 +747,8 @@ function ServiceIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
                                                                                     fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -777,21 +767,23 @@ function ServiceIncident({allSite}) {
                                                                     </MenuItem>
                                                                     {getCatR()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {catSelector === 'Overhauling' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="serviceIncidentInfo.subCategory.overhauling.action"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="serviceIncidentInfo.subCategory.overhauling.action"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -810,10 +802,8 @@ function ServiceIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -829,10 +819,7 @@ function ServiceIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -844,28 +831,28 @@ function ServiceIncident({allSite}) {
                                                                         '& .MuiSelect-icon:hover': {
                                                                             color: '#fff',
                                                                         },
-                                                                        textAlign: 'left',
                                                                     }}>
                                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                         Select Option
                                                                     </MenuItem>
                                                                     {getCatO()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {catSelector === 'Replacement' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="serviceIncidentInfo.subCategory.replacement.action"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="serviceIncidentInfo.subCategory.replacement.action"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -884,10 +871,8 @@ function ServiceIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -903,10 +888,7 @@ function ServiceIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -918,48 +900,50 @@ function ServiceIncident({allSite}) {
                                                                         '& .MuiSelect-icon:hover': {
                                                                             color: '#fff',
                                                                         },
-                                                                        textAlign: 'left',
                                                                     }}>
                                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                         Select Option
                                                                     </MenuItem>
                                                                     {getCatRep()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}
                                         {catSelector === 'Others' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="serviceIncidentInfo.subCategory.others"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                InputProps={{
-                                                                    sx: {...txProps, width: '50%'}
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white",
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                label="Others"
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                required
-                                                                error={!!errors.serviceIncidentInfo?.subCategory?.others}
-                                                                helperText={errors.serviceIncidentInfo?.serviceIncidentInfo?.subCategory?.others.others ? errors.categoryServiceOthers.message : ''}
-                                                            />
-                                                        )}
-                                                    />
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="serviceIncidentInfo.subCategory.others"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    InputProps={{
+                                                                        sx: txProps
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white",
+                                                                            },
+                                                                        }
+                                                                    }}
+                                                                    label="Others"
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    required
+                                                                    error={!!errors.serviceIncidentInfo?.subCategory?.others}
+                                                                    helperText={errors.serviceIncidentInfo?.serviceIncidentInfo?.subCategory?.others.others ? errors.categoryServiceOthers.message : ''}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                             </>
                                         )}

@@ -23,7 +23,7 @@ function EditSiteProfile() {
         const decryptData = async () => {
             try {
                 if (encryptedSiteData && encryptedSiteID) {
-                    const decryptedID = await AdminUtils.decryptUserID(encryptedSiteID);
+                    const decryptedID = await AdminUtils.decryptObjID(encryptedSiteID);
                     const decryptedData = await AdminUtils.decryptData(encryptedSiteData);
 
                     setDecryptedSiteID(decryptedID);  // Set decrypted ID

@@ -3,12 +3,12 @@ import Typography from "@mui/material/Typography";
 import {Controller, useFormContext} from "react-hook-form";
 import {FormControl} from "@mui/material";
 import TextField from "@mui/material/TextField";
-import {txProps} from "@/utils/data";
 import Paper from "@mui/material/Paper";
 import React from "react";
 import MenuItem from "@mui/material/MenuItem";
 import {yupResolver} from '@hookform/resolvers/yup';
 import {baseInfoSchema} from "@/SchemaValidator/IncidentValidators/baseInfoSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 function BaseInfo({allStaff}) {
@@ -17,8 +17,10 @@ function BaseInfo({allStaff}) {
         mode: 'onTouched',
         reValidateMode: 'onChange',
     });
+
+
     const adminFullNames = allStaff.filter(staff => staff.role === 'Admin' || staff.role === 'SuperAdmin').map(staff => staff.fullName);
-    
+
     // admin FullName
     const getAdminFullName = () => {
         return adminFullNames.map((fullName) => (
@@ -43,7 +45,45 @@ function BaseInfo({allStaff}) {
         clearErrors('adminEmail');
         clearErrors('adminRole');
     };
-    
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
+    const txProps = {
+        color: "red",
+        bgcolor: "#274e61",
+        borderRadius: "10px",
+        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+        fontStyle: 'bold',
+        '&:hover': {
+            bgcolor: '#051935',
+        },
+        fontFamily: 'Poppins',
+        "& .MuiInputBase-input": {
+            color: 'white',
+        },
+        "& .MuiFormHelperText-root": {
+            color: 'red',
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: 'green',
+        },
+        "& input:-webkit-autofill": {
+            WebkitBoxShadow: '0 0 0 1000px #274e61 inset',
+            WebkitTextFillColor: 'white',
+        },
+    };
+
     const typographyStyle = {
         fontWeight: 'bold',
         color: '#FFF',
@@ -59,7 +99,7 @@ function BaseInfo({allStaff}) {
         width: '100%',
         height: 'auto',
     }
-    
+
     return (
         <>
             <Paper elevation={5} sx={paperSx}>
@@ -69,13 +109,13 @@ function BaseInfo({allStaff}) {
                         <Typography variant="subtitle 4" sx={typographyStyle}>Admin Approval Staff
                             Info</Typography>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Controller
-                            name="adminFullName"
-                            control={control}
-                            defaultValue=""
-                            render={({field}) => (
-                                <FormControl fullWidth>
+                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                        <FormControl fullWidth>
+                            <Controller
+                                name="adminFullName"
+                                control={control}
+                                defaultValue=""
+                                render={({field}) => (
                                     <TextField
                                         {...field}
                                         select
@@ -94,10 +134,7 @@ function BaseInfo({allStaff}) {
                                                                                 </span>
                                         ) : ''}
                                         InputProps={{
-                                            sx: {
-                                                ...txProps,
-                                                width: '100%',
-                                            },
+                                            sx: txProps,
                                         }}
                                         InputLabelProps={{
                                             sx: {
@@ -105,7 +142,7 @@ function BaseInfo({allStaff}) {
                                                 "&.Mui-focused": {
                                                     color: "white"
                                                 },
-                                                
+
                                             }
                                         }}
                                         SelectProps={{
@@ -114,10 +151,7 @@ function BaseInfo({allStaff}) {
                                                     sx: {
                                                         backgroundColor: '#134357',
                                                         color: 'white',
-                                                        maxHeight: 450,
                                                         overflow: 'auto',
-                                                        fontSize: '40px',
-                                                        width: '20%'
                                                     },
                                                 },
                                             },
@@ -133,83 +167,79 @@ function BaseInfo({allStaff}) {
                                         }}>
                                         {getAdminFullName()}
                                     </TextField>
-                                </FormControl>
-                            )}
-                        />
+                                )}
+                            />
+                        </FormControl>
                     </Grid>
                     {watch('adminFullName') !== '' && (
                         <>
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="adminEmail"
-                                    control={control}
-                                    render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            InputProps={{
-                                                sx: {
-                                                    ...txProps,
-                                                    width: '150%',
-                                                    ml: 10,
-                                                },
-                                                readOnly: true
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
+                                    <Controller
+                                        name="adminEmail"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx: txProps,
+                                                    readOnly: true
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
                                                     },
-                                                    ml: 10,
-                                                },
-                                                shrink: true
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                            label="Admin Email"
-                                            variant="outlined"
-                                            error={!!errors.adminEmail}
-                                            helperText={errors.adminEmail ? errors.adminEmail.message : ''}
-                                            type="text"
-                                            readOnly
-                                        />
-                                    )}
-                                />
+                                                    shrink: true
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="Admin Email"
+                                                variant="outlined"
+                                                error={!!errors.adminEmail}
+                                                helperText={errors.adminEmail ? errors.adminEmail.message : ''}
+                                                type="text"
+                                                readOnly
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
                             </Grid>
-                            <Grid item xs={4}>
-                                <Controller
-                                    name="adminRole"
-                                    control={control}
-                                    render={({field}) => (
-                                        <TextField
-                                            {...field}
-                                            label="Admin Role"
-                                            error={!!errors.adminRole}
-                                            helperText={errors.adminRole?.message}
-                                            InputProps={{
-                                                sx: {
-                                                    ...txProps,
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
+                                    <Controller
+                                        name="adminRole"
+                                        control={control}
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                label="Admin Role"
+                                                error={!!errors.adminRole}
+                                                helperText={errors.adminRole?.message}
+                                                InputProps={{
+                                                    sx: txProps,
                                                     ml: 10,
-                                                },
-                                                readOnly: true
-                                            }}
-                                            InputLabelProps={{
-                                                sx: {
-                                                    color: "#46F0F9",
-                                                    "&.Mui-focused": {
-                                                        color: "white"
+                                                    readOnly: true
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        },
                                                     },
-                                                    ml: 10,
-                                                },
-                                                shrink: true
-                                            }}
-                                            sx={{
-                                                color: "#46F0F9",
-                                            }}
-                                        />
-                                    )}
-                                />
+                                                    shrink: true
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
                             </Grid>
                         </>
                     )}

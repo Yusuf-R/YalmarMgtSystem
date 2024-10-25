@@ -84,7 +84,7 @@ function ViewStaff({id, staffData}) {
     const pathname = usePathname();
     const router = useRouter();
     const editStaff = async () => {
-        const encryptedStaffID = await AdminUtilities.encryptUserID(id);
+        const encryptedStaffID = await AdminUtilities.encryptObjID(id);
         // encrypt the data and store it in the session storage
         const encryptedStaffData = await AdminUtilities.encryptData(staffData);
         // Set the encrypted data in Zustand store

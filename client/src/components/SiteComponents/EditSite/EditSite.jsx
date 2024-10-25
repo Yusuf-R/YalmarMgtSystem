@@ -82,7 +82,7 @@ function EditSite({id, siteData}) {
 
     // function to view site profile
     const viewSite = async () => {
-        const encryptedSiteID = await AdminUtilities.encryptUserID(id);
+        const encryptedSiteID = await AdminUtilities.encryptObjID(id);
         // encrypt the data and store it in the session storage
         const encryptedSiteData = await AdminUtilities.encryptData(siteData);
         // Set the encrypted data in Zustand store

@@ -1,95 +1,125 @@
+'use client';
 import Box from "@mui/material/Box";
-import {mainSection} from "@/utils/data";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Link from "next/link";
 import Avatar from "@mui/material/Avatar";
+import {usePathname, useRouter} from "next/navigation";
+import React, {useEffect, useState} from "react";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 
 function FuellingReportLandingPage() {
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports');
+    const pathname = usePathname();
+
+    // Media query for responsive design
+    const isSmallScreen = useMediaQuery('(max-width:899px)');
+
+    useEffect(() => {
+        if (pathname.includes('servicing')) {
+            setActiveTab('/dashboard/admin/reports/servicing');
+        } else if (pathname.includes('fuel')) {
+            setActiveTab('/dashboard/admin/reports/fuel');
+        } else if (pathname.includes('incident')) {
+            setActiveTab('/dashboard/admin/reports/incident');
+        } else {
+            setActiveTab('/dashboard/admin/reports');
+        }
+    }, [pathname]);
+
     return (
         <>
-            <Box sx={mainSection}>
-                {/*Header*/}
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>Fuelling Supply Center</Typography>
-                </Paper>
-                <br/><br/>
-                <Stack spacing={2} direction='column'
-                       sx={{padding: 0, borderRadius: '10px'}}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={3}>
-                            <Stack
-                                direction="column"
-                                justifyContent="center"
-                                alignItems="center"
-                                spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel/all'>
-                                    <Avatar src='/Diesel.svg' alt='Biodata'
-                                            sx={{
-                                                width: 250,
-                                                height: 250,
-                                                alignContent: 'center',
+            <Box sx={{
+                padding: isSmallScreen ? '10px' : '20px',
+                marginTop: '10px',
+            }}>
+                <Stack direction='row' spacing={2} sx={{justifyContent: 'flex-start', overflowX: 'auto'}}>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isSmallScreen ? "scrollable" : "standard"}
+                        scrollButtons="auto"
+                        sx={{
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: '#46F0F9',
+                            },
+                        }}
+                    >
+                        {['Report-Central', 'Servicing', 'Fuelling', 'Incident'].map((label, index) => {
+                            let route = label.toLowerCase();
+                            if (label === 'Fuelling') {
+                                route = 'fuel';
+                            } // Modify the route for Fuelling
 
-                                            }}/>
-                                </Link>
-                                <Link href='/dashboard/admin/reports/fuel/all'>
-                                    <Typography variant='h6'
-                                                sx={{
-                                                    // color: '#46F0F9',
-                                                    border: '2px solid #46F0F9',
-                                                    borderRadius: 5,
-                                                    p: '10px',
-                                                    bgcolor: '#9966ff',
-                                                    color: '#FFF',
-                                                }}>
-                                        All Territory Report
-                                    </Typography>
-                                </Link>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Stack
-                                direction="column"
-                                justifyContent="center"
-                                alignItems="center"
-                                spacing={2}>
-                                <Link href='/dashboard/admin/reports/fuel/new'>
-                                    <Avatar src='/Fuelling-1.svg' alt='New+'
-                                            sx={{
-                                                width: 250,
-                                                height: 250,
-                                                alignContent: 'center',
+                            return (
+                                <Tab
+                                    key={index}
+                                    label={label}
+                                    value={`/dashboard/admin/reports${index === 0 ? '' : '/' + route}`}
+                                    component={Link}
+                                    href={`/dashboard/admin/reports${index === 0 ? '' : '/' + route}`}
+                                    sx={{
+                                        color: "#FFF",
+                                        fontWeight: 'bold',
+                                        fontSize: isSmallScreen ? '0.6rem' : '0.9rem',
+                                        "&.Mui-selected": {color: "#46F0F9"},
+                                    }}
+                                />
+                            );
+                        })}
 
-                                            }}/>
-                                </Link>
-                                <Link href='/dashboard/admin/reports/fuel/new'>
-                                    <Typography variant='h6'
-                                                sx={{
-                                                    // color: '#46F0F9',
-                                                    border: '2px solid #46F0F9',
-                                                    borderRadius: 5,
-                                                    p: '10px',
-                                                    bgcolor: '#0059b3',
-                                                    color: '#FFF',
-                                                }}>
-                                        New Fuel Report +
-                                    </Typography>
-                                </Link>
-                            </Stack>
-                        </Grid>
-                    </Grid>
+                    </Tabs>
                 </Stack>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: isSmallScreen ? 'center' : 'flex-start',
+                    alignItems: 'center',
+                    marginTop: '20px',
+                }}>
+                    <Stack
+                        direction='column'
+                        spacing={2}
+                        alignItems={isSmallScreen ? 'center' : 'flex-start'}
+                        sx={{
+                            padding: 3,
+                            borderRadius: '10px',
+                        }}
+                    >
+                        <Avatar
+                            src={'/Fuelling-main.svg'}
+                            alt={'Fuelling'}
+                            sx={{
+                                width: isSmallScreen ? '150px' : '250px',
+                                height: isSmallScreen ? '150px' : '250px',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => router.push('/dashboard/admin/reports/fuel/all')}
+                        />
+                        <Typography
+                            variant='h6'
+                            sx={{
+                                fontFamily: 'Poppins',
+                                fontWeight: 'bold',
+                                borderRadius: 5,
+                                padding: '5px 10px',
+                                bgcolor: '#0059b3',
+                                color: '#FFF',
+                                width: isSmallScreen ? '80%' : '250px',
+                                textAlign: 'center',
+                                fontSize: isSmallScreen ? '0.8rem' : '1rem',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => router.push('/dashboard/admin/reports/fuel/all')}
+                        >
+                            Fuel Reports
+                        </Typography>
+                    </Stack>
+                </Box>
             </Box>
         </>
     )

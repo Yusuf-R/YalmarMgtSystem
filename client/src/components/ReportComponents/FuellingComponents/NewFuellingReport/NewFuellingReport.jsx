@@ -9,16 +9,23 @@ import TextField from "@mui/material/TextField";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
 import {mainSection, sitesData, siteStates, siteStatus, type} from "@/utils/data"
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {newFuelSupplyReportSchema} from "@/SchemaValidator/newFuelSupplyReport";
 import DateComponent from "@/components/DateComponent/DateComponent";
 import dayjs from "dayjs";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Link from "next/link";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import useFuelReportStore from "@/store/useFuelReportStore";
+import Card from "@mui/material/Card";
+
 
 function NewFuellingReport({allSite}) {
     const router = useRouter();
@@ -28,6 +35,26 @@ function NewFuellingReport({allSite}) {
     const [siteType, setSiteType] = useState('N/A');
     const [location, setLocation] = useState('N/A');
     const [dateSupplied, setDateSupplied] = useState(null);
+
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/fuel/new');
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+    const isLargeScreen = useMediaQuery('(min-width:900px)');
+    const isAbove425px = useMediaQuery('(min-width:425px)');
+
+    const pathname = usePathname();
+
 
     const {
         control, handleSubmit, formState: {errors}, setError, reset, setValue, clearErrors,
@@ -53,8 +80,7 @@ function NewFuellingReport({allSite}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
-        fontSize: '16px',
+        fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
         fontStyle: 'bold',
         '&:hover': {
             bgcolor: '#051935',
@@ -226,477 +252,320 @@ function NewFuellingReport({allSite}) {
 
     return (
         <>
-            <Box sx={mainSection}>
-                {/*Header*/}
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
+            <Box
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%',
+                    flexWrap: 'nowrap',
+                }}
+            >
+                {/*Navigation Tabs */}
+                <Stack direction='row' spacing={2} sx={{
+                    justifyContent: 'flex-start',
                 }}>
-                    <Typography variant='h5'>New Fuelling Supply Report</Typography>
-                </Paper>
-                <br/><br/>
+                    <Tabs
+                        value={activeTab}
+                        onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isXSmall ? "scrollable" : "standard"}
+                        centered
+                        sx={{
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: '#46F0F9',
+                            },
+                        }}
+                    >
+                        <Tab
+                            label="Reports"
+                            component={Link}
+                            href="/dashboard/admin/reports"
+                            value="/dashboard/admin/reports"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                "&.Mui-selected": {color: "#46F0F9"},
+                            }}
+                        />
+
+
+                        <Tab
+                            label="All"
+                            component={Link}
+                            href="/dashboard/admin/reports/fuel/all"
+                            value="/dashboard/admin/reports/fuel/all"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                "&.Mui-selected": {color: "#46F0F9"},
+                            }}
+                        />
+
+                        <Tab
+                            label="New +"
+                            value="/dashboard/admin/reports/fuel/new" // Set the value prop for this Tab
+                            component={Link}
+                            href="/dashboard/admin/reports/fuel/new"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                                "&.Mui-selected": {
+                                    color: "#46F0F9",
+                                },
+                            }}
+                        />
+                    </Tabs>
+                </Stack>
+                <br/>
+                <Card sx={{
+                    background: 'linear-gradient(to right, #000046, #1cb5e0)',
+                    padding: '16px',
+                    borderRadius: '10px'
+                }}>
+                    <Typography variant="body1"
+                                sx={{
+                                    color: '#FFF',
+                                    fontSize: xSmall ? '0.8rem' : small ? '1.0rem' : '1.2rem',
+                                    fontWeight: 'bold',
+                                    textAlign: 'center'
+                                }}>
+                        New Fuelling Report Form
+                    </Typography>
+                </Card>
+                <br/>
                 <Box
                     component="form"
                     onSubmit={handleSubmit(SubmitData)}
                     noValidate
                 >
-                    {/* Main Body */}
-                    {/*AllSite Info*/}
+                    {/*Site Info*/}
                     <Grid container spacing={4}>
-                        <Paper elevation={5} sx={{
-                            alignContent: 'start',
-                            padding: '30px',
-                            backgroundColor: 'inherit',
-                            color: '#46F0F9',
-                            borderRadius: '10px',
-                            width: '100%',
-                            height: 'auto',
-                            margin: '25px'
-                        }}>
-                            {/* First Row (1 fields) prefix */}
-                            <Grid container spacing={4}>
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle 4">AllSite Info</Typography>
-                                </Grid>
-                                {/*AllSite State*/}
-                                <Grid item xs={4}>
-                                    <Controller
-                                        name="state"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <FormControl fullWidth>
-                                                <TextField
-                                                    {...field}
-                                                    select
-                                                    value={field.value}
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        handleState(e);
-                                                    }}
-                                                    required
-                                                    label="State"
-                                                    error={!!errors.state}
-                                                    helperText={errors.state ? (
-                                                        <span style={{color: "#fc8947"}}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
+                                        }}>
+                                Site Information
+                            </Typography>
+                        </Grid>
+                        {/*AllSite State*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="state"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+
+                                        <TextField
+                                            {...field}
+                                            select
+                                            value={field.value}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleState(e);
+                                            }}
+                                            required
+                                            label="State"
+                                            error={!!errors.state}
+                                            helperText={errors.state ? (
+                                                <span style={{color: "#fc8947"}}>
                                                                                 {errors.state.message}
                                                                                 </span>
-                                                    ) : ''}
-                                                    InputProps={{
-                                                        sx: txProps
-                                                    }}
-                                                    InputLabelProps={{
+                                            ) : ''}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
                                                         sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            },
-                                                        }
-                                                    }}
-                                                    SelectProps={{
-                                                        MenuProps: {
-                                                            PaperProps: {
-                                                                sx: {
-                                                                    backgroundColor: '#134357',
-                                                                    color: 'white',
-                                                                    maxHeight: 450,
-                                                                    overflow: 'auto',
-                                                                    fontSize: '40px',
-
-                                                                },
-                                                            },
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            overflow: 'auto',
                                                         },
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiSelect-icon': {
-                                                            color: '#fff',
-                                                        },
-                                                        '& .MuiSelect-icon:hover': {
-                                                            color: '#fff',
-                                                        },
-                                                        textAlign: 'left',
-                                                    }}>
-                                                    {stateMain !== '' && (
-                                                        <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                            Select State
-                                                        </MenuItem>
-                                                    )}
-                                                    {getState()}
-                                                </TextField>
-                                            </FormControl>
-                                        )}
-                                    />
-                                </Grid>
-                                {/*AllSite cluster*/}
-                                <Grid item xs={4}>
-                                    <Controller
-                                        name="cluster"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <FormControl fullWidth>
-                                                <TextField
-                                                    {...field}
-                                                    select
-                                                    value={field.value}
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        handleCluster(e);
-                                                    }}
-                                                    label="Cluster"
-                                                    required
-                                                    error={!!errors.cluster}
-                                                    helperText={errors.cluster ? (
-                                                        <span style={{color: "#fc8947"}}>
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                                textAlign: 'left',
+                                            }}>
+                                            {stateMain !== '' && (
+                                                <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                    Select State
+                                                </MenuItem>
+                                            )}
+                                            {getState()}
+                                        </TextField>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite cluster*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="cluster"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            select
+                                            value={field.value}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleCluster(e);
+                                            }}
+                                            label="Cluster"
+                                            required
+                                            error={!!errors.cluster}
+                                            helperText={errors.cluster ? (
+                                                <span style={{color: "#fc8947"}}>
                                                                                 {errors.cluster.message}
                                                                                 </span>
-                                                    ) : ''}
-                                                    InputProps={{
-                                                        sx: txProps
-                                                    }}
-                                                    InputLabelProps={{
+                                            ) : ''}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
                                                         sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            },
-                                                        }
-                                                    }}
-                                                    SelectProps={{
-                                                        MenuProps: {
-                                                            PaperProps: {
-                                                                sx: {
-                                                                    backgroundColor: '#134357',
-                                                                    color: 'white',
-                                                                    maxHeight: 450,
-                                                                    overflow: 'auto',
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            overflow: 'auto',
 
-                                                                },
-                                                            },
                                                         },
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiSelect-icon': {
-                                                            color: '#fff',
-                                                        },
-                                                        '& .MuiSelect-icon:hover': {
-                                                            color: '#fff',
-                                                        },
-                                                        textAlign: 'left',
-                                                    }}>
-                                                    {cluster !== '' && (
-                                                        <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                            Select Cluster
-                                                        </MenuItem>
-                                                    )}
-                                                    {getCluster()}
-                                                </TextField>
-                                            </FormControl>
-                                        )}
-                                    />
-                                </Grid>
-                                {/*AllSite ID*/}
-                                <Grid item xs={4}>
-                                    <Controller
-                                        name="siteId"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({field}) => (
-                                            <FormControl fullWidth>
-                                                <TextField
-                                                    {...field}
-                                                    select
-                                                    value={field.value}
-                                                    onChange={(e) => {
-                                                        field.onChange(e);
-                                                        handleSiteId(e);
-                                                    }}
-                                                    label="AllSite ID"
-                                                    required
-                                                    error={!!errors.siteId}
-                                                    helperText={errors.siteId ? (
-                                                        <span style={{color: "#fc8947"}}>
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                                textAlign: 'left',
+                                            }}>
+                                            {cluster !== '' && (
+                                                <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                    Select Cluster
+                                                </MenuItem>
+                                            )}
+                                            {getCluster()}
+                                        </TextField>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite ID*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="siteId"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            select
+                                            value={field.value}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleSiteId(e);
+                                            }}
+                                            label="AllSite ID"
+                                            required
+                                            error={!!errors.siteId}
+                                            helperText={errors.siteId ? (
+                                                <span style={{color: "#fc8947"}}>
                                                                                 {errors.siteId.message}
                                                                                 </span>
-                                                    ) : ''}
-                                                    InputProps={{
-                                                        sx: txProps
-                                                    }}
-                                                    InputLabelProps={{
+                                            ) : ''}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
                                                         sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            },
-                                                        }
-                                                    }}
-                                                    SelectProps={{
-                                                        MenuProps: {
-                                                            PaperProps: {
-                                                                sx: {
-                                                                    backgroundColor: '#134357',
-                                                                    color: 'white',
-                                                                    maxHeight: 450,
-                                                                    overflow: 'auto',
-
-                                                                },
-                                                            },
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            overflow: 'auto',
                                                         },
-                                                    }}
-                                                    sx={{
-                                                        '& .MuiSelect-icon': {
-                                                            color: '#fff',
-                                                        },
-                                                        '& .MuiSelect-icon:hover': {
-                                                            color: '#fff',
-                                                        },
-                                                        textAlign: 'left',
-                                                    }}>
-                                                    {cluster !== '' && (
-                                                        <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                            Select SiteID
-                                                        </MenuItem>
-                                                    )}
-                                                    {getSiteId()}
-                                                </TextField>
-                                            </FormControl>
-                                        )}
-                                    />
-                                </Grid>
-                                {/*AllSite Type if available*/}
-                                {siteID && (
-                                    <Grid item xs={4}>
-                                        <Controller
-                                            name="type"
-                                            control={control}
-                                            defaultValue=""
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    InputProps={{
-                                                        sx: txProps
-                                                    }}
-                                                    InputLabelProps={{
-                                                        sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            }
-                                                        }
-                                                    }}
-                                                    sx={{
-                                                        color: "#46F0F9",
-                                                    }}
-                                                    label="AllSite Type"
-                                                    variant="outlined"
-                                                    error={!!errors.type}
-                                                    helperText={errors.type ? errors.type.message : ''}
-                                                    type="text"
-                                                    value={siteType}
-                                                    readOnly
-                                                />
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                                textAlign: 'left',
+                                            }}>
+                                            {cluster !== '' && (
+                                                <MenuItem value='' sx={{color: "#4BF807"}}>
+                                                    Select SiteID
+                                                </MenuItem>
                                             )}
-                                        />
-                                    </Grid>
-                                )}
-                                {/*Location if available*/}
-                                {siteID && (
-                                    <Grid item xs={8}>
-                                        <Controller
-                                            name="location"
-                                            control={control}
-                                            defaultValue=""
-                                            render={({field}) => (
-                                                <TextField
-                                                    {...field}
-                                                    InputProps={{
-                                                        sx: {
-                                                            ...txProps,
-                                                            width: '500px',
-                                                        }
-                                                    }}
-                                                    InputLabelProps={{
-                                                        sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white"
-                                                            }
-                                                        }
-                                                    }}
-                                                    sx={{
-                                                        color: "#46F0F9",
-                                                    }}
-                                                    label="Location"
-                                                    variant="outlined"
-                                                    error={!!errors.location}
-                                                    helperText={errors.location ? errors.location.message : ''}
-                                                    type="text"
-                                                    value={location}
-                                                    readOnly
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </Paper>
-                    </Grid>
-                    <br/><br/>
-                    {/*Fuel Supply Info*/}
-                    <Grid container spacing={4}>
-                        <Paper elevation={5} sx={{
-                            alignContent: 'start',
-                            padding: '30px',
-                            backgroundColor: 'inherit',
-                            color: '#46F0F9',
-                            borderRadius: '10px',
-                            width: '100%',
-                            height: 'auto',
-                            margin: '25px'
-                        }}>
-                            {/* First Row (1 fields) prefix */}
-                            <Grid container spacing={4}>
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle 4">Fuel Supply Info</Typography>
-                                </Grid>
-                                {/*Supply Date*/}
-                                <Grid item xs={3}>
-                                    <DateComponent
-                                        name="dateSupplied"
-                                        control={control}
-                                        errors={errors}
-                                        labelText="Supply Date"
-                                        setDate={setDateSupplied}
-                                        defaultValue={dayjs()}
-                                    />
-                                </Grid>
-                                {/*Initial Quantity*/}
-                                <Grid item xs={3}>
+                                            {getSiteId()}
+                                        </TextField>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*AllSite Type if available*/}
+                        {siteID && (
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
                                     <Controller
-                                        name="qtyInitial"
-                                        control={control}
-                                        defaultValue={0}
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
-                                                    color: "#46F0F9",
-                                                }}
-                                                label="Initial Quantity"
-                                                type="number"
-                                                error={!!errors.qtyInitial}
-                                                helperText={errors.qtyInitial ? errors.qtyInitial.message : ''}
-                                                fullWidth
-                                                onChange={(e) => {
-                                                    const value = parseFloat(e.target.value) || 0;
-                                                    field.onChange(value);
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                {/*Supplied Quantity*/}
-                                <Grid item xs={3}>
-                                    <Controller
-                                        name="qtySupplied"
-                                        control={control}
-                                        defaultValue={0}
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                label="Supplied Quantity"
-                                                type="number"
-                                                error={!!errors.qtySupplied}
-                                                helperText={errors.qtySupplied ? errors.qtySupplied.message : ''}
-                                                fullWidth
-                                                InputProps={{
-                                                    sx: txProps
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
-                                                    color: "#46F0F9",
-                                                }}
-                                                onChange={(e) => {
-                                                    const value = parseFloat(e.target.value) || 0;
-                                                    field.onChange(value);
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                {/*New Available Quantity*/}
-                                <Grid item xs={3}>
-                                    <Controller
-                                        name="qtyNew"
-                                        control={control}
-                                        defaultValue={0}
-                                        render={({field}) => (
-                                            <TextField
-                                                {...field}
-                                                label="New Available Quantity"
-                                                type="number"
-                                                InputProps={{
-                                                    sx: {...txProps, color: 'green'},
-                                                    readOnly: true,
-                                                }}
-                                                InputLabelProps={{
-                                                    sx: {
-                                                        color: "#46F0F9",
-                                                        "&.Mui-focused": {
-                                                            color: "white",
-                                                        },
-                                                    }
-                                                }}
-                                                sx={{
-                                                    color: "#46F0F9",
-                                                }}
-                                                value={newAvailableQty}
-                                                fullWidth
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                {/*Anonymous Spacing*/}
-                                <Grid item xs={12}></Grid>
-                                {/*CPD*/}
-                                <Grid item xs={3}>
-                                    {/* CPD selection */}
-                                    <Controller
-                                        name="cpd"
+                                        name="type"
                                         control={control}
                                         defaultValue=""
                                         render={({field}) => (
                                             <TextField
                                                 {...field}
-                                                label="CPD"
-                                                select
-                                                type='number'
-                                                value={field.value}
-                                                onChange={(e) => field.onChange(e)}
                                                 InputProps={{
                                                     sx: txProps
                                                 }}
@@ -705,55 +574,308 @@ function NewFuellingReport({allSite}) {
                                                         color: "#46F0F9",
                                                         "&.Mui-focused": {
                                                             color: "white"
+                                                        }
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="AllSite Type"
+                                                variant="outlined"
+                                                error={!!errors.type}
+                                                helperText={errors.type ? errors.type.message : ''}
+                                                type="text"
+                                                value={siteType}
+                                                readOnly
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        )}
+                        {/*Location if available*/}
+                        {siteID && (
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <FormControl fullWidth>
+                                    <Controller
+                                        name="location"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                InputProps={{
+                                                    sx:
+                                                    txProps,
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white"
+                                                        }
+                                                    }
+                                                }}
+                                                sx={{
+                                                    color: "#46F0F9",
+                                                }}
+                                                label="Location"
+                                                variant="outlined"
+                                                error={!!errors.location}
+                                                helperText={errors.location ? errors.location.message : ''}
+                                                type="text"
+                                                value={location}
+                                                readOnly
+                                            />
+                                        )}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        )}
+                    </Grid>
+                    <br/>
+                    {/*Fuel Info*/}
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6"
+                                        sx={{
+                                            fontFamily: 'Poppins',
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
+                                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.1rem',
+                                        }}>
+                                Fuel Supply Info
+                            </Typography>
+                        </Grid>
+                        {/*Initial Quantity*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="qtyInitial"
+                                    control={control}
+                                    // defaultValue={0}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            label="Initial Quantity"
+                                            type="number"
+                                            error={!!errors.qtyInitial}
+                                            helperText={errors.qtyInitial ? errors.qtyInitial.message : ''}
+                                            fullWidth
+                                            onChange={(e) => {
+                                                const value = parseFloat(e.target.value) || 0;
+                                                field.onChange(value);
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*Supplied Quantity*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="qtySupplied"
+                                    control={control}
+                                    // defaultValue={0}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            label="Supplied Quantity"
+                                            type="number"
+                                            error={!!errors.qtySupplied}
+                                            helperText={errors.qtySupplied ? errors.qtySupplied.message : ''}
+                                            fullWidth
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            onChange={(e) => {
+                                                const value = parseFloat(e.target.value) || 0;
+                                                field.onChange(value);
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*Date of supply */}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <DateComponent
+                                name="dateSupplied"
+                                control={control}
+                                errors={errors}
+                                labelText="Supply Date"
+                                setDate={setDateSupplied}
+                                defaultValue={dayjs()}
+                            />
+                        </Grid>
+                        {/*New Available Quantity*/}
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="qtyNew"
+                                    control={control}
+                                    defaultValue={0}
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            label="New Available Quantity"
+                                            type="number"
+                                            InputProps={{
+                                                sx: {...txProps, color: 'green'},
+                                                readOnly: true,
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white",
+                                                    },
+                                                }
+                                            }}
+                                            sx={{
+                                                color: "#46F0F9",
+                                            }}
+                                            value={newAvailableQty}
+                                        />
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                            {/* CPD selection */}
+                            <FormControl fullWidth>
+                                <Controller
+                                    name="cpd"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({field}) => (
+                                        <TextField
+                                            {...field}
+                                            label="CPD"
+                                            select
+                                            type='number'
+                                            value={field.value}
+                                            onChange={(e) => field.onChange(e)}
+                                            InputProps={{
+                                                sx: txProps
+                                            }}
+                                            InputLabelProps={{
+                                                sx: {
+                                                    color: "#46F0F9",
+                                                    "&.Mui-focused": {
+                                                        color: "white"
+                                                    },
+                                                }
+                                            }}
+                                            SelectProps={{
+                                                MenuProps: {
+                                                    PaperProps: {
+                                                        sx: {
+                                                            backgroundColor: '#134357',
+                                                            color: 'white',
+                                                            overflow: 'auto',
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            sx={{
+                                                '& .MuiSelect-icon': {
+                                                    color: '#fff',
+                                                },
+                                                '& .MuiSelect-icon:hover': {
+                                                    color: '#fff',
+                                                },
+                                                textAlign: 'left',
+                                            }}>
+                                            <MenuItem value={50}>50</MenuItem>
+                                            <MenuItem value={60}>60</MenuItem>
+                                            <MenuItem value={100}>100</MenuItem>
+                                            <MenuItem value={120}>120</MenuItem>
+                                            <MenuItem value="Others">Others</MenuItem>
+                                        </TextField>
+                                    )}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/*Custom CPD*/}
+                        {cpd === 'Others' && (
+                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                {/* Custom CPD input */}
+                                <FormControl fullWidth>
+                                    <Controller
+                                        name="customCPD"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({field}) => (
+                                            <TextField
+                                                {...field}
+                                                label="Enter CPD"
+                                                type="number"
+                                                InputProps={{
+                                                    sx: txProps
+                                                }}
+                                                InputLabelProps={{
+                                                    sx: {
+                                                        color: "#46F0F9",
+                                                        "&.Mui-focused": {
+                                                            color: "white",
                                                         },
                                                     }
                                                 }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-
-                                                            },
-                                                        },
-                                                    },
-                                                }}
                                                 sx={{
-                                                    '& .MuiSelect-icon': {
-                                                        color: '#fff',
-                                                    },
-                                                    '& .MuiSelect-icon:hover': {
-                                                        color: '#fff',
-                                                    },
-                                                    textAlign: 'left',
-                                                }}>
-                                                <MenuItem value={50}>50</MenuItem>
-                                                <MenuItem value={60}>60</MenuItem>
-                                                <MenuItem value={100}>100</MenuItem>
-                                                <MenuItem value={120}>120</MenuItem>
-                                                <MenuItem value="Others">Others</MenuItem>
-                                            </TextField>
+                                                    color: "#46F0F9",
+                                                }}
+                                                fullWidth
+                                            />
                                         )}
                                     />
-                                </Grid>
-                                {/*Custom CPD*/}
-                                {cpd === 'Others' && (
-                                    <Grid item xs={3}>
-                                        {/* Custom CPD input */}
+                                </FormControl>
+                            </Grid>
+                        )}
+
+                        {/*supply Duration*/}
+                        {cpd && (
+                            <>
+                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                    <FormControl fullWidth>
                                         <Controller
-                                            name="customCPD"
+                                            name="duration"
                                             control={control}
-                                            defaultValue=""
+                                            defaultValue={0}
                                             render={({field}) => (
                                                 <TextField
                                                     {...field}
-                                                    label="Enter CPD"
+                                                    label="Duration"
                                                     type="number"
                                                     InputProps={{
-                                                        sx: txProps
+                                                        sx: txProps,
+                                                        readOnly: true,
                                                     }}
                                                     InputLabelProps={{
                                                         sx: {
@@ -766,94 +888,88 @@ function NewFuellingReport({allSite}) {
                                                     sx={{
                                                         color: "#46F0F9",
                                                     }}
+                                                    value={duration}
                                                     fullWidth
                                                 />
                                             )}
                                         />
-                                    </Grid>
-                                )}
-                                {/*supply Duration*/}
-                                {cpd && (
-                                    <>
-                                        <Grid item xs={3}>
-                                            <Controller
-                                                name="duration"
-                                                control={control}
-                                                defaultValue={0}
-                                                render={({field}) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Duration"
-                                                        type="number"
-                                                        InputProps={{
-                                                            sx: txProps,
-                                                            readOnly: true,
-                                                        }}
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                "&.Mui-focused": {
-                                                                    color: "white",
-                                                                },
-                                                            }
-                                                        }}
-                                                        sx={{
+                                    </FormControl>
+                                </Grid>
+                                {/*nextDueDate*/}
+                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                    <FormControl fullWidth>
+                                        <Controller
+                                            name="nextDueDate"
+                                            control={control}
+                                            defaultValue=""
+                                            render={({field}) => (
+                                                <TextField
+                                                    {...field}
+                                                    label="Next Due Date"
+                                                    type="text"
+                                                    InputProps={{
+                                                        sx: txProps,
+                                                        readOnly: true,
+                                                    }}
+                                                    InputLabelProps={{
+                                                        sx: {
                                                             color: "#46F0F9",
-                                                        }}
-                                                        value={duration}
-                                                        fullWidth
-                                                    />
-                                                )}
-                                            />
-                                        </Grid>
-                                        {/*nextDueDate*/}
-                                        <Grid item xs={3}>
-                                            <Controller
-                                                name="nextDueDate"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <TextField
-                                                        {...field}
-                                                        label="Next Due Date"
-                                                        type="text"
-                                                        InputProps={{
-                                                            sx: txProps,
-                                                            readOnly: true,
-                                                        }}
-                                                        InputLabelProps={{
-                                                            sx: {
-                                                                color: "#46F0F9",
-                                                                "&.Mui-focused": {
-                                                                    color: "white",
-                                                                },
-                                                            }
-                                                        }}
-                                                        sx={{
-                                                            color: "#46F0F9",
-                                                        }}
-                                                        value={nextDueDate}
-                                                        fullWidth
-                                                    />
-                                                )}
-                                            />
-                                        </Grid>
-                                    </>
-                                )}
-                            </Grid>
-
-                        </Paper>
+                                                            "&.Mui-focused": {
+                                                                color: "white",
+                                                            },
+                                                        }
+                                                    }}
+                                                    sx={{
+                                                        color: "#46F0F9",
+                                                    }}
+                                                    value={nextDueDate}
+                                                    fullWidth
+                                                />
+                                            )}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                            </>
+                        )}
                     </Grid>
-                    <br/><br/>
+                    <br/>
                     {/*Submitting button */}
                     <Stack direction='row' gap={2} sx={{marginBottom: '75px'}}>
-                        <Button variant="contained" color='success' title='Back' onClick={goPrev}>
+                        <Button variant="contained" title='Back' onClick={goPrev} size='small'
+                                sx={{
+                                    color: '#FFF',
+                                    backgroundColor: 'red',
+                                    '&:hover': {
+                                        backgroundColor: '#46F0F9',
+                                    },
+                                }}
+                        >
                             Back
                         </Button>
 
-                        <Button variant="contained" color='secondary' onClick={Clear} type='reset'
-                                title='Clear'> Clear </Button>
-                        <Button variant="contained" color='error' type='submit' title='Submit'> Submit </Button>
+                        <Button variant="contained" onClick={Clear} type='reset'
+                                title='Clear' size='small'
+                                sx={{
+                                    color: '#FFF',
+                                    backgroundColor: 'grey',
+                                    '&:hover': {
+                                        backgroundColor: '#46F0F9',
+                                    },
+                                }}
+                        >
+                            Clear
+                        </Button>
+                        <Button variant="contained" type='submit' title='Submit' size='small'
+                                sx={{
+                                    color: '#FFF',
+                                    backgroundColor: 'linear-gradient(to right, #000046, #1cb5e0)',
+                                    '&:hover': {
+                                        backgroundColor: '#891f9c',
+                                    },
+                                }}
+                        >
+                            Submit
+                        </Button>
                     </Stack>
                 </Box>
             </Box>

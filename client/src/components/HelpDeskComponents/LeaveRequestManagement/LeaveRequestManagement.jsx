@@ -278,7 +278,7 @@ function LeaveRequestManagement({leaveReqData}) {
 
             // function to view staff profile
             const reqAction = async () => {
-                const encryptedReqID = await AdminUtilities.encryptUserID(reqID);
+                const encryptedReqID = await AdminUtilities.encryptObjID(reqID);
                 const reqData = leaveReqData.find((reqObj) => reqObj._id === reqID);
                 // encrypt the data and store it in the session storage
                 const encryptedData = await AdminUtilities.encryptData(reqData);

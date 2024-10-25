@@ -66,7 +66,7 @@ function Step3ServiceInfo({txProps}) {
         setValue('pmInstance', pmValue);
     }
 
-    // servicing date
+    // supplied date
     const [showCalendar, setShowCalendar] = useState(false);
 
     const handleToggleCalendar = () => {
@@ -74,7 +74,7 @@ function Step3ServiceInfo({txProps}) {
     };
 
     const handleDateSelect = (date) => {
-        setValue('servicingDate', date);
+        setValue('dateSupplied', date);
         setShowCalendar(false); // Hide the date picker after selecting a date
     };
 

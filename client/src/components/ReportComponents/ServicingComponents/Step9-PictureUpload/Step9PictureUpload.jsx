@@ -67,7 +67,7 @@ const Step9PictureUpload = ({formData, setFormData}) => {
                                           sx={{display: {xs: 'none', sm: 'block'}, border: '2px solid #FFF'}}/>}
                     >
                         <Typography variant="body2" sx={{fontSize: {xs: '0.8rem', sm: '0.9rem', md: '1rem'}}}>
-                            Allowed Types: PNG, JPG, JPEG, SVG
+                            Allowed Types: PNG, JPG, JPEG
                         </Typography>
                         <Typography variant="body2" sx={{fontSize: {xs: '0.8rem', sm: '0.9rem', md: '1rem'}}}>
                             Max Size: 2MB per picture

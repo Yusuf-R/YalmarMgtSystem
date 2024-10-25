@@ -24,7 +24,7 @@ function ViewSiteProfile() {
         const decryptData = async () => {
             try {
                 if (encryptedSiteData && encryptedSiteID) {
-                    const decryptedID = await AdminUtils.decryptUserID(encryptedSiteID); // Decrypt the site ID
+                    const decryptedID = await AdminUtils.decryptObjID(encryptedSiteID); // Decrypt the site ID
                     const decryptedData = await AdminUtils.decryptData(encryptedSiteData); // Decrypt the site data
 
                     setDecryptedSiteID(decryptedID);  // Set decrypted ID

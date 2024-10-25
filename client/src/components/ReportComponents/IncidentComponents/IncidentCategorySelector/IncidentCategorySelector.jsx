@@ -4,13 +4,7 @@ import {DayPicker} from "react-day-picker";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuItem from "@mui/material/MenuItem";
-import AccordionDetails from "@mui/material/AccordionDetails";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -19,6 +13,7 @@ import {autoCompleteSx} from "@/utils/data";
 import "react-day-picker/dist/style.css";
 import {yupResolver} from '@hookform/resolvers/yup';
 import {categorySelectorSchema} from "@/SchemaValidator/IncidentValidators/categorySelectorSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 // Category fields mapping based on the provided schema
@@ -97,58 +92,65 @@ function IncidentCategorySelector({
         clearErrors('severity');
     };
 
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
     const today = new Date();
 
     return (
         <Paper elevation={5} sx={customStyles.paperSx}>
             <Grid container spacing={4}>
-                <Grid item xs={4}>
-                    <Typography variant="subtitle 4" sx={customStyles.typographyStyle}>Date of Incident</Typography>
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography variant="subtitle 4" sx={customStyles.typographyStyle}>Report Category</Typography>
-                </Grid>
-                <Grid item xs={4}>
-                    <Typography variant="subtitle 4" sx={customStyles.typographyStyle}>Severity</Typography>
+                <Grid item xs={12}>
+                    <Typography variant="subtitle 4" sx={customStyles.typographyStyle}>Incident Info</Typography>
                 </Grid>
                 {/* Date of Incident */}
-                <Grid item xs={4}>
-                    <Controller
-                        name="incidentDate"
-                        control={control}
-                        render={({onChange}) => (
-                            <TextField
-                                onFocus={handleToggleCalendar}
-                                value={incidentDate ? incidentDate.toLocaleDateString() : 'Enter Incident Date'}
-                                InputProps={{sx: customStyles.txProps, readOnly: true}}
-                                error={!!errors.incidentDate}
-                                helperText={errors.incidentDate ? (
-                                    <span style={{color: "#fc8947"}}>
+                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <FormControl fullWidth>
+                        <Controller
+                            name="incidentDate"
+                            control={control}
+                            render={({onChange}) => (
+                                <TextField
+                                    onFocus={handleToggleCalendar}
+                                    value={incidentDate ? incidentDate.toLocaleDateString() : 'Enter Incident Date'}
+                                    InputProps={{sx: customStyles.txProps, readOnly: true}}
+                                    error={!!errors.incidentDate}
+                                    helperText={errors.incidentDate ? (
+                                        <span style={{color: "#fc8947"}}>
                                             {errors.incidentDate.message}
                                         </span>
-                                ) : ''}
-                                label="Incident Date"
-                                InputLabelProps={{
-                                    sx: {
-                                        color: "#46F0F9",
-                                        "&.Mui-focused": {color: "white"},
-                                    },
-                                }}
-                                SelectProps={{
-                                    MenuProps: {
-                                        PaperProps: {
-                                            sx: {
-                                                backgroundColor: '#134357',
-                                                color: 'white',
-                                                maxHeight: 450,
-                                                overflow: 'auto',
+                                    ) : ''}
+                                    label="Incident Date"
+                                    InputLabelProps={{
+                                        sx: {
+                                            color: "#46F0F9",
+                                            "&.Mui-focused": {color: "white"},
+                                        },
+                                    }}
+                                    SelectProps={{
+                                        MenuProps: {
+                                            PaperProps: {
+                                                sx: {
+                                                    backgroundColor: '#134357',
+                                                    color: 'white',
+                                                    overflow: 'auto',
+                                                },
                                             },
                                         },
-                                    },
-                                }}
-                            />
-                        )}
-                    />
+                                    }}
+                                />
+                            )}
+                        />
+                    </FormControl>
                     {showCalendar && (
                         <DayPicker
                             mode="single"
@@ -172,7 +174,7 @@ function IncidentCategorySelector({
                     )}
                 </Grid>
                 {/* Report Category */}
-                <Grid item xs={4}>
+                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                     <FormControl fullWidth>
                         <Controller
                             name="reportCategory"
@@ -190,7 +192,7 @@ function IncidentCategorySelector({
                                             {...params}
                                             label="Incident Category"
                                             placeholder="Select categories"
-                                            sx={{...autoCompleteSx, width: 450}}
+                                            sx={{...autoCompleteSx}}
                                         />
                                     )}
                                     filterSelectedOptions
@@ -232,13 +234,13 @@ function IncidentCategorySelector({
                     </FormControl>
                 </Grid>
                 {/* Severity */}
-                <Grid item xs={4}>
-                    <Controller
-                        name="severity"
-                        control={control}
-                        defaultValue=""
-                        render={({field}) => (
-                            <FormControl fullWidth>
+                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <FormControl fullWidth>
+                        <Controller
+                            name="severity"
+                            control={control}
+                            defaultValue=""
+                            render={({field}) => (
                                 <TextField
                                     {...field}
                                     select
@@ -252,7 +254,7 @@ function IncidentCategorySelector({
                                             {errors.severity.message}
                                         </span>
                                     ) : ''}
-                                    InputProps={{sx: {...customStyles.txProps, width: '40%'}}}
+                                    InputProps={{sx: {...customStyles.txProps}}}
                                     InputLabelProps={{
                                         sx: {
                                             color: "#46F0F9",
@@ -283,9 +285,9 @@ function IncidentCategorySelector({
                                         </MenuItem>
                                     ))}
                                 </TextField>
-                            </FormControl>
-                        )}
-                    />
+                            )}
+                        />
+                    </FormControl>
                 </Grid>
             </Grid>
             <br/>

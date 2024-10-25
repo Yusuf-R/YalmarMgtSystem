@@ -32,6 +32,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Dialog from "@mui/material/Dialog";
 import CloseIcon from "@mui/icons-material/Close";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 
 const goPrev = () => {
@@ -43,6 +44,17 @@ function ViewOthersIncidentReport() {
     const viewOthersIncidentReport = useIncidentStore(state => state.viewOthersIncidentReport);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident/others/view');
     const pathname = usePathname();
+
+    // Media Queries for responsiveness
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+
 
     // useEffect or handling navigation between new and others
     useEffect(() => {
@@ -58,7 +70,16 @@ function ViewOthersIncidentReport() {
 
     if (!viewOthersIncidentReport) {
         return (
-            <Box sx={mainSection}>
+            <Box
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%', // This ensures nothing overflows
+                    overflow: 'hidden', // Handles overflowing content
+                }}
+            >
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -66,6 +87,7 @@ function ViewOthersIncidentReport() {
                     <Tabs
                         value={activeTab}
                         onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isXSmall ? "scrollable" : "standard"}
                         centered
                         sx={{
                             '& .MuiTabs-indicator': {
@@ -73,33 +95,34 @@ function ViewOthersIncidentReport() {
                             },
                         }}
                     >
+                        <Tab
+                            label="Reports"
+                            component={Link}
+                            href="/dashboard/admin/reports"
+                            value="/dashboard/admin/reports"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                "&.Mui-selected": {color: "#46F0F9"},
+                            }}
+                        />
 
-                        <Tab
-                            label="Incident"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident"
-                            value="/dashboard/admin/reports/incident"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="Others"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident/others"
-                            value="/dashboard/admin/reports/incident/others"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
+                        {['Incident-Center', 'Others'].map((label) => (
+                            <Tab
+                                key={label}
+                                label={label}
+                                component={Link}
+                                href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: 'bold',
+                                    fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                    "&.Mui-selected": {color: "#46F0F9"},
+                                }}
+                            />
+                        ))}
 
                         <Tab
                             label="View"
@@ -117,29 +140,52 @@ function ViewOthersIncidentReport() {
                     </Tabs>
                 </Stack>
                 <br/>
-                <Typography variant='h6'
-                            sx={{
-                                fontFamily: 'Poppins',
-                                fontWeight: 'bold',
-                                color: '#FFF',
-                                ml: 60,
-                                mt: 5,
-                                p: 2,
-                                border: '1px solid rgb(255, 153, 153)',
-                                borderRadius: 10,
-                                width: '32%',
-                                textAlign: 'center',
-                            }}>
-                    Oops!!! No Report found. <IconButton><ArrowBackSharpIcon
-                    sx={{color: 'lime', fontSize: 30}} onClick={goPrev}/></IconButton>
-                </Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '20px',
+                    width: '100%',
+                }}>
+                    <Typography variant="h6"
+                                sx={{
+                                    fontFamily: 'Poppins',
+                                    fontWeight: 'bold',
+                                    borderRadius: 5,
+                                    padding: '10px 15px',
+                                    bgcolor: '#0059b3',
+                                    color: '#FFF',
+                                    width: 'auto',
+                                    maxWidth: '90%',
+                                    textAlign: 'center',
+                                    fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                        Oops!!! No Report found.
+                        <IconButton><ArrowBackSharpIcon
+                            sx={{color: 'lime', fontSize: 25}} onClick={goPrev}/>
+                        </IconButton>
+                    </Typography>
+                </Box>
             </Box>
         )
     }
 
     return (
         <>
-            <Box sx={mainSection}>
+            <Box
+                sx={{
+                    padding: xSmall || small ? '5px' : medium || large ? '10px' : '5px',
+                    marginTop: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    maxWidth: '100%', // This ensures nothing overflows
+                    overflow: 'hidden', // Handles overflowing content
+                }}
+            >
                 {/*Navigation Tabs */}
                 <Stack direction='row' spacing={2} sx={{
                     justifyContent: 'flex-start',
@@ -147,6 +193,7 @@ function ViewOthersIncidentReport() {
                     <Tabs
                         value={activeTab}
                         onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isXSmall ? "scrollable" : "standard"}
                         centered
                         sx={{
                             '& .MuiTabs-indicator': {
@@ -154,33 +201,34 @@ function ViewOthersIncidentReport() {
                             },
                         }}
                     >
+                        <Tab
+                            label="Reports"
+                            component={Link}
+                            href="/dashboard/admin/reports"
+                            value="/dashboard/admin/reports"
+                            sx={{
+                                color: "#FFF",
+                                fontWeight: 'bold',
+                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                "&.Mui-selected": {color: "#46F0F9"},
+                            }}
+                        />
 
-                        <Tab
-                            label="Incident"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident"
-                            value="/dashboard/admin/reports/incident"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="Others"
-                            component={Link}
-                            href="/dashboard/admin/reports/incident/others"
-                            value="/dashboard/admin/reports/incident/others"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
+                        {['Incident-Center', 'Others'].map((label) => (
+                            <Tab
+                                key={label}
+                                label={label}
+                                component={Link}
+                                href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                                sx={{
+                                    color: "#FFF",
+                                    fontWeight: 'bold',
+                                    fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                                    "&.Mui-selected": {color: "#46F0F9"},
+                                }}
+                            />
+                        ))}
 
                         <Tab
                             label="View"
@@ -198,11 +246,6 @@ function ViewOthersIncidentReport() {
                     </Tabs>
                 </Stack>
                 <br/>
-                <Divider sx={{
-                    width: '100%',
-                    backgroundColor: 'rgb(255, 153, 153)',
-                    color: '#FFF'
-                }}/>
                 <RenderedData data={viewOthersIncidentReport}/>
             </Box>
         </>
@@ -215,7 +258,7 @@ function RenderedData({data}) {
         fontWeight: 'bold',
         color: '#FFF',
         fontFamily: 'Poppins',
-        fontSize: '16px',
+        fontSize: {xs: '0.9rem', sm: '1.0rem', md: '1.2rem'},
     };
     const [isModalOpen, setIsModalOpen] = useState(false);
     const cardSx = {
@@ -228,6 +271,16 @@ function RenderedData({data}) {
     const accordionSx = {
         bgcolor: '#274e61',
     }
+
+    // Media Queries for responsiveness
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
 
     const {
         severity,
@@ -279,20 +332,20 @@ function RenderedData({data}) {
 
     return (
         <>
-            <Typography variant='h6'
+            <Typography variant="h6"
                         sx={{
                             fontFamily: 'Poppins',
                             fontWeight: 'bold',
                             color: '#FFF',
-                            ml: 60,
-                            mt: 5,
-                            p: 2,
-                            border: '1px solid rgb(255, 153, 153)',
-                            borderRadius: 10,
-                            width: '32%'
+                            fontSize: xSmall || small ? '0.9rem' : medium || large ? '1.0rem' : '1.2rem',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '10px',
+                            borderRadius: '10px',
+                            bgcolor: '#0059b3',
                         }}>
-                Incident Report Data : {formattedDate}
-                <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
+                Report Data : {formattedDate}
             </Typography>
             <br/>
             {/*Submission Info*/}
@@ -305,7 +358,7 @@ function RenderedData({data}) {
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
                         }}>
                             Submission and Approval:
                         </Typography>
@@ -318,7 +371,7 @@ function RenderedData({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
                                     }}>Approval Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
@@ -329,7 +382,12 @@ function RenderedData({data}) {
                                             </Typography>
                                         </ListItem>
                                         <ListItem>
-                                            <Typography sx={typographyStyle}>
+                                            <Typography sx={{
+                                                ...typographyStyle,
+                                                wordBreak: 'break-word',
+                                                overflowWrap: 'break-word',
+                                                whiteSpace: 'normal',
+                                            }}>
                                                 {`Email: ${adminEmail}`}
                                             </Typography>
                                         </ListItem>
@@ -349,19 +407,20 @@ function RenderedData({data}) {
             {/*Severity*/}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Card sx={{...cardSx, border: 'none',}}>
+                    <Card sx={{...cardSx, border: 'none', p: 1}}>
                         <Typography variant='h6' sx={{
                             fontWeight: 'bold',
                             color: 'white',
                             fontFamily: 'Poppins',
-                            ml: '30px',
-                            mt: '30px',
-                            mb: '30px',
-                            fontSize: '18px',
+                            mt: '10px',
+                            mb: '10px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
                             backgroundColor: severity === 'Critical' ? 'hsl(12, 100%, 50%)' : severity === 'Major' ? 'hsl(240, 100%, 50%)' : severity === 'Minor' ? 'limegreen' : 'inherit',
                             padding: '5px', // Optional: Add some padding for better readability
                             borderRadius: '10px', // Optional: Add border-radius for rounded corners
-                            width: '15%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
                         }}>
                             Severity: {severity}
                         </Typography>
@@ -379,7 +438,7 @@ function RenderedData({data}) {
                             fontFamily: 'Poppins',
                             ml: '30px',
                             mt: '30px',
-                            fontSize: '18px',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
                         }}>
                             Incident Summary:
                         </Typography>
@@ -392,7 +451,7 @@ function RenderedData({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: '16px',
+                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
                                     }}>Description Details</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white'}}>
@@ -409,8 +468,10 @@ function RenderedData({data}) {
                                                         fontWeight: 'bold',
                                                         color: 'white',
                                                         fontFamily: 'Poppins',
-                                                        fontSize: '16px',
-                                                        m: -1,
+                                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                                        wordBreak: 'break-word',
+                                                        overflowWrap: 'break-word',
+                                                        whiteSpace: 'normal',
                                                     }}
                                                 >
                                                     {line}
@@ -439,10 +500,13 @@ function RenderedData({data}) {
                             fontWeight: 'bold',
                             color: '#FFF',
                             fontFamily: 'Poppins',
-                            fontSize: '20px',
-                            mt: 1,
-                            p: 4,
-                        }} align="left">
+                            fontSize: isXSmall || xSmall || small ? '0.9rem' : medium || large ? '1.2rem' : '1.2rem',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginTop: 3,
+                            marginBottom: 1,
+                        }}>
                             Reporting Images
                         </Typography>
                         <br/>

@@ -9,14 +9,12 @@ import {descriptionSchema} from "@/SchemaValidator/IncidentValidators/descriptio
 import {yupResolver} from "@hookform/resolvers/yup";
 
 
-
-
 function IncidentDescription({customStyles}) {
     const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext({
         mode: 'onTouched',
         reValidateMode: 'onChange',
         resolver: yupResolver(descriptionSchema),
-        
+
     });
     return (
         <>
@@ -35,7 +33,7 @@ function IncidentDescription({customStyles}) {
                                 <TextField
                                     {...field}
                                     InputProps={{
-                                        sx: {...txProps, width: '100%'}
+                                        sx: txProps,
                                     }}
                                     InputLabelProps={{
                                         sx: {

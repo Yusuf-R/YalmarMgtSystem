@@ -306,7 +306,6 @@ function AllSite({allSite}) {
             const handleDelete = async (event) => {
                 event.preventDefault();
                 const obj = {email, selectedIds: [siteID]};
-                console.log({obj});
                 mutation.mutate(obj, {
                     onSuccess: () => {
                         queryClient.invalidateQueries({queryKey: ["AllSite"]});
@@ -323,7 +322,7 @@ function AllSite({allSite}) {
 
             // function to view site profile
             const viewSite = async () => {
-                const encryptedSiteID = await AdminUtilities.encryptUserID(siteID);
+                const encryptedSiteID = await AdminUtilities.encryptObjID(siteID);
                 const siteData = allSite.find((site) => site._id === siteID);
                 // encrypt the data and store it in the session storage
                 const encryptedStaffData = await AdminUtilities.encryptData(siteData);
@@ -333,7 +332,7 @@ function AllSite({allSite}) {
             };
             // function to edit site profile
             const editSite = async () => {
-                const encryptedSiteID = await AdminUtilities.encryptUserID(siteID);
+                const encryptedSiteID = await AdminUtilities.encryptObjID(siteID);
                 const siteData = allSite.find((site) => site._id === siteID);
                 // encrypt the data and store it in the session storage
                 const encryptedStaffData = await AdminUtilities.encryptData(siteData);

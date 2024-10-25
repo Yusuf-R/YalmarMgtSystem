@@ -1,269 +1,156 @@
-'use client';
+import React, {useEffect, useState} from 'react';
+import {useRouter, usePathname} from 'next/navigation';
+import Link from 'next/link';
 import Box from "@mui/material/Box";
-import {mainSection} from "@/utils/data";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
-import {useRouter} from 'next/navigation'
 import Avatar from "@mui/material/Avatar";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Button from "@mui/material/Button";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import React, {useEffect, useState} from "react";
+import Typography from "@mui/material/Typography";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import {usePathname} from "next/navigation";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function IncidentLandingPage({allIncidentReport}) {
     const router = useRouter();
-    const typographyStyle = {
-        fontWeight: 'bold',
-        color: '#FFF',
-        fontFamily: 'Poppins',
-        fontSize: '16px',
-    };
-    const cardSx = {
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-        borderRadius: 5,
-        border: '4px solid rgb(163, 163, 117)',
-        p: 0.1,
-    }
     const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/incident');
-    const accordionSx = {
-        bgcolor: '#274e61',
-    }
     const pathname = usePathname();
-    // useEffect or handling navigation between new and staff
+
+    // Media Queries for responsiveness
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+    const isSmall = useMediaQuery('(min-width:600px) and (max-width:899.99px)');
+    const isMedium = useMediaQuery('(min-width:900px) and (max-width:1199.99px)');
+    const isLarge = useMediaQuery('(min-width:1200px)');
+
     useEffect(() => {
         if (pathname.includes('new')) {
             setActiveTab('/dashboard/admin/reports/incident/new');
+        } else if (pathname.includes('staff')) {
+            setActiveTab('/dashboard/admin/reports/incident/staff');
+        } else if (pathname.includes('site')) {
+            setActiveTab('/dashboard/admin/reports/incident/site');
+        } else if (pathname.includes('service')) {
+            setActiveTab('/dashboard/admin/reports/incident/service');
+        } else if (pathname.includes('fuel')) {
+            setActiveTab('/dashboard/admin/reports/incident/fuel');
+        } else if (pathname.includes('others')) {
+            setActiveTab('/dashboard/admin/reports/incident/others');
+        } else if (pathname.includes('incident')) {
+            setActiveTab('/dashboard/admin/reports/incident');
         } else {
-            setActiveTab('/dashboard/admin/incident');
+            setActiveTab('/dashboard/admin/reports');
         }
     }, [pathname]);
 
-    return (
-        <>
-            <Box sx={mainSection}>
+    const headerItems = [
+        {title: 'Staff-Incident', src: '/staff-incident.svg', route: '/dashboard/admin/reports/incident/staff'},
+        {title: 'Site-Incident', src: '/site-incident.svg', route: '/dashboard/admin/reports/incident/site'},
+        {title: 'Service-Incident', src: '/service-incident.svg', route: '/dashboard/admin/reports/incident/service'},
+        {title: 'Fuel-Incident', src: '/fuel-incident.jpg', route: '/dashboard/admin/reports/incident/fuel'},
+        {title: 'Others-Incident', src: '/others-incident.svg', route: '/dashboard/admin/reports/incident/others'},
+    ];
 
-                {/*Header*/}
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h6' textAlign='center'
-                                sx={{
-                                    fontFamily: 'Poppins',
-                                    fontWeight: 'bold',
-                                    fontSize: '25px',
-                                }}>
-                        Incident Report Center</Typography>
-                </Paper>
-                <br/>
-                <Grid container spacing={0.5}>
-                    <Grid item xs={2}>
-                        <Typography variant='h6' textAlign='left'
-                                    sx={{
-                                        fontFamily: 'Poppins',
-                                        fontWeight: 'bold',
-                                        fontSize: '18px',
-                                        color: '#FFF',
-                                        cursor: 'pointer',
-                                        // backgroundColor: '#FF8080',
-                                        borderRadius: '10px',
-                                        padding: '10px',
-                                    }}>
-                            Create a new Report.</Typography>
-                    </Grid>
-                    <Grid item xs={0.6}>
-                        <Typography
+    return (
+        <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
+            <Tabs
+                value={activeTab}
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                variant={isXSmall ? "scrollable" : "standard"}
+                scrollButtons="auto"
+                sx={{
+                    '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
+                    marginBottom: 3
+                }}
+            >
+                <Tab
+                    label="Report-Central"
+                    component={Link}
+                    href="/dashboard/admin/reports"
+                    value="/dashboard/admin/reports"
+                    sx={{
+                        color: "#FFF",
+                        fontWeight: 'bold',
+                        fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                        "&.Mui-selected": {color: "#46F0F9"},
+                    }}
+                />
+                {['Incident-Center', 'Staff', 'Site', 'Service', 'Fuel', 'Others'].map((label) => (
+                    <Tab
+                        key={label}
+                        label={label}
+                        component={Link}
+                        href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                        value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                            "&.Mui-selected": {color: "#46F0F9"},
+                        }}
+                    />
+                ))}
+                <Tab
+                    label="New +"
+                    component={Link}
+                    href="/dashboard/admin/reports/incident/new"
+                    value="/dashboard/admin/reports/incident/new"
+                    sx={{
+                        color: "#FFF",
+                        fontWeight: 'bold',
+                        fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                        ":hover": {backgroundColor: 'rgb(51, 153, 51)'},
+                        backgroundColor: '#ff4d4d',
+                        borderRadius: 10,
+                        p: 0,
+                    }}
+                />
+            </Tabs>
+
+            <Grid container spacing={3} justifyContent="flex-start">
+                {headerItems.map((item, index) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                        <Box
+                            onClick={() => router.push(item.route)}
                             sx={{
-                                textDecoration: 'none',
-                                fontFamily: 'Poppins',
-                                fontWeight: 'bold',
-                                fontSize: '18px',
-                                color: '#FFF',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
                                 cursor: 'pointer',
-                                backgroundColor: 'rgb(51, 153, 51)',
-                                borderRadius: '10px',
-                                padding: '10px',
-                            }}
-                            onClick={() => {
-                                router.push('/dashboard/admin/reports/incident/new');
+                                '&:hover': {
+                                    '& .MuiTypography-root': {
+                                        backgroundColor: 'green',
+                                        color: '#FFF',
+                                    }
+                                }
                             }}
                         >
-                            New +
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <br/><br/><br/>
-                <Paper elevation={5} sx={{
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#FFF',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h6' textAlign='left'
+                            <Avatar
+                                alt={item.title}
+                                src={item.src}
                                 sx={{
-                                    fontFamily: 'Poppins',
+                                    width: {xs: '120px', sm: '150px', md: '180px', lg: '200px'},
+                                    height: {xs: '120px', sm: '150px', md: '180px', lg: '200px'},
+                                    marginBottom: {xs: '10px', sm: '15px', md: '20px'},
+                                }}
+                            />
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: '#FFF',
+                                    fontSize: {xs: '0.9rem', sm: '1rem', md: '1.1rem', lg: '1.2rem'},
                                     fontWeight: 'bold',
-                                    fontSize: '18px',
-                                }}>
-                        Click to view any of the following report category.</Typography>
-                </Paper>
-                <br/>
-                <Stack spacing={2} direction='column'
-                       sx={{
-                           m: -3,
-                           p: 0,
-                       }}>
-                    <Grid container spacing={0.5}>
-                        <Grid item xs={2}>
-                            <Stack spacing={10} direction='row'>
-                                <CardContent>
-                                    <Accordion sx={accordionSx}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
-                                                          sx={cardSx}
-                                                          onClick={() => {
-                                                              router.push('/dashboard/admin/reports/incident/staff');
-                                                          }}
-                                        >
-                                            <Typography variant='h6' sx={{
-                                                fontWeight: 'bold',
-                                                color: 'white',
-                                                fontFamily: 'Poppins',
-                                                ml: '30px',
-                                                fontSize: '16px',
-                                            }}
-                                                        onClick={() => {
-                                                            router.push('/dashboard/admin/reports/incident/staff');
-                                                        }}
-                                            >
-                                                Staff
-                                            </Typography>
-                                        </AccordionSummary>
-                                    </Accordion>
-                                </CardContent>
-                                <CardContent>
-                                    <Accordion sx={accordionSx}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
-                                                          sx={cardSx}
-                                                          onClick={() => {
-                                                              router.push('/dashboard/admin/reports/incident/site');
-                                                          }}
-                                        >
-                                            <Typography variant='h6' sx={{
-                                                fontWeight: 'bold',
-                                                color: 'white',
-                                                fontFamily: 'Poppins',
-                                                ml: '30px',
-                                                fontSize: '16px',
-                                            }}
-                                                        onClick={() => {
-                                                            router.push('/dashboard/admin/reports/incident/site');
-                                                        }}
-                                            >
-                                                Site
-                                            </Typography>
-                                        </AccordionSummary>
-                                    </Accordion>
-                                </CardContent>
-                                <CardContent>
-                                    <Accordion sx={accordionSx}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
-                                                          sx={cardSx}
-                                                          onClick={() => {
-                                                              router.push('/dashboard/admin/reports/incident/service');
-                                                          }}
-                                        >
-                                            <Typography variant='h6' sx={{
-                                                fontWeight: 'bold',
-                                                color: 'white',
-                                                fontFamily: 'Poppins',
-                                                ml: '30px',
-                                                fontSize: '16px',
-                                            }}
-                                                        onClick={() => {
-                                                            router.push('/dashboard/admin/reports/incident/service');
-                                                        }}
-                                            >
-                                                Service
-                                            </Typography>
-                                        </AccordionSummary>
-                                    </Accordion>
-                                </CardContent>
-                                <CardContent>
-                                    <Accordion sx={accordionSx}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
-                                                          sx={cardSx}
-                                                          onClick={() => {
-                                                              router.push('/dashboard/admin/reports/incident/fuel');
-                                                          }}
-                                        >
-                                            <Typography variant='h6'
-                                                        sx={{
-                                                            fontWeight: 'bold',
-                                                            color: 'white',
-                                                            fontFamily: 'Poppins',
-                                                            ml: '30px',
-                                                            fontSize: '16px',
-                                                        }}
-                                                        onClick={() => {
-                                                            router.push('/dashboard/admin/reports/incident/fuel');
-                                                        }}
-                                            >
-                                                Fuel
-                                            </Typography>
-                                        </AccordionSummary>
-                                    </Accordion>
-                                </CardContent>
-                                <CardContent>
-                                    <Accordion sx={accordionSx}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
-                                                          sx={cardSx}
-                                                          onClick={() => {
-                                                              router.push('/dashboard/admin/reports/incident/others');
-                                                          }}
-                                        >
-                                            <Typography variant='h6' sx={{
-                                                fontWeight: 'bold',
-                                                color: 'white',
-                                                fontFamily: 'Poppins',
-                                                ml: '30px',
-                                                fontSize: '16px',
-                                            }}
-                                                        onClick={() => {
-                                                            router.push('/dashboard/admin/reports/incident/others');
-                                                        }}
-                                            >
-                                                Others
-                                            </Typography>
-                                        </AccordionSummary>
-                                    </Accordion>
-                                </CardContent>
-                            </Stack>
-                        </Grid>
+                                    textAlign: 'center',
+                                    padding: '5px 10px',
+                                    borderRadius: '5px',
+                                    transition: 'background-color 0.3s, color 0.3s',
+                                }}
+                            >
+                                {item.title}
+                            </Typography>
+                        </Box>
                     </Grid>
-                </Stack>
-
-            </Box>
-        </>
-    )
+                ))}
+            </Grid>
+        </Box>
+    );
 }
 
 export default IncidentLandingPage;

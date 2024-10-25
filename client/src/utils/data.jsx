@@ -11,7 +11,6 @@ export const txProps = {
     color: "red",
     bgcolor: "#274e61",
     borderRadius: "10px",
-    width: '250px',
     fontSize: '16px',
     fontStyle: 'bold',
     '&:hover': {
@@ -1390,7 +1389,6 @@ export const type = [
 export const autoCompleteSx = {
     backgroundColor: "#274e61",
     borderRadius: "10px",
-    width: '250px',
     "& .MuiInputLabel-root": {
         color: '#46F0F9', // Label text color
     },

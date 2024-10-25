@@ -200,7 +200,7 @@ function ServicingReportRecord({data}) {
                         }}>
                             Submission and Approval:
                         </Typography>
-                        <CardContent sx={{color: 'white', margin: 0,}}>
+                        <CardContent sx={{color: 'white', margin: '5px',}}>
                             <Accordion sx={accordionSx}>
                                 <AccordionSummary expandIcon={<ExpandMoreIcon sx={{color: '#FFF'}}/>}
                                                   sx={cardSx}>
@@ -209,8 +209,9 @@ function ServicingReportRecord({data}) {
                                         color: 'white',
                                         fontFamily: 'Poppins',
                                         ml: '30px',
-                                        fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.1rem',
-                                    }}>Submission Details</Typography>
+                                        fontSize: '16px',
+                                    }}>Submission Details
+                                    </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails
                                     sx={{bgcolor: '#274e61', color: 'white', p: 0, m: 0}}>

@@ -1,17 +1,14 @@
 'use client';
-import LazyLoading from "@/components/LazyLoading/LazyLoading";
-import {Suspense, lazy} from "react";
-import {useEffect, useState} from 'react';
-import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
-import AdminUtils from "@/utils/AdminUtilities";
-import {useRouter} from 'next/navigation';
-import useFuelReportStore from "@/store/useFuelReportStore";
+import {lazy, Suspense, useEffect, useState} from 'react';
 import LostInSpace from "@/components/Errors/LostInSpace/LostInSpace";
+import LazyLoading from "@/components/LazyLoading/LazyLoading";
+import {useRouter} from "next/navigation";
+import useFuelReportStore from "@/store/useFuelReportStore";
+import AdminUtils from "@/utils/AdminUtilities";
 
-const FuelAnalytics = lazy(() => import("@/components/ReportComponents/FuellingComponents/FuelAnalytics/FuelAnalytics"));
+const ViewFuelReport = lazy(() => import('@/components/ReportComponents/FuellingComponents/ViewFuelReport/ViewFuelReport'));
 
-function FuelAnalyticsDashboard() {
-    const [error, setError] = useState(null);
+function ViewFuellingReport() {
     const [decryptedFuelID, setDecryptedFuelID] = useState(null);
     const [decryptedFuelData, setDecryptedFuelData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -28,6 +25,7 @@ function FuelAnalyticsDashboard() {
                 if (encryptedFuelData && encryptedFuelID) {
                     const decryptedID = await AdminUtils.decryptObjID(encryptedFuelID); // Decrypt the site ID
                     const decryptedData = await AdminUtils.decryptData(encryptedFuelData); // Decrypt the site data
+
                     setDecryptedFuelID(decryptedID);
                     setDecryptedFuelData(decryptedData);
                 } else {
@@ -43,6 +41,7 @@ function FuelAnalyticsDashboard() {
         decryptData();  // Decrypt data on page load
     }, [encryptedFuelData, encryptedFuelID]);
 
+    // Redirect logic if no data found or decryption failed
     useEffect(() => {
         if (shouldRedirect) {
             router.push('/dashboard/admin/site/void'); // Redirect to void page for sites
@@ -57,14 +56,13 @@ function FuelAnalyticsDashboard() {
         return <LostInSpace/>; // Render VoidSite if decryption failed
     }
 
-
     return (
         <>
             <Suspense fallback={<LazyLoading/>}>
-                <FuelAnalytics fuelData={decryptedFuelData} fuelID={decryptedFuelID}/>
+                <ViewFuelReport fuelData={decryptedFuelData} fuelID={decryptedFuelID}/>
             </Suspense>
         </>
-    );
+    )
 }
 
-export default FuelAnalyticsDashboard;
+export default ViewFuellingReport;

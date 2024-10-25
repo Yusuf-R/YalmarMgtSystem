@@ -15,6 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import React, {useEffect, useState} from "react";
 import {yupResolver} from "@hookform/resolvers/yup";
 import {fuelIncidentSchema} from "@/SchemaValidator/IncidentValidators/fuelIncidentSchema";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 // setting up yupSchema for my fuelIncident form
 
@@ -26,7 +27,19 @@ function FuelIncident({allSite}) {
         cluster: '',
         location: '',
         type: '',
-    });
+    })
+
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+
     const {control, setValue, clearErrors, watch, formState: {errors}} = useFormContext(
         {
             mode: 'onTouched',
@@ -146,7 +159,6 @@ function FuelIncident({allSite}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
         fontSize: '16px',
         fontStyle: 'bold',
         '&:hover': {
@@ -271,13 +283,14 @@ function FuelIncident({allSite}) {
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
                                     <Grid container spacing={4} sx={{mt: 0.5}}>
                                         {/*AllSite State*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="fuelSiteInfo.state"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="fuelSiteInfo.state"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
+
                                                         <TextField
                                                             {...field}
                                                             select
@@ -311,7 +324,6 @@ function FuelIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
 
@@ -327,6 +339,7 @@ function FuelIncident({allSite}) {
                                                                     color: '#fff',
                                                                 },
                                                                 textAlign: 'left',
+                                                                border: '1px solid rgb(163, 163, 117)',
                                                             }}>
                                                             {fuelSiteInfo.state !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -335,18 +348,20 @@ function FuelIncident({allSite}) {
                                                             )}
                                                             {getState()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite cluster*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="fuelSiteInfo.cluster"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="fuelSiteInfo.cluster"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
+
                                                         <TextField
                                                             {...field}
                                                             select
@@ -395,6 +410,7 @@ function FuelIncident({allSite}) {
                                                                     color: '#fff',
                                                                 },
                                                                 textAlign: 'left',
+                                                                border: '1px solid rgb(163, 163, 117)',
                                                             }}>
                                                             {fuelSiteInfo.cluster !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -403,18 +419,20 @@ function FuelIncident({allSite}) {
                                                             )}
                                                             {getCluster()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite ID*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="fuelSiteInfo.siteId"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="fuelSiteInfo.siteId"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
+
                                                         <TextField
                                                             {...field}
                                                             select
@@ -463,6 +481,7 @@ function FuelIncident({allSite}) {
                                                                     color: '#fff',
                                                                 },
                                                                 textAlign: 'left',
+                                                                border: '1px solid rgb(163, 163, 117)',
                                                             }}>
                                                             {fuelSiteInfo.cluster !== '' && (
                                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
@@ -471,79 +490,86 @@ function FuelIncident({allSite}) {
                                                             )}
                                                             {getSiteId()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {/*AllSite Type if available*/}
                                         {fuelSiteInfo.siteId && (
-                                            <Grid item xs={2}>
-                                                <Controller
-                                                    name="siteInfo.type"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="siteInfo.type"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx: txProps
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="AllSite Type"
-                                                            variant="outlined"
-                                                            type="text"
-                                                            value={fuelSiteInfo.type}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                    border: '1px solid rgb(163, 163, 117)',
+
+                                                                }}
+                                                                label="AllSite Type"
+                                                                variant="outlined"
+                                                                type="text"
+                                                                value={fuelSiteInfo.type}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                         {/*Location if available*/}
                                         {fuelSiteInfo.siteId && (
-                                            <Grid item xs={4}>
-                                                <Controller
-                                                    name="siteInfo.location"
-                                                    control={control}
-                                                    defaultValue=""
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: {
-                                                                    ...txProps,
-                                                                    width: '500px',
-                                                                }
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
+                                            <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                <FormControl fullWidth>
+                                                    <Controller
+                                                        name="siteInfo.location"
+                                                        control={control}
+                                                        defaultValue=""
+                                                        render={({field}) => (
+                                                            <TextField
+                                                                {...field}
+                                                                InputProps={{
+                                                                    sx: txProps,
+
+
+                                                                }}
+                                                                InputLabelProps={{
+                                                                    sx: {
+                                                                        color: "#46F0F9",
+                                                                        "&.Mui-focused": {
+                                                                            color: "white"
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            label="Location"
-                                                            variant="outlined"
-                                                            type="text"
-                                                            value={fuelSiteInfo.location}
-                                                            readOnly
-                                                        />
-                                                    )}
-                                                />
+                                                                }}
+                                                                sx={{
+                                                                    color: "#46F0F9",
+                                                                    border: '1px solid rgb(163, 163, 117)',
+                                                                }}
+                                                                label="Location"
+                                                                variant="outlined"
+                                                                type="text"
+                                                                value={fuelSiteInfo.location}
+                                                                readOnly
+                                                            />
+                                                        )}
+                                                    />
+                                                </FormControl>
                                             </Grid>
                                         )}
                                     </Grid>
@@ -564,16 +590,17 @@ function FuelIncident({allSite}) {
                                         Incident-Info
                                     </Typography>
                                 </AccordionSummary>
+                                <br/>
                                 <AccordionDetails sx={{bgcolor: '#274e61', color: 'white',}}>
-                                    <Grid container spacing={4} sx={{mt: 0.5}}>
+                                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
                                         {/*AllSite State*/}
-                                        <Grid item xs={2}>
-                                            <Controller
-                                                name="fuelIncidentInfo.category"
-                                                control={control}
-                                                defaultValue=""
-                                                render={({field}) => (
-                                                    <FormControl fullWidth>
+                                        <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                            <FormControl fullWidth>
+                                                <Controller
+                                                    name="fuelIncidentInfo.category"
+                                                    control={control}
+                                                    defaultValue=""
+                                                    render={({field}) => (
                                                         <TextField
                                                             {...field}
                                                             select
@@ -607,7 +634,6 @@ function FuelIncident({allSite}) {
                                                                         sx: {
                                                                             backgroundColor: '#134357',
                                                                             color: 'white',
-                                                                            maxHeight: 450,
                                                                             overflow: 'auto',
                                                                             fontSize: '40px',
 
@@ -631,20 +657,21 @@ function FuelIncident({allSite}) {
                                                             )}
                                                             {getCat()}
                                                         </TextField>
-                                                    </FormControl>
-                                                )}
-                                            />
+                                                    )}
+                                                />
+                                            </FormControl>
                                         </Grid>
                                         {catSelector === 'Intervention' && (
                                             <>
+                                                <br/>
                                                 {/*action Taken*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.intervention.action"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.intervention.action"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -682,10 +709,7 @@ function FuelIncident({allSite}) {
                                                                                 sx: {
                                                                                     backgroundColor: '#134357',
                                                                                     color: 'white',
-                                                                                    maxHeight: 450,
                                                                                     overflow: 'auto',
-                                                                                    fontSize: '40px',
-                                                                                    // width: '20%'
                                                                                 },
                                                                             },
                                                                         },
@@ -698,23 +722,26 @@ function FuelIncident({allSite}) {
                                                                             color: '#fff',
                                                                         },
                                                                         textAlign: 'left',
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}>
                                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                         Select Option
                                                                     </MenuItem>
                                                                     {getCatI()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                                 {/*oldQty - Estimated*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.intervention.oldQty"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.intervention.oldQty"
+                                                            control={control}
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     label="Old Qty"
@@ -740,20 +767,23 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
                                                                     fullWidth
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                                 {/*QtyAdded*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.intervention.qtyAdded"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.intervention.qtyAdded"
+                                                            control={control}
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     label="Qty Added"
@@ -779,20 +809,22 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
-                                                                    fullWidth
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
                                                 {/*NewQty*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.intervention.newQty"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <br/>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.intervention.newQty"
+                                                            control={control}
+                                                            render={({field}) => (
                                                                 <TextField
                                                                     {...field}
                                                                     label="New Qty"
@@ -819,25 +851,29 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
                                                                     fullWidth
                                                                     value={newQ}
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                             </>
                                         )}
                                         {catSelector === 'Quality' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.quality"
-                                                        control={control}
-                                                        defaultValue=""
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <br/>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.quality"
+                                                            control={control}
+                                                            defaultValue=""
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     select
@@ -856,10 +892,9 @@ function FuelIncident({allSite}) {
                                                                                 </span>
                                                                     ) : ''}
                                                                     InputProps={{
-                                                                        sx: {
-                                                                            ...txProps,
-                                                                            // width: '25%',
-                                                                        }
+                                                                        sx:
+                                                                        txProps,
+
                                                                     }}
                                                                     InputLabelProps={{
                                                                         sx: {
@@ -891,27 +926,31 @@ function FuelIncident({allSite}) {
                                                                             color: '#fff',
                                                                         },
                                                                         textAlign: 'left',
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}>
                                                                     <MenuItem value='' sx={{color: "#4BF807"}}>
                                                                         Select Option
                                                                     </MenuItem>
                                                                     {getCatQ()}
                                                                 </TextField>
-                                                            </FormControl>
-                                                        )}
-                                                    />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                             </>
                                         )}
                                         {catSelector === 'Theft' && (
                                             <>
                                                 {/*oldQty - Estimated*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.theft.oldQty"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <br/>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.theft.oldQty"
+                                                            control={control}
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     label="Old Qty"
@@ -937,20 +976,24 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
                                                                     fullWidth
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                                 {/*QtyAdded*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.theft.qtyStolen"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.theft.qtyStolen"
+                                                            control={control}
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     label="Qty Stolen"
@@ -976,20 +1019,24 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
                                                                     fullWidth
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                                 {/*NewQty*/}
-                                                <Grid item xs={2}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.theft.newQty"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <FormControl fullWidth>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.theft.newQty"
+                                                            control={control}
+                                                            render={({field}) => (
+
                                                                 <TextField
                                                                     {...field}
                                                                     label="New Qty"
@@ -1016,46 +1063,53 @@ function FuelIncident({allSite}) {
                                                                     }}
                                                                     sx={{
                                                                         color: "#46F0F9",
+                                                                        border: '1px solid rgb(163, 163, 117)',
                                                                     }}
                                                                     fullWidth
                                                                     value={newQt}
                                                                 />
-                                                            </FormControl>
-                                                        )}
-                                                    />
+
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                             </>
                                         )}
                                         {catSelector === 'Others' && (
                                             <>
-                                                <Grid item xs={6}>
-                                                    <Controller
-                                                        name="fuelIncidentInfo.subCategory.others"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                InputProps={{
-                                                                    sx: {...txProps, width: '50%'}
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white",
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                label="Others"
-                                                                variant="outlined"
-                                                                fullWidth
-                                                                required
-                                                                error={!!errors.fuelIncidentInfo?.subCategory?.others}
-                                                                helperText={errors.fuelIncidentInfo?.subCategory?.others ? errors.fuelIncidentInfo?.subCategory?.others?.message : ''}
-                                                            />
-                                                        )}
-                                                    />
+                                                <br/>
+                                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                                    <FormControl fullWidth>
+                                                        <Controller
+                                                            name="fuelIncidentInfo.subCategory.others"
+                                                            control={control}
+                                                            render={({field}) => (
+                                                                <TextField
+                                                                    {...field}
+                                                                    InputProps={{
+                                                                        sx: txProps
+                                                                    }}
+                                                                    InputLabelProps={{
+                                                                        sx: {
+                                                                            color: "#46F0F9",
+                                                                            "&.Mui-focused": {
+                                                                                color: "white",
+                                                                            },
+                                                                        }
+                                                                    }}
+                                                                    label="Others"
+                                                                    variant="outlined"
+                                                                    fullWidth
+                                                                    required
+                                                                    error={!!errors.fuelIncidentInfo?.subCategory?.others}
+                                                                    helperText={errors.fuelIncidentInfo?.subCategory?.others ? errors.fuelIncidentInfo?.subCategory?.others?.message : ''}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 </Grid>
+                                                <br/>
                                             </>
                                         )}
                                     </Grid>

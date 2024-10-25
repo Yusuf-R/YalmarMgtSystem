@@ -10,7 +10,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
 import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
@@ -40,19 +40,65 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import {Controller, useForm, useWatch} from "react-hook-form";
 import MenuItem from "@mui/material/MenuItem";
 import {yupResolver} from "@hookform/resolvers/yup";
-import {
-    mainSection,
-    sitesData, siteStates, siteStatus, type,
-} from "@/utils/data";
 import dayjs from "dayjs";
 import DateComponent from "@/components/DateComponent/DateComponent";
 import Divider from "@mui/material/Divider";
 import {editFuelSupplyReportSchema} from "@/SchemaValidator/editFuelSupplyReport";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import IconButton from "@mui/material/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
+import Drawer from "@mui/material/Drawer";
+import CloseIcon from "@mui/icons-material/Close";
+import useFuelReportStore from "@/store/useFuelReportStore";
+import AdminUtilities from "@/utils/AdminUtilities";
 
 function FuellingReport({allFuelReport}) {
     const router = useRouter();
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('/dashboard/admin/fuel/new');
+    const [activeTab, setActiveTab] = useState('/dashboard/admin/reports/fuel/all');
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    // Function to handle the opening and closing of the drawer
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+        setIsDrawerOpen(open);
+    };
+
+    // Media query for responsive design
+    const isXSmall = useMediaQuery('(max-width:599.99px)');
+
+    const {setEncryptedFuelData} = useFuelReportStore.getState();
+
+    // Media Queries for responsiveness
+    const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
+    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
+    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
+    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
+    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
+    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
+    const ultraWide = useMediaQuery('(min-width:1920px)');
+
+    const isSmallScreen = xSmall || small || medium || large;
+
+
+    // useEffect or handling navigation between new and staff
+    useEffect(() => {
+        if (pathname.includes('new')) {
+            setActiveTab('/dashboard/admin/reports/fuel/new');
+        } else if (pathname.includes('all')) {
+            setActiveTab('/dashboard/admin/reports/fuel/all');
+        } else {
+            setActiveTab('/dashboard/admin/reports');
+        }
+    }, [pathname]);
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -252,7 +298,6 @@ function FuellingReport({allFuelReport}) {
         color: "white",
         bgcolor: "#274e61",
         borderRadius: "10px",
-        width: '250px',
         fontSize: '16px',
         fontStyle: 'bold',
         '&:hover': {
@@ -308,14 +353,14 @@ function FuellingReport({allFuelReport}) {
         enableColumnFiltering: true,
         enableColumnHiding: true,
         enableRowSelection: true,
-        enableColumnActions: false,
+        enableColumnActions: true,
         enableRowNumbers: true,
         rowNumberDisplayMode: "original",
         enableRowExpand: true,
         enableMultiRowSelection: true,
         enableGlobalFilter: true,
         enableGrouping: true,
-        enableColumnDragging: false,
+        enableColumnDragging: true,
         enableEditing: true,
         enableClickToCopy: true,
         enableColumnReordering: true,
@@ -471,6 +516,29 @@ function FuellingReport({allFuelReport}) {
                         });
                     });
                 }
+            };
+
+
+            // function to view staff profile
+            const viewFuelReport = async () => {
+                const encryptedFuelID = await AdminUtilities.encryptObjID(objID);
+                const fuelData = allFuelReport.find((site) => site._id === objID);
+                // encrypt the data and store it in the session storage
+                const encryptedFuelData = await AdminUtilities.encryptData(fuelData);
+                // Set the encrypted data in Zustand store
+                setEncryptedFuelData(encryptedFuelData, encryptedFuelID);
+                router.push(`/dashboard/admin/reports/fuel/view`);
+            };
+
+            // function to view staff profile
+            const editFuelReport = async () => {
+                const encryptedFuelID = await AdminUtilities.encryptObjID(objID);
+                const fuelData = allFuelReport.find((site) => site._id === objID);
+                // encrypt the data and store it in the session storage
+                const encryptedFuelData = await AdminUtilities.encryptData(fuelData);
+                // Set the encrypted data in Zustand store
+                setEncryptedFuelData(encryptedFuelData, encryptedFuelID);
+                router.push(`/dashboard/admin/reports/fuel/edit`);
             };
 
             //Analytics on the FuelData
@@ -833,12 +901,12 @@ function FuellingReport({allFuelReport}) {
                                spacing: 0,
                            }}
                     >
-                        <Button onClick={handleModalViewOpen}>
+                        <Button onClick={viewFuelReport}>
                             <Tooltip title="View" arrow>
                                 <LocalLibraryIcon sx={{color: '#E997F9', cursor: 'pointer'}}/>
                             </Tooltip>
                         </Button>
-                        <Button onClick={openDialogEdit}>
+                        <Button onClick={editFuelReport}>
                             <Tooltip title="Edit" arrow>
                                 <EditIcon sx={{color: '#4af7a7', cursor: 'pointer'}}/>
                             </Tooltip>
@@ -1297,398 +1365,7 @@ function FuellingReport({allFuelReport}) {
                         </Paper>
                     </Modal>
                     {/*Dialog for Editing AllSite Data*/}
-                    <Dialog open={dialogEditOpen} onClose={closeDialogEdit} fullWidth maxWidth='lg'>
-                        <Paper sx={{
-                            alignCenter: 'center',
-                            textAlign: 'center',
-                            padding: '20px',
-                            border: '2px solid #0A4D50',
-                            backgroundColor: '#274e61',
-                            color: '#46F0F9',
-                            borderRadius: '10px',
-                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 1.5)',
-                        }}>
-                            <Paper elevation={5} sx={{
-                                alignCenter: 'center',
-                                textAlign: 'center',
-                                padding: '5px',
-                                backgroundColor: '#274e61',
-                                color: '#46F0F9',
-                                borderRadius: '10px',
-                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
-                            }}>
-                                <Typography variant='h6' sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>Edit Fuel
-                                    Report
-                                    Form</Typography>
-                            </Paper>
-                            <br/>
-                            <Box
-                                component="form"
-                                onSubmit={handleSubmit(submitUpdate)}
-                                noValidate
-                            >
-                                {/* Main Body */}
-                                {/*AllSite Info*/}
-                                <Typography variant='h6'
-                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                    SiteID: {siteData.siteId}
-                                </Typography>
-                                <br/>
-                                <Stack direction='row' justifyContent="center"
-                                       alignItems="center"
-                                       spacing={2}>
-                                    <Typography variant='h6'
-                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                        Cluster: {siteData.cluster}
-                                    </Typography>
-                                    <Divider orientation="vertical" flexItem sx={{border: '2px solid #FFF'}}/>
-                                    <Typography variant='h6'
-                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                        Type: {siteData.type}
-                                    </Typography>
-                                    <Divider orientation="vertical" flexItem sx={{border: '2px solid #FFF'}}/>
-                                    <Typography variant='h6'
-                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                        Location: {siteData.location}
-                                    </Typography>
-                                </Stack>
-                                <br/><br/>
-                                {/*Fuel Supply Info*/}
-                                <Grid container spacing={4}>
-                                    <Paper elevation={5} sx={{
-                                        alignContent: 'start',
-                                        padding: '30px',
-                                        backgroundColor: 'inherit',
-                                        color: '#46F0F9',
-                                        borderRadius: '10px',
-                                        width: '100%',
-                                        height: 'auto',
-                                        margin: '25px'
-                                    }}>
-                                        {/* First Row (1 fields) prefix */}
-                                        <Grid container spacing={4}>
-                                            <Grid item xs={12}>
-                                                <Typography variant='h6' textAlign='left'
-                                                            sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                                    Fuel Supply Info
-                                                </Typography>
-                                            </Grid>
-                                            {/*Supply Date*/}
-                                            <Grid item xs={12}>
-                                                <DateComponent
-                                                    name="dateSupplied"
-                                                    control={control}
-                                                    errors={errors}
-                                                    labelText="Supply Date"
-                                                    setDate={setDateSupplied}
-                                                    defaultValue={siteData.dateSupplied} // Pass default value
-                                                />
-                                            </Grid>
-                                            {/*Initial Quantity*/}
-                                            <Grid item xs={3}>
-                                                <Controller
-                                                    name="qtyInitial"
-                                                    control={control}
-                                                    defaultValue={siteData.qtyInitial}
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white",
-                                                                    },
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-
-                                                            }}
-                                                            label="Initial Quantity"
-                                                            type="number"
-                                                            error={!!errors.qtyInitial}
-                                                            helperText={errors.qtyInitial ? errors.qtyInitial.message : ''}
-                                                            fullWidth
-                                                            onChange={(e) => {
-                                                                const value = parseFloat(e.target.value) || 0;
-                                                                field.onChange(value);
-                                                            }}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-                                            {/*Supplied Quantity*/}
-                                            <Grid item xs={3}>
-                                                <Controller
-                                                    name="qtySupplied"
-                                                    control={control}
-                                                    defaultValue={siteData.qtySupplied}
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="Supplied Quantity"
-                                                            type="number"
-                                                            error={!!errors.qtySupplied}
-                                                            helperText={errors.qtySupplied ? errors.qtySupplied.message : ''}
-                                                            fullWidth
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white",
-                                                                    },
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            onChange={(e) => {
-                                                                const value = parseFloat(e.target.value) || 0;
-                                                                field.onChange(value);
-                                                            }}
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-                                            {/*New Available Quantity*/}
-                                            <Grid item xs={3}>
-                                                <Controller
-                                                    name="qtyNew"
-                                                    control={control}
-                                                    defaultValue={siteData.qtyNew}
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="New Available Quantity"
-                                                            type="number"
-                                                            InputProps={{
-                                                                sx: {...txProps, color: 'lime'},
-                                                                readOnly: true,
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white",
-                                                                    },
-                                                                }
-                                                            }}
-                                                            sx={{
-                                                                color: "#46F0F9",
-                                                            }}
-                                                            fullWidth
-                                                        />
-                                                    )}
-                                                />
-                                            </Grid>
-                                            {/*CPD*/}
-                                            {/*Current AllSite CPD*/}
-                                            <Grid item xs={3}>
-                                                <TextField
-                                                    label="Current AllSite CPD"
-                                                    value={siteData.cpd}
-                                                    InputProps={{
-                                                        readOnly: true,
-                                                        sx: txProps
-                                                    }}
-                                                    InputLabelProps={{
-                                                        sx: {
-                                                            color: "#46F0F9",
-                                                            "&.Mui-focused": {
-                                                                color: "white",
-                                                            },
-                                                        }
-                                                    }}
-                                                    sx={{
-                                                        color: "#46F0F9",
-                                                    }}
-                                                    fullWidth
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                <Divider orientation="horizontal" flexItem
-                                                         sx={{borderColor: '#FFF',}}>
-                                                    <Typography variant='h6' textAlign='center'
-                                                                sx={{fontFamily: 'Poppins', fontWeight: 'bold',}}>
-                                                        Set New CPD
-                                                    </Typography>
-                                                </Divider>
-
-                                            </Grid>
-                                            <Grid item xs={3} sx={{display: 'flex', flexDirection: 'column'}}>
-                                                {/* CPD selection */}
-                                                <Controller
-                                                    name="cpd"
-                                                    control={control}
-                                                    render={({field}) => (
-                                                        <TextField
-                                                            {...field}
-                                                            label="CPD"
-                                                            select
-                                                            value={field.value || ''}
-                                                            onChange={handleCPDChange}
-                                                            error={!!errors.cpd}
-                                                            helperText={errors.cpd ? errors.cpd.message : ''}
-                                                            InputProps={{
-                                                                sx: txProps
-                                                            }}
-                                                            InputLabelProps={{
-                                                                sx: {
-                                                                    color: "#46F0F9",
-                                                                    "&.Mui-focused": {
-                                                                        color: "white"
-                                                                    },
-                                                                }
-                                                            }}
-                                                            SelectProps={{
-                                                                MenuProps: {
-                                                                    PaperProps: {
-                                                                        sx: {
-                                                                            backgroundColor: '#134357',
-                                                                            color: 'white',
-                                                                        },
-                                                                    },
-                                                                },
-                                                            }}
-                                                            sx={{
-                                                                '& .MuiSelect-icon': {
-                                                                    color: '#fff',
-                                                                },
-                                                                '& .MuiSelect-icon:hover': {
-                                                                    color: '#fff',
-                                                                },
-                                                                textAlign: 'left',
-                                                                alignSelf: 'left',
-                                                            }}>
-                                                            <MenuItem value={50}>50</MenuItem>
-                                                            <MenuItem value={60}>60</MenuItem>
-                                                            <MenuItem value={100}>100</MenuItem>
-                                                            <MenuItem value={120}>120</MenuItem>
-                                                            <MenuItem value="Others">Others</MenuItem>
-                                                        </TextField>
-                                                    )}
-                                                />
-                                            </Grid>
-                                            {/*Custom CPD*/}
-                                            {cpd === 'Others' && (
-                                                <Grid item xs={3}>
-                                                    {/* Custom CPD input */}
-                                                    <Controller
-                                                        name="customCPD"
-                                                        control={control}
-                                                        render={({field}) => (
-                                                            <TextField
-                                                                {...field}
-                                                                label="Enter CPD"
-                                                                type="number"
-                                                                value={field.value || ''}
-                                                                error={!!errors.customCPD}
-                                                                helperText={errors.customCPD ? errors.customCPD.message : ''}
-                                                                InputProps={{
-                                                                    sx: txProps
-                                                                }}
-                                                                InputLabelProps={{
-                                                                    sx: {
-                                                                        color: "#46F0F9",
-                                                                        "&.Mui-focused": {
-                                                                            color: "white",
-                                                                        },
-                                                                    }
-                                                                }}
-                                                                sx={{
-                                                                    color: "#46F0F9",
-                                                                }}
-                                                                fullWidth
-                                                            />
-                                                        )}
-                                                    />
-                                                </Grid>
-                                            )}
-                                            {/*supply Duration*/}
-                                            {cpd && (
-                                                <>
-                                                    <Grid item xs={3}>
-                                                        <Controller
-                                                            name="duration"
-                                                            control={control}
-                                                            defaultValue={siteData.duration}
-                                                            render={({field}) => (
-                                                                <TextField
-                                                                    {...field}
-                                                                    label="Duration"
-                                                                    type="number"
-                                                                    InputProps={{
-                                                                        sx: txProps,
-                                                                        readOnly: true,
-                                                                    }}
-                                                                    InputLabelProps={{
-                                                                        sx: {
-                                                                            color: "#46F0F9",
-                                                                            "&.Mui-focused": {
-                                                                                color: "white",
-                                                                            },
-                                                                        }
-                                                                    }}
-                                                                    sx={{
-                                                                        color: "#46F0F9",
-                                                                    }}
-                                                                    fullWidth
-                                                                />
-                                                            )}
-                                                        />
-                                                    </Grid>
-                                                    {/*nextDueDate*/}
-                                                    <Grid item xs={3}>
-                                                        <Controller
-                                                            name="nextDueDate"
-                                                            control={control}
-                                                            defaultValue=""
-                                                            render={({field}) => (
-                                                                <TextField
-                                                                    {...field}
-                                                                    label="Next Due Date"
-                                                                    type="text"
-                                                                    InputProps={{
-                                                                        sx: txProps,
-                                                                        readOnly: true,
-                                                                    }}
-                                                                    InputLabelProps={{
-                                                                        sx: {
-                                                                            color: "#46F0F9",
-                                                                            "&.Mui-focused": {
-                                                                                color: "white",
-                                                                            },
-                                                                        }
-                                                                    }}
-                                                                    sx={{
-                                                                        color: "#46F0F9",
-                                                                    }}
-                                                                    fullWidth
-                                                                />
-                                                            )}
-                                                        />
-                                                    </Grid>
-                                                </>
-                                            )}
-                                        </Grid>
-                                    </Paper>
-                                </Grid>
-                                <br/><br/>
-                                {/*Submitting button */}
-                                <DialogActions>
-                                    <Button onClick={closeDialogEdit} color='error' variant='contained'>Cancel</Button>
-                                    <Button type='submit' color='success' variant='contained'>Submit</Button>
-                                </DialogActions>
-                            </Box>
-                        </Paper>
-                    </Dialog>
+                    
                     {/*Delete Dialog*/}
                     <Dialog open={dialogDelete} onClose={CloseDeleteDialogue}
                             PaperProps={{
@@ -1816,19 +1493,12 @@ function FuellingReport({allFuelReport}) {
             return (
                 <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
                     <Button
-                        color="secondary"
-                        onClick={createNew}
-                        variant="contained"
-                    >
-                        Create New Fuel Report +
-                    </Button>
-                    <Button
                         color="error"
                         disabled={!table.getIsSomeRowsSelected()}
                         onClick={handleOpen}
                         variant="contained"
                     >
-                        Delete Selected Report
+                        Delete
                     </Button>
                     <Dialog
                         open={open}
@@ -1857,7 +1527,7 @@ function FuellingReport({allFuelReport}) {
                                                 fontWeight: 'bold',
                                                 fontSize: '1.1em',
                                             }}>
-                                    You are about to permanently delete the selected AllSite, Please enter your
+                                    You are about to permanently delete the selected fuel report, Please enter your
                                     email address to further confirm your actions.
                                 </Typography>
                             </DialogContentText>
@@ -1914,118 +1584,206 @@ function FuellingReport({allFuelReport}) {
         },
         renderToolbarInternalActions: ({table}) => {
             return (
-                <Stack direction='row' sx={{
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
-                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='large'/>
-                    <MRT_ToggleFullScreenButton table={table} style={{color: 'white'}} size='large'/>
-                </Stack>
-            );
+                <>
+                    {/* For larger screens, show the action buttons inline */}
+                    {large || xLarge || xxLarge || wide || xWide || ultraWide ? (
+                        <Stack direction="row" sx={{justifyContent: 'space-evenly', alignItems: 'center'}}>
+                            <MRT_ToggleGlobalFilterButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ShowHideColumnsButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleFiltersButton table={table} style={{color: 'white'}} size='small'/>
+                            <MRT_ToggleDensePaddingButton table={table} style={{color: 'white'}} size='small'/>
+                        </Stack>
+                    ) : (
+                        <>
+                            {/* For smaller screens, show a settings icon that opens a drawer */}
+                            <IconButton onClick={toggleDrawer(true)}>
+                                <Tooltip title="Actions" arrow>
+                                    <SettingsIcon sx={{color: 'white'}}/>
+                                </Tooltip>
+                            </IconButton>
+                            {/* Drawer for smaller screens */}
+                            <Drawer
+                                anchor="right"
+                                open={isDrawerOpen}
+                                onClose={toggleDrawer(false)}
+                            >
+                                <Stack sx={{
+                                    borderRadius: '10px',
+                                    background: "#000000",
+                                    height: '100vh',
+                                }}>
+                                    <IconButton onClick={toggleDrawer(false)} sx={{alignSelf: 'flex-end'}}>
+                                        <CloseIcon/>
+                                    </IconButton>
+                                    <MRT_ToggleGlobalFilterButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ShowHideColumnsButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleFiltersButton table={table} style={{color: 'black'}} size='medium'/>
+                                    <MRT_ToggleDensePaddingButton table={table} style={{color: 'black'}} size='medium'/>
+                                </Stack>
+                            </Drawer>
+                        </>
+                    )}
+                </>
+            )
         },
         mrtTheme: {
-            baseBackgroundColor: '#304f61',
-            // baseBackgroundColor: '#00264d',
-            // selectedRowBackgroundColor: '#051e3b',
+            baseBackgroundColor: '#000428',
         },
         muiTableHeadCellProps: {
             sx: {
                 color: '#21c6fc',
-                fontSize: '1.32em',
-                fontWeight: 'bold',
-                fontFamily: 'sans-serif',
-            },
+                fontSize:
+                    '1.32em',
+                fontWeight:
+                    'bold',
+                fontFamily:
+                    'sans-serif',
+            }
+            ,
             align: 'center',
         },
         muiTableBodyCellProps: {
             sx: {
                 color: 'white',
-                fontSize: '1.2em',
-                '&:hover': {
-                    color: '#fcc2fb',
-                },
+                fontSize:
+                    '1.2em',
+                '&:hover':
+                    {
+                        color: '#fcc2fb',
+                    }
+                ,
                 padding: '2px 4px',
-                alignItems: 'center',
-            },
+                alignItems:
+                    'center',
+            }
+            ,
             align: 'center',
 
         },
         muiTableBodyRowProps: {
             sx: {
                 height: '2px',
-            },
+            }
+            ,
         },
         muiSearchTextFieldProps: {
-            InputLabelProps: {shrink: true},
+            InputLabelProps: {
+                shrink: true
+            }
+            ,
             label: 'Search',
-            placeholder: 'AllSite Details',
-            variant: 'outlined',
+            placeholder:
+                'AllSite Details',
+            variant:
+                'outlined',
 
         },
         muiFilterTextFieldProps: {
             color: 'error',
-            borderColor: 'error',
+            borderColor:
+                'error',
         },
         muiPaginationProps: {
             shape: 'rounded',
-            color: 'warning',
-            variant: 'text',
-            size: 'small',
-            rowsPerPageOptions: [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
+            color:
+                'warning',
+            variant:
+                'text',
+            size:
+                'small',
+            rowsPerPageOptions:
+                [5, 10, 25, 50, 100, 150, 200, 250, 300, 500, 1000],
             // set the table to display the first 100 data by default
-            rowsPerPage: 100,
+            rowsPerPage:
+                100,
         },
         paginationDisplayMode: 'pages',
-        positionPagination: "both",
+        positionPagination: "bottom",
         initialState: {
             pagination: {
                 pageIndex: 0,
-                pageSize: 100
-            },
+                pageSize:
+                    100
+            }
+            ,
             density: 'compact',
         },
-
     });
     return (
         <>
-            <Box sx={mainSection}>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <Typography variant='h5'>All Territorial Fuelling Report</Typography>
-                </Paper>
-                <br/><br/>
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '10px',
-                    backgroundColor: '#274e61',
-                    color: '#46F0F9',
-                    borderRadius: '10px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <ThemeProvider theme={tableTheme}>
-                        <MaterialReactTable table={table}/>
-                    </ThemeProvider>
-                </Paper>
-                <br/><br/>
-                {/*</Card>*/}
-                <Stack direction='row' spacing={5}>
-                    <Link href="/dashboard/admin/reports/fuel">
-                        <Button variant="contained" color='success' title='Back'> Back </Button>
-                    </Link>
-                </Stack>
+            <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
+                <Tabs
+                    value={activeTab}
+                    onChange={(e, newValue) => setActiveTab(newValue)}
+                    variant={isXSmall ? "scrollable" : "standard"}
+                    scrollButtons="auto"
+                    sx={{
+                        '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
+                        marginBottom: 3
+                    }}
+                >
+                    <Tab
+                        label="Report-Central"
+                        component={Link}
+                        href="/dashboard/admin/reports"
+                        value="/dashboard/admin/reports"
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
+                            },
+                        }}
+                    />
+                    <Tab
+                        label="All"
+                        component={Link}
+                        href="/dashboard/admin/reports/fuel/all"
+                        value="/dashboard/admin/reports/fuel/all"
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
+                            },
+                        }}
+                    />
+                    <Tab
+                        label="New +"
+                        component={Link}
+                        href="/dashboard/admin/reports/fuel/new"
+                        value="/dashboard/admin/reports/fuel/new"
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
+                            },
+                        }}
+                    />
+                </Tabs>
+                <Typography variant="h6"
+                            sx={{
+                                fontFamily: 'Poppins',
+                                fontWeight: 'bold',
+                                borderRadius: 2,
+                                padding: '10px 15px',
+                                background: 'linear-gradient(to right, #004e92, #000428)',
+                                color: '#FFF',
+                                width: 'auto',
+                                textAlign: 'center',
+                                fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                    Fuel Report
+                </Typography>
+                <br/>
+                {/*Table Section to present an abstracted form of the table*/}
+                <ThemeProvider theme={tableTheme}>
+                    <MaterialReactTable table={table}/>
+                </ThemeProvider>
             </Box>
         </>
     );
