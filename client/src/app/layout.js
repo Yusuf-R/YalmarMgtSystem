@@ -1,16 +1,11 @@
 import ReactQueryProvider from "@/components/ReactQuery/ReactQueryProvider";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Poppins} from 'next/font/google'
+import "@/styles/fonts.css"; // Import the local fonts
 import "./globals.css";
 import {AppRouterCacheProvider} from '@mui/material-nextjs/v13-appRouter';
 import theme from "@/utils/theme";
 import {ThemeProvider} from "@mui/material/styles";
-
-const poppins = Poppins({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700', '800', '900']
-});
 
 export const metadata = {
     title: "Yalmar Management System",
@@ -20,7 +15,7 @@ export const metadata = {
 export default function RootLayout({children}) {
     return (
         <html lang="en">
-        <body className={poppins.className}>
+        <body style={{fontFamily: 'Poppins, sans-serif'}}>
         <ReactQueryProvider>
             <AppRouterCacheProvider>
                 <ThemeProvider theme={theme}>

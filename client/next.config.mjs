@@ -15,22 +15,21 @@ const nextConfig = {
             },
         ],
     },
+    // Update headers for local font files
     async headers() {
         return [
             {
-                source: '/fonts/(.*)',
+                source: '/fonts/:path*',
                 headers: [
                     {
-                        key: 'Access-Control-Allow-Origin',
-                        value: '*',
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable',
                     },
                 ],
             },
-        ]
+        ];
     },
     eslint: {
-        // Warning: This allows production builds to successfully complete even if
-        // your project has ESLint errors.
         ignoreDuringBuilds: true,
     },
     async redirects() {
@@ -38,7 +37,7 @@ const nextConfig = {
             {
                 source: '/',
                 destination: '/home',
-                permanent: true, // Set to true if you want it to be a permanent redirect (HTTP 308)
+                permanent: true,
             },
         ];
     },
