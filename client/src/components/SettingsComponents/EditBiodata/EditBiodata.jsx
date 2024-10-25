@@ -30,7 +30,7 @@ import {Label} from "@mui/icons-material";
 import Stack from "@mui/material/Stack";
 import ListItemText from "@mui/material/ListItemText";
 import AdminUtils from "@/utils/AdminUtilities";
-import {editStaffSchema} from "@/SchemaValidator/editStaffSchema";
+import {editStaffSchema} from "@/SchemaValidator/StaffValidator/StaffSchema"
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
