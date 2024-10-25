@@ -172,4 +172,4 @@ yarn.lock
 
 /client/src/utils/playground.js
 /server/src/utils /pg.js
-server/src/utils/pg.js!/client/src/components/Demo/
+/server/src/utils/pg.js
