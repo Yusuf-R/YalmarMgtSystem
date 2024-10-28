@@ -166,7 +166,12 @@ class SecurityConfig {
 
     get corsOptions() {
         return {
-            origin: ['http://localhost:3000', 'https://98a6-102-91-93-119.ngrok-free.app', 'http://localhost:3001'],
+            origin: [
+                'http://localhost:3000',
+                'https://yalmar-mgt-system.vercel.app', // Main Vercel domain
+                'https://yalmar-mgt-system-6fsrv3l6n-yusuf-rs-projects.vercel.app', // Vercel deployment alias
+                'https://yalmar-mgt-system-be.vercel.app', // Backend on Vercel
+            ],
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true,
             allowedHeaders: [
