@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -26,10 +25,12 @@ import {keyframes} from "@mui/system";
 import {FcRedo} from "react-icons/fc";
 import Stack from "@mui/material/Stack";
 
+import LazyComponent from "@/components/LazyComponent/LazyComponent";
+
 
 function Login() {
     const [rememberMe, setRememberMe] = useState(false);
-    const [isSubmit, setIsSubmit] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const theme = useTheme();
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
@@ -111,8 +112,7 @@ function Login() {
         mutationFn: AdminUtils.StaffLogin,
     });
     const OnLogin = async (loginData) => {
-        console.log(loginData);
-        setIsSubmit(true);
+        setLoading(true);
         // encrypt the login data
         const encryptedData = await AdminUtils.encryptLoginData(loginData);
         console.log(encryptedData);
@@ -131,10 +131,10 @@ function Login() {
                 setTimeout(() => {
                     router.push("/dashboard");
                 }, 2000);
-                setIsSubmit(false);
+                setLoading(false);
             },
             onError: (error) => {
-                setIsSubmit(false);
+                setLoading(false);
                 console.error(error);
                 toast.error("Unauthorized credentials", toastConfig);
             },
@@ -378,13 +378,13 @@ function Login() {
                                     fontSize: xSmall ? '14px' : small ? '16px' : medium ? '18px' : '20px',
                                     color: 'white',
                                 }}
-                                disabled={isSubmit}
                             >
-                                {isSubmit ? "Logging in..." : "Login"}
+                                Login
                             </Button>
                         </Box>
                     </Box>
                 </Box>
+                {loading && <LazyComponent Command={'Logging In'}/>}
             </Box>
         </>
     );
