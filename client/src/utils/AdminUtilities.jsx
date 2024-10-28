@@ -509,14 +509,45 @@ class AdminUtils {
     static async UpdateStaffLeaveRequest(obj) {
         try {
             return await axiosPrivate({
-                method: "PUT",
-                url: '/leave-request/update'
+                method: "PATCH",
+                url: '/leave-request/update',
+                data: obj,
             });
-
         } catch (error) {
             throw new Error(error);
         }
     }
+
+
+    // settings Leave Request
+
+    // get all my leave request
+    static async GetLeaveRequest() {
+        try {
+            const response = await axiosPrivate({
+                method: "GET",
+                url: '/leave-request/staff',
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    // delete a leave request draft
+    static async DeleteLeaveDraft(obj) {
+        try {
+            const response = await axiosPrivate({
+                method: "DELETE",
+                url: '/leave-request/delete',
+                data: obj,
+            });
+            return response.data;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
 
     /// site API----------Sites-----------  ///
 
@@ -525,45 +556,6 @@ class AdminUtils {
             const response = await axiosPrivate({
                 method: "GET",
                 url: '/site/all',
-            });
-            return response.data;
-
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
-
-    static async BGwariSite() {
-        try {
-            const response = await axiosPrivate({
-                method: "GET",
-                url: '/site/birnin-gwari',
-            });
-            return response.data;
-
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
-
-    static async KdCentralSite() {
-        try {
-            const response = await axiosPrivate({
-                method: "GET",
-                url: '/site/kaduna-central',
-            });
-            return response.data;
-
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
-
-    static async ZariaSite() {
-        try {
-            const response = await axiosPrivate({
-                method: "GET",
-                url: '/site/zaria',
             });
             return response.data;
 

@@ -72,7 +72,8 @@ function FuellingReport({allFuelReport}) {
     // Media query for responsive design
     const isXSmall = useMediaQuery('(max-width:599.99px)');
 
-    const {setEncryptedFuelData} = useFuelReportStore.getState();
+    // Inside your component:
+    const setEncryptedFuelData = useFuelReportStore(state => state.setEncryptedFuelData);
 
     // Media Queries for responsiveness
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
@@ -1365,7 +1366,7 @@ function FuellingReport({allFuelReport}) {
                         </Paper>
                     </Modal>
                     {/*Dialog for Editing AllSite Data*/}
-                    
+
                     {/*Delete Dialog*/}
                     <Dialog open={dialogDelete} onClose={CloseDeleteDialogue}
                             PaperProps={{

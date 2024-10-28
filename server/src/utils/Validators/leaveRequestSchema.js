@@ -46,9 +46,9 @@ export const leaveRequestSchemaValidator = Joi.object().keys({
         "Wedding",
         "Confidential",
     ),
-    // status: Joi.string().required().valid('Requested', 'Pending', 'Approved', 'Declined'),
     duration: Joi.number().required(),
     currentBalance: Joi.number().required(),
     newBalance: Joi.number().required(),
-    saveAsDraft: Joi.boolean().required()
+    saveAsDraft: Joi.boolean().required(),
+    status: Joi.string().required().valid('Requested', 'Draft'),
 });

@@ -17,7 +17,7 @@ function ViewProfile() {
     // Zustand store values
     const encryptedStaffData = useStaffStore((state) => state.encryptedStaffData);
     const encryptedStaffID = useStaffStore((state) => state.encryptedStaffID);
-    const clearStaffData = useStaffStore((state) => state.clearStaffData);
+    
 
     useEffect(() => {
         const decryptData = async () => {

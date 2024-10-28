@@ -1,3 +1,4 @@
+'use client';
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -39,6 +40,8 @@ import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import AdminUtilities from "@/utils/AdminUtilities";
+import useStaffStore from "@/store/useStaffStore";
 
 function EditStaff({id, staffData}) {
     const theme = createTheme({
@@ -93,6 +96,7 @@ function EditStaff({id, staffData}) {
     const router = useRouter();
     const pathname = usePathname();
     const [activeTab, setActiveTab] = useState('/dashboard/admin/staff/edit');
+    const {setEncryptedStaffData} = useStaffStore.getState();
 
 
     const [gender, setGender] = useState('');
@@ -451,6 +455,15 @@ function EditStaff({id, staffData}) {
         mutationFn: AdminUtils.UpdateStaff,
     });
 
+    const viewStaff = async () => {
+        const encryptedStaffID = await AdminUtilities.encryptObjID(id);
+        // encrypt the data and store it in the session storage
+        const encryptedStaffData = await AdminUtilities.encryptData(staffData);
+        // Set the encrypted data in Zustand store
+        setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
+        router.push(`/dashboard/admin/staff/view`);
+    };
+
     const UpdateProfile = async (data) => {
         try {
             await editStaffSchema.validate(data, {abortEarly: false});
@@ -556,6 +569,7 @@ function EditStaff({id, staffData}) {
                     <Tab
                         label="View"
                         component={Link}
+                        onClick={viewStaff}
                         href="/dashboard/admin/staff/view"
                         value="/dashboard/admin/staff/view"
                         sx={{

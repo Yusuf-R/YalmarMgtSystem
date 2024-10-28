@@ -54,4 +54,5 @@ export const actionLeaveRequestSchemaValidator = joi.object().keys({
     duration: Joi.number().required(),
     currentBalance: Joi.number().required(),
     newBalance: Joi.number().required(),
+    saveAsDraft: Joi.boolean().required().valid(false),
 });

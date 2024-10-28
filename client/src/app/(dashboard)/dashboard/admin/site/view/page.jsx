@@ -15,9 +15,8 @@ function ViewSiteProfile() {
     const router = useRouter();
 
     // Zustand store values
-    const encryptedSiteData = useSiteStore((state) => state.encryptedSiteData);
-    const encryptedSiteID = useSiteStore((state) => state.encryptedSiteID);
-    const clearSiteData = useSiteStore((state) => state.clearSiteData);
+    const encryptedSiteData = useSiteStore(state => state.encryptedSiteData);
+    const encryptedSiteID = useSiteStore(state => state.encryptedSiteID);
 
     // Decrypt the site data stored in Zustand
     useEffect(() => {

@@ -192,7 +192,8 @@ function EditFuelReport({allSite, fuelData, fuelID}) {
     const isLargeScreen = useMediaQuery('(min-width:900px)');
     const isAbove425px = useMediaQuery('(min-width:425px)');
 
-    const {setEncryptedFuelData} = useFuelReportStore.getState();
+    // Inside your component:
+    const setEncryptedFuelData = useFuelReportStore(state => state.setEncryptedFuelData);
     // useEffect or handling navigation between new and staff
     useEffect(() => {
         if (pathname.includes('view')) {

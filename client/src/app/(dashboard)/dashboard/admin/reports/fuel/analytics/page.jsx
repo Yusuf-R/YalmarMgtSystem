@@ -18,8 +18,9 @@ function FuelAnalyticsDashboard() {
     const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
 
-    // Zustand store values (destructured in a single call)
-    const {encryptedFuelData, encryptedFuelID} = useFuelReportStore();
+    // Get the stored data
+    const encryptedFuelData = useFuelReportStore(state => state.encryptedFuelData);
+    const encryptedFuelID = useFuelReportStore(state => state.encryptedFuelID);
 
     // Decrypt the site data stored in Zustand
     useEffect(() => {

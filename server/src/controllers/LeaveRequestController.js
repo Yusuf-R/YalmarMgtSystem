@@ -4,7 +4,7 @@ import Staff from "../models/Staff";
 import LeaveRequest from "../models/LeaveRequest"
 import mongoose from "mongoose";
 import {leaveRequestSchemaValidator} from "../utils/Validators/leaveRequestSchema";
-import {newStaffSchemaValidator} from "../utils/Validators/newStaffSchema";
+import {editLeaveRequestSchemaValidator} from "../utils/Validators/editLeaveRequestSchema";
 import dayjs from "dayjs";
 import {actionLeaveRequestSchemaValidator} from "../utils/Validators/actionLeaveRequest";
 
@@ -64,11 +64,11 @@ class LeaveRequestController {
             if (!(await dbClient.isAlive())) {
                 return res.status(500).json({error: 'Database connection failed'});
             }
-            const leaveObjData = await LeaveRequest.find({staffId: new ObjectId(id)}).select('-__v');
-            if (!leaveObjData) {
+            const leaveReqData = await LeaveRequest.find({staffId: new ObjectId(id)}).select('-__v');
+            if (!leaveReqData) {
                 return res.status(404).json({error: 'Leave Request Data not found'});
             }
-            return res.status(200).json({message: 'Leave Request data retrieved successfully', leaveObjData});
+            return res.status(200).json({message: 'Leave Request data retrieved successfully', leaveReqData});
 
         } catch (error) {
             if (error.message === 'jwt expired') {
@@ -104,16 +104,6 @@ class LeaveRequestController {
                 });
                 return res.status(400).json({error: formattedErrors});
             }
-            // construct the full name of the staff firstName +  Optionally(middleName) + lastName
-            // value.fullName = `${value.firstName} ${value.middleName ? value.middleName + ' ' : ''}${value.lastName}`;
-            // remove [firesName, middleName, lastName from the req.body
-            // const filterOut = ['firstName', 'middleName', 'lastName'];
-            // for (const key of filterOut) {
-            //     if (Object.prototype.hasOwnProperty.call(value, key)) {
-            //         delete value[key];
-            //     }
-            // }
-            // ensure startDate and endDate difference is equal to duration
             const start = dayjs(value.startDate)
             const end = dayjs(value.endDate);
             // calculate the duration of the leave
@@ -237,6 +227,135 @@ class LeaveRequestController {
             // unexpected error
             return res.status(500).json({error: error.message});
         }
+    }
+
+    static async editLeaveRequest(req, res) {
+        try {
+            // perform full current check
+            const verifiedJwt = await AuthController.currPreCheck(req);
+            if (verifiedJwt instanceof Error) {
+                return res.status(400).json({error: verifiedJwt.message});
+            }
+            const {id} = verifiedJwt;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            // pass schema to the leaveRequestSchemaValidator
+            const {error, value} = editLeaveRequestSchemaValidator.validate(req.body, {abortEarly: false});
+            if (error) {
+                // Format Joi error messages
+                const formattedErrors = error.details.map(detail => {
+                    // Remove slashes and display more readable messages
+                    return detail.message.replace(/["\\]/g, '');
+                });
+                return res.status(400).json({error: formattedErrors});
+            }
+            const start = dayjs(value.startDate)
+            const end = dayjs(value.endDate);
+            // calculate the duration of the leave
+            const leaveDuration = end.diff(start, 'day', true) + 1;
+            if (leaveDuration !== value.duration) {
+                return res.status(400).json({error: 'Data Integrity Violation: Duration'});
+            }
+            if (value.currentBalance < 0) {
+                return res.status(400).json({error: 'Data Integrity Violation: Leave Balance'});
+            }
+            //  correctly format the startDate, endDate to DD-MMM-YYYY
+            value.startDate = dayjs(value.startDate).format('DD-MMM-YYYY');
+            value.endDate = dayjs(value.endDate).format('DD-MMM-YYYY');
+            // ensure the staffId is valid
+            const staffObj = await Staff.findById(new ObjectId(value.staffId));
+            if (!staffObj) {
+                return res.status(404).json({error: 'AllStaff not found'});
+            }
+            if (staffObj.email !== value.email) {
+                return res.status(400).json({error: 'Data Integrity Violation: Email'});
+            }
+            // ensure startDate is not less than current date
+            if (dayjs(value.startDate).isBefore(dayjs(), 'day')) {
+                return res.status(400).json({error: 'Start Date cannot be less than current date'});
+            }
+            // ensure duration is a positive integer
+            if (value.duration < 0) {
+                return res.status(400).json({error: 'InCorrect Duration'});
+            }
+            // ensure the update is a valid one
+            const leaveReqObj = await LeaveRequest.findById(new ObjectId(value._id));
+            if (!leaveReqObj) {
+                return res.status(404).json({error: 'Operation Error: Leave Request not found'});
+            }
+            // ensure the exiting staffId is valid against the incoming update
+            if (leaveReqObj.staffId.toString() !== value.staffId) {
+                return res.status(400).json({error: 'Data Integrity Violation: StaffId'});
+            }
+            // ensure the status is ONLY draft, every other status is rejected
+            if (leaveReqObj.status !== 'Draft') {
+                return res.status(400).json({error: 'Un-Authorize Action: Leave Request already actioned'});
+            }
+            // update the leaveRequest with the new data
+            const updatedLeaveReqObj = await LeaveRequest.findByIdAndUpdate(new ObjectId(value._id), value, {
+                new: true,
+                runValidators: true,
+                context: 'query',
+            });
+            if (!updatedLeaveReqObj) {
+                return res.status(404).json({error: 'Operation Error: Leave Request not updated'});
+            }
+            return res.status(201).json({message: 'Leave Request updated successfully', updatedLeaveReqObj});
+            // send an email notifying the staff of the successful update -- implemented in the future version
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            // unexpected error
+            return res.status(500).json({error: error.message});
+        }
+    }
+
+    static async deleteLeaveRequest(req, res) {
+        try {
+            // perform full current check
+            const verifiedJwt = await AuthController.currPreCheck(req);
+            if (verifiedJwt instanceof Error) {
+                return res.status(400).json({error: verifiedJwt.message});
+            }
+            const {id} = verifiedJwt;
+            if (!id) {
+                return res.status(400).json({error: 'Invalid token'});
+            }
+            // check DB connection
+            if (!(await dbClient.isAlive())) {
+                return res.status(500).json({error: 'Database connection failed'});
+            }
+            // validate the _id
+            const leaveReqObj = await LeaveRequest.findById(new ObjectId(req.body._id));
+            if (!leaveReqObj) {
+                return res.status(404).json({error: 'Leave Request not found'});
+            }
+            // validate the confirmatory email passed
+            if (leaveReqObj.email !== req.body.email) {
+                return res.status(400).json({error: 'Operation Integrity Checked Failed'});
+            }
+            // ensure the status is Draft
+            if (leaveReqObj.status !== 'Draft') {
+                return res.status(400).json({error: 'Un-Authorize Action: Leave Request already actioned'});
+            }
+            // delete the leaveReqObj
+            await LeaveRequest.findByIdAndDelete(new ObjectId(req.body._id));
+            return res.status(201).json({message: 'Leave Request deleted successfully'});
+            // send an email notifying the staff of the successful delete -- implemented in the future version
+        } catch (error) {
+            if (error.message === 'jwt expired') {
+                return res.status(401).json({error: error.message});
+            }
+            // unexpected error
+            return res.status(500).json({error: error.message});
+        }
+
     }
 }
 

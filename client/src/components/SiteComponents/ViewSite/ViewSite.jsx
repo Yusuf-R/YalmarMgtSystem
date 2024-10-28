@@ -73,7 +73,7 @@ function ViewSite({id, siteData}) {
     const isLargeScreen = useMediaQuery('(min-width:900px)');
     const isAbove425px = useMediaQuery('(min-width:425px)');
     // state variables
-    const {setEncryptedSiteData} = useSiteStore.getState();
+    const setEncryptedSiteData = useSiteStore(state => state.setEncryptedSiteData);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/site/view');
     const pathname = usePathname();
     const router = useRouter();

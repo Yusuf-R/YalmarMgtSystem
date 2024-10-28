@@ -1,14 +1,30 @@
+// siteStore.js
 import {create} from 'zustand';
-import {persist} from 'zustand/middleware';
+import {persist, createJSONStorage} from 'zustand/middleware';
 
-const useSiteStore = create(persist((set) => ({
-    encryptedSiteData: null,      // Store encrypted site data
-    encryptedSiteID: null,        // Store encrypted site ID
-    setEncryptedSiteData: (data, id) => set({encryptedSiteData: data, encryptedSiteID: id}), // Setter for encrypted data
-    clearSiteData: () => set({encryptedSiteData: null, encryptedSiteID: null}), // Clear site data
-}), {
-    name: 'site-storage', // Key name in localStorage or sessionStorage
-    getStorage: () => localStorage, // Use localStorage (or sessionStorage)
-}));
+const useSiteStore = create(
+    persist(
+        (set) => ({
+            encryptedSiteData: null,
+            encryptedSiteID: null,
+            setEncryptedSiteData: (data, id) => set({
+                encryptedSiteData: data,
+                encryptedSiteID: id
+            }),
+            clearSiteData: () => set({
+                encryptedSiteData: null,
+                encryptedSiteID: null
+            }),
+        }),
+        {
+            name: 'site-storage',
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({
+                encryptedSiteData: state.encryptedSiteData,
+                encryptedSiteID: state.encryptedSiteID,
+            }),
+        }
+    )
+);
 
 export default useSiteStore;

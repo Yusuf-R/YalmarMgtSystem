@@ -14,10 +14,9 @@ function EditSiteProfile() {
     const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
 
-    // Zustand store values for sites
-    const encryptedSiteData = useSiteStore((state) => state.encryptedSiteData);
-    const encryptedSiteID = useSiteStore((state) => state.encryptedSiteID);
-    const clearSiteData = useSiteStore((state) => state.clearSiteData);
+    // Get the stored data
+    const encryptedSiteData = useSiteStore(state => state.encryptedSiteData);
+    const encryptedSiteID = useSiteStore(state => state.encryptedSiteID);
 
     useEffect(() => {
         const decryptData = async () => {

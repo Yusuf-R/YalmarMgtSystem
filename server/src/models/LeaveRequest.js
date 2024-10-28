@@ -6,7 +6,7 @@ const leaveReqObj = {
     role: {type: String, ref: 'Staff', required: true},
     phone: {type: String, ref: 'Staff', required: true},
     fullName: {type: String, required: true},
-    status: {type: String, enum: ['Requested', 'Pending', 'Accepted', 'Rejected'], default: 'Requested'},
+    status: {type: String, enum: ['Requested', 'Pending', 'Accepted', 'Rejected', 'Draft'], default: 'Requested'},
     duration: {type: Number, required: true},
     currentBalance: {type: Number, required: true},
     newBalance: {type: Number, required: true},

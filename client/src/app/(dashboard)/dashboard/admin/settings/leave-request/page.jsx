@@ -1,37 +1,38 @@
 'use client';
-import LeaveRequest from "@/components/SettingsComponents/LeaveRequest/LeaveRequest";
+
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
-import MyBioData from "@/components/SettingsComponents/MyBioData/MyBioData";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
-import {Suspense} from "react";
+import {Suspense, lazy, useState, useEffect} from "react";
+import useBioDataStore from "@/store/useBioDataStore";
+
+const AllLeaveRequest = lazy(() => import ("@/components/SettingsComponents/LeaveRequest/AllLeaveRequest/AllLeaveRequest"));
 
 
 function LeaveManagement() {
-    const queryClient = useQueryClient();
-    const {staffData} = queryClient.getQueryData(['BioData']);
-    
+
+    // Query setup
     const {data, isLoading, isError} = useQuery({
-        queryKey: ['BioData'],
-        queryFn: AdminUtils.Profile,
+        queryKey: ['GetLeaveRequest'],
+        queryFn: AdminUtils.GetLeaveRequest,
         staleTime: Infinity,
-        enabled: !staffData,
     });
-    
+
     if (isLoading) {
         return <LazyLoading/>
     }
-    
+
     if (isError || !data) {
-        return <DataFetchError/>
+        console.error('Error fetching user data');
+        return <DataFetchError/>;
     }
-    
-    const effectiveStaffData = staffData || data.staffData;
-    
+
+    const {leaveReqData} = data;
+
     return (
         <Suspense fallback={<LazyLoading/>}>
-            <LeaveRequest staffData={effectiveStaffData}/>
+            <AllLeaveRequest leaveReqData={leaveReqData}/>
         </Suspense>
     )
 }

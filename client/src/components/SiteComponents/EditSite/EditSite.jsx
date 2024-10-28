@@ -46,7 +46,7 @@ function EditSite({id, siteData}) {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
-    const {setEncryptedSiteData} = useSiteStore.getState();
+    const setEncryptedSiteData = useSiteStore(state => state.setEncryptedSiteData);
 
     const {
         control,

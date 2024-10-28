@@ -1,43 +1,97 @@
 'use client';
-import ProfilePicture from '@/components/SettingsComponents/ProfilePicture/ProfilePicture';
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
-import {useRouter} from 'next/navigation'
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
-import {Suspense} from "react";
+import {Suspense, lazy, useState, useEffect} from "react";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
+import useBioDataStore from "@/store/useBioDataStore";
 
+const ProfilePicture = lazy(() => import('@/components/SettingsComponents/BioData/ProfilePicture/ProfilePicture'));
 
 function PictureUpload() {
-    const router = useRouter();
-    const queryClient = useQueryClient(); // Accessing the shared QueryClient instance
-    const {staffData} = queryClient.getQueryData(['BioData']) || {};
-    
+    const queryClient = useQueryClient();
+    const [staffData, setStaffData] = useState(null);
+    const [processed, setProcessed] = useState(false); // Prevents re-processing
+
+    // Get Zustand store functions and data
+    const {
+        encryptedStaffData,
+        encryptedStaffID,
+        setEncryptedStaffData
+    } = useBioDataStore(state => ({
+        encryptedStaffData: state.encryptedStaffData,
+        encryptedStaffID: state.encryptedStaffID,
+        setEncryptedStaffData: state.setEncryptedStaffData
+    }));
+
+    // Get cached data from TanStack Query
+    const cachedData = queryClient.getQueryData(['BioData']);
+
+    // Query setup
     const {data, isLoading, isError} = useQuery({
         queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
         staleTime: Infinity,
-        enabled: !staffData,
+        enabled: !encryptedStaffData && !cachedData?.staffData,
     });
-    
-    if (isLoading) {
-        return <LazyLoading/>
+
+    useEffect(() => {
+        const processData = async () => {
+            try {
+                if (processed) return; // Prevent re-execution
+
+                // Check Zustand first
+                if (encryptedStaffData && encryptedStaffID) {
+                    const decryptedData = await AdminUtils.decryptData(encryptedStaffData);
+                    setStaffData(decryptedData);
+                    setProcessed(true);
+                    return;
+                }
+
+                // Check TanStack Query cache
+                if (cachedData?.staffData) {
+                    // Encrypt and store in Zustand
+                    const encryptedID = await AdminUtils.encryptObjID(cachedData.staffData._id);
+                    const encryptedData = await AdminUtils.encryptData(cachedData.staffData);
+                    setEncryptedStaffData(encryptedData, encryptedID);
+                    setStaffData(cachedData.staffData);
+                    setProcessed(true);
+                    return;
+                }
+
+                // If we have fresh data from the query
+                if (data?.staffData) {
+                    // Encrypt and store in Zustand
+                    const encryptedID = await AdminUtils.encryptObjID(data.staffData._id);
+                    const encryptedData = await AdminUtils.encryptData(data.staffData);
+                    setEncryptedStaffData(encryptedData, encryptedID);
+                    setStaffData(data.staffData);
+                    setProcessed(true);
+                }
+            } catch (error) {
+                console.error('Error processing data:', error);
+            }
+        };
+
+        // Execute processData only once after component mounts
+        if (!processed) {
+            processData();
+        }
+    }, [encryptedStaffData, encryptedStaffID, cachedData, data, setEncryptedStaffData, processed]);
+
+    if (isLoading || !staffData) {
+        return <LazyLoading/>;
     }
-    
-    if (isError || !data) {
+
+    if (isError && !staffData) {
         console.error('Error fetching user data');
         return <DataFetchError/>;
     }
-    
-    const effectiveStaffData = staffData || data.staffData;
-    
     return (
-        <>
-            <Suspense fallback={<LazyLoading/>}>
-                <ProfilePicture staffData={effectiveStaffData}/>
-            </Suspense>
-        </>
+        <Suspense fallback={<LazyLoading/>}>
+            <ProfilePicture staffData={staffData}/>
+        </Suspense>
     )
 }
 
-export default PictureUpload
+export default PictureUpload;

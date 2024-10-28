@@ -14,6 +14,7 @@ leaveReqRouter.get('/all', leaveReqController.getAllLeaveRequest);
 leaveReqRouter.get('/staff', leaveReqController.getStaffLeaveRequest);
 leaveReqRouter.post('/new', leaveReqController.newLeaveRequest);
 leaveReqRouter.patch('/action', leaveReqController.actionLeaveRequest);
-// leaveRequestRouter.delete('/delete', leaveReqController.deleteLeaveRequest);
+leaveReqRouter.patch('/update', leaveReqController.editLeaveRequest);
+leaveReqRouter.delete('/delete', leaveReqController.deleteLeaveRequest);
 
 module.exports = leaveReqRouter;

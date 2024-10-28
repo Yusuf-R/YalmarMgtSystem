@@ -1,7 +1,6 @@
 'use client';
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,25 +11,48 @@ import AdminSideNav from "@/components/AdminLandingPageComponents/AdminSideNav/A
 import AdminUtils from "@/utils/AdminUtilities";
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
 import {light, dark, dracula} from '@/components/Themes/adminThemes';
+import useBioDataStore from "@/store/useBioDataStore";
 
 function AdminLayout({children}) {
     const router = useRouter();
-    // check the cache key 'Biodata', if it exists then extract staff data
-    // if it doesn't exist, then redirect to 404 page
-    const queryClient = useQueryClient(); // Accessing the shared QueryClient instance
-    const {staffData} = queryClient.getQueryData(['BioData']) || {};
+    const queryClient = useQueryClient();
+    const setEncryptedStaffData = useBioDataStore((state) => state.setEncryptedStaffData);
+    const {staffData: cachedStaffData} = queryClient.getQueryData(['BioData']) || {};
 
+    // States
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [themeMode, setThemeMode] = useState('light');
+
+    // Query
     const {data, isLoading, isError} = useQuery({
         queryKey: ['BioData'],
         queryFn: AdminUtils.Profile,
         staleTime: Infinity,
-        enabled: !staffData,
+        enabled: !cachedStaffData,
     });
 
-    const [isCollapsed, setIsCollapsed] = useState(false);  // State for collapsing SideNav
-    const [themeMode, setThemeMode] = useState('light');    // State for toggling theme
+    // Determine effective staff data
+    const effectiveStaffData = cachedStaffData || (data?.staffData ?? null);
 
-    // Memoized theme selection based on the current themeMode
+    // Encryption effect
+    useEffect(() => {
+        const encryptAndStore = async () => {
+            if (effectiveStaffData) {
+                try {
+                    const encryptedStaffID = await AdminUtils.encryptObjID(effectiveStaffData._id);
+                    const encryptedStaffData = await AdminUtils.encryptData(effectiveStaffData);
+                    setEncryptedStaffData(encryptedStaffData, encryptedStaffID);
+                } catch (error) {
+                    console.error("Encryption Error:", error);
+                    // Consider handling this error appropriately
+                }
+            }
+        };
+
+        encryptAndStore();
+    }, [effectiveStaffData, setEncryptedStaffData]);
+
+    // Theme selection
     const theme = useMemo(() => {
         switch (themeMode) {
             case 'dark':
@@ -42,27 +64,21 @@ function AdminLayout({children}) {
         }
     }, [themeMode]);
 
-    // Capture responsive breakpoints
+    // Media queries
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
     const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
-    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
-    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
-    const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
-    const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
-    const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
-    const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
-    const ultraWide = useMediaQuery('(min-width:1920px)');
 
-    // Sidebar width calculation based on collapsed state
-    const sideNavWidth = isCollapsed ? '45px' : '170px';  // Adjust width for different breakpoints
+    // Calculate sidebar width
+    const sideNavWidth = isCollapsed ? '45px' : '170px';
 
+    // Handle loading and error states
     if (isLoading) {
         return <LazyLoading/>;
     }
-    if (isError || !data) {
-        return router.push('/error/404');
+    if (isError || (!data && !cachedStaffData)) {
+        router.push('/error/404');
+        return null;
     }
-    const effectiveStaffData = staffData || data.staffData;
 
     return (
         <ThemeProvider theme={theme}>
@@ -75,44 +91,41 @@ function AdminLayout({children}) {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 backgroundAttachment: 'fixed',
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',  // Transparent overlay
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
             }}>
-                {/* Top Navigation Bar */}
                 <AdminTopNav
                     staffData={effectiveStaffData}
                     themeMode={themeMode}
-                    setThemeMode={setThemeMode}  // Pass the theme setter to TopNav
+                    setThemeMode={setThemeMode}
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setIsCollapsed}
                 />
 
-                {/* Side Navigation */}
                 <AdminSideNav
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setIsCollapsed}
                 />
 
-                {/* Main Content */}
                 <Box
                     component="main"
                     sx={{
                         flexGrow: 1,
-                        marginLeft: isCollapsed ? `${sideNavWidth}` : `${sideNavWidth}`,  // Adjust main content margin based on collapsed state
-                        transition: 'margin-left 0.3s ease',  // Smooth transition for expanding/collapsing
+                        marginLeft: sideNavWidth,
+                        transition: 'margin-left 0.3s ease',
                         paddingLeft: '5px',
                         paddingRight: '5px',
-                        overflow: 'hidden',  // Ensure no overflow happens
-                        position: 'relative',  // Use relative positioning to respect layout boundaries
+                        overflow: 'hidden',
+                        position: 'relative',
                         top: 70,
                         zIndex: 1,
                         background: 'linear-gradient(to right, #141e30, #243b55)',
                         borderRadius: '10px',
-                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',  // Add box shadow
-                        minHeight: 'calc(100vh - 75px)',  // Ensure content takes full height minus TopNav height
-                        maxHeight: 'calc(100vh - 75px)',  // Ensure the main content is within the viewable area
-                        overflowY: 'auto',  // Only allow vertical scrolling when necessary
-                        overflowX: 'hidden',  // Disable horizontal scrolling
-                        width: 'calc(100% - 5px)',  // Ensure width does not overflow container
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.5)',
+                        minHeight: 'calc(100vh - 75px)',
+                        maxHeight: 'calc(100vh - 75px)',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        width: 'calc(100% - 5px)',
                         backdropFilter: 'blur(10px)',
                     }}
                 >

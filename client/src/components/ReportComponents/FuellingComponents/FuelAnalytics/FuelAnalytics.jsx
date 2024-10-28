@@ -103,7 +103,8 @@ function FuelAnalytics({fuelData, fuelID}) {
             setActiveTab('/dashboard/admin/reports');
         }
     }, [pathname])
-    const {setEncryptedFuelData} = useFuelReportStore.getState();
+    // Inside your component:
+    const setEncryptedFuelData = useFuelReportStore(state => state.setEncryptedFuelData);
 
 
     const editFuelReport = async () => {
