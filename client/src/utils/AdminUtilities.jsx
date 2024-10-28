@@ -154,6 +154,7 @@ class AdminUtils {
     // to be used for Login and SetPassword Specific operations
     static async encryptLoginData(data) {
         const publicKeyPem = process.env.NEXT_PUBLIC_PUBLIC_KEY;
+        console.log({publicKeyPem});
         // Convert PEM to ArrayBuffer
         // sourcery skip: avoid-function-declarations-in-blocks
         function pemToArrayBuffer(pem) {
