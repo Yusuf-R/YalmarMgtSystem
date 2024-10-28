@@ -47,12 +47,7 @@ import useSiteStore from "@/store/useSiteStore";
 function AllSite({allSite}) {
     const router = useRouter();
     const pathname = usePathname();
-    const [open, setOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('/dashboard/admin/site/all');
-    const [stateMain, setStateMain] = useState('');
-    const [cluster, setClusterType] = useState('');
-    const [status, setStatus] = useState('');
-    const [siteType, setSiteType] = useState('');
 
     // Media Queries for responsiveness
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
@@ -65,7 +60,8 @@ function AllSite({allSite}) {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
-    const {setEncryptedSiteData} = useSiteStore.getState();
+    const setEncryptedSiteData = useSiteStore(state => state.setEncryptedSiteData);
+
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     // Function to handle the opening and closing of the drawer

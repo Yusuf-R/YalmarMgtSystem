@@ -96,7 +96,8 @@ function ViewFuelReport({fuelData, fuelID}) {
     const isLargeScreen = useMediaQuery('(min-width:900px)');
     const isAbove425px = useMediaQuery('(min-width:425px)');
 
-    const {setEncryptedFuelData} = useFuelReportStore.getState();
+    // Inside your component:
+    const setEncryptedFuelData = useFuelReportStore(state => state.setEncryptedFuelData);
     const router = useRouter();
     const pathname = usePathname();
 

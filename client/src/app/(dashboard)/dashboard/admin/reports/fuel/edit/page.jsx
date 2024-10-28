@@ -15,7 +15,9 @@ const EditFuelReport = lazy(() => import('@/components/ReportComponents/Fuelling
 function EditFuellingReport() {
     const router = useRouter();
     const queryClient = useQueryClient();
-    const {encryptedFuelData, encryptedFuelID} = useFuelReportStore();
+    // Get the stored data
+    const encryptedFuelData = useFuelReportStore(state => state.encryptedFuelData);
+    const encryptedFuelID = useFuelReportStore(state => state.encryptedFuelID);
 
     // Check for cached site data first
     const cachedSiteData = queryClient.getQueryData(['AllSite']);
@@ -86,7 +88,7 @@ function EditFuellingReport() {
     const effectiveSiteData = useMemo(() => {
         const siteData = cachedSiteData || fetchedSiteData;
         if (!siteData) {
-          return null;
+            return null;
         }
         return {allSite: siteData.allSite};
     }, [cachedSiteData, fetchedSiteData]);

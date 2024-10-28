@@ -218,6 +218,7 @@ class StaffController {
                 return res.status(500).json({error: 'Database connection failed'});
             }
             const staffData = await Staff.findById(id).select('-password -createdAt -updatedAt -__v');
+            // console.log({staffData});
             if (!staffData) {
                 return res.status(404).json({error: 'AllStaff not found'});
             }
