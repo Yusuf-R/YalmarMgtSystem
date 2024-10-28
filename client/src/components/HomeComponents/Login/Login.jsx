@@ -112,33 +112,51 @@ function Login() {
         mutationFn: AdminUtils.StaffLogin,
     });
     const OnLogin = async (loginData) => {
-        setLoading(true);
-        // encrypt the login data
-        const encryptedData = await AdminUtils.encryptLoginData(loginData);
-        console.log(encryptedData);
-        const toastConfig = getToastConfig();
-        mutation.mutate({encryptedData}, {
-            onSuccess: () => {
-                toast.success("Login successful 🚀", toastConfig);
-                toast.success("Redirecting to dashboard", {
-                    ...toastConfig,
-                    icon: <FcRedo/>,
-                });
-                Cookies.set("rememberMe", rememberMe ? "true" : "false", {
-                    secure: true,
-                    sameSite: "strict",
-                });
-                setTimeout(() => {
-                    router.push("/dashboard");
-                }, 2000);
-                setLoading(false);
-            },
-            onError: (error) => {
-                setLoading(false);
-                console.error(error);
-                toast.error("Unauthorized credentials", toastConfig);
-            },
-        });
+        try {
+            setLoading(true);
+
+            // Encrypt the login data
+            const encryptedData = await AdminUtils.encryptLoginData(loginData);
+            console.log(encryptedData);
+
+            const toastConfig = getToastConfig();
+
+            // Use mutation with encrypted data
+            mutation.mutate({encryptedData}, {
+                onSuccess: () => {
+                    toast.success("Login successful 🚀", toastConfig);
+                    toast.success("Redirecting to dashboard", {
+                        ...toastConfig,
+                        icon: <FcRedo/>,
+                    });
+
+                    // Set the "rememberMe" cookie securely
+                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                        secure: true,
+                        sameSite: "strict",
+                    });
+
+                    // Redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        router.push("/dashboard");
+                    }, 2000);
+
+                    setLoading(false);
+                },
+                onError: (error) => {
+                    setLoading(false);
+                    console.error("Mutation error:", error);
+                    toast.error("Unauthorized credentials", toastConfig);
+                },
+            });
+        } catch (error) {
+            // Handle unexpected errors during encryption or any other part of the process
+            setLoading(false);
+            console.error("Unexpected error:", error);
+            toast.error("An unexpected error occurred. Please try again.", {
+                autoClose: 5000,
+            });
+        }
     };
 
     const txProps = {
