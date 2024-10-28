@@ -4,13 +4,13 @@ require('dotenv').config({
 const mongoose = require('mongoose');
 
 // const uri = process.env.MONGODB_URL;
-const uri = process.env.LOCAL_URL;
+const uri = process.env.MONGODB_URL;
 
 class DBClient {
     constructor() {
         this.client = this.init();
     }
-    
+
     async init() {
         delete this.client; // Forces this.client state update once init has been called
         try {
@@ -21,7 +21,7 @@ class DBClient {
             return undefined;
         }
     }
-    
+
     async isAlive() {
         // Check if the Mongoose connection state is open
         if (await this.client) {

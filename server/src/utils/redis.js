@@ -2,9 +2,7 @@ require('dotenv').config({
     path: '../server/.env',
 });
 const Redis = require('ioredis');
-
-// const url = process.env.REDIS_URL;
-const redisURL = process.env.REDIS_LOCAL_URL;
+const redisURL = `redis://:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
 const msg = 'Redis connection is not alive';
 
 class RedisClient {
@@ -17,14 +15,14 @@ class RedisClient {
             console.log('Redis client connected to the server');
         });
     }
-    
+
     async isAlive() {
         if (!await this.client.ping()) {
             return false;
         }
         return true;
     }
-    
+
     async get(key) {
         try {
             if (!await this.isAlive()) {
@@ -35,7 +33,7 @@ class RedisClient {
             throw new Error(error);
         }
     }
-    
+
     async set(key, value, duration) {
         try {
             if (!await this.isAlive()) {
@@ -46,7 +44,7 @@ class RedisClient {
             throw new Error(error);
         }
     }
-    
+
     async del(key) {
         try {
             if (!await this.isAlive()) {
@@ -57,7 +55,7 @@ class RedisClient {
             throw new Error(error);
         }
     }
-    
+
     // Add functionality for managing the blacklist
     async addToBlacklist(staffId, tokenId) {
         try {
@@ -69,7 +67,7 @@ class RedisClient {
             throw new Error(error);
         }
     }
-    
+
     async isInBlacklist(staffId, tokenId) {
         try {
             if (!await this.isAlive()) {
@@ -80,7 +78,7 @@ class RedisClient {
             throw new Error(error);
         }
     }
-    
+
     async removeFromBlacklist(staffId, tokenId) {
         try {
             if (!await this.isAlive()) {
