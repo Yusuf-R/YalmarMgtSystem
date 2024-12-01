@@ -328,9 +328,6 @@ function NewIncidentReport({allStaff, allSite}) {
         p: 0.1,
     }
 
-    const {errors} = methods.formState;
-    console.log(errors);
-
     return (
         <>
             <FormProvider {...methods}>

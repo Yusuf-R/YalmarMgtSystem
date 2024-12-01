@@ -276,7 +276,6 @@ function AllStaff({allStaff}) {
             const handleDelete = async (event) => {
                 event.preventDefault();
                 const obj = {email, selectedIds: [staffID]};
-                console.log({obj});
                 mutation.mutate(obj, {
                     onSuccess: () => {
                         queryClient.invalidateQueries({queryKey: ["AllStaff"]});

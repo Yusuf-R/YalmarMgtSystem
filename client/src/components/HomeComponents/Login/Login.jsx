@@ -85,10 +85,10 @@ function Login() {
             width = '400px';
         } else if (xLarge || xxLarge) {
             fontSize = '18px';
-            width = '450px';
+            width = '400px';
         } else {
             fontSize = '20px';
-            width = '500px';
+            width = '400px';
         }
         return {
             position,
@@ -117,23 +117,26 @@ function Login() {
 
             // Encrypt the login data
             const encryptedData = await AdminUtils.encryptLoginData(loginData);
-            console.log(encryptedData);
-
             const toastConfig = getToastConfig();
-
             // Use mutation with encrypted data
-            mutation.mutate({encryptedData}, {
-                onSuccess: () => {
+            mutation.mutate({ encryptedData }, {
+                onSuccess: (response) => {
+                    const { accessToken } = response;
+                    Cookies.set("accessToken", accessToken, {
+                        secure: true,
+                        sameSite: "None",
+                        path: "/",
+                    });
+                    // Set the "rememberMe" cookie securely
+                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                        secure: true,
+                        sameSite: "None",
+                        path: "/",
+                    });
                     toast.success("Login successful 🚀", toastConfig);
                     toast.success("Redirecting to dashboard", {
                         ...toastConfig,
                         icon: <FcRedo/>,
-                    });
-
-                    // Set the "rememberMe" cookie securely
-                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
-                        secure: true,
-                        sameSite: "strict",
                     });
 
                     // Redirect to dashboard after a short delay
@@ -154,7 +157,7 @@ function Login() {
             setLoading(false);
             console.error("Unexpected error:", error);
             toast.error("An unexpected error occurred. Please try again.", {
-                autoClose: 5000,
+                autoClose: 2000,
             });
         }
     };

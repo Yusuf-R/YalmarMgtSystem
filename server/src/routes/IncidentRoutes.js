@@ -1,50 +1,36 @@
+import SecurityConfig from '../utils/config';
+
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-const incidentController = require('../controllers/IncidentController');
-import SecurityConfig from "../utils/config"
-
 const multer = require('multer');
+const incidentController = require('../controllers/IncidentController');
+
 const securityConfig = new SecurityConfig();
-const {corsOptions} = securityConfig;
+const { corsOptions } = securityConfig;
 const incidentRouter = express.Router();
 
 incidentRouter.use(cors(corsOptions));
+incidentRouter.options('*', cors(corsOptions));
 
 // we will be using disk storage since render hosting service will give us 16 gb of storage
 // we will store the images in a folder called tempIncidentReportImages
 // create this folder if not exiting
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const dir = path.join(__dirname, '../utils/Tmp/incidentReportImages');
-        // Create the directory if it doesn't exist
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, {recursive: true});
-        }
-        cb(null, dir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
-
+// Use memory storage with Multer for in-memory storage of files
 const upload = multer({
-    storage: storage,
-
-    fileFilter: function (req, file, cb) {
-        if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
-            cb(null, true)
+    storage: multer.memoryStorage(),
+    fileFilter(req, file, cb) {
+        if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+            cb(null, true);
         } else {
-            cb(null, false)
-            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'))
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg formats are allowed!'));
         }
     },
     limits: {
-        fileSize: 200 * 1024 * 1024, // Limit file size to 200Mb
-        fieldSize: 200 * 1024 * 1024, // Limit field size to 200Mb
-    },
+        fileSize: 25 * 1024 * 1024, // Limit file size to 25MB per image
+        fieldSize: 25 * 1024 * 1024, // Limit field size to 25MB
+    }
 });
 
 incidentRouter.get('/all', incidentController.getAllIncidentReport);

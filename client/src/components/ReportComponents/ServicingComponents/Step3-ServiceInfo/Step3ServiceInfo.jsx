@@ -1,3 +1,4 @@
+'use client';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
@@ -74,7 +75,7 @@ function Step3ServiceInfo({txProps}) {
     };
 
     const handleDateSelect = (date) => {
-        setValue('dateSupplied', date);
+        setValue('servicingDate', date);
         setShowCalendar(false); // Hide the date picker after selecting a date
     };
 
@@ -106,7 +107,7 @@ function Step3ServiceInfo({txProps}) {
                         </Typography>
                     </Grid>
                     {/*AllSite State*/}
-                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <Grid item xs={xSmall || small || medium ? 12 : 6}>
                         <FormControl fullWidth>
                             <Controller
                                 name="shelterType"
@@ -173,7 +174,7 @@ function Step3ServiceInfo({txProps}) {
                         </FormControl>
                     </Grid>
                     {/*Pm Instance*/}
-                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <Grid item xs={xSmall || small || medium ? 12 : 6}>
                         <FormControl fullWidth>
                             <Controller
                                 name="pmInstance"
@@ -240,7 +241,7 @@ function Step3ServiceInfo({txProps}) {
                         </FormControl>
                     </Grid>
                     {/*Service Date*/}
-                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <Grid item xs={xSmall || small || medium ? 12 : 6}>
                         <FormControl fullWidth>
                             <Controller
                                 name="servicingDate"
@@ -250,7 +251,7 @@ function Step3ServiceInfo({txProps}) {
                                         onClick={handleToggleCalendar}
                                         value={servicingDate ? servicingDate.toLocaleDateString() : 'Enter Service Date'}
                                         InputProps={{sx: txProps, readOnly: true}}
-                                        lable='Service Date'
+                                        label='Service Date'
                                         InputLabelProps={{
                                             sx: {
                                                 color: "#46F0F9",
@@ -275,7 +276,7 @@ function Step3ServiceInfo({txProps}) {
                         </FormControl>
                         {showCalendar && (
                             <>
-                                <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                                <Grid item xs={xSmall || small || medium ? 12 : 6}>
                                     <DayPicker
                                         mode="single"
                                         captionLayout="dropdown"
@@ -297,6 +298,9 @@ function Step3ServiceInfo({txProps}) {
                                             day: {
                                                 color: '#FFF',
                                             },
+                                            head_cell: {
+                                                color: '#FFF'
+                                            },
                                         }}
                                         modifiersStyles={{
                                             today: {
@@ -313,7 +317,7 @@ function Step3ServiceInfo({txProps}) {
                         )}
                     </Grid>
                     {/*Next Service Date*/}
-                    <Grid item xs={xSmall || small || medium ? 12 : large ? 6 : 4}>
+                    <Grid item xs={xSmall || small || medium ? 12 : 6}>
                         {watch('servicingDate') && (
                             <FormControl fullWidth>
                                 <TextField

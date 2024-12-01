@@ -335,7 +335,7 @@ function RenderedData({data}) {
                                 borderRadius: '10px',
                                 bgcolor: '#0059b3',
                             }}>
-                    Incident Report Data : {formattedDate}
+                    Report Data : {formattedDate}
                 </Typography>
                 <br/>
                 {/*Submission Info*/}

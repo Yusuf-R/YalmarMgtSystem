@@ -4,7 +4,6 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import {Controller, useForm, useWatch} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
@@ -12,7 +11,6 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {usePathname, useRouter} from "next/navigation";
 import AdminUtils from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
-import {mainSection, sitesData, siteStates, siteStatus, type} from "@/utils/data"
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import React, {useState, useEffect} from "react";
@@ -23,7 +21,6 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Link from "next/link";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import useFuelReportStore from "@/store/useFuelReportStore";
 import Card from "@mui/material/Card";
 
 
@@ -210,7 +207,6 @@ function NewFuellingReport({allSite}) {
                 data.cpd = Number(customCPD);
             }
             await newFuelSupplyReportSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
             data.site_id = site_id;
             // convert dateSupplied to DD/MMM/YYYY
             data.dateSupplied = dayjs(dateSupplied).format('DD/MMM/YYYY');
@@ -232,11 +228,9 @@ function NewFuellingReport({allSite}) {
                 },
                 onError: (error) => {
                     toast.error(error.message);
-                    console.log(error);
                 }
             });
         } catch (e) {
-            console.log(e);
             e.inner.forEach((error) => {
                 // Set form errors
                 setError(error.path, {
@@ -813,6 +807,9 @@ function NewFuellingReport({allSite}) {
                                                 },
                                                 textAlign: 'left',
                                             }}>
+                                            <MenuItem value={30}>30</MenuItem>
+                                            <MenuItem value={35}>35</MenuItem>
+                                            <MenuItem value={40}>40</MenuItem>
                                             <MenuItem value={50}>50</MenuItem>
                                             <MenuItem value={60}>60</MenuItem>
                                             <MenuItem value={100}>100</MenuItem>

@@ -169,7 +169,6 @@ function EditSite({id, siteData}) {
 
     const submitUpdate = async (data) => {
         await editSiteSchema.validate(data, {abortEarly: false});
-        console.log("Validation passed!"); // Check if validation passes
         data._id = siteData._id;
         mutation.mutate(data, {
             onSuccess: () => {

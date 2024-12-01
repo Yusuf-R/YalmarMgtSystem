@@ -456,9 +456,6 @@ function NewStaff() {
             setActiveTab('/dashboard/admin/staff');
         }
     }, [pathname]);
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ["NewStaff"],
@@ -467,7 +464,6 @@ function NewStaff() {
     const SubmitData = async (data) => {
         try {
             await newStaffSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
@@ -488,7 +484,7 @@ function NewStaff() {
                 }
             });
         } catch (e) {
-            console.log({e});
+            toast.error('Error in the form fields');
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,

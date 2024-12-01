@@ -5,11 +5,12 @@ const cors = require('cors');
 const siteController = require('../controllers/SiteController');
 
 const securityConfig = new SecurityConfig();
-const {corsOptions} = securityConfig;
+const { corsOptions } = securityConfig;
 
 const siteRouter = express.Router();
 
 siteRouter.use(cors(corsOptions));
+siteRouter.options('*', cors(corsOptions));
 
 // api routes CRUD
 

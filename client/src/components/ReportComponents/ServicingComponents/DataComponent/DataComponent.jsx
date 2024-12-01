@@ -846,12 +846,6 @@ function DataComponent({allStaff, allSite, formData, handleInputChange, handleNe
         }
     }, [backUpBatteries, setValue]);
 
-    // if errors contain any error then display the error
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
-
-
     const queryClient = useQueryClient();
     const mutation = useMutation({
         mutationKey: ['NewServicingReport'],

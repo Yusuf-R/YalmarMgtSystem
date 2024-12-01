@@ -68,10 +68,6 @@ function NewSite() {
             setActiveTab('/dashboard/admin/site/all');
         }
     }, [pathname]);
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
-
     // set state
     const getState = () => {
         return siteStates.map((stateName) => (
@@ -128,12 +124,6 @@ function NewSite() {
         setStatus(event.target.value);
     }
 
-
-    if (Object.keys(errors).length > 0) {
-        console.log({errors});
-    }
-
-
     const queryClient = useQueryClient()
     const mutation = useMutation({
         mutationKey: ["NewSite"],
@@ -143,7 +133,6 @@ function NewSite() {
     const SubmitData = async (data) => {
         try {
             await newSiteSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
@@ -159,11 +148,9 @@ function NewSite() {
                 },
                 onError: (error) => {
                     toast.error(error.message);
-                    console.log(error);
                 }
             });
         } catch (e) {
-            console.log({e});
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,

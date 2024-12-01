@@ -197,11 +197,6 @@ function EditLeaveRequest({leaveReqData, id}) {
     }, [startDate, endDate, currentBalance]);
 
 
-    //console.log the errors only if the object is not empty
-    if (errors.length > 0) {
-        console.log(errors);
-    }
-
     const saveAsDraft = (event) => {
         setIsDraft(event.target.checked);
     };
@@ -249,7 +244,6 @@ function EditLeaveRequest({leaveReqData, id}) {
                 }
             });
         } catch (e) {
-            console.log({e});
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,

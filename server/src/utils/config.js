@@ -1,18 +1,9 @@
-require('dotenv').config({path: '../../../server/.env'});
+require('dotenv').config({ path: '../../../server/.env' });
 const crypto = require('crypto');
-const {log} = console;
-
-const util = require('util');
-const dataSecret = process.env.DATA_SECRET; // Make sure this matches the secret used in the frontend
-
-const digest = util.promisify(crypto.subtle.digest);
-const importKey = util.promisify(crypto.subtle.importKey);
-const decrypt = util.promisify(crypto.subtle.decrypt);
 
 class SecurityConfig {
     constructor() {
         this.secretKey = process.env.CIPHER_SECRET;
-
     }
 
     // generating any random secret key
@@ -37,11 +28,11 @@ class SecurityConfig {
     decodeB64(data64) {
         const dataDecode = Buffer.from(data64, 'base64').toString().split(':');
         if (dataDecode.length !== 2) {
-            return {error: 'Inconsistent Encryption Algorithm, ensure Base64 encryption'};
+            return { error: 'Inconsistent Encryption Algorithm, ensure Base64 encryption' };
         }
         const email = dataDecode[0];
         const password = dataDecode[1];
-        return {email, password};
+        return { email, password };
     }
 
     encryptData(data) {
@@ -77,20 +68,19 @@ class SecurityConfig {
 
         try {
             const buffer = Buffer.from(encryptedData, 'base64');
-            const decrypted = crypto.privateDecrypt(
-                {
+            const decrypted = crypto.privateDecrypt({
                     key: privateKeyPem,
                     padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                    oaepHash: "sha256",
+                    oaepHash: 'sha256',
                 },
-                buffer
+                buffer,
             );
 
             const jsonString = decrypted.toString('utf8');
             // Parse the JSON string
             return JSON.parse(jsonString);
         } catch (error) {
-            console.error("Decryption error:", error);
+            console.error('Decryption error:', error);
             throw error;
         }
     }
@@ -102,13 +92,12 @@ class SecurityConfig {
         const keyMaterial = crypto.createHash('sha256').update(dataSecret).digest();
 
         // Base64 decode
-        const encryptedDataWithIv = Buffer.from(encryptedData, 'base64');
+        const encryptedDataWithIv = Buffer.from(data, 'base64');
 
         // Extract IV (first 12 bytes), AuthTag (next 16 bytes), and Encrypted Bytes (remaining)
         const iv = encryptedDataWithIv.slice(0, 12);
         const authTag = encryptedDataWithIv.slice(encryptedDataWithIv.length - 16); // Last 16 bytes are the auth tag
         const encryptedBytes = encryptedDataWithIv.slice(12, encryptedDataWithIv.length - 16); // Everything between IV and auth tag
-
 
         try {
             // Create decipher using the AES-GCM algorithm
@@ -127,7 +116,6 @@ class SecurityConfig {
             throw new Error(error.message);
         }
     }
-
 
     static formatPrivateKey(rawKey) {
         // Remove any existing header and footer
@@ -148,17 +136,17 @@ class SecurityConfig {
                 modulusLength: 4096,
                 publicKeyEncoding: {
                     type: 'spki',
-                    format: 'pem'
+                    format: 'pem',
                 },
                 privateKeyEncoding: {
                     type: 'pkcs8',
-                    format: 'pem'
-                }
+                    format: 'pem',
+                },
             }, (err, publicKey, privateKey) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve({publicKey, privateKey});
+                    resolve({ publicKey, privateKey });
                 }
             });
         });
@@ -167,10 +155,8 @@ class SecurityConfig {
     get corsOptions() {
         return {
             origin: [
-                'http://localhost:3000',
-                'https://yalmar-mgt-system.vercel.app', // Main Vercel domain
-                'https://yalmar-mgt-system-6fsrv3l6n-yusuf-rs-projects.vercel.app', // Vercel deployment alias
-                'https://yalmar-mgt-system-be.vercel.app', // Backend on Vercel
+                "https://yalmar-management-system-server.vercel.app",
+                "https://yalmar-management-system.vercel.app"
             ],
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true,
@@ -183,12 +169,10 @@ class SecurityConfig {
                 'Authorization',
                 'X-Token',
             ],
-            preflightContinue: false, // Ensure preflight requests are handled correctly
-            optionsSuccessStatus: 204, // Response status code for successful OPTIONS requests
+            preflightContinue: false, // Allow Express to handle preflight automatically
+            optionsSuccessStatus: 200, // Ensure status 200 with headers for OPTIONS
         };
     }
 }
 
-
 export default SecurityConfig;
-

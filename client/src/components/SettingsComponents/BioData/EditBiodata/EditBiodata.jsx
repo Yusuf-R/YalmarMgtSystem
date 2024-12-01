@@ -449,10 +449,6 @@ function EditBiodata({id, staffData}) {
 
     const queryClient = useQueryClient()
 
-    if (Object.keys(errors).length > 0) {
-        console.log(errors);
-    }
-
     // Mutation for updating staff profile
     const mutation = useMutation({
         mutationKey: ["UpdateStaff"],

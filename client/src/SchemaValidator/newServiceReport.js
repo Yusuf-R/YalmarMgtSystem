@@ -24,9 +24,9 @@ export const newServiceReportSchema = yup.object().shape({
     // AllSite info
     siteId: yup.string().required('AllSite ID is required'),
     state: yup.string().required('State is required').default('KADUNA'),
-    cluster: yup.string().oneOf(['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA'], 'Invalid cluster').required('Cluster is required'),
+    cluster: yup.string().oneOf(['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'], 'Invalid cluster').required('Cluster is required'),
     location: yup.string(),
-    siteType: yup.string().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type').required('AllSite type is required').default('HUB'),
+    siteType: yup.string().oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM'], 'Invalid site type').required('AllSite type is required').default('HUB'),
     shelterType: yup.string().oneOf(['Containerized', 'Open'], 'Invalid shelter type').required('Shelter type is required'),
     pmInstance: yup.string().oneOf(['PM1', 'PM2'], 'Invalid PM instance').required('PM instance is required'),
 

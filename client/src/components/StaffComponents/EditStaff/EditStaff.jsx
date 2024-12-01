@@ -445,11 +445,6 @@ function EditStaff({id, staffData}) {
 
     const queryClient = useQueryClient()
 
-    if (Object.keys(errors).length > 0) {
-        console.log(errors);
-    }
-
-    // Mutation for updating staff profile
     const mutation = useMutation({
         mutationKey: ["UpdateStaff"],
         mutationFn: AdminUtils.UpdateStaff,
@@ -467,7 +462,6 @@ function EditStaff({id, staffData}) {
     const UpdateProfile = async (data) => {
         try {
             await editStaffSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
             data._id = staffData._id;
             mutation.mutate(data, {
                 onSuccess: (response) => {

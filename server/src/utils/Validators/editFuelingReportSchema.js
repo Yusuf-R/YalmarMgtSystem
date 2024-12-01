@@ -13,6 +13,6 @@ export const editFuellingReportSchemaValidator = Joi.object().keys({
     state: Joi.string().required(),
     cluster: Joi.string().required(),
     location: Joi.string().optional().allow('').allow(null),
-    type: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'),
+    type: Joi.string().required().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM'),
     cpd: Joi.number().required(),
 });

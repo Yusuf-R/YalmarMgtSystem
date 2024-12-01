@@ -4,10 +4,11 @@ const express = require('express');
 const cors = require('cors');
 const leaveReqController = require('../controllers/LeaveRequestController');
 const securityConfig = new SecurityConfig();
-const {corsOptions} = securityConfig;
+const { corsOptions } = securityConfig;
 const leaveReqRouter = express.Router();
 
 leaveReqRouter.use(cors(corsOptions));
+leaveReqRouter.options('*', cors(corsOptions));
 
 // api routes for leaveReqController
 leaveReqRouter.get('/all', leaveReqController.getAllLeaveRequest);
