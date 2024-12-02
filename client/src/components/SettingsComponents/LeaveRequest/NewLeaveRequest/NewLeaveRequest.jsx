@@ -205,16 +205,9 @@ function NewLeaveRequest({staffData}) {
     }, [duration, newBalance]);
 
 
-    //console.log the errors only if the object is not empty
-    if (errors.length > 0) {
-        console.log(errors);
-    }
-
     const saveAsDraft = (event) => {
         setIsDraft(event.target.checked);
     };
-
-    console.log({errors})
 
     const queryClient = useQueryClient()
     const mutation = useMutation({
@@ -225,7 +218,6 @@ function NewLeaveRequest({staffData}) {
         // return;
         try {
             await leaveRequestSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!");
             // update the data with some modification
             data.staffId = staffData._id;
             data.saveAsDraft = isDraft;
@@ -255,7 +247,6 @@ function NewLeaveRequest({staffData}) {
                 }
             });
         } catch (e) {
-            console.log({e});
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,

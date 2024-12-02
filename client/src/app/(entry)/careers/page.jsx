@@ -1,9 +1,11 @@
-const Careers = () => {
-    return (
-        <div>
-            <h1>Careers</h1>
-        </div>
-    );
-};
+import Careers from "@/components/HomeComponents/Careers/Careers";
 
-export default Careers;
+function YalmarCareers() {
+    return (
+        <>
+            <Careers/>
+        </>
+    )
+}
+
+export default YalmarCareers;

@@ -191,7 +191,6 @@ function MultiStepForm({allStaff, allSite}) {
 
         } else {
             toast.error("Please fill all required fields correctly");
-            console.log("Please fill all required fields correctly");
         }
     };
 
@@ -442,9 +441,6 @@ function MultiStepForm({allStaff, allSite}) {
             queryClient.removeQueries(cacheKey);
         }
         try {
-            for (let pair of formDataObj.entries()) {
-                console.log(`${pair[0]}: ${pair[1]}`);
-            }
             await mutation.mutateAsync(formDataObj);
             toast.success("Report submitted successfully");
             await queryClient.invalidateQueries('AllServicingReports');

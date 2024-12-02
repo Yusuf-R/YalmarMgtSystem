@@ -6,11 +6,9 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer')
 const staffController = require('../controllers/StaffController');
-const imageController = require('../controllers/ImageController');
-
 
 const securityConfig = new SecurityConfig();
-const {corsOptions} = securityConfig;
+const { corsOptions } = securityConfig;
 
 const staffRouter = express.Router();
 const storage = multer.memoryStorage(); // Store file in memory
@@ -23,6 +21,7 @@ const upload = multer({
 });
 
 staffRouter.use(cors(corsOptions));
+staffRouter.options('*', cors(corsOptions));
 
 staffRouter.post('/login', staffController.login);
 staffRouter.post('/logout', staffController.logout);
@@ -35,17 +34,5 @@ staffRouter.delete('/delete', staffController.deleteStaff);
 staffRouter.get('/dashboard', staffController.dashboardData);
 staffRouter.put('/update', staffController.updateStaff);
 staffRouter.post('/avatar', upload.single('avatar'), staffController.setAvatar);
-
-
-staffRouter.put('/changepassword', staffController.changePassword);
-staffRouter.post('/uploadimage', imageController.uploadNewImage);
-staffRouter.get('/signature', imageController.getSignature);
-
-// staffRouter.patch('/profile', staffController.updateProfile);
-
-// staffRouter.delete('/profile', staffController.deleteProfile);
-
-// staffRouter.patch('/password', staffController.updatePassword);
-
 
 module.exports = staffRouter;

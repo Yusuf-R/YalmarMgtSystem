@@ -13,7 +13,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import {usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import React, {useMemo, useState, Suspense, useEffect} from "react";
+import React, {useMemo, useState, Suspense, useEffect, useCallback} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -42,45 +42,119 @@ import Drawer from "@mui/material/Drawer";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminUtilities from "@/utils/AdminUtilities";
 import useSiteStore from "@/store/useSiteStore";
-
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from 'xlsx';
 
 function AllSite({allSite}) {
     const router = useRouter();
     const pathname = usePathname();
     const [activeTab, setActiveTab] = useState('/dashboard/admin/site/all');
+    const [open, setOpen] = useState(false);
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedCluster, setSelectedCluster] = useState('all');
+    const [selectedType, setSelectedType] = useState('all');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    // Media Queries for responsiveness
+    const setEncryptedSiteData = useSiteStore(state => state.setEncryptedSiteData);
+
+    // Media queries
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
-    const small = useMediaQuery('(min-width:390px) and (max-width:480.999px)');
-    const medium = useMediaQuery('(min-width:481px) and (max-width:599.999px)');
-    const large = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const small = useMediaQuery('(min-width:390px) and (max-width:599.999px)');
+    const medium = useMediaQuery('(min-width:600px) and (max-width:899.999px)');
+    const large = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
     const xLarge = useMediaQuery('(min-width:900px) and (max-width:1199.999px)');
     const xxLarge = useMediaQuery('(min-width:1200px) and (max-width:1439.999px)');
     const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
 
-    const setEncryptedSiteData = useSiteStore(state => state.setEncryptedSiteData);
+    // Constants
+    const clusters = ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'];
+    const types = ['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM'];
 
+    // Memoize filter options to prevent re-renders
+    const clusterOptions = useMemo(() => [
+        {value: 'all', label: 'All Clusters'},
+        ...clusters.map(cluster => ({value: cluster, label: cluster}))
+    ], []);
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    // Function to handle the opening and closing of the drawer
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    const typeOptions = useMemo(() => [
+        {value: 'all', label: 'All Types'},
+        ...types.map(type => ({value: type, label: type}))
+    ], []);
+
+    // Handle drawer toggle
+    const toggleDrawer = useCallback((open) => (event) => {
+        if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
         setIsDrawerOpen(open);
-    };
+    }, []);
 
+    // Update active tab based on pathname
     useEffect(() => {
-        if (pathname.includes('new')) {
-            setActiveTab('/dashboard/admin/site/new');
-        } else if (pathname.includes('all')) {
-            setActiveTab('/dashboard/admin/site/all');
-        } else {
-            setActiveTab('/dashboard/admin/site');
+        let newTab = '/dashboard/admin/site';
+        if (pathname === '/dashboard/admin/site/all') {
+            newTab = '/dashboard/admin/site/all';
+        } else if (pathname === '/dashboard/admin/site/new') {
+            newTab = '/dashboard/admin/site/new';
         }
+        setActiveTab(newTab);
     }, [pathname]);
+
+    // Handle tab change
+    const handleTabChange = useCallback((event, newValue) => {
+        setActiveTab(newValue);
+        router.push(newValue);
+    }, [router]);
+
+    // Handle cluster change
+    const handleClusterChange = useCallback((event) => {
+        setSelectedCluster(event.target.value);
+    }, []);
+
+    // Handle type change
+    const handleTypeChange = useCallback((event) => {
+        setSelectedType(event.target.value);
+    }, []);
+
+    const exportToExcel = useCallback(() => {
+        if (!allSite) return;
+
+        const filteredData = allSite.filter(site => {
+            return (selectedCluster === 'all' || site.cluster === selectedCluster) &&
+                (selectedType === 'all' || site.type === selectedType);
+        });
+
+        const workbookData = filteredData.map(site => ({
+            'Site ID': site.siteId || 'N/A',
+            'State': site.state || 'N/A',
+            'Cluster': site.cluster || 'N/A',
+            'Location': site.location || 'N/A',
+            'Type': site.type || 'N/A',
+            'Status': site.status || 'N/A',
+            'Longitude': site.longitude || 0.00,
+            'Latitude': site.latitude || 0.00,
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(workbookData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sites');
+
+        const filters = [];
+        if (selectedCluster !== 'all') filters.push(selectedCluster);
+        if (selectedType !== 'all') filters.push(selectedType);
+
+        const filename = `sites${filters.length ? '_' + filters.join('_') : ''}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, filename);
+    }, [allSite, selectedCluster, selectedType]);
 
     const tableTheme = useMemo(
         () =>
@@ -745,66 +819,154 @@ function AllSite({allSite}) {
             <Box sx={{
                 padding: xSmall || small ? '5px' : medium || large ? '10px' : '20px',
                 marginTop: '10px',
-
             }}>
-                {/* Navigation Tabs */}
-                <Stack direction='row' spacing={2} sx={{
-                    justifyContent: 'flex-start',
-                }}>
-                    <Tabs
-                        value={activeTab}
-                        onChange={(e, newValue) => setActiveTab(newValue)}
-                        centered
+                <Tabs
+                    value={activeTab}
+                    onChange={handleTabChange}
+                    variant={xSmall ? "scrollable" : "standard"}
+                    scrollButtons="auto"
+                    sx={{
+                        '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
+                        marginBottom: 3
+                    }}
+                >
+                    <Tab
+                        label="Site"
+                        value="/dashboard/admin/sitef" // Set the value prop for this Tab
+                        component={Link}
+                        href="/dashboard/admin/site"
                         sx={{
-                            '& .MuiTabs-indicator': {
-                                backgroundColor: '#46F0F9',
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
                             },
-                        }}>
-                        <Tab
-                            label="Sitef"
-                            value="/dashboard/admin/sitef" // Set the value prop for this Tab
-                            component={Link}
-                            href="/dashboard/admin/site"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="All"
-                            value="/dashboard/admin/site/all" // Set the value prop for this Tab
-                            component={Link}
-                            href="/dashboard/admin/site/all"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                        <Tab
-                            label="New +"
-                            value="/dashboard/admin/site/new" // Set the value prop for this Tab
-                            component={Link}
-                            href="/dashboard/admin/site/new"
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
-                                "&.Mui-selected": {
-                                    color: "#46F0F9",
-                                },
-                            }}
-                        />
-                    </Tabs>
-                </Stack>
-                <br/>
+                        }}
+                    />
+                    <Tab
+                        label="All"
+                        value="/dashboard/admin/site/all" // Set the value prop for this Tab
+                        component={Link}
+                        href="/dashboard/admin/site/all"
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
+                            },
+                        }}
+                    />
+                    <Tab
+                        label="New +"
+                        value="/dashboard/admin/site/new" // Set the value prop for this Tab
+                        component={Link}
+                        href="/dashboard/admin/site/new"
+                        sx={{
+                            color: "#FFF",
+                            fontWeight: 'bold',
+                            fontSize: xSmall || small || medium || large ? '0.6rem' : '0.9rem',
+                            "&.Mui-selected": {
+                                color: "#46F0F9",
+                            },
+                        }}
+                    />
+                </Tabs>
+
+                {/* Export Controls */}
+                <Paper sx={{p: 2, mb: 2, backgroundColor: '#304f61'}}>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={6} md={4}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Cluster</InputLabel>
+                                <Select
+                                    value={selectedCluster}
+                                    onChange={handleClusterChange}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                >
+                                    {clusterOptions.map(({value, label}) => (
+                                        <MenuItem
+                                            key={value}
+                                            value={value}
+                                            sx={{
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#1a5570'
+                                                }
+                                            }}
+                                        >
+                                            {label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Site Type</InputLabel>
+                                <Select
+                                    value={selectedType}
+                                    onChange={handleTypeChange}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                >
+                                    {typeOptions.map(({value, label}) => (
+                                        <MenuItem
+                                            key={value}
+                                            value={value}
+                                            sx={{
+                                                color: 'white',
+                                                '&:hover': {
+                                                    backgroundColor: '#1a5570'
+                                                }
+                                            }}
+                                        >
+                                            {label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={4}>
+                            <Button
+                                onClick={exportToExcel}
+                                startIcon={<FileDownloadIcon/>}
+                                variant="contained"
+                                fullWidth
+                                sx={{height: '56px'}}
+                            >
+                                Export to Excel
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
+
                 <Stack direction='column' spacing={2}>
                     <Card sx={{
                         padding: '2px',

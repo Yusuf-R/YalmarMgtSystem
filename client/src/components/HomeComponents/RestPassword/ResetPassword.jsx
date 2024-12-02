@@ -106,24 +106,34 @@ function ResetPassword() {
     });
 
     const ResetPassword = async (data) => {
-        const {email} = data;
-        // encrypt the email and store it in session storage
-        const encryptedEmail = await AdminUtils.encryptData(email);
-        setIsSubmit(true);
+        const { email } = data;
         const toastConfig = getToastConfig();
-        mutation.mutate(data, {
-            onSuccess: () => {
-                toast.success('Reset Token sent to your email', toastConfig);
-                sessionStorage.setItem("email", encryptedEmail);
-                setIsSubmit(false);
-                router.push('/setpassword')
-            },
-            onError: (error) => {
-                setIsSubmit(false);
-                console.error(error);
-                toast.error("Unauthorized credentials", toastConfig);
-            },
-        });
+        
+        try {
+            // Encrypt the email and store it in session storage
+            const encryptedEmail = await AdminUtils.encryptData(email);
+            setIsSubmit(true);
+    
+            // Perform mutation with the original mutate method
+            mutation.mutate(data, {
+                onSuccess: () => {
+                    toast.success('Reset Token sent to your email', toastConfig);
+                    sessionStorage.setItem("email", encryptedEmail);
+                    setIsSubmit(false);
+                    router.push('/setpassword');
+                },
+                onError: (error) => {
+                    setIsSubmit(false);
+                    console.error(error);
+                    toast.error("Unauthorized credentials", toastConfig);
+                },
+            });
+    
+        } catch (error) {
+            setIsSubmit(false);
+            console.error("Encryption Error:", error);
+            toast.error("An error occurred. Please try again.", toastConfig);
+        }
     };
 
     const txProps = {

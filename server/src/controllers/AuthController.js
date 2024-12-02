@@ -21,6 +21,23 @@ const jwtAccessExp = process.env.JWT_ACCESS_EXPIRES_IN;
 const jwtRefreshExp = process.env.JWT_REFRESH_EXPIRES_IN;
 
 class AuthController {
+
+    static async checkConn(req, res) {
+        const dbStatus = await dbClient.isAlive();
+        const redisStatus = await redisClient.isAlive();
+        if (!dbStatus) {
+            return res.status(500).json({error: 'Database connection failed'});
+        }
+        if (!redisStatus) {
+            return res.status(500).json({error: 'Redis connection failed'});
+        }
+        return res.status(200).json({
+            message: 'Server is up and running',
+            redisStatus,
+            dbStatus,
+        });
+    }
+
     static async isHealth(req, res) {
         const dbStatus = await dbClient.isAlive();
         const redisStatus = await redisClient.isAlive();

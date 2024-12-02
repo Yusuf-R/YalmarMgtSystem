@@ -347,7 +347,6 @@ function EditFuelReport({allSite, fuelData, fuelID}) {
                 data.cpd = Number(customCPD);
             }
             await editFuelSupplyReportSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!"); // Check if validation passes
             data.site_id = fuelData.site_id;
             data._id = fuelID;
             // convert dateSupplied to DD/MMM/YYYY
@@ -369,11 +368,9 @@ function EditFuelReport({allSite, fuelData, fuelID}) {
                 },
                 onError: (error) => {
                     toast.error(error.message);
-                    console.log(error);
                 }
             });
         } catch (e) {
-            console.log(e);
             e.inner.forEach((error) => {
                 // Set form errors
                 setError(error.path, {

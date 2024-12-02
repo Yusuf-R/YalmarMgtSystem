@@ -1133,7 +1133,38 @@ export const allSitesData = {
         "KAD103",
         "TNA013"
     ],
-    ZARIA: [
+    'KACHIA': [
+        "CKN001",
+        "KMG006",
+        "KMG001",
+        "KMG002",
+        "KMG004",
+        "KMG003",
+        "KMG005",
+        "KKC001",
+        "ZON006",
+        "KKC002",
+        "KAC003",
+        "KAC002",
+        "KAC001",
+        "KAC801",
+        "DGZ001",
+        "SBS001",
+        "KUI001",
+        "KUI002",
+        "ZNR001",
+        "KKC003",
+        "ZNR002",
+        "ZNR003",
+        "ZON003",
+        "KAF005",
+        "KAF004",
+        "KAF003",
+        "KWI004",
+        "KBA001",
+        "KGK001"
+    ],
+    'ZARIA': [
         "ZAR001",
         "ZAR002",
         "ZAR003",
@@ -1179,8 +1210,13 @@ export const allSitesData = {
         "SBA003",
         "SBA004",
         "MTR001",
-        "MTR002"
-    ],
+        "MTR002",
+        // Newly added entries
+        "ABU001",
+        "ABU002",
+        "ABU003",
+        "ZAR027"
+    ]
 };
 export const allSiteStates = [
     'KADUNA',

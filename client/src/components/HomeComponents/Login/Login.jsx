@@ -85,10 +85,10 @@ function Login() {
             width = '400px';
         } else if (xLarge || xxLarge) {
             fontSize = '18px';
-            width = '450px';
+            width = '400px';
         } else {
             fontSize = '20px';
-            width = '500px';
+            width = '400px';
         }
         return {
             position,
@@ -114,7 +114,6 @@ function Login() {
     const OnLogin = async (loginData) => {
         try {
             setLoading(true);
-
             // Encrypt the login data
             const encryptedData = await AdminUtils.encryptLoginData(loginData);
             console.log(encryptedData);
@@ -140,7 +139,6 @@ function Login() {
                     setTimeout(() => {
                         router.push("/dashboard");
                     }, 2000);
-
                     setLoading(false);
                 },
                 onError: (error) => {
@@ -154,7 +152,7 @@ function Login() {
             setLoading(false);
             console.error("Unexpected error:", error);
             toast.error("An unexpected error occurred. Please try again.", {
-                autoClose: 5000,
+                autoClose: 2000,
             });
         }
     };

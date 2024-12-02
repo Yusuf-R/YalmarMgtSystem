@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
@@ -17,22 +17,22 @@ import {useLogout} from "@/customHooks/useLogout";
 import Dialog from "@mui/material/Dialog";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from '@mui/material/useMediaQuery';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import FormatColorResetIcon from '@mui/icons-material/FormatColorReset';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import Brightness3OutlinedIcon from '@mui/icons-material/Brightness3Outlined';
+import FormatColorResetIcon from "@mui/icons-material/FormatColorReset";
+
+import { useRouter } from 'next/navigation';
 
 function AdminTopNav({staffData, themeMode, setThemeMode, isCollapsed, setIsCollapsed}) {
     const theme = useTheme();
+    const router = useRouter();
 
     // Capture responsive breakpoints
     const xSmall = useMediaQuery('(min-width:300px) and (max-width:389.999px)');
@@ -228,7 +228,7 @@ function AdminTopNav({staffData, themeMode, setThemeMode, isCollapsed, setIsColl
                 transformOrigin={{horizontal: 'right', vertical: 'top'}}
                 anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             >
-                <MenuItem onClick={() => router.push('/dashboard/admin/settings/biodata/view')}>
+                <MenuItem onClick={() => router.push('/dashboard/admin/settings/biodata')}>
                     <ListItemIcon>
                         <AccountCircleIcon sx={{color: 'green'}}/>
                     </ListItemIcon>

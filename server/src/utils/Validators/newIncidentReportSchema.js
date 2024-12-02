@@ -38,9 +38,9 @@ const siteIncidentSchema = Joi.object({
         site_id: Joi.string().required(),
         siteId: Joi.string().required(),
         state: Joi.string().valid('KADUNA').default('KADUNA'),
-        cluster: Joi.string().valid('BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA').required(),
+        cluster: Joi.string().valid('BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA').required(),
         location: Joi.string().allow(null),
-        type: Joi.string().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC').default('HUB'),
+        type: Joi.string().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM').default('HUB'),
     }).required(),
     siteIncidentInfo: Joi.object({
         category: Joi.string().valid('Shelter', 'Security', 'Others').required(),

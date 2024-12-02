@@ -13,7 +13,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 const opt1 = ['OK', "NOT-OK", 'NOT-APPLICABLE'];
 const opt2 = ['YES', 'NO', 'NOT-APPLICABLE'];
-const noOfAc = [1, 2];
+const noOfAc = [1, 2, 3, 4, 5];
 
 function Step5AirConPM({txProps}) {
     const {control, setValue, watch, clearErrors, formState: {errors}} = useFormContext();
@@ -199,7 +199,7 @@ function Step5AirConPM({txProps}) {
                                         }}>
                                         {acInstalled !== '' && (
                                             <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                Select Shelter Type
+                                                Select AC Installation Status
                                             </MenuItem>
                                         )}
                                         {getAcInstalled()}
@@ -267,7 +267,7 @@ function Step5AirConPM({txProps}) {
                                                     textAlign: 'left',
                                                 }}>
                                                 <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                    Select Shelter Type
+                                                    Select Number of AC Installed
                                                 </MenuItem>
                                                 {getNoOfAc()}
                                             </TextField>

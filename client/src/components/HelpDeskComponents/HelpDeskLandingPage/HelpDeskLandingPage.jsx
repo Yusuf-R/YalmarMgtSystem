@@ -81,7 +81,7 @@ function HelpDeskLandingPage() {
                             label="Helpdesk"
                             value="/dashboard/admin/helpdesk" // Set the value prop for this Tab
                             component={Link}
-                            href="/dashboard/admin/helpdeskf"
+                            href="/dashboard/admin/helpdesk"
                             sx={{
                                 color: "#FFF",
                                 fontWeight: 'bold',

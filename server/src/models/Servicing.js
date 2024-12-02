@@ -41,7 +41,7 @@ const serviceOps = {
     site_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Site', required: true},
     siteId: {type: String, required: true},
     state: {type: String, required: true, default: 'KADUNA'},
-    cluster: {type: String, enum: ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA'], required: true},
+    cluster: {type: String, enum: ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'], required: true},
     location: {type: String},
     siteGenModes: {
         type: String,
@@ -51,7 +51,7 @@ const serviceOps = {
     },
     siteType: {
         type: String,
-        enum: ['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'],
+        enum: ['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM'],
         required: true,
         default: 'HUB'
     },

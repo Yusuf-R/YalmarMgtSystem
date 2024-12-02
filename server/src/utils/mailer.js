@@ -2,13 +2,13 @@ require('dotenv').config({
     path: '../server/.env',
 });
 const nodemailer = require('nodemailer');
-const {SERVICE, CLIENT, PASS, HOST, PORT} = process.env;
+const { SERVICE, CLIENT, PASS, HOST, MAILER_PORT } = process.env;
 
 class MailClient {
     static getTransporter() {
         return nodemailer.createTransport({
             service: SERVICE,
-            port: PORT,
+            port: MAILER_PORT,
             secure: true,
             host: HOST,
             auth: {
@@ -20,11 +20,11 @@ class MailClient {
 
     // Static method to send the reset token
     static async sendToken(staff) {
-        const transporter = this.getTransporter();  // Call getTransporter to initialize transporter
-        const {email, fullName, resetOTP} = staff;
+        const transporter = this.getTransporter(); // Call getTransporter to initialize transporter
+        const { email, fullName, resetOTP } = staff;
         try {
             const info = await transporter.sendMail({
-                from: 'schoolpilot.mgt@gmail.com',
+                from: 'yalmar.tech@gmail.com',
                 to: email,
                 subject: 'Password Reset Token',
                 html: `
@@ -36,8 +36,6 @@ class MailClient {
                     <p>Best regards,<br/>Yalmar Management System</p>
                 `,
             });
-
-            console.log(`Password reset email sent: ${info.messageId}`);
         } catch (error) {
             console.error('Error sending password reset email:', error);
             throw new Error('Failed to send email');

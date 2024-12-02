@@ -1271,16 +1271,6 @@ const safeParseNumber = (value) => {
     return null;
 };
 const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQty, cpd, customDate = null) => {
-    // Debug input values immediately
-    console.log('Raw input values:', {
-        dateSupplied,
-        nextDueDate,
-        customDate,
-        initialQty,
-        suppliedQty,
-        cpd
-    });
-
     // Input validation
     const validateInputs = () => {
         if (!dateSupplied || !nextDueDate) {
@@ -1291,12 +1281,6 @@ const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQ
         const numInitialQty = safeParseNumber(initialQty);
         const numSuppliedQty = safeParseNumber(suppliedQty);
         const numCpd = safeParseNumber(cpd);
-
-        console.log('Parsed numbers:', {
-            numInitialQty,
-            numSuppliedQty,
-            numCpd
-        });
 
         if (numInitialQty === null || numSuppliedQty === null || numCpd === null) {
             throw new Error('Quantity and CPD values must be valid numbers');
@@ -1356,21 +1340,6 @@ const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQ
         }
 
         const totalQty = numInitialQty + numSuppliedQty;
-
-        // Debug logging
-        console.log('Validated values:', {
-            dateSupplied,
-            nextDueDate,
-            customDate,
-            referenceDate: referenceDate.format('YYYY-MM-DD'),
-            dateSuppliedDayjs: dateSuppliedDayjs.format('YYYY-MM-DD'),
-            nextDueDateDayjs: nextDueDateDayjs.format('YYYY-MM-DD'),
-            numInitialQty,
-            numSuppliedQty,
-            numCpd,
-            totalQty
-        });
-
         const daysPassed = referenceDate.diff(dateSuppliedDayjs, 'day');
         const consumptionSoFar = daysPassed * numCpd;
         const currentFuelAvailable = Math.max(0, totalQty - consumptionSoFar);
@@ -1411,7 +1380,6 @@ const calculateFuelAnalytics = (dateSupplied, nextDueDate, initialQty, suppliedQ
             fuelToDateColor = "#33cc33";
             fuelToDateText = "75-100% left";
         }
-        console.log({fuelToDatePercentage});
 
         return {
             currentFuelAvailable,

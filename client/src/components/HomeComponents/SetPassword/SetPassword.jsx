@@ -46,7 +46,7 @@ function SetPassword({decryptedEmail}) {
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
     const [isSubmit, setIsSubmit] = useState(false);
-    const [email, setEmail] = useState(decryptedEmail || '');
+    const [email, setEmail] = useState(decryptedEmail);
     const [showPasswordP1, setShowPasswordP1] = useState(false);
     const [showPasswordP2, setShowPasswordP2] = useState(false);
 

@@ -357,7 +357,7 @@ function RenderedData({data}) {
                             borderRadius: '10px',
                             bgcolor: '#0059b3',
                         }}>
-                Report Data for {siteInfo.siteId} : {formattedDate}
+                {siteInfo.siteId} : {formattedDate}
                 <IconButton onClick={goPrev}> <ArrowBackSharpIcon sx={{color: 'lime', fontSize: 30}}/></IconButton>
             </Typography>
             <br/>

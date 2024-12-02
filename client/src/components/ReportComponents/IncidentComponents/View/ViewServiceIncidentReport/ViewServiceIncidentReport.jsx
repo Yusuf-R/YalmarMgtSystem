@@ -351,7 +351,7 @@ function RenderedData({data}) {
                             borderRadius: '10px',
                             bgcolor: '#0059b3',
                         }}>
-                Report Data for {serviceSiteInfo.siteId} : {formattedDate}
+                Data for {serviceSiteInfo.siteId} : {formattedDate}
             </Typography>
             <br/>
             {/*Submission Info*/}

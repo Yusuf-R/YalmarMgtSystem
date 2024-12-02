@@ -43,8 +43,6 @@ const MainComponent = () => {
     
     const handleConfirm = () => {
         setDialogOpen(false);
-        // Perform your submit action here
-        console.log('Confirmed and submitting...');
     };
     
     return (

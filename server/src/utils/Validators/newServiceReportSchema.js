@@ -32,12 +32,12 @@ export const newServiceReportSchemaValidator = Joi.object({
     state: Joi.string().default('KADUNA').required().messages({
         'string.empty': 'State is required'
     }),
-    cluster: Joi.string().valid('BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA').required().messages({
+    cluster: Joi.string().valid('BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA').required().messages({
         'any.only': 'Invalid cluster',
         'string.empty': 'Cluster is required'
     }),
     location: Joi.string().allow(''),
-    siteType: Joi.string().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC').default('HUB').required().messages({
+    siteType: Joi.string().valid('TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM').default('HUB').required().messages({
         'any.only': 'Invalid site type',
         'string.empty': 'AllSite type is required'
     }),

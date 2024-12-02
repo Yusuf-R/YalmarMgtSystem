@@ -8,12 +8,12 @@ const serviceSiteInfoSchema = yup.object().shape({
     cluster: yup
         .string()
         .required('Cluster is required')
-        .oneOf(['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA'], 'Invalid cluster'),
+        .oneOf(['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'], 'Invalid cluster'),
     location: yup.string(),
     type: yup
         .string()
         .required('Type is required')
-        .oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC'], 'Invalid site type'),
+        .oneOf(['TERMINAL', 'HUB', 'MAJOR-HUB', 'MGW', 'TERMINAL-HUB', 'BSC', 'PLATINUM'], 'Invalid site type'),
 });
 
 // Validation Schema for Service Incident

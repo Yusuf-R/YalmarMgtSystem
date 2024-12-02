@@ -350,7 +350,7 @@ function RenderedData({data}) {
                             borderRadius: '10px',
                             bgcolor: '#0059b3',
                         }}>
-                Report Data for {fuelSiteInfo.siteId} : {formattedDate}
+                Data for {fuelSiteInfo.siteId} : {formattedDate}
             </Typography>
             <br/>
             {/*Submission Info*/}
@@ -483,7 +483,7 @@ function RenderedData({data}) {
                             justifyContent: 'center',
                             alignItems: 'center',
                         }}>
-                            Severity: {severity} width: '250px',
+                            Severity: {severity} 
 
                         </Typography>
                     </Card>

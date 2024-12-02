@@ -1,11 +1,12 @@
-import React from 'react';
+import Contacts from "@/components/HomeComponents/Contacts/Contacts";
 
-const ContactUs = () => {
+function YalmarContacts () {
     return (
-        <div>
-            <h1>Contact Us</h1>
-        </div>
+        <>
+            <Contacts/>
+        </>
     );
 };
 
-export default ContactUs;
+
+export default YalmarContacts;

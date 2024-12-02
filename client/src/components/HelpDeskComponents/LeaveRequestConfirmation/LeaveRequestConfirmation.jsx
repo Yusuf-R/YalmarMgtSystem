@@ -166,21 +166,15 @@ function LeaveRequestConfirmation({reqID, reqData}) {
         mutationFn: AdminUtils.ConfirmStaffLeaveRequest,
     });
     const SubmitData = async (data) => {
-        console.log(reqData);
         // return;
         try {
             await leaveRequestConfirmActionSchema.validate(data, {abortEarly: false});
-            console.log("Validation passed!");
-            // update the data with some modification
             data.adminAction = adminAction;
-            // append everything about the reqData to data except createdAt and updateAt
             Object.entries(reqData).forEach(([key, value]) => {
                 if (key !== 'createdAt' && key !== 'updatedAt') {
                     data[key] = value;
                 }
             });
-            // call the mutation function
-            console.log(data);
             mutation.mutate(data, {
                 onSuccess: (response) => {
                     if (response) {
@@ -201,7 +195,6 @@ function LeaveRequestConfirmation({reqID, reqData}) {
                 }
             });
         } catch (e) {
-            console.log({e});
             e.inner.forEach((error) => {
                 setError(error.path, {
                     type: error.type,

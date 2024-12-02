@@ -11,6 +11,7 @@ import React, {useEffect, useState} from 'react';
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 const opt1 = ['OK', 'NOT-OK', 'NOT-APPLICABLE'];
+const batStat = ['OK', 'NOT-OK', 'NOT-POWERED', 'NOT-APPLICABLE'];
 const opt2 = ['YES', 'NO', 'NOT-APPLICABLE'];
 const batCount = [0, 4, 8, 12, 16, 32, 48];
 
@@ -70,7 +71,7 @@ function Step7DCSystemPM({txProps}) {
     }
     // status
     const getBatteryStatus = () => {
-        return opt1.map((type) => (
+        return batStat.map((type) => (
             <MenuItem key={type} value={type}
                       sx={{color: 'white', '&:hover': {backgroundColor: '#051935'}}}>
                 {type}
@@ -199,12 +200,9 @@ function Step7DCSystemPM({txProps}) {
                                         <FormControl fullWidth>
                                             <TextField
                                                 {...field}
-                                                select
                                                 value={field.value || ''}
-                                                onChange={(e) => {
-                                                    field.onChange(e);
-                                                    handleBatteryCount(e);
-                                                }}
+                                                type="number"
+                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                                 required
                                                 label="Battery Count"
                                                 error={!!errors.dcSystem?.batteryCount}
@@ -224,20 +222,7 @@ function Step7DCSystemPM({txProps}) {
                                                         },
                                                     }
                                                 }}
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        PaperProps: {
-                                                            sx: {
-                                                                backgroundColor: '#134357',
-                                                                color: 'white',
-                                                                maxHeight: 450,
-                                                                overflow: 'auto',
-                                                                fontSize: '40px',
 
-                                                            },
-                                                        },
-                                                    },
-                                                }}
                                                 sx={{
                                                     '& .MuiSelect-icon': {
                                                         color: '#fff',
@@ -247,12 +232,6 @@ function Step7DCSystemPM({txProps}) {
                                                     },
                                                     textAlign: 'left',
                                                 }}>
-                                                {count !== '' && (
-                                                    <MenuItem value='' sx={{color: "#4BF807"}}>
-                                                        Battery Count
-                                                    </MenuItem>
-                                                )}
-                                                {getBatteryCount()}
                                             </TextField>
                                         </FormControl>
                                     )}

@@ -18,6 +18,7 @@ const genOpt = [
     'CAT',
     'MANTRAC',
     'LISTA-PETER',
+    'BROAD-CROWN',
     'FG-WILSON',
     'JUBALI-BROS',
     'MIKANO',
@@ -833,7 +834,7 @@ function Step4GeneratorPM({txProps}) {
                                                     field.onChange(e);
                                                     handleGen2Type(e);
                                                 }}
-                                                label="Gen1 Type"
+                                                label="Gen2 Type"
                                                 required
                                                 error={!!errors.pmInstance}
                                                 helperText={errors.pmInstance ? (
@@ -965,7 +966,7 @@ function Step4GeneratorPM({txProps}) {
                                                     field.onChange(e);
                                                     handleGen2WorkingStatus(e);
                                                 }}
-                                                label="Gen2 Type"
+                                                label="Gen2 Working Status"
                                                 required
                                                 error={!!errors.generatorPM?.gen2WorkingStatus}
                                                 helperText={errors.generatorPM?.gen2WorkingStatus ? (
@@ -1112,7 +1113,7 @@ function Step4GeneratorPM({txProps}) {
                                                     field.onChange(e);
                                                     handleGen2Hr(e);
                                                 }}
-                                                label="Gen1 Working Hrs"
+                                                label="Gen2 Working Hrs"
                                                 required
                                                 error={!!errors.generatorPM?.gen2Hr}
                                                 helperText={errors.generatorPM?.gen2Hr ? (
