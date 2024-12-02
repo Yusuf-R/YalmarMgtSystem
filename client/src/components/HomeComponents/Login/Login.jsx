@@ -114,36 +114,31 @@ function Login() {
     const OnLogin = async (loginData) => {
         try {
             setLoading(true);
-
             // Encrypt the login data
             const encryptedData = await AdminUtils.encryptLoginData(loginData);
+            console.log(encryptedData);
+
             const toastConfig = getToastConfig();
+
             // Use mutation with encrypted data
-            mutation.mutate({ encryptedData }, {
-                onSuccess: (response) => {
-                    const { accessToken } = response;
-                    Cookies.set("accessToken", accessToken, {
-                        secure: true,
-                        sameSite: "None",
-                        path: "/",
-                    });
-                    // Set the "rememberMe" cookie securely
-                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
-                        secure: true,
-                        sameSite: "None",
-                        path: "/",
-                    });
+            mutation.mutate({encryptedData}, {
+                onSuccess: () => {
                     toast.success("Login successful 🚀", toastConfig);
                     toast.success("Redirecting to dashboard", {
                         ...toastConfig,
                         icon: <FcRedo/>,
                     });
 
+                    // Set the "rememberMe" cookie securely
+                    Cookies.set("rememberMe", rememberMe ? "true" : "false", {
+                        secure: true,
+                        sameSite: "strict",
+                    });
+
                     // Redirect to dashboard after a short delay
                     setTimeout(() => {
                         router.push("/dashboard");
                     }, 2000);
-
                     setLoading(false);
                 },
                 onError: (error) => {

@@ -16,34 +16,22 @@ import React, {useEffect, useMemo, useState} from "react";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import {createTheme, LinearProgress, ThemeProvider, useTheme} from '@mui/material';
+import {createTheme, ThemeProvider} from '@mui/material';
 import {
     MaterialReactTable,
-    useMaterialReactTable,
-    MRT_ToggleDensePaddingButton,
-    MRT_ToggleFullScreenButton,
-    MRT_ToggleGlobalFilterButton,
-    MRT_ToggleFiltersButton,
     MRT_ShowHideColumnsButton,
+    MRT_ToggleDensePaddingButton,
+    MRT_ToggleFiltersButton,
+    MRT_ToggleGlobalFilterButton,
+    useMaterialReactTable,
 } from "material-react-table";
 import Tooltip from "@mui/material/Tooltip";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import AdminUtils from "@/utils/AdminUtilities";
+import AdminUtilities from "@/utils/AdminUtilities";
 import {toast} from "react-toastify";
-import Modal from '@mui/material/Modal';
-import InputAdornment from "@mui/material/InputAdornment";
-import MapIcon from "@mui/icons-material/Map";
 import Grid from "@mui/material/Grid";
-import CellTowerIcon from '@mui/icons-material/CellTower';
-import KebabDiningIcon from '@mui/icons-material/KebabDining';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import {Controller, useForm, useWatch} from "react-hook-form";
 import MenuItem from "@mui/material/MenuItem";
-import {yupResolver} from "@hookform/resolvers/yup";
-import dayjs from "dayjs";
-import DateComponent from "@/components/DateComponent/DateComponent";
-import Divider from "@mui/material/Divider";
-import {editFuelSupplyReportSchema} from "@/SchemaValidator/editFuelSupplyReport";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -52,10 +40,12 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import CloseIcon from "@mui/icons-material/Close";
 import useFuelReportStore from "@/store/useFuelReportStore";
-import AdminUtilities from "@/utils/AdminUtilities";
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {saveAs} from 'file-saver';
 import * as XLSX from 'xlsx';
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 function FuellingReport({allFuelReport}) {
     const router = useRouter();
@@ -91,8 +81,45 @@ function FuellingReport({allFuelReport}) {
 
     const isSmallScreen = xSmall || small || medium || large;
 
+    const [selectedMonth, setSelectedMonth] = useState('all');
+    const [selectedYear, setSelectedYear] = useState('all');
+    const [selectedCluster, setSelectedCluster] = useState('all');
 
-    // useEffect or handling navigation between new and staff
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const clusters = ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'];
+
+// Generate years array with future years
+    const years = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const startYear = 2023; // Base year
+        const futureYears = 0; // Number of future years to include
+
+        // Calculate total years to include
+        const totalYears = (currentYear - startYear) + futureYears + 1;
+
+        return Array.from({length: totalYears}, (_, i) => {
+            return currentYear + futureYears - i;
+        }).sort((a, b) => b - a); // Sort in descending order
+    }, []);
+
+    const filterReports = (reports) => {
+        return reports.filter(report => {
+            const [day, monthStr, yearStr] = report.dateSupplied.split('/');
+            const reportMonth = months[new Date(`${monthStr} 1, 2000`).getMonth()];
+            const reportYear = yearStr;
+
+            const monthMatch = selectedMonth === 'all' || reportMonth === selectedMonth;
+            const yearMatch = selectedYear === 'all' || reportYear === selectedYear;
+            const clusterMatch = selectedCluster === 'all' || report.cluster === selectedCluster;
+
+            return monthMatch && yearMatch && clusterMatch;
+        });
+    };
+
     useEffect(() => {
         if (pathname.includes('new')) {
             setActiveTab('/dashboard/admin/reports/fuel/new');
@@ -423,7 +450,7 @@ function FuellingReport({allFuelReport}) {
                 });
             };
 
-         
+
             // function to view fuel report
             const viewFuelReport = async () => {
                 const encryptedFuelID = await AdminUtilities.encryptObjID(objID);
@@ -445,7 +472,7 @@ function FuellingReport({allFuelReport}) {
                 setEncryptedFuelData(encryptedFuelData, encryptedFuelID);
                 router.push(`/dashboard/admin/reports/fuel/edit`);
             };
-            
+
             return (
                 <>
                     <Stack direction='row'
@@ -598,35 +625,7 @@ function FuellingReport({allFuelReport}) {
                 });
             };
             // provide Xcel format for download
-            const exportToExcel = () => {
-                // Prepare data by mapping to desired format
-                const exportData = table.getRowModel().rows.map(row => {
-                    const {_id, cpd, ...rest} = row.original; // Exclude '_id'
-                    return {
-                        SiteId: rest.siteId,
-                        Cluster: rest.cluster,
-                        Location: rest.location,
-                        Type: rest.type,
-                        QtyInitial: rest.qtyInitial,
-                        QtySupplied: rest.qtySupplied,
-                        QtyNew: rest.qtyNew,
-                        DateSupplied: rest.dateSupplied,
-                        NextDueDate: rest.nextDueDate,
-                        Duration: rest.duration,
-                        CPD: cpd // Rename 'cpd' to 'CPD'
-                    };
-                });
 
-                // Generate worksheet and workbook for the modified data
-                const worksheet = XLSX.utils.json_to_sheet(exportData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "FuelData");
-
-                // Convert workbook to a Blob and trigger download
-                const excelBuffer = XLSX.write(workbook, {bookType: "xlsx", type: "array"});
-                const blob = new Blob([excelBuffer], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-                saveAs(blob, "FuelData.xlsx");
-            };
             return (
                 <Box sx={{display: 'flex', gap: '1rem', p: '4px'}}>
                     <Button
@@ -637,13 +636,7 @@ function FuellingReport({allFuelReport}) {
                     >
                         Delete
                     </Button>
-                    <Button
-                        onClick={exportToExcel}
-                        startIcon={<FileDownloadIcon/>}
-                        variant="contained"
-                    >
-                        Excel
-                    </Button>
+
                     <Dialog
                         open={open}
                         onClose={handleClose}
@@ -853,6 +846,49 @@ function FuellingReport({allFuelReport}) {
             density: 'compact',
         },
     });
+
+    const exportToExcel = () => {
+        const filteredData = filterReports(allFuelReport);
+
+        const workbookData = filteredData.map(report => ({
+            // Site Information
+            'Site ID': report.site_id || 'N/A',
+            'Site Code': report.siteId || 'N/A',
+            'State': report.state || 'N/A',
+            'Cluster': report.cluster || 'N/A',
+            'Location': report.location || 'N/A',
+            'Site Type': report.type || 'N/A',
+
+            // Fuel Quantities
+            'Initial Quantity': report.qtyInitial || 'N/A',
+            'Supplied Quantity': report.qtySupplied || 'N/A',
+            'New Quantity': report.qtyNew || 'N/A',
+
+            // Dates and Duration
+            'Date Supplied': report.dateSupplied || 'N/A',
+            'Next Due Date': report.nextDueDate || 'N/A',
+            'Duration (Days)': report.duration || 'N/A',
+            'Consumption Per Day': report.cpd || 'N/A',
+
+            // Metadata
+            'Created At': report.createdAt ? new Date(report.createdAt).toLocaleString() : 'N/A',
+            'Updated At': report.updatedAt ? new Date(report.updatedAt).toLocaleString() : 'N/A'
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(workbookData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Fuelling Reports');
+
+        // Generate filename based on filters
+        const monthStr = selectedMonth === 'all' ? 'All-Months' : selectedMonth;
+        const yearStr = selectedYear === 'all' ? 'All-Years' : selectedYear;
+        const clusterStr = selectedCluster === 'all' ? 'All-Clusters' : selectedCluster;
+        const filename = `Fuelling-Report-${monthStr}-${yearStr}-${clusterStr}.xlsx`;
+
+        const excelBuffer = XLSX.write(wb, {bookType: "xlsx", type: "array"});
+        const blob = new Blob([excelBuffer], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        saveAs(blob, filename);
+    };
     return (
         <>
             <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
@@ -906,6 +942,148 @@ function FuellingReport({allFuelReport}) {
                         }}
                     />
                 </Tabs>
+                <Paper sx={{p: 2, mb: 2, backgroundColor: '#304f61'}}>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Month</InputLabel>
+                                <Select
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                >
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Months</MenuItem>
+                                    {months.map(month => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={month} sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} value={month}>{month}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Year</InputLabel>
+                                <Select
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                >
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Years</MenuItem>
+                                    {years.map(year => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={year} sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} value={year.toString()}>{year}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Cluster</InputLabel>
+                                <Select
+                                    value={selectedCluster}
+                                    onChange={(e) => setSelectedCluster(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'>
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Clusters</MenuItem>
+                                    {clusters.map(cluster => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={cluster} sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} value={cluster}>{cluster}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <Button
+                                onClick={exportToExcel}
+                                startIcon={<FileDownloadIcon/>}
+                                variant="contained"
+                                fullWidth
+                            >
+                                Excel
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
                 <Typography variant="h6"
                             sx={{
                                 fontFamily: 'Poppins',

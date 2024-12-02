@@ -1,10 +1,12 @@
 'use client';
-import AllSite from "@/components/SiteComponents/AllSite/AllSite"
+
 import AdminUtils from '@/utils/AdminUtilities';
 import {useQuery} from '@tanstack/react-query'; // Ensure this import is correct
 import LazyLoading from "@/components/LazyLoading/LazyLoading";
-import {Suspense} from "react";
+import {Suspense, lazy} from "react";
 import DataFetchError from "@/components/Errors/DataFetchError/DataFetchError";
+
+const AllSite = lazy(() => import ("@/components/SiteComponents/AllSite/AllSite"));
 
 function AllSites() {
     const {isLoading, isError, data, error} = useQuery({

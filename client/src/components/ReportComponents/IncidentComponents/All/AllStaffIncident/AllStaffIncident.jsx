@@ -39,6 +39,13 @@ import IconButton from "@mui/material/IconButton";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import CloseIcon from "@mui/icons-material/Close";
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from 'xlsx';
 
 function AllStaffIncident({staffIncidentData}) {
     const pathname = usePathname();
@@ -61,7 +68,6 @@ function AllStaffIncident({staffIncidentData}) {
     const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
-
 
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
@@ -717,87 +723,298 @@ function AllStaffIncident({staffIncidentData}) {
         },
     });
 
+    const [selectedMonth, setSelectedMonth] = useState('all');
+    const [selectedYear, setSelectedYear] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const categories = ['Employment', 'Roles', 'Violence', 'Others'];
+
+    // Generate years array with future years
+    const years = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const startYear = 2023; // Base year
+        const futureYears = 0; // Number of future years to include
+
+        // Calculate total years to include
+        const totalYears = (currentYear - startYear) + futureYears + 1;
+
+        return Array.from({length: totalYears}, (_, i) => {
+            return currentYear + futureYears - i;
+        }).sort((a, b) => b - a); // Sort in descending order
+    }, []);
+
+    const filterReports = (data) => {
+        return data.filter(report => {
+            const reportDate = new Date(report.incidentDate);
+            const reportMonth = months[reportDate.getMonth()];
+            const reportYear = reportDate.getFullYear().toString();
+            const reportCategory = report.staffIncidentInfo?.classAction;
+
+            return (selectedMonth === 'all' || reportMonth === selectedMonth) &&
+                (selectedYear === 'all' || reportYear === selectedYear) &&
+                (selectedCategory === 'all' || reportCategory === selectedCategory);
+        });
+    };
+
+    const exportToExcel = () => {
+        const filteredData = filterReports(staffIncidentData);
+
+        const workbookData = filteredData.map(report => ({
+            // Base Incident Fields
+            'Incident Date': new Date(report.incidentDate).toLocaleDateString(),
+            'Admin Name': report.adminFullName || 'N/A',
+            'Admin Email': report.adminEmail || 'N/A',
+            'Admin Role': report.adminRole || 'N/A',
+            'Severity': report.severity || 'N/A',
+            'Report Category': Array.isArray(report.reportCategory) ? report.reportCategory.join(', ') : report.reportCategory || 'N/A',
+            'Report Description': report.reportDescription || 'N/A',
+
+            // Staff Information
+            'Staff Name': report.staffInfo?.fullName || 'N/A',
+            'Staff Email': report.staffInfo?.email || 'N/A',
+            'Staff Role': report.staffInfo?.role || 'N/A',
+
+            // Staff Incident Information
+            'Class Action': report.staffIncidentInfo?.classAction || 'N/A',
+            'Category Details': (() => {
+                const info = report.staffIncidentInfo?.category;
+                if (!info) return 'N/A';
+                if (info.employment) return `Employment - ${info.employment}`;
+                if (info.role) return `Role - ${info.role}`;
+                if (info.violence) return `Violence - ${info.violence}`;
+                if (info.others) return `Others - ${info.others}`;
+                return 'N/A';
+            })(),
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(workbookData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Incidents');
+
+        // Generate filename with filters
+        const filters = [];
+        if (selectedMonth !== 'all') filters.push(selectedMonth);
+        if (selectedYear !== 'all') filters.push(selectedYear);
+        if (selectedCategory !== 'all') filters.push(selectedCategory);
+
+        const filename = `staff_incidents${filters.length ? '_' + filters.join('_') : ''}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, filename);
+    };
+
     return (
-        <>
-            <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
-                <Tabs
-                    value={activeTab}
-                    onChange={(e, newValue) => setActiveTab(newValue)}
-                    variant={isXSmall ? "scrollable" : "standard"}
-                    scrollButtons="auto"
-                    sx={{
-                        '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
-                        marginBottom: 3
-                    }}
-                >
-                    {['Incident-Center', 'Staff', 'Site', 'Service', 'Fuel', 'Others'].map((label) => (
-                        <Tab
-                            key={label}
-                            label={label}
-                            component={Link}
-                            href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
-                            value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
-                            sx={{
-                                color: "#FFF",
-                                fontWeight: 'bold',
-                                fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
-                                "&.Mui-selected": {color: "#46F0F9"},
-                            }}
-                        />
-                    ))}
+        <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
+            <Tabs
+                value={activeTab}
+                onChange={(e, newValue) => setActiveTab(newValue)}
+                variant={isXSmall ? "scrollable" : "standard"}
+                scrollButtons="auto"
+                sx={{
+                    '& .MuiTabs-indicator': {backgroundColor: '#46F0F9'},
+                    marginBottom: 3
+                }}
+            >
+                {['Incident-Center', 'Staff', 'Site', 'Service', 'Fuel', 'Others'].map((label) => (
                     <Tab
-                        label="New +"
+                        key={label}
+                        label={label}
                         component={Link}
-                        href="/dashboard/admin/reports/incident/new"
-                        value="/dashboard/admin/reports/incident/new"
+                        href={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
+                        value={`/dashboard/admin/reports/incident${label === 'Incident-Center' ? '' : `/${label.toLowerCase()}`}`}
                         sx={{
                             color: "#FFF",
                             fontWeight: 'bold',
                             fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
-                            ":hover": {backgroundColor: 'rgb(51, 153, 51)'},
-                            backgroundColor: '#ff4d4d',
-                            borderRadius: 10,
-                            p: 0,
+                            "&.Mui-selected": {color: "#46F0F9"},
                         }}
                     />
-                </Tabs>
+                ))}
+                <Tab
+                    label="New +"
+                    component={Link}
+                    href="/dashboard/admin/reports/incident/new"
+                    value="/dashboard/admin/reports/incident/new"
+                    sx={{
+                        color: "#FFF",
+                        fontWeight: 'bold',
+                        fontSize: {xs: '0.7rem', sm: '0.8rem', md: '0.9rem'},
+                        ":hover": {backgroundColor: 'rgb(51, 153, 51)'},
+                        backgroundColor: '#ff4d4d',
+                        borderRadius: 10,
+                        p: 0,
+                    }}
+                />
+            </Tabs>
 
-                <Typography variant="h6"
-                            sx={{
-                                fontFamily: 'Poppins',
-                                fontWeight: 'bold',
-                                borderRadius: 2,
-                                padding: '10px 15px',
-                                background: 'linear-gradient(to right, #004e92, #000428)',
-                                color: '#FFF',
-                                width: 'auto',
-                                textAlign: 'center',
-                                fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                    Staff Incident Data
-                </Typography>
-                <br/>
-                {/*Table Section to present an abstracted form of the table*/}
-                <Paper elevation={5} sx={{
-                    alignCenter: 'center',
-                    textAlign: 'center',
-                    padding: '2px',
-                    background: 'linear-gradient(to right, #004e92, #000428)',
-                    color: '#46F0F9',
-                    borderRadius: '2px',
-                    width: '100%',
-                    height: 'auto',
-                }}>
-                    <ThemeProvider theme={tableTheme}>
-                        <MaterialReactTable table={table}/>
-                    </ThemeProvider>
-                </Paper>
+            {/* Export Controls */}
+            <Paper sx={{p: 2, mb: 2, backgroundColor: '#304f61'}}>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth>
+                            <InputLabel sx={{color: '#fff'}}>Month</InputLabel>
+                            <Select
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(e.target.value)}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 300,
+                                            backgroundColor: '#134357',
+                                        }
+                                    },
+                                }}
+                                sx={{
+                                    backgroundColor: '#134357',
+                                    color: 'white',
+                                    overflow: 'auto',
+                                }}
+                                variant='filled'
+                            >
+                                <MenuItem value="all" sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#1a5570'
+                                    }
+                                }}>All Months</MenuItem>
+                                {months.map(month => (
+                                    <MenuItem key={month} sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value={month}>{month}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth>
+                            <InputLabel sx={{color: '#fff'}}>Year</InputLabel>
+                            <Select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(e.target.value)}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 300,
+                                            backgroundColor: '#134357',
+                                        }
+                                    },
+                                }}
+                                sx={{
+                                    backgroundColor: '#134357',
+                                    color: 'white',
+                                    overflow: 'auto',
+                                }}
+                                variant='filled'
+                            >
+                                <MenuItem sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#1a5570'
+                                    }
+                                }} value="all">All Years</MenuItem>
+                                {years.map(year => (
+                                    <MenuItem key={year} sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value={year.toString()}>{year}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl fullWidth>
+                            <InputLabel sx={{color: '#fff'}}>Category</InputLabel>
+                            <Select
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 300,
+                                            backgroundColor: '#134357',
+                                        }
+                                    },
+                                }}
+                                sx={{
+                                    backgroundColor: '#134357',
+                                    color: 'white',
+                                    overflow: 'auto',
+                                }}
+                                variant='filled'
+                            >
+                                <MenuItem sx={{
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#1a5570'
+                                    }
+                                }} value="all">All Categories</MenuItem>
+                                {categories.map(category => (
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} key={category} value={category}>{category}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <Button
+                            onClick={exportToExcel}
+                            startIcon={<FileDownloadIcon/>}
+                            variant="contained"
+                            fullWidth
+                        >
+                            Export to Excel
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Paper>
 
-            </Box>
-        </>
+            <Typography variant="h6"
+                        sx={{
+                            fontFamily: 'Poppins',
+                            fontWeight: 'bold',
+                            borderRadius: 2,
+                            padding: '10px 15px',
+                            background: 'linear-gradient(to right, #004e92, #000428)',
+                            color: '#FFF',
+                            width: 'auto',
+                            textAlign: 'center',
+                            fontSize: xSmall || small ? '0.8rem' : medium || large ? '1.0rem' : '1.2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                Staff Incident Data
+            </Typography>
+            <br/>
+            {/*Table Section to present an abstracted form of the table*/}
+            <Paper elevation={5} sx={{
+                alignCenter: 'center',
+                textAlign: 'center',
+                padding: '2px',
+                background: 'linear-gradient(to right, #004e92, #000428)',
+                color: '#46F0F9',
+                borderRadius: '2px',
+                width: '100%',
+                height: 'auto',
+            }}>
+                <ThemeProvider theme={tableTheme}>
+                    <MaterialReactTable table={table}/>
+                </ThemeProvider>
+            </Paper>
+
+        </Box>
     )
 }
 

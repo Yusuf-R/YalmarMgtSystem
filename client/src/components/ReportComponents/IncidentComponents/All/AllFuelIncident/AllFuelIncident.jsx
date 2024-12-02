@@ -37,6 +37,13 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackSharpIcon from "@mui/icons-material/ArrowBackSharp";
+import Grid from "@mui/material/Grid";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import * as XLSX from 'xlsx';
 
 function AllFuelIncident({fuelIncidentData}) {
     const pathname = usePathname();
@@ -91,7 +98,6 @@ function AllFuelIncident({fuelIncidentData}) {
     const wide = useMediaQuery('(min-width:1440px) and (max-width:1679.999px)');
     const xWide = useMediaQuery('(min-width:1680px) and (max-width:1919.999px)');
     const ultraWide = useMediaQuery('(min-width:1920px)');
-
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     // Function to handle the opening and closing of the drawer
@@ -680,9 +686,96 @@ function AllFuelIncident({fuelIncidentData}) {
             density: 'compact',
         },
     });
+
+    const [selectedMonth, setSelectedMonth] = useState('all');
+    const [selectedYear, setSelectedYear] = useState('all');
+    const [selectedCluster, setSelectedCluster] = useState('all');
+
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const clusters = ['BIRNIN-GWARI', 'KADUNA-CENTRAL', 'ZARIA', 'KACHIA'];
+
+// Generate years array with future years
+    const years = useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        const startYear = 2023; // Base year
+        const futureYears = 0; // Number of future years to include
+
+        // Calculate total years to include
+        const totalYears = (currentYear - startYear) + futureYears + 1;
+
+        return Array.from({length: totalYears}, (_, i) => {
+            return currentYear + futureYears - i;
+        }).sort((a, b) => b - a); // Sort in descending order
+    }, []);
+
+    const filterReports = (data) => {
+        return data.filter(report => {
+            const reportDate = new Date(report.incidentDate);
+            const reportMonth = months[reportDate.getMonth()];
+            const reportYear = reportDate.getFullYear().toString();
+            const reportCluster = report.fuelSiteInfo?.cluster;
+
+            return (selectedMonth === 'all' || reportMonth === selectedMonth) &&
+                (selectedYear === 'all' || reportYear === selectedYear) &&
+                (selectedCluster === 'all' || reportCluster === selectedCluster);
+        });
+    };
+
+    const exportToExcel = () => {
+        const filteredData = filterReports(fuelIncidentData);
+
+        const workbookData = filteredData.map(report => ({
+            // Base Incident Fields
+            'Incident Date': new Date(report.incidentDate).toLocaleDateString(),
+            'Admin Name': report.adminFullName || 'N/A',
+            'Admin Email': report.adminEmail || 'N/A',
+            'Admin Role': report.adminRole || 'N/A',
+            'Severity': report.severity || 'N/A',
+            'Report Category': Array.isArray(report.reportCategory) ? report.reportCategory.join(', ') : report.reportCategory || 'N/A',
+            'Report Description': report.reportDescription || 'N/A',
+
+            // Site Information
+            'Site ID': report.fuelSiteInfo?.siteId || 'N/A',
+            'State': report.fuelSiteInfo?.state || 'N/A',
+            'Cluster': report.fuelSiteInfo?.cluster || 'N/A',
+            'Location': report.fuelSiteInfo?.location || 'N/A',
+            'Site Type': report.fuelSiteInfo?.type || 'N/A',
+
+            // Fuel Incident Specific Information
+            'Category': report.fuelIncidentInfo?.category || 'N/A',
+            'Sub-Category': (() => {
+                const info = report.fuelIncidentInfo?.subCategory;
+                if (!info) return 'N/A';
+                if (info.theft) return `Theft - Old: ${info.theft.oldQty}, New: ${info.theft.newQty}, Stolen: ${info.theft.qtyStolen}`;
+                if (info.quality) return `Quality - ${info.quality.action}`;
+                if (info.intervention) return `Intervention - ${info.intervention.action}, Old: ${info.intervention.oldQty}, New: ${info.intervention.newQty}, Added: ${info.intervention.qtyAdded}`;
+                if (info.others) return `Others - ${info.others}`;
+                return 'N/A';
+            })(),
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(workbookData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Fuel Incidents');
+
+        // Generate filename with filters
+        const filters = [];
+        if (selectedMonth !== 'all') filters.push(selectedMonth);
+        if (selectedYear !== 'all') filters.push(selectedYear);
+        if (selectedCluster !== 'all') filters.push(selectedCluster);
+
+        const filename = `fuel_incidents${filters.length ? '_' + filters.join('_') : ''}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(wb, filename);
+    };
+
     return (
         <>
             <Box sx={{padding: {xs: '10px', sm: '15px', md: '20px'}, marginTop: '10px'}}>
+
                 <Tabs
                     value={activeTab}
                     onChange={(e, newValue) => setActiveTab(newValue)}
@@ -724,6 +817,135 @@ function AllFuelIncident({fuelIncidentData}) {
                         }}
                     />
                 </Tabs>
+                {/* Export Controls */}
+                <Paper sx={{p: 2, mb: 2, backgroundColor: '#304f61'}}>
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Month</InputLabel>
+                                <Select
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                >
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Months</MenuItem>
+                                    {months.map(month => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={month} value={month}>{month}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Year</InputLabel>
+                                <Select
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                >
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Years</MenuItem>
+                                    {years.map(year => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={year} value={year.toString()}>{year}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel sx={{color: '#fff'}}>Cluster</InputLabel>
+                                <Select
+                                    value={selectedCluster}
+                                    onChange={(e) => setSelectedCluster(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 300,
+                                                backgroundColor: '#134357',
+                                            }
+                                        },
+                                    }}
+                                    sx={{
+                                        backgroundColor: '#134357',
+                                        color: 'white',
+                                        overflow: 'auto',
+                                    }}
+                                    variant='filled'
+                                >
+                                    <MenuItem sx={{
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#1a5570'
+                                        }
+                                    }} value="all">All Clusters</MenuItem>
+                                    {clusters.map(cluster => (
+                                        <MenuItem sx={{
+                                            color: 'white',
+                                            '&:hover': {
+                                                backgroundColor: '#1a5570'
+                                            }
+                                        }} key={cluster} value={cluster}>{cluster}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <Button
+                                onClick={exportToExcel}
+                                startIcon={<FileDownloadIcon/>}
+                                variant="contained"
+                                fullWidth
+                            >
+                                Export to Excel
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
                 <Typography variant="h6"
                             sx={{
                                 fontFamily: 'Poppins',

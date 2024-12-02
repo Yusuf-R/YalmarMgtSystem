@@ -7,8 +7,9 @@ const validateGenHr = (value) => {
     return typeof value === 'number' || ["FAULTY-TELLYS", 'NOT-APPLICABLE'].includes(value);
 };
 
-const otherOpt = ['OK', 'NOT-OK', 'NOT-APPLICABLE']
-const batOpt = ['YES', 'NO', 'NOT-APPLICABLE']
+const otherOpt = ['OK', 'NOT-OK', 'NOT-APPLICABLE'];
+const batOpt = ['YES', 'NO', 'NOT-APPLICABLE'];
+const batStat = ['OK', 'NOT-OK', 'NOT-POWERED', 'NOT-APPLICABLE'];
 
 export const newServiceReportSchema = yup.object().shape({
     // AllStaff info
@@ -43,6 +44,7 @@ export const newServiceReportSchema = yup.object().shape({
         gen1Type: yup.string().oneOf(['CAT',
             'MANTRAC',
             'LISTA-PETER',
+            'BROAD-CROWN',
             'FG-WILSON',
             'JUBALI-BROS',
             'MIKANO',
@@ -61,12 +63,19 @@ export const newServiceReportSchema = yup.object().shape({
             then: () => yup.number().positive().required('Custom Gen1 hour is required'),
             otherwise: () => yup.number().strip(),
         }),
-        gen1OperatingVoltage: yup.number().positive('Must be a positive number').required('Gen1 operating voltage is required'),
-        gen1OperatingFrequency: yup.number().positive('Must be a positive number').required('Gen1 operating frequency is required'),
+        gen1OperatingVoltage: yup
+            .number()
+            .min(0, 'Gen1 operating voltage must be 0 or a positive number')
+            .required('Gen1 operating voltage is required'),
+        gen1OperatingFrequency: yup
+            .number()
+            .min(0, 'Gen1 operating frequency must be 0 or a positive number')
+            .required('Gen1 operating frequency is required'),
         gen1WorkingStatus: yup.string().oneOf(['OK', 'NOT-OK', 'WEAK-GEN', 'NOT-APPLICABLE'], 'Invalid gen1 working status').required('Gen1 working status is required'),
         gen2Type: yup.string().oneOf(['CAT',
             'MANTRAC',
             'LISTA-PETER',
+            'BROAD-CROWN',
             'FG-WILSON',
             'JUBALI-BROS',
             'MIKANO',
@@ -75,7 +84,7 @@ export const newServiceReportSchema = yup.object().shape({
             'SDMO',
             'OTHERS',
             'NOT-APPLICABLE',], 'Invalid gen2 type').required('Gen2 type is required'),
-        gen2Display: yup.string().oneOf(['OK', 'NOT OK', 'NOT-APPLICABLE'], 'Invalid gen2 display status').required('Gen2 display status is required'),
+        gen2Display: yup.string().oneOf(['OK', 'NOT-OK', 'NOT-APPLICABLE'], 'Invalid gen2 display status').required('Gen2 display status is required'),
         gen2Hr: yup
             .string()
             .oneOf(['Enter Value', 'FAULTY-TELLYS', 'NOT-APPLICABLE'], 'Invalid gen1 hour selection')
@@ -88,14 +97,18 @@ export const newServiceReportSchema = yup.object().shape({
         gen2OperatingVoltage: yup.number().when('gen2Type', {
             is: 'NOT-APPLICABLE',
             then: () => yup.number().oneOf([0], 'Must be zero when NOT-APPLICABLE'),
-            otherwise: () => yup.number().positive('Must be a positive number').required('Gen2 operating voltage is required'),
+            otherwise: () => yup.number()
+                .min(0, 'Gen2 operating voltage must be 0 or a positive number')
+                .required('Gen2 operating voltage is required'),
         }),
         gen2OperatingFrequency: yup.number().when('gen2Type', {
             is: 'NOT-APPLICABLE',
             then: () => yup.number().oneOf([0], 'Must be zero when NOT-APPLICABLE'),
-            otherwise: () => yup.number().positive('Must be a positive number').required('Gen2 operating frequency is required'),
+            otherwise: () => yup.number()
+                .min(0, 'Gen2 operating frequency must be 0 or a positive number')
+                .required('Gen2 operating frequency is required'),
         }),
-        gen2WorkingStatus: yup.string().oneOf(['OK', 'NOT OK', 'WEAK GEN', 'NOT-APPLICABLE'], 'Invalid gen2 working status').required('Gen2 working status is required'),
+        gen2WorkingStatus: yup.string().oneOf(['OK', 'NOT-OK', 'WEAK-GEN', 'NOT-APPLICABLE'], 'Invalid gen2 working status').required('Gen2 working status is required'),
     }),
 
     airconPM: yup.object().shape({
@@ -159,14 +172,13 @@ export const newServiceReportSchema = yup.object().shape({
         backUpBatteries: yup.string().oneOf(batOpt, 'Invalid back up battery selection').required('Back up batteries is required'),
         batteryCount: yup.number().when('backUpBatteries', {
                 is: 'YES',
-                // its value must be a positive number of this value [4, 8, 12, 16, 24, 32, 48, 'NOT-APPLICABLE']
-                then: () => yup.number().required('Number of batteries is required').positive('Must be a positive number').oneOf([0, 4, 8, 12, 16, 24, 32, 48], 'Invalid number of batteries'),
+                then: () => yup.number().required('Number of batteries is required').positive('Must be a positive number'),
                 otherwise: () => yup.number().nullable(),
             },
         ),
         batteryStatus: yup.string().when('backUpBatteries', {
                 is: 'YES',
-                then: () => yup.string().oneOf(otherOpt, 'Invalid battery status').required('Battery status is required'),
+                then: () => yup.string().oneOf(batStat, 'Invalid battery status').required('Battery status is required'),
                 otherwise: () => yup.string().nullable(),
             },
         ),

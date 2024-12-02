@@ -726,24 +726,24 @@ function ReportRendering({allServicingReport}) {
             <Box sx={{
                 p: 0.1
             }}>
-                <Stack direction='row' spacing={5}>
-                    <Button size={xSmall || small || medium || large ? "small" : 'medium'}
-                            color="secondary"
-                            onClick={searchRecord}
-                            variant="contained"
-                            sx={{borderRadius: '20px'}}
-                    >
-                        Search:<SearchRoundedIcon/>
-                    </Button>
-                    <Button size={xSmall || small || medium || large ? "small" : 'medium'}
-                            color="secondary"
-                            onClick={createNew}
-                            variant="contained"
-                            sx={{borderRadius: '20px'}}
-                    >
-                        New +
-                    </Button>
-                </Stack>
+                {/*<Stack direction='row' spacing={5}>*/}
+                {/*    <Button size={xSmall || small || medium || large ? "small" : 'medium'}*/}
+                {/*            color="secondary"*/}
+                {/*            onClick={searchRecord}*/}
+                {/*            variant="contained"*/}
+                {/*            sx={{borderRadius: '20px'}}*/}
+                {/*    >*/}
+                {/*        Search:<SearchRoundedIcon/>*/}
+                {/*    </Button>*/}
+                {/*    <Button size={xSmall || small || medium || large ? "small" : 'medium'}*/}
+                {/*            color="secondary"*/}
+                {/*            onClick={createNew}*/}
+                {/*            variant="contained"*/}
+                {/*            sx={{borderRadius: '20px'}}*/}
+                {/*    >*/}
+                {/*        New +*/}
+                {/*    </Button>*/}
+                {/*</Stack>*/}
                 <br/>
                 <ThemeProvider theme={tableTheme}>
                     <MaterialReactTable table={table}/>

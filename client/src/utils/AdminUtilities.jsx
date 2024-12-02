@@ -388,6 +388,7 @@ class AdminUtils {
                 method: "GET",
                 url: '/staff/profile',
             });
+            console.log({response});
             return response.data;
         } catch (error) {
             const errData = (error.response.data.error)
