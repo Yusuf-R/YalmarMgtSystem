@@ -79,7 +79,6 @@ function ServicingReport({allServicingReport, allSite}) {
         const workbookData = filteredData.map(report => ({
 
             // Site Information
-            'Site ID': report.site_id || 'N/A',
             'Site Code': report.siteId || 'N/A',
             'State': report.state || 'N/A',
             'Cluster': report.cluster || 'N/A',
